@@ -16,6 +16,8 @@
   	<properties>
 		<maven.compiler.version>3.10.0</maven.compiler.version>
 		<hsql.version>2.6.1</hsql.version>
+		<hibernate.core.version>5.6.7.Final</hibernate.core.version>
+		<hibernate.validator.version>6.2.3.Final</hibernate.validator.version>
 	</properties>
 	
 	<dependencies>
@@ -25,6 +27,25 @@
     		<artifactId>hsqldb</artifactId>
     		<version>${hsql.version}</version>
     		<scope>runtime</scope>
+		</dependency>
+		
+		<!-- Object-relational mapping using hibernate -->
+		<dependency>
+	    	<groupId>org.hibernate</groupId>
+	    	<artifactId>hibernate-core</artifactId>
+	    	<version>${hibernate.core.version}</version>
+		</dependency>
+		
+		<!-- The Hibernate reference implementation of the Validation API. This is distinct from the persistence part of Hibernate. -->
+		<dependency>
+	    	<groupId>org.hibernate.validator</groupId>
+	    	<artifactId>hibernate-validator</artifactId>
+	    	<version>${hibernate.validator.version}</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.hibernate.validator</groupId>
+		    <artifactId>hibernate-validator-annotation-processor</artifactId>
+		    <version>${hibernate.validator.version}</version>
 		</dependency>
 	</dependencies>
   
