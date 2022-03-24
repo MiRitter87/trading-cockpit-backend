@@ -15,7 +15,18 @@
   
   	<properties>
 		<maven.compiler.version>3.10.0</maven.compiler.version>
+		<hsql.version>2.6.1</hsql.version>
 	</properties>
+	
+	<dependencies>
+		<!-- HSQL database for data storage -->
+		<dependency>
+    		<groupId>org.hsqldb</groupId>
+    		<artifactId>hsqldb</artifactId>
+    		<version>${hsql.version}</version>
+    		<scope>runtime</scope>
+		</dependency>
+	</dependencies>
   
   	<build>
 		<plugins>
