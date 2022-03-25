@@ -2,6 +2,16 @@ package backend.model;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Set;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+import javax.validation.constraints.Min;
+
+import org.hibernate.validator.HibernateValidator;
+import org.hibernate.validator.messageinterpolation.ExpressionLanguageFeatureLevel;
 
 /**
  * An alert that a stock has reached a certain price at a stock exchange.
@@ -12,6 +22,7 @@ public class PriceAlert {
 	/**
 	 * The ID.
 	 */
+	@Min(value = 1, message = "{priceAlert.id.min.message}")
 	private Integer id;
 	
 	/**
@@ -162,5 +173,34 @@ public class PriceAlert {
 	 */
 	public void setConfirmationTime(Date confirmationTime) {
 		this.confirmationTime = confirmationTime;
+	}
+	
+	
+	/**
+	 * Validates the price alert.
+	 * 
+	 * @throws Exception In case a general validation error occurred.
+	 */
+	public void validate() throws Exception {
+		this.validateAnnotations();
+	}
+	
+	
+	/**
+	 * Validates the price alert according to the annotations of the validation framework.
+	 * 
+	 * @exception Exception In case the validation failed.
+	 */
+	private void validateAnnotations() throws Exception {
+		ValidatorFactory validatorFactory = Validation.byProvider(HibernateValidator.class)   
+                .configure().constraintExpressionLanguageFeatureLevel(ExpressionLanguageFeatureLevel.BEAN_METHODS)
+                .buildValidatorFactory();
+
+		Validator validator = validatorFactory.getValidator();
+		Set<ConstraintViolation<PriceAlert>> violations = validator.validate(this);
+
+		for(ConstraintViolation<PriceAlert> violation:violations) {
+			throw new Exception(violation.getMessage());
+		}
 	}
 }
