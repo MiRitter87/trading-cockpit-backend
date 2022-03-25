@@ -8,7 +8,11 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import org.hibernate.validator.HibernateValidator;
 import org.hibernate.validator.messageinterpolation.ExpressionLanguageFeatureLevel;
@@ -28,21 +32,28 @@ public class PriceAlert {
 	/**
 	 * The stock symbol.
 	 */
+	@NotNull(message = "{priceAlert.symbol.notNull.message}")
+	@Size(min = 1, max = 6, message = "{priceAlert.symbol.size.message}")
 	private String symbol;
 	
 	/**
 	 * The exchange where the stock is listed.
 	 */
+	@NotNull(message = "{priceAlert.stockExchange.notNull.message}")
 	private StockExchange stockExchange;
 	
 	/**
 	 * The type of the price alert.
 	 */
+	@NotNull(message = "{priceAlert.alertType.notNull.message}")
 	private PriceAlertType alertType;
 	
 	/**
 	 * The price at which the alert is activated.
 	 */
+	@NotNull(message = "{priceAlert.price.notNull.message}")
+	@DecimalMin(value = "0.01", inclusive = true, message = "{priceAlert.price.decimalMin.message}")
+	@Max(value = 100000, message = "{priceAlert.price.max.message}")
 	private BigDecimal price;
 	
 	/**
