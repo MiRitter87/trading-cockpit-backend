@@ -22,6 +22,7 @@
 		<junit.jupiter.version>5.8.2</junit.jupiter.version>
 		<javax.el.version>3.0.0</javax.el.version>
 		<glassfish.el.version>2.2.6</glassfish.el.version>
+		<log4j2.version>2.17.2</log4j2.version>
 	</properties>
 	
 	<dependencies>
@@ -73,6 +74,23 @@
 	    	<artifactId>javax.el</artifactId>
 	    	<version>${glassfish.el.version}</version>
 		</dependency>
+		
+		<!-- Log4J Logging -->
+		<dependency>
+    		<groupId>org.apache.logging.log4j</groupId>
+    		<artifactId>log4j-api</artifactId>
+    		<version>${log4j2.version}</version>
+  		</dependency>
+  		<dependency>
+    		<groupId>org.apache.logging.log4j</groupId>
+    		<artifactId>log4j-core</artifactId>
+    		<version>${log4j2.version}</version>
+  		</dependency>
+  		<dependency>
+    		<groupId>org.apache.logging.log4j</groupId>
+    		<artifactId>log4j-web</artifactId>
+    		<version>${log4j2.version}</version>
+  		</dependency>
 	</dependencies>
   
   	<build>
