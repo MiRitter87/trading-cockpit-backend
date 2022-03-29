@@ -1,4 +1,4 @@
-package backend.model;
+package backend.model.priceAlert;
 
 /**
  * The type of a price alert.

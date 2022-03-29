@@ -8,7 +8,8 @@ import org.apache.logging.log4j.Logger;
 
 import backend.dao.DAOManager;
 import backend.dao.PriceAlertDAO;
-import backend.model.PriceAlert;
+import backend.model.priceAlert.PriceAlert;
+import backend.model.priceAlert.PriceAlertArray;
 import backend.model.webservice.WebServiceMessage;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
@@ -74,5 +75,28 @@ public class PriceAlertService {
 		}
 		
 		return getPriceAlertResult;
+	}
+	
+	
+	/**
+	 * Provides a list of all price alerts.
+	 * 
+	 * @return A list of all price alerts.
+	 */
+	public WebServiceResult getPriceAlerts() {
+		PriceAlertArray priceAlerts = new PriceAlertArray();
+		WebServiceResult getPriceAlertsResult = new WebServiceResult(null);
+		
+		try {
+			priceAlerts.setPriceAlerts(this.priceAlertDAO.getPriceAlerts());
+			getPriceAlertsResult.setData(priceAlerts);
+		} catch (Exception e) {
+			getPriceAlertsResult.addMessage(new WebServiceMessage(
+					WebServiceMessageType.E, this.resources.getString("priceAlert.getPriceAlertsError")));
+			
+			logger.error(this.resources.getString("priceAlert.getPriceAlertsError"), e);
+		}
+		
+		return getPriceAlertsResult;
 	}
 }

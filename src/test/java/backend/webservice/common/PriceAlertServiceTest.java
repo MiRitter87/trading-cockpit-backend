@@ -18,9 +18,10 @@ import org.junit.jupiter.api.Test;
 
 import backend.dao.DAOManager;
 import backend.dao.PriceAlertDAO;
-import backend.model.PriceAlert;
-import backend.model.PriceAlertType;
-import backend.model.StockExchange;
+import backend.model.priceAlert.PriceAlert;
+import backend.model.priceAlert.PriceAlertArray;
+import backend.model.priceAlert.PriceAlertType;
+import backend.model.priceAlert.StockExchange;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
 import backend.tools.WebServiceTools;
@@ -209,5 +210,44 @@ public class PriceAlertServiceTest {
 		expectedErrorMessage = MessageFormat.format(this.resources.getString("priceAlert.notFound"), unknownPriceAlertId);
 		actualErrorMessage = getPriceAlertResult.getMessages().get(0).getText();
 		assertEquals(expectedErrorMessage, actualErrorMessage);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of all price alerts.
+	 */
+	public void testGetAllPriceAlerts() {
+		WebServiceResult getPriceAlertsResult;
+		PriceAlertArray priceAlerts;
+		PriceAlert priceAlert;
+		
+		//Get the price alerts.
+		PriceAlertService service = new PriceAlertService();
+		getPriceAlertsResult = service.getPriceAlerts();
+		priceAlerts = (PriceAlertArray) getPriceAlertsResult.getData();
+		
+		//Assure no error message exists
+		assertTrue(WebServiceTools.resultContainsErrorMessage(getPriceAlertsResult) == false);
+		
+		//Check if two accounts are returned.
+		assertTrue(priceAlerts.getPriceAlerts().size() == 2);
+		
+		//Check both price alerts by each attribute
+		priceAlert = priceAlerts.getPriceAlerts().get(0);
+		assertEquals(this.appleAlert.getId(), priceAlert.getId());
+		assertEquals(this.appleAlert.getSymbol(), priceAlert.getSymbol());
+		assertEquals(this.appleAlert.getStockExchange(), priceAlert.getStockExchange());
+		assertTrue(this.appleAlert.getPrice().compareTo(priceAlert.getPrice()) == 0);
+		assertEquals(this.appleAlert.getTriggerTime(), priceAlert.getTriggerTime());
+		assertEquals(this.appleAlert.getConfirmationTime(), priceAlert.getConfirmationTime());
+		
+		priceAlert = priceAlerts.getPriceAlerts().get(1);
+		assertEquals(this.microsoftAlert.getId(), priceAlert.getId());
+		assertEquals(this.microsoftAlert.getSymbol(), priceAlert.getSymbol());
+		assertEquals(this.microsoftAlert.getStockExchange(), priceAlert.getStockExchange());
+		assertTrue(this.microsoftAlert.getPrice().compareTo(priceAlert.getPrice()) == 0);
+		assertEquals(this.microsoftAlert.getTriggerTime(), priceAlert.getTriggerTime());
+		assertEquals(this.microsoftAlert.getConfirmationTime(), priceAlert.getConfirmationTime());
 	}
 }

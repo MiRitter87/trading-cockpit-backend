@@ -3,7 +3,7 @@ package backend.dao;
 import java.util.List;
 
 import backend.exception.ObjectUnchangedException;
-import backend.model.PriceAlert;
+import backend.model.priceAlert.PriceAlert;
 
 /**
  * Interface for price alert persistence.

@@ -1,4 +1,4 @@
-package backend.model;
+package backend.model.priceAlert;
 
 /**
  * The exchange at which a stock is listed.

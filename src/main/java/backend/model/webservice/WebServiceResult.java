@@ -7,6 +7,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
+import backend.model.priceAlert.PriceAlertArray;
+
 /**
  * The result of a WebService call.
  * A result consists of n messages and data.
@@ -14,7 +16,7 @@ import javax.xml.bind.annotation.XmlSeeAlso;
  * @author Michael
  *
  */
-@XmlSeeAlso({})
+@XmlSeeAlso({PriceAlertArray.class})
 public class WebServiceResult {
 	/**
 	 * A list of messages.

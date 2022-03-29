@@ -4,9 +4,13 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 import backend.exception.ObjectUnchangedException;
-import backend.model.PriceAlert;
+import backend.model.priceAlert.PriceAlert;
 
 /**
  * Provides access to price alert database persistence using Hibernate.
@@ -79,8 +83,32 @@ public class PriceAlertHibernateDAO implements PriceAlertDAO {
 	
 	@Override
 	public List<PriceAlert> getPriceAlerts() throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		List<PriceAlert> priceAlerts = null;
+		EntityManager entityManager = this.sessionFactory.createEntityManager();
+		entityManager.getTransaction().begin();
+		
+		try {
+			CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+			CriteriaQuery<PriceAlert> criteriaQuery = criteriaBuilder.createQuery(PriceAlert.class);
+			Root<PriceAlert> criteria = criteriaQuery.from(PriceAlert.class);
+			criteriaQuery.select(criteria);
+			criteriaQuery.orderBy(criteriaBuilder.asc(criteria.get("id")));	//Order by id ascending
+			TypedQuery<PriceAlert> typedQuery = entityManager.createQuery(criteriaQuery);
+			priceAlerts = typedQuery.getResultList();
+			
+			entityManager.getTransaction().commit();			
+		}
+		catch(Exception exception) {
+			//If something breaks a rollback is necessary.
+			if(entityManager.getTransaction().isActive())
+				entityManager.getTransaction().rollback();
+			throw exception;
+		}
+		finally {
+			entityManager.close();			
+		}
+		
+		return priceAlerts;
 	}
 
 	

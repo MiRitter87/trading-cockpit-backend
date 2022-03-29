@@ -1,4 +1,4 @@
-package backend.model;
+package backend.model.priceAlert;
 
 import java.math.BigDecimal;
 import java.util.Date;
