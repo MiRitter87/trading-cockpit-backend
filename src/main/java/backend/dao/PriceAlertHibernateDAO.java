@@ -86,8 +86,14 @@ public class PriceAlertHibernateDAO implements PriceAlertDAO {
 	
 	@Override
 	public PriceAlert getPriceAlert(Integer id) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		EntityManager entityManager = this.sessionFactory.createEntityManager();
+		
+		entityManager.getTransaction().begin();
+		PriceAlert priceAlert = entityManager.find(PriceAlert.class, id);
+		entityManager.getTransaction().commit();
+		entityManager.close();
+		
+		return priceAlert;
 	}
 
 	

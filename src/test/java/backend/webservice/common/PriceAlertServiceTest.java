@@ -1,10 +1,13 @@
 package backend.webservice.common;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
 import org.junit.jupiter.api.AfterAll;
@@ -18,6 +21,9 @@ import backend.dao.PriceAlertDAO;
 import backend.model.PriceAlert;
 import backend.model.PriceAlertType;
 import backend.model.StockExchange;
+import backend.model.webservice.WebServiceMessageType;
+import backend.model.webservice.WebServiceResult;
+import backend.tools.WebServiceTools;
 
 /**
  * Tests the price alert service.
@@ -151,14 +157,57 @@ public class PriceAlertServiceTest {
 	
 	@Test
 	/**
-	 * A dummy test.
+	 * Tests the retrieval of a price alert.
 	 */
-	public void dummyTest() {
-		int a, b;
+	public void testGetPriceAlert() {
+		WebServiceResult getPriceAlertResult;
+		PriceAlert priceAlert;
 		
-		a = 1;
-		b = 1;
+		//Get the price alert.
+		PriceAlertService service = new PriceAlertService();
+		getPriceAlertResult = service.getPriceAlert(this.appleAlert.getId());
 		
-		assertTrue(a == b);
+		//Assure no error message exists
+		assertTrue(WebServiceTools.resultContainsErrorMessage(getPriceAlertResult) == false);
+		
+		//Assure that a price alert is returned
+		assertTrue(getPriceAlertResult.getData() instanceof PriceAlert);
+		
+		priceAlert = (PriceAlert) getPriceAlertResult.getData();
+		
+		//Check each attribute of the price alert.
+		assertEquals(this.appleAlert.getId(), priceAlert.getId());
+		assertEquals(this.appleAlert.getSymbol(), priceAlert.getSymbol());
+		assertEquals(this.appleAlert.getStockExchange(), priceAlert.getStockExchange());
+		assertTrue(this.appleAlert.getPrice().compareTo(priceAlert.getPrice()) == 0);
+		assertEquals(this.appleAlert.getTriggerTime(), priceAlert.getTriggerTime());
+		assertEquals(this.appleAlert.getConfirmationTime(), priceAlert.getConfirmationTime());
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of a price alert with an id that is unknown.
+	 */
+	public void testGetPriceAlertWithUnknownId() {
+		WebServiceResult getPriceAlertResult;
+		Integer unknownPriceAlertId = 0;
+		String expectedErrorMessage, actualErrorMessage;
+		
+		//Get the price alert.
+		PriceAlertService service = new PriceAlertService();
+		getPriceAlertResult = service.getPriceAlert(unknownPriceAlertId);
+		
+		//Assure that no price alert is returned
+		assertNull(getPriceAlertResult.getData());
+				
+		//There should be a return message of type E.
+		assertTrue(getPriceAlertResult.getMessages().size() == 1);
+		assertTrue(getPriceAlertResult.getMessages().get(0).getType() == WebServiceMessageType.E);
+		
+		//Verify the expected error message.
+		expectedErrorMessage = MessageFormat.format(this.resources.getString("priceAlert.notFound"), unknownPriceAlertId);
+		actualErrorMessage = getPriceAlertResult.getMessages().get(0).getText();
+		assertEquals(expectedErrorMessage, actualErrorMessage);
 	}
 }
