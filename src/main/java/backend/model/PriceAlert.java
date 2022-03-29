@@ -4,6 +4,15 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Set;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -22,16 +31,23 @@ import org.hibernate.validator.messageinterpolation.ExpressionLanguageFeatureLev
  * 
  * @author Michael
  */
+@Table(name="PRICE_ALERT")
+@Entity
+@SequenceGenerator(name = "priceAlertSequence", initialValue = 1, allocationSize = 1)
 public class PriceAlert {
 	/**
 	 * The ID.
 	 */
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "priceAlertSequence")
+	@Column(name="PRICE_ALERT_ID")
 	@Min(value = 1, message = "{priceAlert.id.min.message}")
 	private Integer id;
 	
 	/**
 	 * The stock symbol.
 	 */
+	@Column(name="SYMBOL", length = 6)
 	@NotNull(message = "{priceAlert.symbol.notNull.message}")
 	@Size(min = 1, max = 6, message = "{priceAlert.symbol.size.message}")
 	private String symbol;
@@ -39,18 +55,23 @@ public class PriceAlert {
 	/**
 	 * The exchange where the stock is listed.
 	 */
+	@Column(name="STOCK_EXCHANGE", length = 4)
+	@Enumerated(EnumType.STRING)
 	@NotNull(message = "{priceAlert.stockExchange.notNull.message}")
 	private StockExchange stockExchange;
 	
 	/**
 	 * The type of the price alert.
 	 */
+	@Column(name="ALERT_TYPE", length = 20)
+	@Enumerated(EnumType.STRING)
 	@NotNull(message = "{priceAlert.alertType.notNull.message}")
 	private PriceAlertType alertType;
 	
 	/**
 	 * The price at which the alert is activated.
 	 */
+	@Column(name="PRICE")
 	@NotNull(message = "{priceAlert.price.notNull.message}")
 	@DecimalMin(value = "0.01", inclusive = true, message = "{priceAlert.price.decimalMin.message}")
 	@Max(value = 100000, message = "{priceAlert.price.max.message}")
@@ -59,11 +80,13 @@ public class PriceAlert {
 	/**
 	 * The time at which the alert has been triggered.
 	 */
+	@Column(name="TRIGGER_TIME")
 	private Date triggerTime;
 	
 	/**
 	 * The time at which the user as confirmed the alert.
 	 */
+	@Column(name="CONFIRMATION_TIME")
 	private Date confirmationTime;
 	
 	
