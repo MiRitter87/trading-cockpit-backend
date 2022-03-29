@@ -107,8 +107,8 @@ public class PriceAlertServiceTest {
 	 */
 	private void deleteDummyPriceAlerts() {
 		try {
-			priceAlertDAO.deleteAccount(this.appleAlert);
-			priceAlertDAO.deleteAccount(this.microsoftAlert);
+			priceAlertDAO.deletePriceAlert(this.appleAlert);
+			priceAlertDAO.deletePriceAlert(this.microsoftAlert);
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}

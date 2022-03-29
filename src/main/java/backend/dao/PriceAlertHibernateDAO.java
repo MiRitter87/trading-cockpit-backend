@@ -2,6 +2,7 @@ package backend.dao;
 
 import java.util.List;
 
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
 import backend.exception.ObjectUnchangedException;
@@ -31,13 +32,48 @@ public class PriceAlertHibernateDAO implements PriceAlertDAO {
 
 	@Override
 	public void insertPriceAlert(PriceAlert priceAlert) throws Exception {
-		// TODO Auto-generated method stub
+		EntityManager entityManager = this.sessionFactory.createEntityManager();
+		entityManager.getTransaction().begin();
+		
+		try {
+			entityManager.persist(priceAlert);
+			entityManager.flush();	//Assures, that the generated account ID is available.
+			entityManager.getTransaction().commit();
+		}
+		catch(Exception exception) {
+			//If something breaks a rollback is necessary!?
+			if(entityManager.getTransaction().isActive())
+				entityManager.getTransaction().rollback();
+			throw exception;
+		}
+		finally {
+			entityManager.close();			
+		}
 	}
 
 	
 	@Override
-	public void deleteAccount(PriceAlert priceAlert) throws Exception {
-		// TODO Auto-generated method stub
+	public void deletePriceAlert(PriceAlert priceAlert) throws Exception {
+		EntityManager entityManager = this.sessionFactory.createEntityManager();
+		
+		//In order to successfully delete an entity, it first has to be fetched from the database.
+		PriceAlert deletePriceAlert = entityManager.find(PriceAlert.class, priceAlert.getId());
+		
+		entityManager.getTransaction().begin();
+		
+		try {
+			entityManager.remove(deletePriceAlert);
+			entityManager.getTransaction().commit();			
+		}
+		catch(Exception exception) {
+			//If something breaks a rollback is necessary.
+			if(entityManager.getTransaction().isActive())
+				entityManager.getTransaction().rollback();
+			throw exception;
+		}
+		finally {
+			entityManager.close();			
+		}
 	}
 
 	

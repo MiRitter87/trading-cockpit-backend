@@ -26,7 +26,7 @@ public interface PriceAlertDAO {
 	 * @param priceAlert The price alert to be deleted.
 	 * @throws Exception Deletion failed.
 	 */
-	void deleteAccount(final PriceAlert priceAlert) throws Exception;
+	void deletePriceAlert(final PriceAlert priceAlert) throws Exception;
 	
 	
 	/**
