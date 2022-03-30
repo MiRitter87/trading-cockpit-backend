@@ -99,4 +99,41 @@ public class PriceAlertService {
 		
 		return getPriceAlertsResult;
 	}
+	
+	
+	/**
+	 * Deletes the price alert with the given id.
+	 * 
+	 * @param id The id of the price alert to be deleted.
+	 * @return The result of the delete function.
+	 */
+	public WebServiceResult deletePriceAlert(final Integer id) {
+		WebServiceResult deletePriceAlertResult = new WebServiceResult(null);
+		PriceAlert priceAlert = null;
+		
+		//Check if a price alert with the given id exists.
+		try {
+			priceAlert = this.priceAlertDAO.getPriceAlert(id);
+			
+			if(priceAlert != null) {
+				//Delete price alert if exists.
+				this.priceAlertDAO.deletePriceAlert(priceAlert);
+				deletePriceAlertResult.addMessage(new WebServiceMessage(WebServiceMessageType.S, 
+						MessageFormat.format(this.resources.getString("priceAlert.deleteSuccess"), id)));
+			}
+			else {
+				//Price alert not found.
+				deletePriceAlertResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
+						MessageFormat.format(this.resources.getString("priceAlert.notFound"), id)));
+			}
+		}
+		catch (Exception e) {
+			deletePriceAlertResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
+					MessageFormat.format(this.resources.getString("priceAlert.deleteError"), id)));
+			
+			logger.error(MessageFormat.format(this.resources.getString("priceAlert.deleteError"), id), e);
+		}
+		
+		return deletePriceAlertResult;
+	}
 }

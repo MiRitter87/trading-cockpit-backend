@@ -230,7 +230,7 @@ public class PriceAlertServiceTest {
 		//Assure no error message exists
 		assertTrue(WebServiceTools.resultContainsErrorMessage(getPriceAlertsResult) == false);
 		
-		//Check if two accounts are returned.
+		//Check if two price alerts are returned.
 		assertTrue(priceAlerts.getPriceAlerts().size() == 2);
 		
 		//Check both price alerts by each attribute
@@ -249,5 +249,47 @@ public class PriceAlertServiceTest {
 		assertTrue(this.microsoftAlert.getPrice().compareTo(priceAlert.getPrice()) == 0);
 		assertEquals(this.microsoftAlert.getTriggerTime(), priceAlert.getTriggerTime());
 		assertEquals(this.microsoftAlert.getConfirmationTime(), priceAlert.getConfirmationTime());
+	}
+	
+	
+	@Test
+	/**
+	 * Tests deletion of a price alert.
+	 */
+	public void testDeletePriceAlert() {
+		WebServiceResult deletePriceAlertResult;
+		PriceAlert deletedPriceAlert;
+		
+		try {
+			//Delete Apple alert using the service.
+			PriceAlertService service = new PriceAlertService();
+			deletePriceAlertResult = service.deletePriceAlert(this.appleAlert.getId());
+			
+			//There should be no error messages
+			assertTrue(WebServiceTools.resultContainsErrorMessage(deletePriceAlertResult) == false);
+			
+			//There should be a success message
+			assertTrue(deletePriceAlertResult.getMessages().size() == 1);
+			assertTrue(deletePriceAlertResult.getMessages().get(0).getType() == WebServiceMessageType.S);
+			
+			//Check if Apple alert is missing using the DAO.
+			deletedPriceAlert = priceAlertDAO.getPriceAlert(this.appleAlert.getId());
+			
+			if(deletedPriceAlert != null)
+				fail("Apple alert is still persisted but should have been deleted by the WebService operation 'deletePriceAlert'.");
+		}
+		catch (Exception e) {
+			fail(e.getMessage());
+		}
+		finally {
+			//Restore old database state by adding the price alert that has been deleted previously.
+			try {
+				this.appleAlert = this.getAppleAlert();
+				priceAlertDAO.insertPriceAlert(this.appleAlert);
+			} 
+			catch (Exception e) {
+				fail(e.getMessage());
+			}
+		}
 	}
 }
