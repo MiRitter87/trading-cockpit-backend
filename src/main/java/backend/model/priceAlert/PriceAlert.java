@@ -210,6 +210,80 @@ public class PriceAlert {
 	}
 	
 	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((alertType == null) ? 0 : alertType.hashCode());
+		result = prime * result + ((confirmationTime == null) ? 0 : confirmationTime.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((price == null) ? 0 : price.hashCode());
+		result = prime * result + ((stockExchange == null) ? 0 : stockExchange.hashCode());
+		result = prime * result + ((symbol == null) ? 0 : symbol.hashCode());
+		result = prime * result + ((triggerTime == null) ? 0 : triggerTime.hashCode());
+		return result;
+	}
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		PriceAlert other = (PriceAlert) obj;
+		if (alertType != other.alertType) {
+			return false;
+		}
+		if (confirmationTime == null && other.confirmationTime != null)
+			return false;
+		if (confirmationTime != null && other.confirmationTime == null)
+			return false;
+		if(confirmationTime != null && other.confirmationTime != null) {
+			if (confirmationTime.getTime() != other.confirmationTime.getTime())
+				return false;
+		}		
+		if (id == null) {
+			if (other.id != null) {
+				return false;
+			}
+		} else if (!id.equals(other.id)) {
+			return false;
+		}
+		if (price == null) {
+			if (other.price != null) {
+				return false;
+			}
+		} else if (price.compareTo(other.price) != 0) {
+			return false;
+		}
+		if (stockExchange != other.stockExchange) {
+			return false;
+		}
+		if (symbol == null) {
+			if (other.symbol != null) {
+				return false;
+			}
+		} else if (!symbol.equals(other.symbol)) {
+			return false;
+		}
+		if (triggerTime == null && other.triggerTime != null)
+			return false;
+		if (triggerTime != null && other.triggerTime == null)
+			return false;
+		if(triggerTime != null && other.triggerTime != null) {
+			if (triggerTime.getTime() != other.triggerTime.getTime())
+				return false;
+		}	
+		return true;
+	}
+
+
 	/**
 	 * Validates the price alert.
 	 * 

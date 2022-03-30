@@ -129,12 +129,27 @@ public class PriceAlertHibernateDAO implements PriceAlertDAO {
 	public void updatePriceAlert(PriceAlert priceAlert) throws ObjectUnchangedException, Exception {
 		EntityManager entityManager;
 		
-		//this.checkAccountDataChanged(account);
+		this.checkPriceAlertDataChanged(priceAlert);
 		
 		entityManager = this.sessionFactory.createEntityManager();
 		entityManager.getTransaction().begin();
 		entityManager.merge(priceAlert);
 		entityManager.getTransaction().commit();
 		entityManager.close();
+	}
+	
+	
+	/**
+	 * Checks if the data of the given price alert differ from the price alert that is persisted at database level.
+	 * 
+	 * @param priceAlert The price alert to be checked.
+	 * @throws ObjectUnchangedException In case the price alert has not been changed.
+	 * @throws Exception In case an error occurred during determination of the price alert stored at the database.
+	 */
+	private void checkPriceAlertDataChanged(final PriceAlert priceAlert) throws ObjectUnchangedException, Exception {
+		PriceAlert databasePriceAlert = this.getPriceAlert(priceAlert.getId());
+		
+		if(databasePriceAlert.equals(priceAlert))
+			throw new ObjectUnchangedException();
 	}
 }

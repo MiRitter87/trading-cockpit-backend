@@ -162,15 +162,15 @@ public class PriceAlertService {
 			updatePriceAlertResult.addMessage(new WebServiceMessage(WebServiceMessageType.S, 
 					MessageFormat.format(this.resources.getString("priceAlert.updateSuccess"), priceAlert.getId())));
 		} 
-//		catch(ObjectUnchangedException objectUnchangedException) {
-//			updateAccountResult.addMessage(new WebServiceMessage(WebServiceMessageType.I, 
-//					MessageFormat.format(this.resources.getString("account.updateUnchanged"), account.getId())));
-//		}
+		catch(ObjectUnchangedException objectUnchangedException) {
+			updatePriceAlertResult.addMessage(new WebServiceMessage(WebServiceMessageType.I, 
+					MessageFormat.format(this.resources.getString("priceAlert.updateUnchanged"), priceAlert.getId())));
+		}
 		catch (Exception e) {
-//			updateAccountResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
-//					MessageFormat.format(this.resources.getString("account.updateError"), account.getId())));
-//			
-//			logger.error(MessageFormat.format(this.resources.getString("account.updateError"), account.getId()), e);
+			updatePriceAlertResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
+					MessageFormat.format(this.resources.getString("priceAlert.updateError"), priceAlert.getId())));
+			
+			logger.error(MessageFormat.format(this.resources.getString("priceAlert.updateError"), priceAlert.getId()), e);
 		}
 		
 		return updatePriceAlertResult;

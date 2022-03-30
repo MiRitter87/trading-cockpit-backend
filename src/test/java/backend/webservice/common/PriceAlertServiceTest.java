@@ -25,6 +25,7 @@ import backend.model.priceAlert.StockExchange;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
 import backend.tools.WebServiceTools;
+import backend.tools.test.ValidationMessageProvider;
 
 /**
  * Tests the price alert service.
@@ -321,5 +322,53 @@ public class PriceAlertServiceTest {
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests updating a price alert with invalid data.
+	 */
+	public void testUpdateInvalidPriceAlert() {
+		WebServiceResult updatePriceAlertResult;
+		PriceAlertService service = new PriceAlertService();
+		ValidationMessageProvider messageProvider = new ValidationMessageProvider();
+		String actualErrorMessage, expectedErrorMessage;
+		
+		//Remove the symbol.
+		this.appleAlert.setSymbol("");
+		updatePriceAlertResult = service.updatePriceAlert(this.appleAlert);
+		
+		//There should be a return message of type E.
+		assertTrue(updatePriceAlertResult.getMessages().size() == 1);
+		assertTrue(updatePriceAlertResult.getMessages().get(0).getType() == WebServiceMessageType.E);
+		
+		//A proper message should be provided.
+		expectedErrorMessage = messageProvider.getSizeValidationMessage("priceAlert", "symbol", String.valueOf(this.appleAlert.getSymbol().length()), "1", "6");
+		actualErrorMessage = updatePriceAlertResult.getMessages().get(0).getText();
+		assertEquals(expectedErrorMessage, actualErrorMessage);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests updating a price alert without changing any data.
+	 */
+	public void testUpdateUnchangedPriceAlert() {
+		WebServiceResult updatePriceAlertResult;
+		PriceAlertService service = new PriceAlertService();
+		String actualErrorMessage, expectedErrorMessage;
+		
+		//Update price alert without changing any data.
+		updatePriceAlertResult = service.updatePriceAlert(this.appleAlert);
+		
+		//There should be a return message of type I
+		assertTrue(updatePriceAlertResult.getMessages().size() == 1);
+		assertTrue(updatePriceAlertResult.getMessages().get(0).getType() == WebServiceMessageType.I);
+		
+		//A proper message should be provided.
+		expectedErrorMessage = MessageFormat.format(this.resources.getString("priceAlert.updateUnchanged"), this.appleAlert.getId());
+		actualErrorMessage = updatePriceAlertResult.getMessages().get(0).getText();
+		assertEquals(expectedErrorMessage, actualErrorMessage);
 	}
 }
