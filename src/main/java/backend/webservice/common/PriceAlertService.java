@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 
 import backend.dao.DAOManager;
 import backend.dao.PriceAlertDAO;
+import backend.exception.ObjectUnchangedException;
 import backend.model.priceAlert.PriceAlert;
 import backend.model.priceAlert.PriceAlertArray;
 import backend.model.webservice.WebServiceMessage;
@@ -135,5 +136,43 @@ public class PriceAlertService {
 		}
 		
 		return deletePriceAlertResult;
+	}
+	
+	
+	/**
+	 * Updates an existing price alert.
+	 * 
+	 * @param priceAlert The price alert to be updated.
+	 * @return The result of the update function.
+	 */
+	public WebServiceResult updatePriceAlert(final PriceAlert priceAlert) {
+		WebServiceResult updatePriceAlertResult = new WebServiceResult(null);
+		
+		//Validation of the given price alert.
+		try {
+			priceAlert.validate();
+		} catch (Exception validationException) {
+			updatePriceAlertResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, validationException.getMessage()));
+			return updatePriceAlertResult;
+		}
+		
+		//Update price alert if validation is successful.
+		try {
+			this.priceAlertDAO.updatePriceAlert(priceAlert);
+			updatePriceAlertResult.addMessage(new WebServiceMessage(WebServiceMessageType.S, 
+					MessageFormat.format(this.resources.getString("priceAlert.updateSuccess"), priceAlert.getId())));
+		} 
+//		catch(ObjectUnchangedException objectUnchangedException) {
+//			updateAccountResult.addMessage(new WebServiceMessage(WebServiceMessageType.I, 
+//					MessageFormat.format(this.resources.getString("account.updateUnchanged"), account.getId())));
+//		}
+		catch (Exception e) {
+//			updateAccountResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
+//					MessageFormat.format(this.resources.getString("account.updateError"), account.getId())));
+//			
+//			logger.error(MessageFormat.format(this.resources.getString("account.updateError"), account.getId()), e);
+		}
+		
+		return updatePriceAlertResult;
 	}
 }

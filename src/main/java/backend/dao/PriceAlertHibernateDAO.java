@@ -127,6 +127,14 @@ public class PriceAlertHibernateDAO implements PriceAlertDAO {
 	
 	@Override
 	public void updatePriceAlert(PriceAlert priceAlert) throws ObjectUnchangedException, Exception {
-		// TODO Auto-generated method stub
+		EntityManager entityManager;
+		
+		//this.checkAccountDataChanged(account);
+		
+		entityManager = this.sessionFactory.createEntityManager();
+		entityManager.getTransaction().begin();
+		entityManager.merge(priceAlert);
+		entityManager.getTransaction().commit();
+		entityManager.close();
 	}
 }

@@ -292,4 +292,34 @@ public class PriceAlertServiceTest {
 			}
 		}
 	}
+	
+	
+	@Test
+	/**
+	 * Tests updating a price alert with valid data.
+	 */
+	public void testUpdateValidPriceAlert() {
+		WebServiceResult updatePriceAlertResult;
+		PriceAlert updatedPriceAlert;
+		PriceAlertService service = new PriceAlertService();
+		
+		//Update the price.
+		this.appleAlert.setPrice(BigDecimal.valueOf(186.30));
+		updatePriceAlertResult = service.updatePriceAlert(this.appleAlert);
+		
+		//Assure no error message exists
+		assertTrue(WebServiceTools.resultContainsErrorMessage(updatePriceAlertResult) == false);
+		
+		//There should be a success message
+		assertTrue(updatePriceAlertResult.getMessages().size() == 1);
+		assertTrue(updatePriceAlertResult.getMessages().get(0).getType() == WebServiceMessageType.S);
+		
+		//Retrieve the updated price alert and check if the changes have been persisted.
+		try {
+			updatedPriceAlert = priceAlertDAO.getPriceAlert(this.appleAlert.getId());
+			assertTrue(this.appleAlert.getPrice().compareTo(updatedPriceAlert.getPrice()) == 0);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
 }
