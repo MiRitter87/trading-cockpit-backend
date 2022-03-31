@@ -103,6 +103,37 @@ public class PriceAlertService {
 	
 	
 	/**
+	 * Adds a price alert.
+	 * 
+	 * @param priceAlert The price alert to be added.
+	 * @return The result of the add function.
+	 */
+	public WebServiceResult addPriceAlert(final PriceAlert priceAlert) {
+		WebServiceResult addPriceAlertResult = new WebServiceResult();
+		
+//		//Validate the given account.
+//		try {
+//			account.validate();
+//		} catch (Exception validationException) {
+//			addAccountResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, validationException.getMessage()));
+//			return addAccountResult;
+//		}
+		
+		//Insert price alert if validation is successful.
+		try {
+			this.priceAlertDAO.insertPriceAlert(priceAlert);
+			addPriceAlertResult.addMessage(new WebServiceMessage(WebServiceMessageType.S, this.resources.getString("priceAlert.addSuccess")));
+			addPriceAlertResult.setData(priceAlert.getId());
+		} catch (Exception e) {
+//			addAccountResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, this.resources.getString("account.addError")));
+//			logger.error(this.resources.getString("account.addError"), e);
+		}
+		
+		return addPriceAlertResult;
+	}
+	
+	
+	/**
 	 * Deletes the price alert with the given id.
 	 * 
 	 * @param id The id of the price alert to be deleted.

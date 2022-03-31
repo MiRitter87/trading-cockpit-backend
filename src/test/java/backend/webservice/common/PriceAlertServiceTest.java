@@ -1,6 +1,7 @@
 package backend.webservice.common;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -370,5 +371,62 @@ public class PriceAlertServiceTest {
 		expectedErrorMessage = MessageFormat.format(this.resources.getString("priceAlert.updateUnchanged"), this.appleAlert.getId());
 		actualErrorMessage = updatePriceAlertResult.getMessages().get(0).getText();
 		assertEquals(expectedErrorMessage, actualErrorMessage);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests adding of a new price alert.
+	 */
+	public void testAddValidPriceAlert() {
+		PriceAlert newPriceAlert = new PriceAlert();
+		PriceAlert adddedPriceAlert;
+		WebServiceResult addPriceAlertResult;
+		PriceAlertService service = new PriceAlertService();
+		
+		//Define the new price alert
+		newPriceAlert.setSymbol("TSLA");
+		newPriceAlert.setStockExchange(StockExchange.NYSE);
+		newPriceAlert.setAlertType(PriceAlertType.LESS_OR_EQUAL);
+		newPriceAlert.setPrice(BigDecimal.valueOf(149.99));
+		
+		//Add a new price alert to the database via WebService
+		addPriceAlertResult = service.addPriceAlert(newPriceAlert);
+		
+		//Assure no error message exists
+		assertTrue(WebServiceTools.resultContainsErrorMessage(addPriceAlertResult) == false);
+		
+		//There should be a success message
+		assertTrue(addPriceAlertResult.getMessages().size() == 1);
+		assertTrue(addPriceAlertResult.getMessages().get(0).getType() == WebServiceMessageType.S);
+		
+		//The ID of the newly created price alert should be provided in the data part of the WebService return.
+		assertNotNull(addPriceAlertResult.getData());
+		assertTrue(addPriceAlertResult.getData() instanceof Integer);
+		newPriceAlert.setId((Integer) addPriceAlertResult.getData());
+		
+		//Read the persisted account via DAO
+		try {
+			adddedPriceAlert = priceAlertDAO.getPriceAlert(newPriceAlert.getId());
+			
+			//Check if the price alert read by the DAO equals the price alert inserted using the WebService in each attribute.
+			assertEquals(newPriceAlert.getId(), adddedPriceAlert.getId());
+			assertEquals(newPriceAlert.getSymbol(), adddedPriceAlert.getSymbol());
+			assertEquals(newPriceAlert.getStockExchange(), adddedPriceAlert.getStockExchange());
+			assertTrue(newPriceAlert.getPrice().compareTo(adddedPriceAlert.getPrice()) == 0);
+			assertEquals(newPriceAlert.getTriggerTime(), adddedPriceAlert.getTriggerTime());
+			assertEquals(newPriceAlert.getConfirmationTime(), adddedPriceAlert.getConfirmationTime());
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+		finally {
+			//Delete the newly added price alert.
+			try {
+				priceAlertDAO.deletePriceAlert(newPriceAlert);
+			} 
+			catch (Exception e) {
+				fail(e.getMessage());
+			}
+		}		
 	}
 }
