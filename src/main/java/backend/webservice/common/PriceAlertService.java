@@ -111,13 +111,13 @@ public class PriceAlertService {
 	public WebServiceResult addPriceAlert(final PriceAlert priceAlert) {
 		WebServiceResult addPriceAlertResult = new WebServiceResult();
 		
-//		//Validate the given account.
-//		try {
-//			account.validate();
-//		} catch (Exception validationException) {
-//			addAccountResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, validationException.getMessage()));
-//			return addAccountResult;
-//		}
+		//Validate the given price alert.
+		try {
+			priceAlert.validate();
+		} catch (Exception validationException) {
+			addPriceAlertResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, validationException.getMessage()));
+			return addPriceAlertResult;
+		}
 		
 		//Insert price alert if validation is successful.
 		try {
@@ -125,8 +125,8 @@ public class PriceAlertService {
 			addPriceAlertResult.addMessage(new WebServiceMessage(WebServiceMessageType.S, this.resources.getString("priceAlert.addSuccess")));
 			addPriceAlertResult.setData(priceAlert.getId());
 		} catch (Exception e) {
-//			addAccountResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, this.resources.getString("account.addError")));
-//			logger.error(this.resources.getString("account.addError"), e);
+			addPriceAlertResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, this.resources.getString("priceAlert.addError")));
+			logger.error(this.resources.getString("account.addError"), e);
 		}
 		
 		return addPriceAlertResult;

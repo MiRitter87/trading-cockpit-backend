@@ -429,4 +429,30 @@ public class PriceAlertServiceTest {
 			}
 		}		
 	}
+	
+	
+	@Test
+	/**
+	 * Tests adding of an invalid price alert.
+	 */
+	public void testAddInvalidPriceAlert() {
+		PriceAlert newPriceAlert = new PriceAlert();
+		WebServiceResult addPriceAlertResult;
+		PriceAlertService service = new PriceAlertService();
+		
+		//Define the new price alert without a stock exchange.
+		newPriceAlert.setSymbol("TSLA");
+		newPriceAlert.setAlertType(PriceAlertType.LESS_OR_EQUAL);
+		newPriceAlert.setPrice(BigDecimal.valueOf(149.99));
+		
+		//Add a new price alert to the database via WebService
+		addPriceAlertResult = service.addPriceAlert(newPriceAlert);
+		
+		//There should be a return message of type E.
+		assertTrue(addPriceAlertResult.getMessages().size() == 1);
+		assertTrue(addPriceAlertResult.getMessages().get(0).getType() == WebServiceMessageType.E);
+		
+		//The new account should not have been persisted
+		assertNull(newPriceAlert.getId());
+	}
 }
