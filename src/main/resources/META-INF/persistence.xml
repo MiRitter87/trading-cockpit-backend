@@ -10,7 +10,7 @@
         <properties>
         	<!-- Database access -->
 	        <property name="javax.persistence.jdbc.driver" value="org.hsqldb.jdbcDriver" />
-	        <property name="javax.persistence.jdbc.url" value="jdbc:hsqldb:file:database/testdb;shutdown=true" />
+	        <property name="javax.persistence.jdbc.url" value="jdbc:hsqldb:file:database/tradingCockpitBackend;shutdown=true" />
 	        <property name="javax.persistence.jdbc.user" value="SA" />
 	        <property name="javax.persistence.jdbc.password" value="" />
 	        
