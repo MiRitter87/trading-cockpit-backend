@@ -26,6 +26,8 @@ import javax.validation.constraints.Size;
 import org.hibernate.validator.HibernateValidator;
 import org.hibernate.validator.messageinterpolation.ExpressionLanguageFeatureLevel;
 
+import backend.model.StockExchange;
+
 /**
  * An alert that a stock has reached a certain price at a stock exchange.
  * 

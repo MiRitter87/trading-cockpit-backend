@@ -19,10 +19,10 @@ import org.junit.jupiter.api.Test;
 
 import backend.dao.DAOManager;
 import backend.dao.PriceAlertDAO;
+import backend.model.StockExchange;
 import backend.model.priceAlert.PriceAlert;
 import backend.model.priceAlert.PriceAlertArray;
 import backend.model.priceAlert.PriceAlertType;
-import backend.model.priceAlert.StockExchange;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
 import backend.tools.WebServiceTools;
