@@ -1,7 +1,16 @@
 package backend.dao.stockQuote;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.math.BigDecimal;
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
+import backend.model.Currency;
+import backend.model.StockExchange;
+import backend.model.stockQuote.StockQuote;
 
 /**
  * Tests the Yahoo stock quote DAO.
@@ -30,5 +39,36 @@ public class StockQuoteYahooDAOTest {
 	 */
 	public static void tearDownClass() {
 		stockQuoteYahooDAO = null;
+	}
+	
+	
+	/**
+	 * Gets a stock quote as expected from the Yahoo service.
+	 * 
+	 * @return A stock quote
+	 */
+	private StockQuote getDenisonMinesQuote() {
+		StockQuote stockQuote = new StockQuote();
+		
+		stockQuote.setSymbol("DML");
+		stockQuote.setStockExchange(StockExchange.TSX);
+		stockQuote.setPrice(BigDecimal.valueOf(1.88));
+		stockQuote.setCurrency(Currency.CAD);
+		
+		return stockQuote;
+	}
+	
+	
+	@Test
+	/**
+	 * Tests getting  data from a stock listed at the TSE.
+	 */
+	public void testGetStockQuoteTSE() {
+		StockQuote actualStockQuote, expectedStockQuote;
+		
+		actualStockQuote = stockQuoteYahooDAO.getStockQuote("DML", StockExchange.TSX);
+		expectedStockQuote = this.getDenisonMinesQuote();
+		
+		assertEquals(expectedStockQuote.getSymbol(), actualStockQuote.getSymbol());
 	}
 }
