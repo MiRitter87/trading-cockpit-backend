@@ -6,6 +6,9 @@ import java.io.IOException;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
+import backend.dao.priceAlert.PriceAlertDAO;
+import backend.dao.priceAlert.PriceAlertHibernateDAO;
+
 /**
  * Manages a central database connection and provides DAOs for database access.
  * 

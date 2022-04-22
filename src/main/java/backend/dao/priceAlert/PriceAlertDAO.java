@@ -1,4 +1,4 @@
-package backend.dao;
+package backend.dao.priceAlert;
 
 import java.util.List;
 

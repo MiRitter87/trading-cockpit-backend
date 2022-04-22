@@ -18,7 +18,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import backend.dao.DAOManager;
-import backend.dao.PriceAlertDAO;
+import backend.dao.priceAlert.PriceAlertDAO;
 import backend.model.StockExchange;
 import backend.model.priceAlert.PriceAlert;
 import backend.model.priceAlert.PriceAlertArray;
