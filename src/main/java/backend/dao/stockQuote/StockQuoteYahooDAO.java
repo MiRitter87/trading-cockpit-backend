@@ -13,7 +13,12 @@ import backend.model.stockQuote.StockQuote;
  *
  */
 public class StockQuoteYahooDAO implements StockQuoteDAO {
-
+	/**
+	 * URL to quote API of Yahoo finance.
+	 */
+	private static final String BASE_URL = "https://query1.finance.yahoo.com/v7/finance/quote?symbols=";
+	
+	
 	@Override
 	public StockQuote getStockQuote(String symbol, StockExchange stockExchange) throws Exception {
 		// TODO Auto-generated method stub
@@ -79,5 +84,47 @@ public class StockQuoteYahooDAO implements StockQuoteDAO {
 			default:
 				return null;
 		}
+	}
+	
+	
+	/**
+	 * Gets the stock exchange for construction of the query URL.
+	 * 
+	 * @param stockExchange The stock exchange of the internal data model.
+	 * @return The stock exchange as used in the query URL.
+	 */
+	protected String getExchangeForQueryURL(final StockExchange stockExchange) {
+		StringBuilder stockExchangeBuilder = new StringBuilder("");
+		
+		switch(stockExchange) {
+			case TSX:
+				stockExchangeBuilder.append(".");
+				stockExchangeBuilder.append("TO");
+				return stockExchangeBuilder.toString();
+			case TSXV:
+				stockExchangeBuilder.append(".");
+				stockExchangeBuilder.append("V");
+				return stockExchangeBuilder.toString();
+			case NYSE:
+			default:
+				return stockExchangeBuilder.toString();
+		}
+	}
+	
+	
+	/**
+	 * Gets the query URL for the given symbol and stock exchange.
+	 * 
+	 * @param symbol The symbol to be queried.
+	 * @param stockExchange The stock exchange where the symbol is listed.
+	 * @return The query URL.
+	 */
+	protected String getQueryUrl(final String symbol, final StockExchange stockExchange) {
+		StringBuilder urlBuilder = new StringBuilder(BASE_URL);
+		
+		urlBuilder.append(symbol);
+		urlBuilder.append(this.getExchangeForQueryURL(stockExchange));
+		
+		return urlBuilder.toString();
 	}
 }

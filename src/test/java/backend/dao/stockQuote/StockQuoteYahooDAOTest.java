@@ -80,4 +80,49 @@ public class StockQuoteYahooDAOTest {
 			fail(e.getMessage());
 		}
 	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of the query URL for a stock listed at the TSX.
+	 */
+	public void testGetQueryUrlTSX() {
+		final String symbol = "DML";
+		final StockExchange stockExchange = StockExchange.TSX;
+		final String expectedURL = "https://query1.finance.yahoo.com/v7/finance/quote?symbols=DML.TO";
+		String actualURL = "";
+		
+		actualURL = stockQuoteYahooDAO.getQueryUrl(symbol, stockExchange);
+		assertEquals(expectedURL, actualURL);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of the query URL for a stock listed at the TSXV.
+	 */
+	public void testGetQueryUrlTSXV() {
+		final String symbol = "RCK";
+		final StockExchange stockExchange = StockExchange.TSXV;
+		final String expectedURL = "https://query1.finance.yahoo.com/v7/finance/quote?symbols=RCK.V";
+		String actualURL = "";
+		
+		actualURL = stockQuoteYahooDAO.getQueryUrl(symbol, stockExchange);
+		assertEquals(expectedURL, actualURL);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of the query URL for a stock listed at the NYSE.
+	 */
+	public void testGetQueryUrlNYSE() {
+		final String symbol = "F";
+		final StockExchange stockExchange = StockExchange.NYSE;
+		final String expectedURL = "https://query1.finance.yahoo.com/v7/finance/quote?symbols=F";
+		String actualURL = "";
+		
+		actualURL = stockQuoteYahooDAO.getQueryUrl(symbol, stockExchange);
+		assertEquals(expectedURL, actualURL);
+	}
 }
