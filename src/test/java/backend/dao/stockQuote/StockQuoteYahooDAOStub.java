@@ -19,9 +19,9 @@ import backend.model.stockQuote.StockQuote;
  * @author Michael
  *
  */
-public class StockQuoteYahooDAOStub extends StockQuoteYahooDAO {
+public class StockQuoteYahooDAOStub extends StockQuoteYahooDAO {	
 	@Override
-	public StockQuote getStockQuote(String symbol, StockExchange stockExchange) {
+	public StockQuote getStockQuote(String symbol, StockExchange stockExchange) throws Exception {
 		StockQuote stockQuote = new StockQuote();
 		ObjectMapper mapper = new ObjectMapper();
 		
@@ -36,14 +36,11 @@ public class StockQuoteYahooDAOStub extends StockQuoteYahooDAO {
 			stockQuote.setPrice(this.getPrice((double) resultAttributes.get("regularMarketPrice")));
 			stockQuote.setCurrency(this.getCurrency((String) resultAttributes.get("financialCurrency")));
 		} catch (JsonParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new Exception(e);
 		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new Exception(e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new Exception(e);
 		}
 		
 		return stockQuote;

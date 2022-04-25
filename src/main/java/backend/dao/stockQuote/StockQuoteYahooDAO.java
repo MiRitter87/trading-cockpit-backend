@@ -15,7 +15,7 @@ import backend.model.stockQuote.StockQuote;
 public class StockQuoteYahooDAO implements StockQuoteDAO {
 
 	@Override
-	public StockQuote getStockQuote(String symbol, StockExchange stockExchange) {
+	public StockQuote getStockQuote(String symbol, StockExchange stockExchange) throws Exception {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -2,6 +2,7 @@ package backend.dao.stockQuote;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.math.BigDecimal;
 
@@ -67,12 +68,16 @@ public class StockQuoteYahooDAOTest {
 	public void testGetStockQuoteTSE() {
 		StockQuote actualStockQuote, expectedStockQuote;
 		
-		actualStockQuote = stockQuoteYahooDAO.getStockQuote("DML", StockExchange.TSX);
-		expectedStockQuote = this.getDenisonMinesQuote();
-		
-		assertEquals(expectedStockQuote.getSymbol(), actualStockQuote.getSymbol());
-		assertEquals(expectedStockQuote.getStockExchange(), actualStockQuote.getStockExchange());
-		assertTrue(expectedStockQuote.getPrice().compareTo(actualStockQuote.getPrice()) == 0);
-		assertEquals(expectedStockQuote.getCurrency(), actualStockQuote.getCurrency());
+		try {
+			actualStockQuote = stockQuoteYahooDAO.getStockQuote("DML", StockExchange.TSX);
+			expectedStockQuote = this.getDenisonMinesQuote();
+			
+			assertEquals(expectedStockQuote.getSymbol(), actualStockQuote.getSymbol());
+			assertEquals(expectedStockQuote.getStockExchange(), actualStockQuote.getStockExchange());
+			assertTrue(expectedStockQuote.getPrice().compareTo(actualStockQuote.getPrice()) == 0);
+			assertEquals(expectedStockQuote.getCurrency(), actualStockQuote.getCurrency());
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
 	}
 }
