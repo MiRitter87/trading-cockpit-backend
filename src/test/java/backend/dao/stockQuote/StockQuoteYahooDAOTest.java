@@ -1,6 +1,7 @@
 package backend.dao.stockQuote;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 
@@ -70,5 +71,8 @@ public class StockQuoteYahooDAOTest {
 		expectedStockQuote = this.getDenisonMinesQuote();
 		
 		assertEquals(expectedStockQuote.getSymbol(), actualStockQuote.getSymbol());
+		assertEquals(expectedStockQuote.getStockExchange(), actualStockQuote.getStockExchange());
+		assertTrue(expectedStockQuote.getPrice().compareTo(actualStockQuote.getPrice()) == 0);
+		assertEquals(expectedStockQuote.getCurrency(), actualStockQuote.getCurrency());
 	}
 }

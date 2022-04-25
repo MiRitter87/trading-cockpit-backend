@@ -1,7 +1,6 @@
 package backend.dao.stockQuote;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -25,20 +24,17 @@ public class StockQuoteYahooDAOStub extends StockQuoteYahooDAO {
 	public StockQuote getStockQuote(String symbol, StockExchange stockExchange) {
 		StockQuote stockQuote = new StockQuote();
 		ObjectMapper mapper = new ObjectMapper();
-		//double regularMarketPrice;
-		String symbolFromAPI = "";
 		
 		try {
 			Map<?, ?> map = mapper.readValue(Paths.get("src/test/resources/yahooTSEQuoteDML.json").toFile(), Map.class);
-			LinkedHashMap quoteResponse = (LinkedHashMap) map.get("quoteResponse");
+			LinkedHashMap<?, ?> quoteResponse = (LinkedHashMap) map.get("quoteResponse");
 			ArrayList<?> result = (ArrayList<?>) quoteResponse.get("result");
 			LinkedHashMap<?, ?> resultAttributes = (LinkedHashMap<?, ?>) result.get(0);
 			
-			//regularMarketPrice = (double) resultAttributes.get("regularMarketPrice");
-			symbolFromAPI = (String) resultAttributes.get("symbol");
-			
-			stockQuote.setSymbol(symbolFromAPI.split("\\.")[0]);
-			//stockQuote.setPrice(BigDecimal.valueOf(regularMarketPrice));
+			stockQuote.setSymbol(this.getSymbol((String) resultAttributes.get("symbol")));
+			stockQuote.setStockExchange(this.getExchange((String) resultAttributes.get("exchange")));
+			stockQuote.setPrice(this.getPrice((double) resultAttributes.get("regularMarketPrice")));
+			stockQuote.setCurrency(this.getCurrency((String) resultAttributes.get("financialCurrency")));
 		} catch (JsonParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -49,16 +45,6 @@ public class StockQuoteYahooDAOStub extends StockQuoteYahooDAO {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		//Load JSON file "yahooTSEQuoteDML.json"
-		
-		
-		//Parse content
-		//Price is at quoteResponse -> result -> regularMarketPrice
-		
-		//Create StockQuote object and fill attributes with parsed content
-		
-		//Return StockQuote object
 		
 		return stockQuote;
 	}
