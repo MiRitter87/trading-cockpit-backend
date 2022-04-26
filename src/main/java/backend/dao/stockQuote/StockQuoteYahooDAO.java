@@ -1,6 +1,19 @@
 package backend.dao.stockQuote;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandlers;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import backend.model.Currency;
 import backend.model.StockExchange;
@@ -21,8 +34,70 @@ public class StockQuoteYahooDAO implements StockQuoteDAO {
 	
 	@Override
 	public StockQuote getStockQuote(String symbol, StockExchange stockExchange) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		String jsonStockQuote = this.getStockQuoteJSONFromYahoo(symbol, stockExchange);
+		StockQuote stockQuote = this.convertJSONToStockQuote(jsonStockQuote);
+		
+		return stockQuote;
+	}
+	
+	
+	/**
+	 * Gets the stock quote data from Yahoo finance as JSON String.
+	 * 
+	 * @param symbol The symbol.
+	 * @param stockExchange The stock exchange.
+	 * @return The stock quote as JSON string.
+	 * @throws Exception Stock quote determination failed.
+	 */
+	protected String getStockQuoteJSONFromYahoo(final String symbol, final StockExchange stockExchange) throws Exception {
+		HttpClient client = HttpClient.newHttpClient();
+		HttpRequest request = HttpRequest.newBuilder().uri(URI.create(this.getQueryUrl(symbol, stockExchange))).build();
+		HttpResponse<String> response;
+		
+		try {
+			response = client.send(request, BodyHandlers.ofString());
+		} catch (IOException e) {
+			throw new Exception(e);
+		} catch (InterruptedException e) {
+			throw new Exception(e);
+		}
+		
+		return response.body();
+	}
+	
+	
+	/**
+	 * Converts the stock quote from Yahoo provided as JSON String to a StockQuote object.
+	 * 
+	 * @param stockQuoteAsJSON The quote data as JSON String.
+	 * @return The StockQuote.
+	 * @throws Exception Stock quote conversion failed.
+	 */
+	protected StockQuote convertJSONToStockQuote(final String stockQuoteAsJSON) throws Exception {
+		StockQuote stockQuote = new StockQuote();
+		ObjectMapper mapper = new ObjectMapper();
+		Map<?, ?> map;
+		LinkedHashMap<?, ?> quoteResponse;
+		ArrayList<?> result;
+		LinkedHashMap<?, ?> resultAttributes;
+		
+		try {
+			map = mapper.readValue(stockQuoteAsJSON, Map.class);
+			quoteResponse = (LinkedHashMap<?, ?>) map.get("quoteResponse");
+			result = (ArrayList<?>) quoteResponse.get("result");
+			resultAttributes = (LinkedHashMap<?, ?>) result.get(0);
+			
+			stockQuote.setSymbol(this.getSymbol((String) resultAttributes.get("symbol")));
+			stockQuote.setStockExchange(this.getExchange((String) resultAttributes.get("exchange")));
+			stockQuote.setPrice(this.getPrice((double) resultAttributes.get("regularMarketPrice")));
+			stockQuote.setCurrency(this.getCurrency((String) resultAttributes.get("financialCurrency")));
+		} catch (JsonMappingException e) {
+			throw new Exception(e);
+		} catch (JsonProcessingException e) {
+			throw new Exception(e);
+		}
+		
+		return stockQuote;
 	}
 
 	

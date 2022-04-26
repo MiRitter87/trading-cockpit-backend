@@ -117,13 +117,13 @@
   
   	<build>
 		<plugins>
-			<!-- Compile java 8 -->
+			<!-- Compile java 12 -->
 			<plugin>
 		    	<groupId>org.apache.maven.plugins</groupId>
 		     	<artifactId>maven-compiler-plugin</artifactId>
 		     	<version>${maven.compiler.version}</version>
 		     	<configuration>
-		     		<release>8</release>
+		     		<release>12</release>
 		     	</configuration>
 			</plugin>
 			

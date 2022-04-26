@@ -14,7 +14,8 @@ import backend.model.StockExchange;
 import backend.model.stockQuote.StockQuote;
 
 /**
- * Retrieves stock data using the finance API of Yahoo.
+ * Stub to simulate receiving of stock data using the finance API of Yahoo.
+ * A local JSON file is used instead of a live query to Yahoo finance.
  * 
  * @author Michael
  *
@@ -27,7 +28,7 @@ public class StockQuoteYahooDAOStub extends StockQuoteYahooDAO {
 		
 		try {
 			Map<?, ?> map = mapper.readValue(Paths.get("src/test/resources/yahooTSEQuoteDML.json").toFile(), Map.class);
-			LinkedHashMap<?, ?> quoteResponse = (LinkedHashMap) map.get("quoteResponse");
+			LinkedHashMap<?, ?> quoteResponse = (LinkedHashMap<?, ?>) map.get("quoteResponse");
 			ArrayList<?> result = (ArrayList<?>) quoteResponse.get("result");
 			LinkedHashMap<?, ?> resultAttributes = (LinkedHashMap<?, ?>) result.get(0);
 			
