@@ -9,6 +9,13 @@
 		The backend application of the Trading Cockpit.
 	</description>
 	
+	<!-- Servlet handling application startup and shutdown. -->
+	<listener>  
+    	<listener-class>
+        	backend.servlet.BootstrapContextListener
+    	</listener-class>
+	</listener>  
+	
 	<!-- Servlet for REST WebService using Jersey -->
   	<servlet>
     	<servlet-name>Jersey REST Service</servlet-name>

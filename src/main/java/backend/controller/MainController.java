@@ -51,6 +51,8 @@ public class MainController {
 	 */
 	public void applicationStartup() {
 		DAOManager.getInstance();
+		
+		System.out.println("Application started.");
 	}
 
 	/**
@@ -59,6 +61,8 @@ public class MainController {
 	public void applicationShutdown() {
 		try {
 			DAOManager.getInstance().close();
+			
+			System.out.println("Application stopped");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
