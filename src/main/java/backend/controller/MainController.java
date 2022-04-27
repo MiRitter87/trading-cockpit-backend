@@ -1,7 +1,9 @@
 package backend.controller;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ResourceBundle;
+import java.util.Properties;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -66,5 +68,32 @@ public class MainController {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	
+	/**
+	 * Gets the value of the property for the given key.
+	 * 
+	 * @param propertyKey The key of the property.
+	 * @return The value of the property.
+	 * @throws Exception In case the property could not be read.
+	 */
+	public String getConfigurationProperty(final String propertyKey) throws Exception {
+		Properties properties = new Properties();
+		String value = "";
+		FileInputStream input = null;
+		String workingDir = System.getProperty("user.dir");
+		
+		try {
+			input = new FileInputStream(workingDir +"/conf/tradingCockpitBackend.properties");
+			properties.load(input);
+			value = properties.getProperty(propertyKey);
+		} catch (FileNotFoundException e) {
+			new Exception(e.getMessage());
+		} catch (IOException e) {
+			new Exception(e.getMessage());
+		}
+		
+		return value;
 	}
 }

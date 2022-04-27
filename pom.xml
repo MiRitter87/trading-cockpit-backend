@@ -158,7 +158,7 @@
 							<outputDirectory>${basedir}/target/conf</outputDirectory>
 							<resources>          
 								<resource>
-									<directory>src/main/conf</directory>
+									<directory>conf</directory>
 									<filtering>true</filtering>
 								</resource>
 							</resources>              
