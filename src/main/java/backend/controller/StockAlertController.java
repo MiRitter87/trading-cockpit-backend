@@ -99,7 +99,7 @@ public class StockAlertController {
 	public void start() {
 		//https://www.baeldung.com/java-start-thread
 		this.executorService = Executors.newScheduledThreadPool(1);
-		executorService.scheduleAtFixedRate(new StockAlertThread(), 0, this.getQueryInterval(), TimeUnit.SECONDS);
+		executorService.scheduleAtFixedRate(new StockAlertThread(this.startTime, this.endTime), 0, this.getQueryInterval(), TimeUnit.SECONDS);
 	}
 	
 	
