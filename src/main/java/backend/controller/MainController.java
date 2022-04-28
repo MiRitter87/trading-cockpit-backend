@@ -23,6 +23,11 @@ public class MainController {
 	private static MainController instance;
 	
 	/**
+	 * Queries stock quotes and triggers stock alerts.
+	 */
+	private StockAlertController stockAlertController;
+	
+	/**
 	 * Application logging.
 	 */
 	public static final Logger logger = LogManager.getLogger(MainController.class);
@@ -54,6 +59,13 @@ public class MainController {
 	public void applicationStartup() {
 		DAOManager.getInstance();
 		
+		try {
+			this.stockAlertController = new StockAlertController();
+			this.stockAlertController.start();
+		} catch (Exception e) {
+			logger.error("The query mechanism for stock alerts failed to start.", e);
+		}
+		
 		System.out.println("Application started.");
 	}
 
@@ -63,6 +75,9 @@ public class MainController {
 	public void applicationShutdown() {
 		try {
 			DAOManager.getInstance().close();
+			
+			if(this.stockAlertController != null)
+				this.stockAlertController.stop();
 			
 			System.out.println("Application stopped");
 		} catch (IOException e) {

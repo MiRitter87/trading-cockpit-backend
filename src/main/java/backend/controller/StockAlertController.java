@@ -1,6 +1,9 @@
 package backend.controller;
 
 import java.time.LocalTime;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Controls the process, that cyclically queries stock quotes and updates the alerts accordingly.
@@ -48,6 +51,11 @@ public class StockAlertController {
 	 */
 	private LocalTime endTime;
 	
+	/**
+	 * Executes threads cyclically.
+	 */
+	private ScheduledExecutorService executorService;
+	
 	
 	/**
 	 * Initialization.
@@ -90,6 +98,8 @@ public class StockAlertController {
 	 */
 	public void start() {
 		//https://www.baeldung.com/java-start-thread
+		this.executorService = Executors.newScheduledThreadPool(1);
+		executorService.scheduleAtFixedRate(new StockAlertThread(), 0, this.getQueryInterval(), TimeUnit.SECONDS);
 	}
 	
 	
@@ -97,7 +107,7 @@ public class StockAlertController {
 	 * Stops the query and update process.
 	 */
 	public void stop() {
-		
+		executorService.shutdown();
 	}
 	
 	
