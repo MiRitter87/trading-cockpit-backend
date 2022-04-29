@@ -91,6 +91,12 @@ public class PriceAlert {
 	@Column(name="CONFIRMATION_TIME")
 	private Date confirmationTime;
 	
+	/**
+	 * The time of the last stock quote query.
+	 */
+	@Column(name="LAST_STOCK_QUOTE_TIME")
+	private Date lastStockQuoteTime;
+	
 	
 	/**
 	 * Default constructor.
@@ -212,6 +218,22 @@ public class PriceAlert {
 	}
 	
 	
+	/**
+	 * @return the lastStockQuoteTime
+	 */
+	public Date getLastStockQuoteTime() {
+		return lastStockQuoteTime;
+	}
+
+
+	/**
+	 * @param lastStockQuoteTime the lastStockQuoteTime to set
+	 */
+	public void setLastStockQuoteTime(Date lastStockQuoteTime) {
+		this.lastStockQuoteTime = lastStockQuoteTime;
+	}
+
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -223,6 +245,7 @@ public class PriceAlert {
 		result = prime * result + ((stockExchange == null) ? 0 : stockExchange.hashCode());
 		result = prime * result + ((symbol == null) ? 0 : symbol.hashCode());
 		result = prime * result + ((triggerTime == null) ? 0 : triggerTime.hashCode());
+		result = prime * result + ((lastStockQuoteTime == null) ? 0 : lastStockQuoteTime.hashCode());
 		return result;
 	}
 
@@ -281,7 +304,15 @@ public class PriceAlert {
 		if(triggerTime != null && other.triggerTime != null) {
 			if (triggerTime.getTime() != other.triggerTime.getTime())
 				return false;
-		}	
+		}
+		if (lastStockQuoteTime == null && other.lastStockQuoteTime != null)
+			return false;
+		if (lastStockQuoteTime != null && other.lastStockQuoteTime == null)
+			return false;
+		if(lastStockQuoteTime != null && other.lastStockQuoteTime != null) {
+			if (lastStockQuoteTime.getTime() != other.lastStockQuoteTime.getTime())
+				return false;
+		}
 		return true;
 	}
 

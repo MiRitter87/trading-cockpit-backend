@@ -38,8 +38,9 @@ public class StockAlertThread extends Thread {
 	public void run() {
 		Date currentDate = new Date();
 		
-		if(this.isTimeIntervalActive())
+		if(this.isTimeIntervalActive()) {
 			System.out.println("Current date: " +currentDate.toString());
+		}
 	}
 	
 	

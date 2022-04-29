@@ -97,8 +97,7 @@ public class StockAlertController {
 	 * Starts the query and update process.
 	 */
 	public void start() {
-		//https://www.baeldung.com/java-start-thread
-		this.executorService = Executors.newScheduledThreadPool(1);
+		this.executorService = Executors.newSingleThreadScheduledExecutor();
 		executorService.scheduleAtFixedRate(new StockAlertThread(this.startTime, this.endTime), 0, this.getQueryInterval(), TimeUnit.SECONDS);
 	}
 	
