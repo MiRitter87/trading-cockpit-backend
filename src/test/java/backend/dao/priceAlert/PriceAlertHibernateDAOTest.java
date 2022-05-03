@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -25,7 +27,7 @@ public class PriceAlertHibernateDAOTest {
 	/**
 	 * The DAO to access price alerts.
 	 */
-	private static PriceAlertDAO priceAlertHibernateDAO;
+	private static PriceAlertDAO priceAlertDAO;
 	
 	/**
 	 * A price alert for the Apple stock.
@@ -42,13 +44,18 @@ public class PriceAlertHibernateDAOTest {
 	 */
 	private PriceAlert nvidiaAlert;
 	
+	/**
+	 * A price alert for the Netflix stock.
+	 */
+	private PriceAlert netflixAlert;
+	
 	
 	@BeforeAll
 	/**
 	 * Tasks to be performed once at startup of test class.
 	 */
 	public static void setUpClass() {
-		priceAlertHibernateDAO = DAOManager.getInstance().getPriceAlertDAO();
+		priceAlertDAO = DAOManager.getInstance().getPriceAlertDAO();
 	}
 	
 	
@@ -112,10 +119,18 @@ public class PriceAlertHibernateDAOTest {
 		lastStockQuote.add(Calendar.MINUTE, -2);
 		this.nvidiaAlert.setLastStockQuoteTime(lastStockQuote.getTime());
 		
+		this.netflixAlert = new PriceAlert();
+		this.netflixAlert.setSymbol("NFLX");
+		this.netflixAlert.setStockExchange(StockExchange.NYSE);
+		this.netflixAlert.setAlertType(PriceAlertType.LESS_OR_EQUAL);
+		this.netflixAlert.setPrice(BigDecimal.valueOf(199.99));
+		this.netflixAlert.setLastStockQuoteTime(null);
+		this.netflixAlert.setTriggerTime(new Date());
+		
 		try {
-			priceAlertHibernateDAO.insertPriceAlert(this.appleAlert);
-			priceAlertHibernateDAO.insertPriceAlert(this.microsoftAlert);
-			priceAlertHibernateDAO.insertPriceAlert(this.nvidiaAlert);
+			priceAlertDAO.insertPriceAlert(this.appleAlert);
+			priceAlertDAO.insertPriceAlert(this.microsoftAlert);
+			priceAlertDAO.insertPriceAlert(this.nvidiaAlert);
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
@@ -127,16 +142,25 @@ public class PriceAlertHibernateDAOTest {
 	 */
 	private void deleteDummyPriceAlerts() {
 		try {
-			priceAlertHibernateDAO.deletePriceAlert(this.nvidiaAlert);
-			priceAlertHibernateDAO.deletePriceAlert(this.microsoftAlert);
-			priceAlertHibernateDAO.deletePriceAlert(this.appleAlert);
+			priceAlertDAO.deletePriceAlert(this.nvidiaAlert);
+			priceAlertDAO.deletePriceAlert(this.microsoftAlert);
+			priceAlertDAO.deletePriceAlert(this.appleAlert);
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
 	}
 	
 	
-	/*
-	 * TODO testGetPriceAlertsNotTriggered	Get price alerts that have not been triggered yet sorted by lastStockQuoteTime
+	/**
+	 * Tests getting all price alerts that have not been triggered, sorted by lastStockQuoteTime.
 	 */
+	public void testGetPriceAlertsNotTriggered() {
+		List<PriceAlert> priceAlerts;
+		
+		try {
+			priceAlerts = priceAlertDAO.getPriceAlerts();
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
 }
