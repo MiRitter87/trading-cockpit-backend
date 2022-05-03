@@ -1,5 +1,6 @@
 package backend.dao.priceAlert;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import backend.dao.DAOManager;
 import backend.model.StockExchange;
@@ -131,6 +133,7 @@ public class PriceAlertHibernateDAOTest {
 			priceAlertDAO.insertPriceAlert(this.appleAlert);
 			priceAlertDAO.insertPriceAlert(this.microsoftAlert);
 			priceAlertDAO.insertPriceAlert(this.nvidiaAlert);
+			priceAlertDAO.insertPriceAlert(this.netflixAlert);
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
@@ -142,6 +145,7 @@ public class PriceAlertHibernateDAOTest {
 	 */
 	private void deleteDummyPriceAlerts() {
 		try {
+			priceAlertDAO.deletePriceAlert(this.netflixAlert);
 			priceAlertDAO.deletePriceAlert(this.nvidiaAlert);
 			priceAlertDAO.deletePriceAlert(this.microsoftAlert);
 			priceAlertDAO.deletePriceAlert(this.appleAlert);
@@ -151,6 +155,7 @@ public class PriceAlertHibernateDAOTest {
 	}
 	
 	
+	@Test
 	/**
 	 * Tests getting all price alerts that have not been triggered, sorted by lastStockQuoteTime.
 	 */
@@ -158,7 +163,10 @@ public class PriceAlertHibernateDAOTest {
 		List<PriceAlert> priceAlerts;
 		
 		try {
-			priceAlerts = priceAlertDAO.getPriceAlerts();
+			priceAlerts = priceAlertDAO.getPriceAlerts(true);
+			
+			//3 price alerts have not been triggered and therefore should be returned.
+			assertEquals(3, priceAlerts.size());
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}

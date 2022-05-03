@@ -89,7 +89,7 @@ public class PriceAlertService {
 		WebServiceResult getPriceAlertsResult = new WebServiceResult(null);
 		
 		try {
-			priceAlerts.setPriceAlerts(this.priceAlertDAO.getPriceAlerts());
+			priceAlerts.setPriceAlerts(this.priceAlertDAO.getPriceAlerts(false));
 			getPriceAlertsResult.setData(priceAlerts);
 		} catch (Exception e) {
 			getPriceAlertsResult.addMessage(new WebServiceMessage(

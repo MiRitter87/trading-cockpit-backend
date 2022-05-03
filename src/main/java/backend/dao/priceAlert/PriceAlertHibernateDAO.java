@@ -82,7 +82,7 @@ public class PriceAlertHibernateDAO implements PriceAlertDAO {
 
 	
 	@Override
-	public List<PriceAlert> getPriceAlerts() throws Exception {
+	public List<PriceAlert> getPriceAlerts(final boolean onlyNotTriggered) throws Exception {
 		List<PriceAlert> priceAlerts = null;
 		EntityManager entityManager = this.sessionFactory.createEntityManager();
 		entityManager.getTransaction().begin();
@@ -92,6 +92,10 @@ public class PriceAlertHibernateDAO implements PriceAlertDAO {
 			CriteriaQuery<PriceAlert> criteriaQuery = criteriaBuilder.createQuery(PriceAlert.class);
 			Root<PriceAlert> criteria = criteriaQuery.from(PriceAlert.class);
 			criteriaQuery.select(criteria);
+			
+			if(onlyNotTriggered)
+				criteriaQuery.where(criteriaBuilder.isNull(criteria.get("triggerTime")));
+			
 			criteriaQuery.orderBy(criteriaBuilder.asc(criteria.get("id")));	//Order by id ascending
 			TypedQuery<PriceAlert> typedQuery = entityManager.createQuery(criteriaQuery);
 			priceAlerts = typedQuery.getResultList();
