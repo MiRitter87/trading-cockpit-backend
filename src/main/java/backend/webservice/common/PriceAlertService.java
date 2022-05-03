@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 
 import backend.dao.DAOManager;
 import backend.dao.priceAlert.PriceAlertDAO;
+import backend.dao.priceAlert.PriceAlertOrderAttribute;
 import backend.exception.ObjectUnchangedException;
 import backend.model.priceAlert.PriceAlert;
 import backend.model.priceAlert.PriceAlertArray;
@@ -89,7 +90,7 @@ public class PriceAlertService {
 		WebServiceResult getPriceAlertsResult = new WebServiceResult(null);
 		
 		try {
-			priceAlerts.setPriceAlerts(this.priceAlertDAO.getPriceAlerts(false));
+			priceAlerts.setPriceAlerts(this.priceAlertDAO.getPriceAlerts(PriceAlertOrderAttribute.ID, false));
 			getPriceAlertsResult.setData(priceAlerts);
 		} catch (Exception e) {
 			getPriceAlertsResult.addMessage(new WebServiceMessage(

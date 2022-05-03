@@ -161,12 +161,21 @@ public class PriceAlertHibernateDAOTest {
 	 */
 	public void testGetPriceAlertsNotTriggered() {
 		List<PriceAlert> priceAlerts;
+		PriceAlert priceAlert;
 		
 		try {
-			priceAlerts = priceAlertDAO.getPriceAlerts(true);
+			priceAlerts = priceAlertDAO.getPriceAlerts(PriceAlertOrderAttribute.LAST_STOCK_QUOTE_TIME, true);
 			
 			//3 price alerts have not been triggered and therefore should be returned.
 			assertEquals(3, priceAlerts.size());
+			
+			//Assure correct sorting
+			priceAlert = priceAlerts.get(0);
+			assertEquals(priceAlert.getId(), this.appleAlert.getId());
+			priceAlert = priceAlerts.get(1);
+			assertEquals(priceAlert.getId(), this.nvidiaAlert.getId());
+			priceAlert = priceAlerts.get(2);
+			assertEquals(priceAlert.getId(), this.microsoftAlert.getId());
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}

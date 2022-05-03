@@ -32,11 +32,12 @@ public interface PriceAlertDAO {
 	/**
 	 * Gets all price alerts.
 	 * 
+	 * @param priceAlertOrderAttribute The attribute by which the price alerts are ordered.
 	 * @param onlyNotTriggered Only return alerts that have not been triggered if set to true. Return all if false.
 	 * @return All price alerts.
 	 * @throws Exception Price alert retrieval failed.
 	 */
-	List<PriceAlert> getPriceAlerts(final boolean onlyNotTriggered) throws Exception;
+	List<PriceAlert> getPriceAlerts(final PriceAlertOrderAttribute priceAlertOrderAttribute, final boolean onlyNotTriggered) throws Exception;
 	
 	
 	/**
