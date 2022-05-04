@@ -92,7 +92,7 @@ public class StockAlertThread extends Thread {
 		try {
 			this.checkAndUpdatePriceAlert(priceAlert, stockQuote);
 		} catch (Exception e) {
-			logger.error("Failed to update price alert for symbol: " +priceAlert.getSymbol(), e);
+			logger.error("Failed to update price alert with ID: " +priceAlert.getId(), e);
 		}
 	}
 	
