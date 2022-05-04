@@ -4,6 +4,9 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import backend.dao.DAOManager;
 import backend.dao.priceAlert.PriceAlertDAO;
 import backend.dao.priceAlert.PriceAlertOrderAttribute;
@@ -38,6 +41,11 @@ public class StockAlertThread extends Thread {
 	 */
 	private PriceAlertDAO priceAlertDAO;
 	
+	/**
+	 * Application logging.
+	 */
+	public static final Logger logger = LogManager.getLogger(StockAlertThread.class);
+	
 	
 	/**
 	 * Initializes the stock alert thread.
@@ -58,36 +66,33 @@ public class StockAlertThread extends Thread {
 	 * The main method of the thread that is executed.
 	 */
 	public void run() {
-		ArrayList<PriceAlert> priceAlerts = new ArrayList<PriceAlert>();
-		PriceAlert priceAlert;
+		PriceAlert priceAlert = null;
 		StockQuote stockQuote;
 		
 		if(!this.isTimeIntervalActive())
 			return;
 		
 		try {
-			//Get the price alert with the oldest lastStockQuoteTime.
-			priceAlerts.addAll(this.priceAlertDAO.getPriceAlerts(PriceAlertOrderAttribute.LAST_STOCK_QUOTE_TIME, true));
-			
-			if(priceAlerts.size() > 0)
-				priceAlert = priceAlerts.get(0);
-			else
-				return;
-			
-			//Get the quote of the stock defined in the price alert.
-			stockQuote = this.stockQuoteDAO.getStockQuote(priceAlert.getSymbol(), priceAlert.getStockExchange());
-			
-			//If the trigger price has been reached, set the trigger time of the price alert.
-			if(priceAlert.getAlertType() == PriceAlertType.GREATER_OR_EQUAL && stockQuote.getPrice().compareTo(priceAlert.getPrice()) >= 0)
-				priceAlert.setTriggerTime(new Date());
-			else if(priceAlert.getAlertType() == PriceAlertType.LESS_OR_EQUAL && stockQuote.getPrice().compareTo(priceAlert.getPrice()) <= 0)
-				priceAlert.setTriggerTime(new Date());
-			
-			if(priceAlert.getTriggerTime() != null)
-				this.priceAlertDAO.updatePriceAlert(priceAlert);
+			priceAlert = this.getOldestPriceAlert();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Failed to determine price alerts for next checkup.", e);
+		}
+		
+		if(priceAlert == null)
+			return;
+			
+		//Get the quote of the stock defined in the price alert.
+		try {
+			stockQuote = this.stockQuoteDAO.getStockQuote(priceAlert.getSymbol(), priceAlert.getStockExchange());
+		} catch (Exception e) {
+			logger.error("Failed to determine stock quote for symbol: " +priceAlert.getSymbol(), e);
+			return;
+		}
+			
+		try {
+			this.checkAndUpdatePriceAlert(priceAlert, stockQuote);
+		} catch (Exception e) {
+			logger.error("Failed to update price alert for symbol: " +priceAlert.getSymbol(), e);
 		}
 	}
 	
@@ -107,5 +112,44 @@ public class StockAlertThread extends Thread {
 		else {			
 			return false;
 		}
+	}
+	
+	
+	/**
+	 * Gets the price alert with the oldest lastStockQuoteTime that has not been triggered yet.
+	 * 
+	 * @return The price alert.
+	 * @throws Exception In case price alert determination failed.
+	 */
+	private PriceAlert getOldestPriceAlert() throws Exception {
+		ArrayList<PriceAlert> priceAlerts = new ArrayList<PriceAlert>();
+		
+		priceAlerts.addAll(this.priceAlertDAO.getPriceAlerts(PriceAlertOrderAttribute.LAST_STOCK_QUOTE_TIME, true));
+		
+		if(priceAlerts.size() > 0)
+			return priceAlerts.get(0);
+		else
+			return null;
+	}
+	
+	
+	/**
+	 * Checks the price defined in the alert against the stock quote.
+	 * Updates the price alert afterwards.
+	 * 
+	 * @param priceAlert The price alert.
+	 * @param stockQuote The stock quote.
+	 * @throws Exception In case the update failed.
+	 */
+	private void checkAndUpdatePriceAlert(PriceAlert priceAlert, final StockQuote stockQuote) throws Exception {
+		//If the trigger price has been reached, set the trigger time of the price alert.
+		if(priceAlert.getAlertType() == PriceAlertType.GREATER_OR_EQUAL && stockQuote.getPrice().compareTo(priceAlert.getPrice()) >= 0)
+			priceAlert.setTriggerTime(new Date());
+		else if(priceAlert.getAlertType() == PriceAlertType.LESS_OR_EQUAL && stockQuote.getPrice().compareTo(priceAlert.getPrice()) <= 0)
+			priceAlert.setTriggerTime(new Date());
+		
+		priceAlert.setLastStockQuoteTime(new Date());
+		
+		this.priceAlertDAO.updatePriceAlert(priceAlert);
 	}
 }
