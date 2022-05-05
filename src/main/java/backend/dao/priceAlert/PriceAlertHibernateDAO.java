@@ -11,6 +11,7 @@ import javax.persistence.criteria.Root;
 
 import backend.exception.ObjectUnchangedException;
 import backend.model.priceAlert.PriceAlert;
+import backend.model.priceAlert.TriggerStatus;
 
 /**
  * Provides access to price alert database persistence using Hibernate.
@@ -82,7 +83,7 @@ public class PriceAlertHibernateDAO implements PriceAlertDAO {
 
 	
 	@Override
-	public List<PriceAlert> getPriceAlerts(final PriceAlertOrderAttribute priceAlertOrderAttribute, final boolean onlyNotTriggered) throws Exception {
+	public List<PriceAlert> getPriceAlerts(final PriceAlertOrderAttribute priceAlertOrderAttribute, final TriggerStatus triggerStatus) throws Exception {
 		List<PriceAlert> priceAlerts = null;
 		EntityManager entityManager = this.sessionFactory.createEntityManager();
 		entityManager.getTransaction().begin();
@@ -93,8 +94,7 @@ public class PriceAlertHibernateDAO implements PriceAlertDAO {
 			Root<PriceAlert> criteria = criteriaQuery.from(PriceAlert.class);
 			criteriaQuery.select(criteria);
 			
-			if(onlyNotTriggered)
-				criteriaQuery.where(criteriaBuilder.isNull(criteria.get("triggerTime")));
+			this.applyTriggerStatusParameter(triggerStatus, criteriaQuery, criteriaBuilder, criteria);
 			
 			if(priceAlertOrderAttribute == PriceAlertOrderAttribute.ID)
 				criteriaQuery.orderBy(criteriaBuilder.asc(criteria.get("id")));
@@ -159,5 +159,27 @@ public class PriceAlertHibernateDAO implements PriceAlertDAO {
 		
 		if(databasePriceAlert.equals(priceAlert))
 			throw new ObjectUnchangedException();
+	}
+	
+	
+	/**
+	 * Applies the trigger status parameter to the price alert query.
+	 * 
+	 * @param triggerStatus The parameter for price alert triggerTime status.
+	 * @param criteriaQuery The price alert criteria query.
+	 * @param criteriaBuilder The builder of criterias.
+	 * @param criteria The root entity of the price alert that is being queried.
+	 */
+	private void applyTriggerStatusParameter(final TriggerStatus triggerStatus, final CriteriaQuery<PriceAlert> criteriaQuery,
+			final CriteriaBuilder criteriaBuilder, final Root<PriceAlert> criteria) {
+		
+		if(triggerStatus == null || triggerStatus == TriggerStatus.ALL)
+			return;	//No further query restrictions needed.
+		
+		if(triggerStatus == TriggerStatus.NOT_TRIGGERED)
+			criteriaQuery.where(criteriaBuilder.isNull(criteria.get("triggerTime")));
+		
+		if(triggerStatus == TriggerStatus.TRIGGERED)
+			criteriaQuery.where(criteriaBuilder.isNotNull(criteria.get("triggerTime")));
 	}
 }

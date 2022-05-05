@@ -12,6 +12,7 @@ import backend.dao.priceAlert.PriceAlertOrderAttribute;
 import backend.exception.ObjectUnchangedException;
 import backend.model.priceAlert.PriceAlert;
 import backend.model.priceAlert.PriceAlertArray;
+import backend.model.priceAlert.TriggerStatus;
 import backend.model.webservice.WebServiceMessage;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
@@ -90,7 +91,7 @@ public class PriceAlertService {
 		WebServiceResult getPriceAlertsResult = new WebServiceResult(null);
 		
 		try {
-			priceAlerts.setPriceAlerts(this.priceAlertDAO.getPriceAlerts(PriceAlertOrderAttribute.ID, false));
+			priceAlerts.setPriceAlerts(this.priceAlertDAO.getPriceAlerts(PriceAlertOrderAttribute.ID, TriggerStatus.ALL));
 			getPriceAlertsResult.setData(priceAlerts);
 		} catch (Exception e) {
 			getPriceAlertsResult.addMessage(new WebServiceMessage(

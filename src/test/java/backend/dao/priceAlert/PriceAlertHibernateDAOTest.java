@@ -19,6 +19,7 @@ import backend.dao.DAOManager;
 import backend.model.StockExchange;
 import backend.model.priceAlert.PriceAlert;
 import backend.model.priceAlert.PriceAlertType;
+import backend.model.priceAlert.TriggerStatus;
 
 /**
  * Tests the Hibernate DAO for price alerts.
@@ -164,7 +165,7 @@ public class PriceAlertHibernateDAOTest {
 		PriceAlert priceAlert;
 		
 		try {
-			priceAlerts = priceAlertDAO.getPriceAlerts(PriceAlertOrderAttribute.LAST_STOCK_QUOTE_TIME, true);
+			priceAlerts = priceAlertDAO.getPriceAlerts(PriceAlertOrderAttribute.LAST_STOCK_QUOTE_TIME, TriggerStatus.NOT_TRIGGERED);
 			
 			//3 price alerts have not been triggered and therefore should be returned.
 			assertEquals(3, priceAlerts.size());

@@ -256,6 +256,22 @@ public class PriceAlertServiceTest {
 	
 	@Test
 	/**
+	 * Tests the retrieval of all price alerts that have been triggered but not confirmed yet.
+	 */
+	public void testGetAllPriceAlertsTriggeredNotConfirmed() {
+		WebServiceResult getPriceAlertsResult;
+		PriceAlertArray priceAlerts;
+		PriceAlert priceAlert;
+		
+		//Get the price alerts.
+		PriceAlertService service = new PriceAlertService();
+		
+		//TODO Further implement test
+	}
+	
+	
+	@Test
+	/**
 	 * Tests deletion of a price alert.
 	 */
 	public void testDeletePriceAlert() {

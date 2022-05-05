@@ -4,6 +4,7 @@ import java.util.List;
 
 import backend.exception.ObjectUnchangedException;
 import backend.model.priceAlert.PriceAlert;
+import backend.model.priceAlert.TriggerStatus;
 
 /**
  * Interface for price alert persistence.
@@ -33,11 +34,11 @@ public interface PriceAlertDAO {
 	 * Gets all price alerts.
 	 * 
 	 * @param priceAlertOrderAttribute The attribute by which the price alerts are ordered.
-	 * @param onlyNotTriggered Only return alerts that have not been triggered if set to true. Return all if false.
+	 * @param triggerStatus Define which alerts are selected based on the status of the triggerTime attribute.
 	 * @return All price alerts.
 	 * @throws Exception Price alert retrieval failed.
 	 */
-	List<PriceAlert> getPriceAlerts(final PriceAlertOrderAttribute priceAlertOrderAttribute, final boolean onlyNotTriggered) throws Exception;
+	List<PriceAlert> getPriceAlerts(final PriceAlertOrderAttribute priceAlertOrderAttribute, final TriggerStatus triggerStatus) throws Exception;
 	
 	
 	/**
