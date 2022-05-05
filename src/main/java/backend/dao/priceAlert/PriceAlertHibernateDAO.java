@@ -1,5 +1,6 @@
 package backend.dao.priceAlert;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -7,6 +8,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import backend.exception.ObjectUnchangedException;
@@ -89,14 +91,18 @@ public class PriceAlertHibernateDAO implements PriceAlertDAO {
 		entityManager.getTransaction().begin();
 		
 		try {
+			Predicate predicate;
+			List<Predicate> predicates = new ArrayList<Predicate>();
 			CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 			CriteriaQuery<PriceAlert> criteriaQuery = criteriaBuilder.createQuery(PriceAlert.class);
 			Root<PriceAlert> criteria = criteriaQuery.from(PriceAlert.class);
 			criteriaQuery.select(criteria);
 			
-			//TODO handle multiple where expressions using Predicates ArrayList
-			//https://stackoverflow.com/questions/12199433/jpa-criteria-api-with-multiple-parameters
-			this.applyTriggerStatusParameter(triggerStatus, criteriaQuery, criteriaBuilder, criteria);
+			predicate = applyTriggerStatusParameter(triggerStatus, criteriaBuilder, criteria);
+			if(predicate != null)
+				predicates.add(predicate);
+			
+			criteriaQuery.where(predicates.toArray(new Predicate[predicates.size()]));
 			
 			this.applyPriceAlertOrderAttribute(priceAlertOrderAttribute, criteriaQuery, criteriaBuilder, criteria);
 			
@@ -165,21 +171,19 @@ public class PriceAlertHibernateDAO implements PriceAlertDAO {
 	 * Applies the trigger status parameter to the price alert query.
 	 * 
 	 * @param triggerStatus The parameter for price alert triggerTime status.
-	 * @param criteriaQuery The price alert criteria query.
 	 * @param criteriaBuilder The builder of criterias.
 	 * @param criteria The root entity of the price alert that is being queried.
+	 * @return A predicate for the trigger status.
 	 */
-	private void applyTriggerStatusParameter(final TriggerStatus triggerStatus, final CriteriaQuery<PriceAlert> criteriaQuery,
-			final CriteriaBuilder criteriaBuilder, final Root<PriceAlert> criteria) {
-		
-		if(triggerStatus == null || triggerStatus == TriggerStatus.ALL)
-			return;	//No further query restrictions needed.
+	private Predicate applyTriggerStatusParameter(final TriggerStatus triggerStatus, final CriteriaBuilder criteriaBuilder, final Root<PriceAlert> criteria) {
 		
 		if(triggerStatus == TriggerStatus.NOT_TRIGGERED)
-			criteriaQuery.where(criteriaBuilder.isNull(criteria.get("triggerTime")));
+			return criteriaBuilder.isNull(criteria.get("triggerTime"));
 		
 		if(triggerStatus == TriggerStatus.TRIGGERED)
-			criteriaQuery.where(criteriaBuilder.isNotNull(criteria.get("triggerTime")));
+			return criteriaBuilder.isNotNull(criteria.get("triggerTime"));
+		
+		return null;
 	}
 	
 	
