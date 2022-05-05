@@ -94,12 +94,11 @@ public class PriceAlertHibernateDAO implements PriceAlertDAO {
 			Root<PriceAlert> criteria = criteriaQuery.from(PriceAlert.class);
 			criteriaQuery.select(criteria);
 			
+			//TODO handle multiple where expressions using Predicates ArrayList
+			//https://stackoverflow.com/questions/12199433/jpa-criteria-api-with-multiple-parameters
 			this.applyTriggerStatusParameter(triggerStatus, criteriaQuery, criteriaBuilder, criteria);
 			
-			if(priceAlertOrderAttribute == PriceAlertOrderAttribute.ID)
-				criteriaQuery.orderBy(criteriaBuilder.asc(criteria.get("id")));
-			else if(priceAlertOrderAttribute == PriceAlertOrderAttribute.LAST_STOCK_QUOTE_TIME)
-				criteriaQuery.orderBy(criteriaBuilder.asc(criteria.get("lastStockQuoteTime")));
+			this.applyPriceAlertOrderAttribute(priceAlertOrderAttribute, criteriaQuery, criteriaBuilder, criteria);
 			
 			TypedQuery<PriceAlert> typedQuery = entityManager.createQuery(criteriaQuery);
 			priceAlerts = typedQuery.getResultList();
@@ -181,5 +180,23 @@ public class PriceAlertHibernateDAO implements PriceAlertDAO {
 		
 		if(triggerStatus == TriggerStatus.TRIGGERED)
 			criteriaQuery.where(criteriaBuilder.isNotNull(criteria.get("triggerTime")));
+	}
+	
+	
+	/**
+	 * Applies the orderAttribute to the price alert query.
+	 * 
+	 * @param priceAlertOrderAttribute The parameter for price alert ordering.
+	 * @param criteriaQuery The price alert criteria query.
+	 * @param criteriaBuilder The builder of criterias.
+	 * @param criteria The root entity of the price alert that is being queried.
+	 */
+	private void applyPriceAlertOrderAttribute(final PriceAlertOrderAttribute priceAlertOrderAttribute, final CriteriaQuery<PriceAlert> criteriaQuery,
+			final CriteriaBuilder criteriaBuilder, final Root<PriceAlert> criteria) {
+		
+		if(priceAlertOrderAttribute == PriceAlertOrderAttribute.ID)
+			criteriaQuery.orderBy(criteriaBuilder.asc(criteria.get("id")));
+		else if(priceAlertOrderAttribute == PriceAlertOrderAttribute.LAST_STOCK_QUOTE_TIME)
+			criteriaQuery.orderBy(criteriaBuilder.asc(criteria.get("lastStockQuoteTime")));
 	}
 }
