@@ -10,6 +10,7 @@ import backend.dao.DAOManager;
 import backend.dao.priceAlert.PriceAlertDAO;
 import backend.dao.priceAlert.PriceAlertOrderAttribute;
 import backend.exception.ObjectUnchangedException;
+import backend.model.priceAlert.ConfirmationStatus;
 import backend.model.priceAlert.PriceAlert;
 import backend.model.priceAlert.PriceAlertArray;
 import backend.model.priceAlert.TriggerStatus;
@@ -82,16 +83,18 @@ public class PriceAlertService {
 	
 	
 	/**
-	 * Provides a list of all price alerts.
+	 * Provides a list of all price alerts that match the given filter criteria.
 	 * 
+	 * @param triggerStatus Filter criterion for trigger status.
+	 * @param confirmationStatus Filter criterion for confirmation status.
 	 * @return A list of all price alerts.
 	 */
-	public WebServiceResult getPriceAlerts() {
+	public WebServiceResult getPriceAlerts(final TriggerStatus triggerStatus, final ConfirmationStatus confirmationStatus) {
 		PriceAlertArray priceAlerts = new PriceAlertArray();
 		WebServiceResult getPriceAlertsResult = new WebServiceResult(null);
 		
 		try {
-			priceAlerts.setPriceAlerts(this.priceAlertDAO.getPriceAlerts(PriceAlertOrderAttribute.ID, TriggerStatus.ALL));
+			priceAlerts.setPriceAlerts(this.priceAlertDAO.getPriceAlerts(PriceAlertOrderAttribute.ID, triggerStatus, confirmationStatus));
 			getPriceAlertsResult.setData(priceAlerts);
 		} catch (Exception e) {
 			getPriceAlertsResult.addMessage(new WebServiceMessage(

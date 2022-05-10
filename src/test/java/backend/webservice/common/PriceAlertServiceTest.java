@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
+import java.util.Date;
 import java.util.ResourceBundle;
 
 import org.junit.jupiter.api.AfterAll;
@@ -20,9 +21,11 @@ import org.junit.jupiter.api.Test;
 import backend.dao.DAOManager;
 import backend.dao.priceAlert.PriceAlertDAO;
 import backend.model.StockExchange;
+import backend.model.priceAlert.ConfirmationStatus;
 import backend.model.priceAlert.PriceAlert;
 import backend.model.priceAlert.PriceAlertArray;
 import backend.model.priceAlert.PriceAlertType;
+import backend.model.priceAlert.TriggerStatus;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
 import backend.tools.WebServiceTools;
@@ -53,6 +56,16 @@ public class PriceAlertServiceTest {
 	 * A price alert for the Microsoft stock.
 	 */
 	private PriceAlert microsoftAlert;
+	
+	/**
+	 * A price alert for the Netflix stock.
+	 */
+	private PriceAlert netflixAlert;
+	
+	/**
+	 * A price alert for the Nvidia stock.
+	 */
+	private PriceAlert nvidiaAlert;
 	
 	
 	@BeforeAll
@@ -101,10 +114,14 @@ public class PriceAlertServiceTest {
 	private void createDummyPriceAlerts() {
 		this.appleAlert = this.getAppleAlert();
 		this.microsoftAlert = this.getMicrosoftAlert();
+		this.netflixAlert = this.getNetflixAlert();
+		this.nvidiaAlert = this.getNvidiaAlert();
 		
 		try {
 			priceAlertDAO.insertPriceAlert(this.appleAlert);
 			priceAlertDAO.insertPriceAlert(this.microsoftAlert);
+			priceAlertDAO.insertPriceAlert(this.netflixAlert);
+			priceAlertDAO.insertPriceAlert(this.nvidiaAlert);
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
@@ -116,8 +133,10 @@ public class PriceAlertServiceTest {
 	 */
 	private void deleteDummyPriceAlerts() {
 		try {
-			priceAlertDAO.deletePriceAlert(this.appleAlert);
+			priceAlertDAO.deletePriceAlert(this.nvidiaAlert);
+			priceAlertDAO.deletePriceAlert(this.netflixAlert);
 			priceAlertDAO.deletePriceAlert(this.microsoftAlert);
+			priceAlertDAO.deletePriceAlert(this.appleAlert);
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
@@ -153,6 +172,46 @@ public class PriceAlertServiceTest {
 		alert.setStockExchange(StockExchange.NYSE);
 		alert.setAlertType(PriceAlertType.LESS_OR_EQUAL);
 		alert.setPrice(BigDecimal.valueOf(250.00));
+		
+		return alert;
+	}
+	
+	
+	/**
+	 * Gets a price alert for the Netflix stock.
+	 * 
+	 * @return A price alert for the Netflix stock.
+	 */
+	private PriceAlert getNetflixAlert() {
+		PriceAlert alert = new PriceAlert();
+		
+		alert = new PriceAlert();
+		alert.setSymbol("NFLX");
+		alert.setStockExchange(StockExchange.NYSE);
+		alert.setAlertType(PriceAlertType.LESS_OR_EQUAL);
+		alert.setPrice(BigDecimal.valueOf(199.99));
+		alert.setTriggerTime(new Date());
+		alert.setConfirmationTime(null);
+		
+		return alert;
+	}
+	
+	
+	/**
+	 * Gets a price alert for the Nvidia stock.
+	 * 
+	 * @return A price alert for the Nvidia stock.
+	 */
+	private PriceAlert getNvidiaAlert() {
+		PriceAlert alert = new PriceAlert();
+		
+		alert = new PriceAlert();
+		alert.setSymbol("NVDA");
+		alert.setStockExchange(StockExchange.NYSE);
+		alert.setAlertType(PriceAlertType.LESS_OR_EQUAL);
+		alert.setPrice(BigDecimal.valueOf(180.00));
+		alert.setTriggerTime(new Date());
+		alert.setConfirmationTime(new Date());
 		
 		return alert;
 	}
@@ -226,16 +285,16 @@ public class PriceAlertServiceTest {
 		
 		//Get the price alerts.
 		PriceAlertService service = new PriceAlertService();
-		getPriceAlertsResult = service.getPriceAlerts();
+		getPriceAlertsResult = service.getPriceAlerts(TriggerStatus.ALL, ConfirmationStatus.ALL);
 		priceAlerts = (PriceAlertArray) getPriceAlertsResult.getData();
 		
 		//Assure no error message exists
 		assertTrue(WebServiceTools.resultContainsErrorMessage(getPriceAlertsResult) == false);
 		
-		//Check if two price alerts are returned.
-		assertTrue(priceAlerts.getPriceAlerts().size() == 2);
+		//Check if four price alerts are returned.
+		assertEquals(4, priceAlerts.getPriceAlerts().size());
 		
-		//Check both price alerts by each attribute
+		//Check all price alerts by each attribute
 		priceAlert = priceAlerts.getPriceAlerts().get(0);
 		assertEquals(this.appleAlert.getId(), priceAlert.getId());
 		assertEquals(this.appleAlert.getSymbol(), priceAlert.getSymbol());
@@ -243,6 +302,7 @@ public class PriceAlertServiceTest {
 		assertTrue(this.appleAlert.getPrice().compareTo(priceAlert.getPrice()) == 0);
 		assertEquals(this.appleAlert.getTriggerTime(), priceAlert.getTriggerTime());
 		assertEquals(this.appleAlert.getConfirmationTime(), priceAlert.getConfirmationTime());
+		assertEquals(this.appleAlert.getLastStockQuoteTime(), priceAlert.getLastStockQuoteTime());
 		
 		priceAlert = priceAlerts.getPriceAlerts().get(1);
 		assertEquals(this.microsoftAlert.getId(), priceAlert.getId());
@@ -251,6 +311,25 @@ public class PriceAlertServiceTest {
 		assertTrue(this.microsoftAlert.getPrice().compareTo(priceAlert.getPrice()) == 0);
 		assertEquals(this.microsoftAlert.getTriggerTime(), priceAlert.getTriggerTime());
 		assertEquals(this.microsoftAlert.getConfirmationTime(), priceAlert.getConfirmationTime());
+		assertEquals(this.microsoftAlert.getLastStockQuoteTime(), priceAlert.getLastStockQuoteTime());
+		
+		priceAlert = priceAlerts.getPriceAlerts().get(2);
+		assertEquals(this.netflixAlert.getId(), priceAlert.getId());
+		assertEquals(this.netflixAlert.getSymbol(), priceAlert.getSymbol());
+		assertEquals(this.netflixAlert.getStockExchange(), priceAlert.getStockExchange());
+		assertTrue(this.netflixAlert.getPrice().compareTo(priceAlert.getPrice()) == 0);
+		assertEquals(this.netflixAlert.getTriggerTime(), priceAlert.getTriggerTime());
+		assertEquals(this.netflixAlert.getConfirmationTime(), priceAlert.getConfirmationTime());
+		assertEquals(this.netflixAlert.getLastStockQuoteTime(), priceAlert.getLastStockQuoteTime());
+		
+		priceAlert = priceAlerts.getPriceAlerts().get(3);
+		assertEquals(this.nvidiaAlert.getId(), priceAlert.getId());
+		assertEquals(this.nvidiaAlert.getSymbol(), priceAlert.getSymbol());
+		assertEquals(this.nvidiaAlert.getStockExchange(), priceAlert.getStockExchange());
+		assertTrue(this.nvidiaAlert.getPrice().compareTo(priceAlert.getPrice()) == 0);
+		assertEquals(this.nvidiaAlert.getTriggerTime(), priceAlert.getTriggerTime());
+		assertEquals(this.nvidiaAlert.getConfirmationTime(), priceAlert.getConfirmationTime());
+		assertEquals(this.nvidiaAlert.getLastStockQuoteTime(), priceAlert.getLastStockQuoteTime());
 	}
 	
 	
@@ -265,8 +344,24 @@ public class PriceAlertServiceTest {
 		
 		//Get the price alerts.
 		PriceAlertService service = new PriceAlertService();
+		getPriceAlertsResult = service.getPriceAlerts(TriggerStatus.TRIGGERED, ConfirmationStatus.NOT_CONFIRMED);
+		priceAlerts = (PriceAlertArray) getPriceAlertsResult.getData();
 		
-		//TODO Further implement test
+		//Assure no error message exists
+		assertTrue(WebServiceTools.resultContainsErrorMessage(getPriceAlertsResult) == false);
+		
+		//Check if one price alert is returned.
+		assertEquals(1, priceAlerts.getPriceAlerts().size());
+		
+		//Check if the correct price alert is returned
+		priceAlert = priceAlerts.getPriceAlerts().get(0);
+		assertEquals(this.netflixAlert.getId(), priceAlert.getId());
+		assertEquals(this.netflixAlert.getSymbol(), priceAlert.getSymbol());
+		assertEquals(this.netflixAlert.getStockExchange(), priceAlert.getStockExchange());
+		assertTrue(this.netflixAlert.getPrice().compareTo(priceAlert.getPrice()) == 0);
+		assertEquals(this.netflixAlert.getTriggerTime(), priceAlert.getTriggerTime());
+		assertEquals(this.netflixAlert.getConfirmationTime(), priceAlert.getConfirmationTime());
+		assertEquals(this.netflixAlert.getLastStockQuoteTime(), priceAlert.getLastStockQuoteTime());
 	}
 	
 	

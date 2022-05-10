@@ -11,6 +11,7 @@ import backend.dao.DAOManager;
 import backend.dao.priceAlert.PriceAlertDAO;
 import backend.dao.priceAlert.PriceAlertOrderAttribute;
 import backend.dao.stockQuote.StockQuoteDAO;
+import backend.model.priceAlert.ConfirmationStatus;
 import backend.model.priceAlert.PriceAlert;
 import backend.model.priceAlert.PriceAlertType;
 import backend.model.priceAlert.TriggerStatus;
@@ -125,7 +126,8 @@ public class StockAlertThread extends Thread {
 	private PriceAlert getOldestPriceAlert() throws Exception {
 		ArrayList<PriceAlert> priceAlerts = new ArrayList<PriceAlert>();
 		
-		priceAlerts.addAll(this.priceAlertDAO.getPriceAlerts(PriceAlertOrderAttribute.LAST_STOCK_QUOTE_TIME, TriggerStatus.NOT_TRIGGERED));
+		priceAlerts.addAll(this.priceAlertDAO.getPriceAlerts(PriceAlertOrderAttribute.LAST_STOCK_QUOTE_TIME, 
+				TriggerStatus.NOT_TRIGGERED, ConfirmationStatus.NOT_CONFIRMED));
 		
 		if(priceAlerts.size() > 0)
 			return priceAlerts.get(0);

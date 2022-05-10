@@ -8,9 +8,12 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import backend.model.priceAlert.ConfirmationStatus;
 import backend.model.priceAlert.PriceAlert;
+import backend.model.priceAlert.TriggerStatus;
 import backend.model.webservice.WebServiceResult;
 import backend.webservice.common.PriceAlertService;
 
@@ -43,9 +46,11 @@ public class PriceAlertRestService {
 	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public WebServiceResult getPriceAlerts() {
+	public WebServiceResult getPriceAlerts(@QueryParam("triggerStatusQuery") final TriggerStatus triggerStatus, 
+			@QueryParam("confirmationStatusQuery") final ConfirmationStatus confirmationStatus) {
+		
 		PriceAlertService priceAlertService = new PriceAlertService();
-		return priceAlertService.getPriceAlerts();
+		return priceAlertService.getPriceAlerts(triggerStatus, confirmationStatus);
 	}
 	
 	

@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 
 import backend.dao.DAOManager;
 import backend.model.StockExchange;
+import backend.model.priceAlert.ConfirmationStatus;
 import backend.model.priceAlert.PriceAlert;
 import backend.model.priceAlert.PriceAlertType;
 import backend.model.priceAlert.TriggerStatus;
@@ -165,7 +166,7 @@ public class PriceAlertHibernateDAOTest {
 		PriceAlert priceAlert;
 		
 		try {
-			priceAlerts = priceAlertDAO.getPriceAlerts(PriceAlertOrderAttribute.LAST_STOCK_QUOTE_TIME, TriggerStatus.NOT_TRIGGERED);
+			priceAlerts = priceAlertDAO.getPriceAlerts(PriceAlertOrderAttribute.LAST_STOCK_QUOTE_TIME, TriggerStatus.NOT_TRIGGERED, ConfirmationStatus.ALL);
 			
 			//3 price alerts have not been triggered and therefore should be returned.
 			assertEquals(3, priceAlerts.size());

@@ -12,6 +12,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import backend.exception.ObjectUnchangedException;
+import backend.model.priceAlert.ConfirmationStatus;
 import backend.model.priceAlert.PriceAlert;
 import backend.model.priceAlert.TriggerStatus;
 
@@ -85,7 +86,9 @@ public class PriceAlertHibernateDAO implements PriceAlertDAO {
 
 	
 	@Override
-	public List<PriceAlert> getPriceAlerts(final PriceAlertOrderAttribute priceAlertOrderAttribute, final TriggerStatus triggerStatus) throws Exception {
+	public List<PriceAlert> getPriceAlerts(final PriceAlertOrderAttribute priceAlertOrderAttribute, 
+			final TriggerStatus triggerStatus, final ConfirmationStatus confirmationStatus) throws Exception {
+		
 		List<PriceAlert> priceAlerts = null;
 		EntityManager entityManager = this.sessionFactory.createEntityManager();
 		entityManager.getTransaction().begin();
@@ -99,6 +102,10 @@ public class PriceAlertHibernateDAO implements PriceAlertDAO {
 			criteriaQuery.select(criteria);
 			
 			predicate = applyTriggerStatusParameter(triggerStatus, criteriaBuilder, criteria);
+			if(predicate != null)
+				predicates.add(predicate);
+			
+			predicate = applyConfirmationStatusParameter(confirmationStatus, criteriaBuilder, criteria);
 			if(predicate != null)
 				predicates.add(predicate);
 			
@@ -181,6 +188,27 @@ public class PriceAlertHibernateDAO implements PriceAlertDAO {
 			return criteriaBuilder.isNull(criteria.get("triggerTime"));
 		
 		if(triggerStatus == TriggerStatus.TRIGGERED)
+			return criteriaBuilder.isNotNull(criteria.get("triggerTime"));
+		
+		return null;
+	}
+	
+	
+	/**
+	 * Applies the confirmation status parameter to the price alert query.
+	 * 
+	 * @param confirmationStatus The parameter for price alert confirmationTime status.
+	 * @param criteriaBuilder The builder of criterias.
+	 * @param criteria The root entity of the price alert that is being queried.
+	 * @return A predicate for the trigger status.
+	 */
+	private Predicate applyConfirmationStatusParameter(final ConfirmationStatus confirmationStatus, 
+			final CriteriaBuilder criteriaBuilder, final Root<PriceAlert> criteria) {
+		
+		if(confirmationStatus == ConfirmationStatus.NOT_CONFIRMED)
+			return criteriaBuilder.isNull(criteria.get("confirmationTime"));
+		
+		if(confirmationStatus == ConfirmationStatus.CONFIRMED)
 			return criteriaBuilder.isNotNull(criteria.get("triggerTime"));
 		
 		return null;
