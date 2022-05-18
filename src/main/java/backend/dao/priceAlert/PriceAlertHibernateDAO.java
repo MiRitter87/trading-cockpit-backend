@@ -209,7 +209,7 @@ public class PriceAlertHibernateDAO implements PriceAlertDAO {
 			return criteriaBuilder.isNull(criteria.get("confirmationTime"));
 		
 		if(confirmationStatus == ConfirmationStatus.CONFIRMED)
-			return criteriaBuilder.isNotNull(criteria.get("triggerTime"));
+			return criteriaBuilder.isNotNull(criteria.get("confirmationTime"));
 		
 		return null;
 	}

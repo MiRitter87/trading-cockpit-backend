@@ -367,6 +367,38 @@ public class PriceAlertServiceTest {
 	
 	@Test
 	/**
+	 * Tests the retrieval of all price alerts that have been triggered and confirmed.
+	 */
+	public void testGetAllPriceAlertsTriggeredConfirmed() {
+		WebServiceResult getPriceAlertsResult;
+		PriceAlertArray priceAlerts;
+		PriceAlert priceAlert;
+		
+		//Get the price alerts.
+		PriceAlertService service = new PriceAlertService();
+		getPriceAlertsResult = service.getPriceAlerts(TriggerStatus.TRIGGERED, ConfirmationStatus.CONFIRMED);
+		priceAlerts = (PriceAlertArray) getPriceAlertsResult.getData();
+		
+		//Assure no error message exists
+		assertTrue(WebServiceTools.resultContainsErrorMessage(getPriceAlertsResult) == false);
+		
+		//Check if one price alert is returned.
+		assertEquals(1, priceAlerts.getPriceAlerts().size());
+		
+		//Check if the correct price alert is returned
+		priceAlert = priceAlerts.getPriceAlerts().get(0);
+		assertEquals(this.nvidiaAlert.getId(), priceAlert.getId());
+		assertEquals(this.nvidiaAlert.getSymbol(), priceAlert.getSymbol());
+		assertEquals(this.nvidiaAlert.getStockExchange(), priceAlert.getStockExchange());
+		assertTrue(this.nvidiaAlert.getPrice().compareTo(priceAlert.getPrice()) == 0);
+		assertEquals(this.nvidiaAlert.getTriggerTime(), priceAlert.getTriggerTime());
+		assertEquals(this.nvidiaAlert.getConfirmationTime(), priceAlert.getConfirmationTime());
+		assertEquals(this.nvidiaAlert.getLastStockQuoteTime(), priceAlert.getLastStockQuoteTime());
+	}
+	
+	
+	@Test
+	/**
 	 * Tests deletion of a price alert.
 	 */
 	public void testDeletePriceAlert() {
