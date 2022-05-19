@@ -2,6 +2,7 @@ package backend.controller;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.logging.log4j.LogManager;
@@ -71,7 +72,7 @@ public class StockAlertThread extends Thread {
 		PriceAlert priceAlert = null;
 		StockQuote stockQuote;
 		
-		if(!this.isTimeIntervalActive())
+		if(this.isWeekend() || !this.isTimeIntervalActive())
 			return;
 		
 		try {
@@ -114,6 +115,23 @@ public class StockAlertThread extends Thread {
 		else {			
 			return false;
 		}
+	}
+	
+	
+	/**
+	 * Checks if the current day is at a weekend.
+	 * 
+	 * @return true, if current day is at weekend; false otherwise.
+	 */
+	private boolean isWeekend() {
+		Calendar calendar = Calendar.getInstance();
+		
+		calendar.setTime(new Date());
+		
+		if(calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY || calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY)
+			return true;
+		else
+			return false;
 	}
 	
 	
