@@ -2,6 +2,15 @@ package backend.model.instrument;
 
 import java.util.Set;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -20,16 +29,23 @@ import backend.model.StockExchange;
  * 
  * @author Michael
  */
+@Table(name="INSTRUMENT")
+@Entity
+@SequenceGenerator(name = "instrumentSequence", initialValue = 1, allocationSize = 1)
 public class Instrument {
 	/**
 	 * The ID.
 	 */
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "instrumentSequence")
+	@Column(name="INSTRUMENT_ID")
 	@Min(value = 1, message = "{instrument.id.min.message}")
 	private Integer id;
 	
 	/**
 	 * The symbol.
 	 */
+	@Column(name="SYMBOL", length = 6)
 	@NotNull(message = "{instrument.symbol.notNull.message}")
 	@Size(min = 1, max = 6, message = "{instrument.symbol.size.message}")
 	private String symbol;
@@ -37,18 +53,23 @@ public class Instrument {
 	/**
 	 * The type of the instrument.
 	 */
+	@Column(name="TYPE", length = 10)
+	@Enumerated(EnumType.STRING)
 	@NotNull(message = "{instrument.type.notNull.message}")
 	private InstrumentType type;
 	
 	/**
 	 * The exchange at which the instrument is traded.
 	 */
+	@Column(name="STOCK_EXCHANGE", length = 4)
+	@Enumerated(EnumType.STRING)
 	@NotNull(message = "{instrument.stockExchange.notNull.message}")
 	private StockExchange stockExchange;
 	
 	/**
 	 * The name.
 	 */
+	@Column(name="NAME", length = 50)
 	@Size(min = 0, max = 50, message = "{instrument.name.size.message}")
 	private String name;
 	
