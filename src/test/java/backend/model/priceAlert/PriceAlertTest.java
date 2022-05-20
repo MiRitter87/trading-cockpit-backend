@@ -123,7 +123,7 @@ public class PriceAlertTest {
 	/**
 	 * Tests validation of a price alert whose symbol is too long.
 	 */
-	public void testDescriptionTooLong() {
+	public void testSymbolTooLong() {
 		ValidationMessageProvider messageProvider = new ValidationMessageProvider();		
 		this.priceAlert.setSymbol("ABCDEFG");
 		
