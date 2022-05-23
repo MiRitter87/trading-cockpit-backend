@@ -61,9 +61,9 @@ public class InstrumentService {
 				getInstrumentResult.setData(instrument);
 			}
 			else {
-//				//Price Alert not found
-//				getPriceAlertResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
-//						MessageFormat.format(this.resources.getString("priceAlert.notFound"), id)));
+				//Instrument not found
+				getInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
+						MessageFormat.format(this.resources.getString("instrument.notFound"), id)));
 			}
 		}
 		catch (Exception e) {
