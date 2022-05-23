@@ -6,6 +6,8 @@ import java.io.IOException;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
+import backend.dao.instrument.InstrumentDAO;
+import backend.dao.instrument.InstrumentHibernateDAO;
 import backend.dao.priceAlert.PriceAlertDAO;
 import backend.dao.priceAlert.PriceAlertHibernateDAO;
 import backend.dao.stockQuote.StockQuoteDAO;
@@ -36,6 +38,11 @@ public class DAOManager implements Closeable {
 	 * DAO to access stock quotes.
 	 */
 	private StockQuoteDAO stockQuoteDAO;
+	
+	/**
+	 * DAO to access instruments.
+	 */
+	private InstrumentDAO instrumentDAO;
 	
 	
 	/**
@@ -93,6 +100,19 @@ public class DAOManager implements Closeable {
 			this.stockQuoteDAO = new StockQuoteYahooDAO();
 		
 		return this.stockQuoteDAO;
+	}
+	
+	
+	/**
+	 * Returns a DAO to access instrument data.
+	 * 
+	 * @return The InstrumentDAO.
+	 */
+	public InstrumentDAO getInstrumentDAO() {
+		if(this.instrumentDAO == null)
+			this.instrumentDAO = new InstrumentHibernateDAO(this.sessionFactory);
+		
+		return this.instrumentDAO;
 	}
 
 	
