@@ -37,7 +37,7 @@ public class PriceAlertService {
 	/**
 	 * Application logging.
 	 */
-	public static final Logger logger = LogManager.getLogger(PriceAlert.class);
+	public static final Logger logger = LogManager.getLogger(PriceAlertService.class);
 	
 	
 	/**

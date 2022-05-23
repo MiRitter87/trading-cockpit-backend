@@ -1,5 +1,7 @@
 package backend.webservice.common;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
@@ -8,12 +10,15 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
+import backend.model.webservice.WebServiceResult;
+import backend.tools.WebServiceTools;
 
 /**
  * Tests the instrument service.
@@ -137,5 +142,34 @@ public class InstrumentServiceTest {
 		instrument.setType(InstrumentType.STOCK);
 		
 		return instrument;
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of an instrument.
+	 */
+	public void testGetInstrument() {
+		WebServiceResult getInstrumentResult;
+		Instrument instrument;
+		
+		//Get the instrument.
+		InstrumentService service = new InstrumentService();
+		getInstrumentResult = service.getInstrument(this.appleStock.getId());
+		
+		//Assure no error message exists
+		assertTrue(WebServiceTools.resultContainsErrorMessage(getInstrumentResult) == false);
+		
+		//Assure that an instrument is returned
+		assertTrue(getInstrumentResult.getData() instanceof Instrument);
+		
+		instrument = (Instrument) getInstrumentResult.getData();
+		
+		//Check each attribute of the price alert.
+		assertEquals(this.appleStock.getId(), instrument.getId());
+		assertEquals(this.appleStock.getSymbol(), instrument.getSymbol());
+		assertEquals(this.appleStock.getName(), instrument.getName());
+		assertEquals(this.appleStock.getStockExchange(), instrument.getStockExchange());
+		assertEquals(this.appleStock.getType(), instrument.getType());
 	}
 }

@@ -81,8 +81,14 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 	
 	@Override
 	public Instrument getInstrument(Integer id) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		EntityManager entityManager = this.sessionFactory.createEntityManager();
+		
+		entityManager.getTransaction().begin();
+		Instrument instrument = entityManager.find(Instrument.class, id);
+		entityManager.getTransaction().commit();
+		entityManager.close();
+		
+		return instrument;
 	}
 
 	
