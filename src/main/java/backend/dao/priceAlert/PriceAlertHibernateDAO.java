@@ -45,7 +45,7 @@ public class PriceAlertHibernateDAO implements PriceAlertDAO {
 		
 		try {
 			entityManager.persist(priceAlert);
-			entityManager.flush();	//Assures, that the generated account ID is available.
+			entityManager.flush();	//Assures, that the generated ID is available.
 			entityManager.getTransaction().commit();
 		}
 		catch(Exception exception) {
