@@ -246,4 +246,70 @@ public class InstrumentServiceTest {
 		assertEquals(this.microsoftStock.getStockExchange(), instrument.getStockExchange());
 		assertEquals(this.microsoftStock.getType(), instrument.getType());
 	}
+	
+	
+	@Test
+	/**
+	 * Tests deletion of an instrument.
+	 */
+	public void testDeleteInstrument() {
+		WebServiceResult deleteInstrumentResult;
+		Instrument deletedInstrument;
+		
+		try {
+			//Delete Microsoft instrument using the service.
+			InstrumentService service = new InstrumentService();
+			deleteInstrumentResult = service.deleteInstrument(this.microsoftStock.getId());
+			
+			//There should be no error messages
+			assertTrue(WebServiceTools.resultContainsErrorMessage(deleteInstrumentResult) == false);
+			
+			//There should be a success message
+			assertTrue(deleteInstrumentResult.getMessages().size() == 1);
+			assertTrue(deleteInstrumentResult.getMessages().get(0).getType() == WebServiceMessageType.S);
+			
+			//Check if Apple alert is missing using the DAO.
+			deletedInstrument = instrumentDAO.getInstrument(this.microsoftStock.getId());
+			
+			if(deletedInstrument != null)
+				fail("Microsoft instrument is still persisted but should have been deleted by the WebService operation 'deleteInstrument'.");
+		}
+		catch (Exception e) {
+			fail(e.getMessage());
+		}
+		finally {
+			//Restore old database state by adding the instrument that has been deleted previously.
+			try {
+				this.microsoftStock = this.getMicrosoftStock();
+				instrumentDAO.insertInstrument(this.microsoftStock);
+			} 
+			catch (Exception e) {
+				fail(e.getMessage());
+			}
+		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests deletion of an instrument with an unknown ID.
+	 */
+	public void testeDeleteInstrumentWithUnknownId() {
+		WebServiceResult deleteInstrumentResult;
+		Integer unknownInstrumentId = 0;
+		String expectedErrorMessage, actualErrorMessage;
+		
+		//Delete the instrument.
+		InstrumentService service = new InstrumentService();
+		deleteInstrumentResult = service.deleteInstrument(unknownInstrumentId);
+		
+		//There should be a return message of type E.
+		assertTrue(deleteInstrumentResult.getMessages().size() == 1);
+		assertTrue(deleteInstrumentResult.getMessages().get(0).getType() == WebServiceMessageType.E);
+		
+		//Verify the expected error message.
+		expectedErrorMessage = MessageFormat.format(this.resources.getString("instrument.notFound"), unknownInstrumentId);
+		actualErrorMessage = deleteInstrumentResult.getMessages().get(0).getText();
+		assertEquals(expectedErrorMessage, actualErrorMessage);
+	}
 }

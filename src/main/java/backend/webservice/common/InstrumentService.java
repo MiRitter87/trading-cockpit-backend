@@ -99,4 +99,41 @@ public class InstrumentService {
 		
 		return getInstrumentsResult;
 	}
+	
+	
+	/**
+	 * Deletes the instrument with the given id.
+	 * 
+	 * @param id The id of the instrument to be deleted.
+	 * @return The result of the delete function.
+	 */
+	public WebServiceResult deleteInstrument(final Integer id) {
+		WebServiceResult deleteInstrumentResult = new WebServiceResult(null);
+		Instrument instrument = null;
+		
+		//Check if an instrument with the given id exists.
+		try {
+			instrument = this.instrumentDAO.getInstrument(id);
+			
+			if(instrument != null) {
+				//Delete instrument if exists.
+				this.instrumentDAO.deleteInstrument(instrument);
+				deleteInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.S, 
+						MessageFormat.format(this.resources.getString("instrument.deleteSuccess"), id)));
+			}
+			else {
+				//Instrument not found.
+				deleteInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
+						MessageFormat.format(this.resources.getString("instrument.notFound"), id)));
+			}
+		}
+		catch (Exception e) {
+			deleteInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
+					MessageFormat.format(this.resources.getString("instrument.deleteError"), id)));
+			
+			logger.error(MessageFormat.format(this.resources.getString("instrument.deleteError"), id), e);
+		}
+		
+		return deleteInstrumentResult;
+	}
 }
