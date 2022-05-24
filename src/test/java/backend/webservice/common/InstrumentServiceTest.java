@@ -24,6 +24,7 @@ import backend.model.instrument.InstrumentType;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
 import backend.tools.WebServiceTools;
+import backend.tools.test.ValidationMessageProvider;
 
 /**
  * Tests the instrument service.
@@ -341,5 +342,30 @@ public class InstrumentServiceTest {
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests updating an instrument with invalid data.
+	 */
+	public void testUpdateInvalidInstrument() {
+		WebServiceResult updateInstrumentResult;
+		InstrumentService service = new InstrumentService();
+		ValidationMessageProvider messageProvider = new ValidationMessageProvider();
+		String actualErrorMessage, expectedErrorMessage;
+		
+		//Remove the symbol.
+		this.microsoftStock.setSymbol("");
+		updateInstrumentResult = service.updateInstrument(this.microsoftStock);
+		
+		//There should be a return message of type E.
+		assertTrue(updateInstrumentResult.getMessages().size() == 1);
+		assertTrue(updateInstrumentResult.getMessages().get(0).getType() == WebServiceMessageType.E);
+		
+		//A proper message should be provided.
+		expectedErrorMessage = messageProvider.getSizeValidationMessage("instrument", "symbol", String.valueOf(this.microsoftStock.getSymbol().length()), "1", "6");
+		actualErrorMessage = updateInstrumentResult.getMessages().get(0).getText();
+		assertEquals(expectedErrorMessage, actualErrorMessage);
 	}
 }

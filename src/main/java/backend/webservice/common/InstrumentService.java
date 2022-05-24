@@ -147,13 +147,13 @@ public class InstrumentService {
 	public WebServiceResult updateInstrument(final Instrument instrument) {
 		WebServiceResult updateInstrumentResult = new WebServiceResult(null);
 		
-//		//Validation of the given instrument.
-//		try {
-//			instrument.validate();
-//		} catch (Exception validationException) {
-//			updateInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, validationException.getMessage()));
-//			return updatePriceAlertResult;
-//		}
+		//Validation of the given instrument.
+		try {
+			instrument.validate();
+		} catch (Exception validationException) {
+			updateInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, validationException.getMessage()));
+			return updateInstrumentResult;
+		}
 		
 		//Update price alert if validation is successful.
 		try {
