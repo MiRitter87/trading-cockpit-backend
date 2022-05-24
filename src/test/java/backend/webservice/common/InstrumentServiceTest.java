@@ -19,6 +19,7 @@ import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
+import backend.model.instrument.InstrumentArray;
 import backend.model.instrument.InstrumentType;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
@@ -207,5 +208,42 @@ public class InstrumentServiceTest {
 		expectedErrorMessage = MessageFormat.format(this.resources.getString("instrument.notFound"), unknownInstrumentId);
 		actualErrorMessage = getInstrumentResult.getMessages().get(0).getText();
 		assertEquals(expectedErrorMessage, actualErrorMessage);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of all instruments.
+	 */
+	public void testGetAllInstruments() {
+		WebServiceResult getInstrumentsResult;
+		InstrumentArray instruments;
+		Instrument instrument;
+		
+		//Get the instruments.
+		InstrumentService service = new InstrumentService();
+		getInstrumentsResult = service.getInstruments();
+		instruments = (InstrumentArray) getInstrumentsResult.getData();
+		
+		//Assure no error message exists
+		assertTrue(WebServiceTools.resultContainsErrorMessage(getInstrumentsResult) == false);
+		
+		//Check if two instruments are returned.
+		assertEquals(2, instruments.getInstruments().size());
+		
+		//Check all instruments by each attribute.
+		instrument = instruments.getInstruments().get(0);
+		assertEquals(this.appleStock.getId(), instrument.getId());
+		assertEquals(this.appleStock.getSymbol(), instrument.getSymbol());
+		assertEquals(this.appleStock.getName(), instrument.getName());
+		assertEquals(this.appleStock.getStockExchange(), instrument.getStockExchange());
+		assertEquals(this.appleStock.getType(), instrument.getType());
+		
+		instrument = instruments.getInstruments().get(1);
+		assertEquals(this.microsoftStock.getId(), instrument.getId());
+		assertEquals(this.microsoftStock.getSymbol(), instrument.getSymbol());
+		assertEquals(this.microsoftStock.getName(), instrument.getName());
+		assertEquals(this.microsoftStock.getStockExchange(), instrument.getStockExchange());
+		assertEquals(this.microsoftStock.getType(), instrument.getType());
 	}
 }

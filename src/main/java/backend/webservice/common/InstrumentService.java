@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
 import backend.model.instrument.Instrument;
+import backend.model.instrument.InstrumentArray;
 import backend.model.webservice.WebServiceMessage;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
@@ -74,5 +75,28 @@ public class InstrumentService {
 		}
 		
 		return getInstrumentResult;
+	}
+	
+	
+	/**
+	 * Provides a list of all instruments.
+	 * 
+	 * @return A list of all instruments.
+	 */
+	public WebServiceResult getInstruments() {
+		InstrumentArray instruments = new InstrumentArray();
+		WebServiceResult getInstrumentsResult = new WebServiceResult(null);
+		
+		try {
+			instruments.setInstruments(this.instrumentDAO.getInstruments());
+			getInstrumentsResult.setData(instruments);
+		} catch (Exception e) {
+			getInstrumentsResult.addMessage(new WebServiceMessage(
+					WebServiceMessageType.E, this.resources.getString("instrument.getInstrumentsError")));
+			
+			logger.error(this.resources.getString("instrument.getInstrumentsError"), e);
+		}
+		
+		return getInstrumentsResult;
 	}
 }

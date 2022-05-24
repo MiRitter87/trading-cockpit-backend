@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
+import backend.model.instrument.InstrumentArray;
 import backend.model.priceAlert.PriceAlertArray;
 
 /**
@@ -16,7 +17,7 @@ import backend.model.priceAlert.PriceAlertArray;
  * @author Michael
  *
  */
-@XmlSeeAlso({PriceAlertArray.class})
+@XmlSeeAlso({PriceAlertArray.class, InstrumentArray.class})
 public class WebServiceResult {
 	/**
 	 * A list of messages.

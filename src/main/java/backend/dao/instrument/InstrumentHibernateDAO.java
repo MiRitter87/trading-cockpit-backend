@@ -4,6 +4,10 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 import backend.exception.ObjectUnchangedException;
 import backend.model.instrument.Instrument;
@@ -74,8 +78,32 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 	
 	@Override
 	public List<Instrument> getInstruments() throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		List<Instrument> instruments = null;
+		EntityManager entityManager = this.sessionFactory.createEntityManager();
+		entityManager.getTransaction().begin();
+		
+		try {
+			CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+			CriteriaQuery<Instrument> criteriaQuery = criteriaBuilder.createQuery(Instrument.class);
+			Root<Instrument> criteria = criteriaQuery.from(Instrument.class);
+			criteriaQuery.select(criteria);
+			criteriaQuery.orderBy(criteriaBuilder.asc(criteria.get("id")));	//Order by id ascending
+			TypedQuery<Instrument> typedQuery = entityManager.createQuery(criteriaQuery);
+			instruments = typedQuery.getResultList();
+			
+			entityManager.getTransaction().commit();			
+		}
+		catch(Exception exception) {
+			//If something breaks a rollback is necessary.
+			if(entityManager.getTransaction().isActive())
+				entityManager.getTransaction().rollback();
+			throw exception;
+		}
+		finally {
+			entityManager.close();			
+		}
+		
+		return instruments;
 	}
 
 	
