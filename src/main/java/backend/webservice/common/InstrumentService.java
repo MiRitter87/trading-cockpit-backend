@@ -37,7 +37,7 @@ public class InstrumentService {
 	
 	
 	/**
-	 * Initializes the instrumnet service.
+	 * Initializes the instrument service.
 	 */
 	public InstrumentService() {
 		this.instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
@@ -135,5 +135,43 @@ public class InstrumentService {
 		}
 		
 		return deleteInstrumentResult;
+	}
+	
+	
+	/**
+	 * Updates an existing instrument.
+	 * 
+	 * @param instrument The instrument to be updated.
+	 * @return The result of the update function.
+	 */
+	public WebServiceResult updateInstrument(final Instrument instrument) {
+		WebServiceResult updateInstrumentResult = new WebServiceResult(null);
+		
+//		//Validation of the given instrument.
+//		try {
+//			instrument.validate();
+//		} catch (Exception validationException) {
+//			updateInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, validationException.getMessage()));
+//			return updatePriceAlertResult;
+//		}
+		
+		//Update price alert if validation is successful.
+		try {
+			this.instrumentDAO.updateInstrument(instrument);
+			updateInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.S, 
+					MessageFormat.format(this.resources.getString("instrument.updateSuccess"), instrument.getId())));
+		} 
+//		catch(ObjectUnchangedException objectUnchangedException) {
+//			updatePriceAlertResult.addMessage(new WebServiceMessage(WebServiceMessageType.I, 
+//					MessageFormat.format(this.resources.getString("priceAlert.updateUnchanged"), priceAlert.getId())));
+//		}
+		catch (Exception e) {
+			updateInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
+					MessageFormat.format(this.resources.getString("instrument.updateError"), instrument.getId())));
+			
+			logger.error(MessageFormat.format(this.resources.getString("instrument.updateError"), instrument.getId()), e);
+		}
+		
+		return updateInstrumentResult;
 	}
 }

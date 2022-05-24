@@ -122,7 +122,14 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 	
 	@Override
 	public void updateInstrument(Instrument instrument) throws ObjectUnchangedException, Exception {
-		// TODO Auto-generated method stub
-
+		EntityManager entityManager;
+		
+		//this.checkPriceAlertDataChanged(priceAlert);
+		
+		entityManager = this.sessionFactory.createEntityManager();
+		entityManager.getTransaction().begin();
+		entityManager.merge(instrument);
+		entityManager.getTransaction().commit();
+		entityManager.close();
 	}
 }

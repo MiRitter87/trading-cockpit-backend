@@ -312,4 +312,34 @@ public class InstrumentServiceTest {
 		actualErrorMessage = deleteInstrumentResult.getMessages().get(0).getText();
 		assertEquals(expectedErrorMessage, actualErrorMessage);
 	}
+	
+	
+	@Test
+	/**
+	 * Tests updating an instrument with valid data.
+	 */
+	public void testUpdateValidInstrument() {
+		WebServiceResult updateInstrumentResult;
+		Instrument updatedInstrument;
+		InstrumentService service = new InstrumentService();
+		
+		//Update the name.
+		this.appleStock.setName("Apple Inc.");
+		updateInstrumentResult = service.updateInstrument(this.appleStock);
+		
+		//Assure no error message exists
+		assertTrue(WebServiceTools.resultContainsErrorMessage(updateInstrumentResult) == false);
+		
+		//There should be a success message
+		assertTrue(updateInstrumentResult.getMessages().size() == 1);
+		assertTrue(updateInstrumentResult.getMessages().get(0).getType() == WebServiceMessageType.S);
+		
+		//Retrieve the updated instrument and check if the changes have been persisted.
+		try {
+			updatedInstrument = instrumentDAO.getInstrument(this.appleStock.getId());
+			assertEquals(this.appleStock.getName(), updatedInstrument.getName());
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
 }
