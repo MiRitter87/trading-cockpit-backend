@@ -595,7 +595,7 @@ public class PriceAlertServiceTest {
 		assertTrue(addPriceAlertResult.getMessages().size() == 1);
 		assertTrue(addPriceAlertResult.getMessages().get(0).getType() == WebServiceMessageType.E);
 		
-		//The new account should not have been persisted
+		//The new price alert should not have been persisted
 		assertNull(newPriceAlert.getId());
 	}
 }

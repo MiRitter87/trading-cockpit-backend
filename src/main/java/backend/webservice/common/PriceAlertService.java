@@ -131,7 +131,7 @@ public class PriceAlertService {
 			addPriceAlertResult.setData(priceAlert.getId());
 		} catch (Exception e) {
 			addPriceAlertResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, this.resources.getString("priceAlert.addError")));
-			logger.error(this.resources.getString("account.addError"), e);
+			logger.error(this.resources.getString("priceAlert.addError"), e);
 		}
 		
 		return addPriceAlertResult;

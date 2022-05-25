@@ -448,4 +448,30 @@ public class InstrumentServiceTest {
 			}
 		}		
 	}
+	
+	
+	@Test
+	/**
+	 * Tests adding of an invalid instrument.
+	 */
+	public void testAddInvalidInstrument() {
+		Instrument newInstrument = new Instrument();
+		WebServiceResult addInstrumentResult;
+		InstrumentService service = new InstrumentService();
+		
+		//Define the new instrument without a type.
+		newInstrument.setSymbol("TSLA");
+		newInstrument.setName("Tesla Inc.");
+		newInstrument.setStockExchange(StockExchange.NYSE);
+		
+		//Add a new instrument to the database via WebService
+		addInstrumentResult = service.addInstrument(newInstrument);
+		
+		//There should be a return message of type E.
+		assertTrue(addInstrumentResult.getMessages().size() == 1);
+		assertTrue(addInstrumentResult.getMessages().get(0).getType() == WebServiceMessageType.E);
+		
+		//The new instrument should not have been persisted
+		assertNull(newInstrument.getId());
+	}
 }

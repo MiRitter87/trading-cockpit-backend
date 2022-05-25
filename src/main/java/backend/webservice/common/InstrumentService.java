@@ -112,12 +112,12 @@ public class InstrumentService {
 		WebServiceResult addInstrumentResult = new WebServiceResult();
 		
 		//Validate the given instrument.
-//		try {
-//			priceAlert.validate();
-//		} catch (Exception validationException) {
-//			addPriceAlertResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, validationException.getMessage()));
-//			return addPriceAlertResult;
-//		}
+		try {
+			instrument.validate();
+		} catch (Exception validationException) {
+			addInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, validationException.getMessage()));
+			return addInstrumentResult;
+		}
 		
 		//Insert instrument if validation is successful.
 		try {
@@ -126,7 +126,7 @@ public class InstrumentService {
 			addInstrumentResult.setData(instrument.getId());
 		} catch (Exception e) {
 			addInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, this.resources.getString("instrument.addError")));
-			logger.error(this.resources.getString("account.addError"), e);
+			logger.error(this.resources.getString("instrument.addError"), e);
 		}
 		
 		return addInstrumentResult;
