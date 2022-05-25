@@ -548,7 +548,7 @@ public class PriceAlertServiceTest {
 		assertTrue(addPriceAlertResult.getData() instanceof Integer);
 		newPriceAlert.setId((Integer) addPriceAlertResult.getData());
 		
-		//Read the persisted account via DAO
+		//Read the persisted price alert via DAO
 		try {
 			adddedPriceAlert = priceAlertDAO.getPriceAlert(newPriceAlert.getId());
 			

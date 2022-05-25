@@ -1,6 +1,7 @@
 package backend.webservice.common;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -390,5 +391,61 @@ public class InstrumentServiceTest {
 		expectedErrorMessage = MessageFormat.format(this.resources.getString("instrument.updateUnchanged"), this.microsoftStock.getId());
 		actualErrorMessage = updateInstrumentResult.getMessages().get(0).getText();
 		assertEquals(expectedErrorMessage, actualErrorMessage);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests adding of a new instrument.
+	 */
+	public void testAddValidInstrument() {
+		Instrument newInstrument = new Instrument();
+		Instrument adddedInstrument;
+		WebServiceResult addInstrumentResult;
+		InstrumentService service = new InstrumentService();
+		
+		//Define the new instrument.
+		newInstrument.setSymbol("TSLA");
+		newInstrument.setName("Tesla Inc.");
+		newInstrument.setStockExchange(StockExchange.NYSE);
+		newInstrument.setType(InstrumentType.STOCK);
+		
+		//Add the new instrument to the database via WebService
+		addInstrumentResult = service.addInstrument(newInstrument);
+		
+		//Assure no error message exists
+		assertTrue(WebServiceTools.resultContainsErrorMessage(addInstrumentResult) == false);
+		
+		//There should be a success message
+		assertTrue(addInstrumentResult.getMessages().size() == 1);
+		assertTrue(addInstrumentResult.getMessages().get(0).getType() == WebServiceMessageType.S);
+		
+		//The ID of the newly created price alert should be provided in the data part of the WebService return.
+		assertNotNull(addInstrumentResult.getData());
+		assertTrue(addInstrumentResult.getData() instanceof Integer);
+		newInstrument.setId((Integer) addInstrumentResult.getData());
+		
+		//Read the persisted instrument via DAO
+		try {
+			adddedInstrument = instrumentDAO.getInstrument(newInstrument.getId());
+			
+			//Check if the instrument read by the DAO equals the instrument inserted using the WebService in each attribute.
+			assertEquals(newInstrument.getId(), adddedInstrument.getId());
+			assertEquals(newInstrument.getSymbol(), adddedInstrument.getSymbol());
+			assertEquals(newInstrument.getName(), adddedInstrument.getName());
+			assertEquals(newInstrument.getStockExchange(), adddedInstrument.getStockExchange());
+			assertEquals(newInstrument.getType(), adddedInstrument.getType());
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+		finally {
+			//Delete the newly added price alert.
+			try {
+				instrumentDAO.deleteInstrument(newInstrument);
+			} 
+			catch (Exception e) {
+				fail(e.getMessage());
+			}
+		}		
 	}
 }

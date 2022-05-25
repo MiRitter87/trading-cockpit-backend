@@ -103,6 +103,37 @@ public class InstrumentService {
 	
 	
 	/**
+	 * Adds an instrument.
+	 * 
+	 * @param instrument The instrument to be added.
+	 * @return The result of the add function.
+	 */
+	public WebServiceResult addInstrument(final Instrument instrument) {
+		WebServiceResult addInstrumentResult = new WebServiceResult();
+		
+		//Validate the given instrument.
+//		try {
+//			priceAlert.validate();
+//		} catch (Exception validationException) {
+//			addPriceAlertResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, validationException.getMessage()));
+//			return addPriceAlertResult;
+//		}
+		
+		//Insert instrument if validation is successful.
+		try {
+			this.instrumentDAO.insertInstrument(instrument);
+			addInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.S, this.resources.getString("instrument.addSuccess")));
+			addInstrumentResult.setData(instrument.getId());
+		} catch (Exception e) {
+			addInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, this.resources.getString("instrument.addError")));
+			logger.error(this.resources.getString("account.addError"), e);
+		}
+		
+		return addInstrumentResult;
+	}
+	
+	
+	/**
 	 * Deletes the instrument with the given id.
 	 * 
 	 * @param id The id of the instrument to be deleted.
