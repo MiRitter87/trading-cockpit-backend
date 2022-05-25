@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 
 import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
+import backend.exception.ObjectUnchangedException;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentArray;
 import backend.model.webservice.WebServiceMessage;
@@ -155,16 +156,16 @@ public class InstrumentService {
 			return updateInstrumentResult;
 		}
 		
-		//Update price alert if validation is successful.
+		//Update instrument if validation is successful.
 		try {
 			this.instrumentDAO.updateInstrument(instrument);
 			updateInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.S, 
 					MessageFormat.format(this.resources.getString("instrument.updateSuccess"), instrument.getId())));
 		} 
-//		catch(ObjectUnchangedException objectUnchangedException) {
-//			updatePriceAlertResult.addMessage(new WebServiceMessage(WebServiceMessageType.I, 
-//					MessageFormat.format(this.resources.getString("priceAlert.updateUnchanged"), priceAlert.getId())));
-//		}
+		catch(ObjectUnchangedException objectUnchangedException) {
+			updateInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.I, 
+					MessageFormat.format(this.resources.getString("instrument.updateUnchanged"), instrument.getId())));
+		}
 		catch (Exception e) {
 			updateInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
 					MessageFormat.format(this.resources.getString("instrument.updateError"), instrument.getId())));

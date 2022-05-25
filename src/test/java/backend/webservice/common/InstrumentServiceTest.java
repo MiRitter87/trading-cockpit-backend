@@ -368,4 +368,27 @@ public class InstrumentServiceTest {
 		actualErrorMessage = updateInstrumentResult.getMessages().get(0).getText();
 		assertEquals(expectedErrorMessage, actualErrorMessage);
 	}
+	
+	
+	@Test
+	/**
+	 * Tests updating an instrument without changing any data.
+	 */
+	public void testUpdateUnchangedInstrument() {
+		WebServiceResult updateInstrumentResult;
+		InstrumentService service = new InstrumentService();
+		String actualErrorMessage, expectedErrorMessage;
+		
+		//Update instrument without changing any data.
+		updateInstrumentResult = service.updateInstrument(this.microsoftStock);
+		
+		//There should be a return message of type I
+		assertTrue(updateInstrumentResult.getMessages().size() == 1);
+		assertTrue(updateInstrumentResult.getMessages().get(0).getType() == WebServiceMessageType.I);
+		
+		//A proper message should be provided.
+		expectedErrorMessage = MessageFormat.format(this.resources.getString("instrument.updateUnchanged"), this.microsoftStock.getId());
+		actualErrorMessage = updateInstrumentResult.getMessages().get(0).getText();
+		assertEquals(expectedErrorMessage, actualErrorMessage);
+	}
 }

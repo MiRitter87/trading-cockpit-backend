@@ -124,12 +124,27 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 	public void updateInstrument(Instrument instrument) throws ObjectUnchangedException, Exception {
 		EntityManager entityManager;
 		
-		//this.checkPriceAlertDataChanged(priceAlert);
+		this.checkInstrumentDataChanged(instrument);
 		
 		entityManager = this.sessionFactory.createEntityManager();
 		entityManager.getTransaction().begin();
 		entityManager.merge(instrument);
 		entityManager.getTransaction().commit();
 		entityManager.close();
+	}
+	
+	
+	/**
+	 * Checks if the data of the given instrument differ from the instrument that is persisted at database level.
+	 * 
+	 * @param instrument The instrument to be checked.
+	 * @throws ObjectUnchangedException In case the instrument has not been changed.
+	 * @throws Exception In case an error occurred during determination of the instrument stored at the database.
+	 */
+	private void checkInstrumentDataChanged(final Instrument instrument) throws ObjectUnchangedException, Exception {
+		Instrument databaseInstrument = this.getInstrument(instrument.getId());
+		
+		if(databaseInstrument.equals(instrument))
+			throw new ObjectUnchangedException();
 	}
 }
