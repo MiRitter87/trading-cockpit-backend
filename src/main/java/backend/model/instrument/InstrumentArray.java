@@ -21,7 +21,7 @@ public class InstrumentArray {
 	 * @return the instruments
 	 */
 	@XmlElementWrapper(name="instruments")
-    @XmlElement(name="isntrument")
+    @XmlElement(name="instrument")
 	public List<Instrument> getInstruments() {
 		return instruments;
 	}
