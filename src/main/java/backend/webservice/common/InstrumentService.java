@@ -201,6 +201,10 @@ public class InstrumentService {
 			updateInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.I, 
 					MessageFormat.format(this.resources.getString("instrument.updateUnchanged"), instrument.getId())));
 		}
+		catch (DuplicateInstrumentException duplicateInstrumentException) {
+			updateInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
+					MessageFormat.format(this.resources.getString("instrument.updateDuplicate"), instrument.getSymbol(), instrument.getStockExchange())));
+		}
 		catch (Exception e) {
 			updateInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
 					MessageFormat.format(this.resources.getString("instrument.updateError"), instrument.getId())));

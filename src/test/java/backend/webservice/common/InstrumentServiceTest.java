@@ -396,6 +396,42 @@ public class InstrumentServiceTest {
 	
 	@Test
 	/**
+	 * Tests updating an instrument where the update causes a duplicate instrument.
+	 */
+	public void testUpdateCreatingDuplicate() {
+		Instrument databaseInstrument;
+		WebServiceResult updateInstrumentResult;
+		InstrumentService service = new InstrumentService();
+		String actualErrorMessage, expectedErrorMessage;
+		
+		//Change an existing instrument in a way that a duplicate instrument will be created.
+		this.microsoftStock.setSymbol("AAPL");
+		
+		//Update the instrument at the database via WebService.
+		updateInstrumentResult = service.updateInstrument(this.microsoftStock);
+		
+		//There should be a return message of type E.
+		assertTrue(updateInstrumentResult.getMessages().size() == 1);
+		assertTrue(updateInstrumentResult.getMessages().get(0).getType() == WebServiceMessageType.E);
+		
+		//A proper message should be provided.
+		expectedErrorMessage = MessageFormat.format(this.resources.getString("instrument.updateDuplicate"), 
+				this.appleStock.getSymbol(), this.appleStock.getStockExchange());
+		actualErrorMessage = updateInstrumentResult.getMessages().get(0).getText();
+		assertEquals(expectedErrorMessage, actualErrorMessage);
+		
+		//The symbol change should not have been persisted.
+		try {
+			databaseInstrument = instrumentDAO.getInstrument(this.microsoftStock.getId());
+			assertEquals("MSFT", databaseInstrument.getSymbol());
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	@Test
+	/**
 	 * Tests adding of a new instrument.
 	 */
 	public void testAddValidInstrument() {

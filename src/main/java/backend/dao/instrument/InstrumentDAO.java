@@ -54,7 +54,9 @@ public interface InstrumentDAO {
 	 * Updates the given instrument.
 	 * 
 	 * @param instrument The instrument to be updated.
+	 * @throws ObjectUnchangedException In case the data of the instrument have not been changed.
+	 * @throws DuplicateInstrumentException In case the instrument already exists.
 	 * @throws Exception Instrument update failed.
 	 */
-	void updateInstrument(final Instrument instrument) throws ObjectUnchangedException, Exception;
+	void updateInstrument(final Instrument instrument) throws ObjectUnchangedException, DuplicateInstrumentException, Exception;
 }

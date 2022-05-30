@@ -37,7 +37,7 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 	public void insertInstrument(Instrument instrument) throws DuplicateInstrumentException, Exception {
 		EntityManager entityManager = this.sessionFactory.createEntityManager();
 		
-		this.checkInstrumentExists(instrument);
+		this.checkInstrumentExistsCreate(instrument);
 		
 		entityManager.getTransaction().begin();
 		
@@ -128,10 +128,11 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 
 	
 	@Override
-	public void updateInstrument(Instrument instrument) throws ObjectUnchangedException, Exception {
+	public void updateInstrument(Instrument instrument) throws ObjectUnchangedException, DuplicateInstrumentException, Exception {
 		EntityManager entityManager;
 		
 		this.checkInstrumentDataChanged(instrument);
+		this.checkInstrumentExistsUpdate(instrument);
 		
 		entityManager = this.sessionFactory.createEntityManager();
 		entityManager.getTransaction().begin();
@@ -158,15 +159,32 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 	
 	/**
 	 * Checks if the database already contains an instrument with the given symbol / stock exchange combination.
+	 * This check is used during instrument creation.
 	 * 
 	 * @param instrument The instrument to be checked.
 	 * @throws DuplicateInstrumentException In case an instrument already exists.
 	 * @throws Exception In case an error occurred during determination of the instrument stored at the database.
 	 */
-	private void checkInstrumentExists(final Instrument instrument) throws DuplicateInstrumentException, Exception {
+	private void checkInstrumentExistsCreate(final Instrument instrument) throws DuplicateInstrumentException, Exception {
 		Instrument databaseInstrument = this.getInstrument(instrument.getSymbol(), instrument.getStockExchange());
 		
 		if(databaseInstrument != null)
+			throw new DuplicateInstrumentException(databaseInstrument.getSymbol(), databaseInstrument.getStockExchange());
+	}
+	
+	
+	/**
+	 * Checks if the database already contains an instrument with the given symbol / stock exchange combination.
+	 * This check is used during instrument update.
+	 * 
+	 * @param instrument The instrument to be checked.
+	 * @throws DuplicateInstrumentException In case an instrument already exists.
+	 * @throws Exception In case an error occurred during determination of the instrument stored at the database.
+	 */
+	private void checkInstrumentExistsUpdate(final Instrument instrument) throws DuplicateInstrumentException, Exception {
+		Instrument databaseInstrument = this.getInstrument(instrument.getSymbol(), instrument.getStockExchange());
+		
+		if(databaseInstrument != null && !databaseInstrument.getId().equals(instrument.getId()))
 			throw new DuplicateInstrumentException(databaseInstrument.getSymbol(), databaseInstrument.getStockExchange());
 	}
 	
