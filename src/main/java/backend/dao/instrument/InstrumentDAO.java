@@ -2,6 +2,7 @@ package backend.dao.instrument;
 
 import java.util.List;
 
+import backend.exception.DuplicateInstrumentException;
 import backend.exception.ObjectUnchangedException;
 import backend.model.instrument.Instrument;
 
@@ -15,9 +16,10 @@ public interface InstrumentDAO {
 	 * Inserts an instrument.
 	 * 
 	 * @param intrument The instrument to be inserted.
+	 * @throws DuplicateInstrumentException In case the instrument already exists.
 	 * @throws Exception Insertion failed.
 	 */
-	void insertInstrument(final Instrument instrument) throws Exception;
+	void insertInstrument(final Instrument instrument) throws DuplicateInstrumentException, Exception;
 	
 	
 	/**

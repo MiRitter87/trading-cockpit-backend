@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 
 import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
+import backend.exception.DuplicateInstrumentException;
 import backend.exception.ObjectUnchangedException;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentArray;
@@ -124,6 +125,9 @@ public class InstrumentService {
 			this.instrumentDAO.insertInstrument(instrument);
 			addInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.S, this.resources.getString("instrument.addSuccess")));
 			addInstrumentResult.setData(instrument.getId());
+		} catch (DuplicateInstrumentException duplicateInstrumentException) {
+			addInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
+					MessageFormat.format(this.resources.getString("instrument.createDuplicate"), instrument.getSymbol(), instrument.getStockExchange())));
 		} catch (Exception e) {
 			addInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, this.resources.getString("instrument.addError")));
 			logger.error(this.resources.getString("instrument.addError"), e);

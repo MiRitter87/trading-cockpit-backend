@@ -1,5 +1,6 @@
 package backend.dao.instrument;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -7,9 +8,12 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import backend.exception.DuplicateInstrumentException;
 import backend.exception.ObjectUnchangedException;
+import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 
 public class InstrumentHibernateDAO implements InstrumentDAO {
@@ -30,8 +34,11 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 
 	
 	@Override
-	public void insertInstrument(Instrument instrument) throws Exception {
+	public void insertInstrument(Instrument instrument) throws DuplicateInstrumentException, Exception {
 		EntityManager entityManager = this.sessionFactory.createEntityManager();
+		
+		this.checkInstrumentExists(instrument);
+		
 		entityManager.getTransaction().begin();
 		
 		try {
@@ -146,5 +153,66 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 		
 		if(databaseInstrument.equals(instrument))
 			throw new ObjectUnchangedException();
+	}
+	
+	
+	/**
+	 * Checks if the database already contains an instrument with the given symbol / stock exchange combination.
+	 * 
+	 * @param instrument The instrument to be checked.
+	 * @throws DuplicateInstrumentException In case an instrument already exists.
+	 * @throws Exception In case an error occurred during determination of the instrument stored at the database.
+	 */
+	private void checkInstrumentExists(final Instrument instrument) throws DuplicateInstrumentException, Exception {
+		Instrument databaseInstrument = this.getInstrument(instrument.getSymbol(), instrument.getStockExchange());
+		
+		if(databaseInstrument != null)
+			throw new DuplicateInstrumentException(databaseInstrument.getSymbol(), databaseInstrument.getStockExchange());
+	}
+	
+	
+	/**
+	 * Gets the instrument with the given symbol / stock exchange combination.
+	 * 
+	 * @param symbol The symbol.
+	 * @param stockExchange The stock exchange.
+	 * @return The instrument.
+	 * @throws Exception In case an error occurred during determination of the instrument stored at the database.
+	 */
+	private Instrument getInstrument(final String symbol, final StockExchange stockExchange) throws Exception {
+		List<Instrument> instruments = null;
+		EntityManager entityManager = this.sessionFactory.createEntityManager();
+		entityManager.getTransaction().begin();
+		
+		try {
+			List<Predicate> predicates = new ArrayList<Predicate>();
+			CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+			CriteriaQuery<Instrument> criteriaQuery = criteriaBuilder.createQuery(Instrument.class);
+			Root<Instrument> criteria = criteriaQuery.from(Instrument.class);
+			criteriaQuery.select(criteria);
+			
+			predicates.add(criteriaBuilder.equal(criteria.get("symbol"), symbol));
+			predicates.add(criteriaBuilder.equal(criteria.get("stockExchange"), stockExchange));
+			criteriaQuery.where(predicates.toArray(new Predicate[predicates.size()]));
+			
+			TypedQuery<Instrument> typedQuery = entityManager.createQuery(criteriaQuery);
+			instruments = typedQuery.getResultList();
+			
+			entityManager.getTransaction().commit();			
+		}
+		catch(Exception exception) {
+			//If something breaks a rollback is necessary.
+			if(entityManager.getTransaction().isActive())
+				entityManager.getTransaction().rollback();
+			throw exception;
+		}
+		finally {
+			entityManager.close();			
+		}
+		
+		if(instruments.size() == 0)
+			return null;
+		else
+			return instruments.get(0);
 	}
 }

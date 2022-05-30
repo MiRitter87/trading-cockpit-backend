@@ -474,4 +474,38 @@ public class InstrumentServiceTest {
 		//The new instrument should not have been persisted
 		assertNull(newInstrument.getId());
 	}
+	
+	
+	@Test
+	/**
+	 * Tests adding an instrument which already exists (Symbol / Stock Exchange combination has to be distinct).
+	 */
+	public void testAddDuplicateInstrument() {
+		Instrument newInstrument = new Instrument();
+		WebServiceResult addInstrumentResult;
+		InstrumentService service = new InstrumentService();
+		String actualErrorMessage, expectedErrorMessage;
+		
+		//Define the new instrument without a type.
+		newInstrument.setSymbol("AAPL");
+		newInstrument.setName("Apple Computer");
+		newInstrument.setStockExchange(StockExchange.NYSE);
+		newInstrument.setType(InstrumentType.STOCK);
+		
+		//Add a new instrument to the database via WebService.
+		addInstrumentResult = service.addInstrument(newInstrument);
+		
+		//There should be a return message of type E.
+		assertTrue(addInstrumentResult.getMessages().size() == 1);
+		assertTrue(addInstrumentResult.getMessages().get(0).getType() == WebServiceMessageType.E);
+		
+		//A proper message should be provided.
+		expectedErrorMessage = MessageFormat.format(this.resources.getString("instrument.createDuplicate"), 
+				this.appleStock.getSymbol(), this.appleStock.getStockExchange());
+		actualErrorMessage = addInstrumentResult.getMessages().get(0).getText();
+		assertEquals(expectedErrorMessage, actualErrorMessage);
+		
+		//The new instrument should not have been persisted.
+		assertNull(newInstrument.getId());
+	}
 }
