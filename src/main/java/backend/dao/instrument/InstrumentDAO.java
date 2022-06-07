@@ -2,8 +2,7 @@ package backend.dao.instrument;
 
 import java.util.List;
 
-import backend.exception.DuplicateInstrumentException;
-import backend.exception.ObjectUnchangedException;
+import backend.dao.ObjectUnchangedException;
 import backend.model.instrument.Instrument;
 
 /**

@@ -1,4 +1,4 @@
-package backend.exception;
+package backend.dao.instrument;
 
 import backend.model.StockExchange;
 

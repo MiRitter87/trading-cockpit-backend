@@ -1,4 +1,4 @@
-package backend.exception;
+package backend.dao;
 
 /**
  * Exception that indicates that the data of an object have not been changed.
