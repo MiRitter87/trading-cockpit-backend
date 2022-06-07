@@ -122,12 +122,23 @@ public class List {
 	
 	
 	/**
+	 * Adds an instrument to the list.
+	 * 
+	 * @param instrument The instrument to be added.
+	 */
+	public void addInstrument(final Instrument instrument) {
+		this.instruments.add(instrument);
+	}
+	
+	
+	/**
 	 * Validates the list.
 	 * 
 	 * @throws Exception In case a general validation error occurred.
 	 */
 	public void validate() throws Exception {
 		this.validateAnnotations();
+		this.validateAdditionalCharacteristics();
 	}
 	
 	
@@ -147,5 +158,26 @@ public class List {
 		for(ConstraintViolation<List> violation:violations) {
 			throw new Exception(violation.getMessage());
 		}
+	}
+	
+	
+	/**
+	 * Validates additional characteristics of the instrument besides annotations.
+	 * 
+	 * @throws NoItemsException Indicates that the instrument has no items defined.
+	 */
+	private void validateAdditionalCharacteristics() throws NoItemsException {
+		this.validateItemsDefined();
+	}
+	
+	
+	/**
+	 * Checks if items are defined.
+	 * 
+	 * @throws NoItemsException If no items are defined.
+	 */
+	private void validateItemsDefined() throws NoItemsException {
+		if(this.instruments == null || this.instruments.size() == 0)
+			throw new NoItemsException();
 	}
 }

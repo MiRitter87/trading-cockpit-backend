@@ -7,6 +7,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import backend.model.StockExchange;
+import backend.model.instrument.Instrument;
+import backend.model.instrument.InstrumentType;
 import backend.tools.test.ValidationMessageProvider;
 
 /**
@@ -20,17 +23,30 @@ public class ListTest {
 	 */
 	private List list;
 	
+	/**
+	 * The instrument under test.
+	 */
+	private Instrument instrument;
+	
 	
 	@BeforeEach
 	/**
 	 * Tasks to be performed before each test is run.
 	 */
 	private void setUp() {
+		this.instrument = new Instrument();
+		this.instrument.setId(Integer.valueOf(1));
+		this.instrument.setSymbol("AAPL");
+		this.instrument.setType(InstrumentType.STOCK);
+		this.instrument.setStockExchange(StockExchange.NYSE);
+		this.instrument.setName("Apple");
+		
 		this.list = new List();
 		this.list.setId(Integer.valueOf(1));
 		this.list.setName("DJI");
 		this.list.setName("Dow Jones Industrial Average");
 		this.list.setDescription("All stocks of the Dow Jones Industrial Average Index.");
+		this.list.addInstrument(this.instrument);
 	}
 	
 	
@@ -40,6 +56,7 @@ public class ListTest {
 	 */
 	private void tearDown() {
 		this.list = null;
+		this.instrument = null;
 	}
 	
 	
@@ -193,5 +210,20 @@ public class ListTest {
 	}
 	
 	
-	
+	@Test
+	/**
+	 * Tests validation of a list that has no items given.
+	 */
+	public void testNoItemsGiven() {
+		this.list.getInstruments().clear();
+		
+		try {
+			this.list.validate();
+			fail("Validation should have failed because list has no items defined.");
+		} catch (NoItemsException expected) {
+			//All is well.
+		} catch (Exception e) {
+			fail("No general exception should have occurred. Just the NoItemsException.");
+		}
+	}
 }
