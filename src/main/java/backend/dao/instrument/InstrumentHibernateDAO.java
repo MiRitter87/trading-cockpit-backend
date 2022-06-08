@@ -15,6 +15,11 @@ import backend.dao.ObjectUnchangedException;
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 
+/**
+ * Provides access to instrument database persistence using Hibernate.
+ * 
+ * @author Michael
+ */
 public class InstrumentHibernateDAO implements InstrumentDAO {
 	/**
 	 * Factory for database session.
