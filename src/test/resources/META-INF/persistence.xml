@@ -5,6 +5,8 @@
     <persistence-unit name="my-persistence-unit">
     	<!-- The classes that are persisted -->
         <class>backend.model.priceAlert.PriceAlert</class>
+        <class>backend.model.instrument.Instrument</class>
+        <class>backend.model.list.List</class>
         
         <!-- Several configuration properties -->
         <properties>

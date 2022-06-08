@@ -3,6 +3,16 @@ package backend.model.list;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -23,16 +33,23 @@ import backend.model.instrument.Instrument;
  * 
  * @author Michael
  */
+@Table(name="LIST")
+@Entity
+@SequenceGenerator(name = "listSequence", initialValue = 1, allocationSize = 1)
 public class List {
 	/**
 	 * The ID.
 	 */
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "listSequence")
+	@Column(name="LIST_ID")
 	@Min(value = 1, message = "{list.id.min.message}")
 	private Integer id;
 	
 	/**
 	 * The name.
 	 */
+	@Column(name="NAME", length = 50)
 	@NotNull(message = "{list.name.notNull.message}")
 	@Size(min = 1, max = 50, message = "{list.name.size.message}")
 	private String name;
@@ -40,12 +57,17 @@ public class List {
 	/**
 	 * The description.
 	 */
+	@Column(name="DESCRIPTION", length = 250)
 	@Size(min = 0, max = 250, message = "{list.description.size.message}")
 	private String description;
 	
 	/**
 	 * The instruments of the list.
 	 */
+	@ManyToMany
+	@JoinTable(name = "LIST_INSTRUMENT", 
+    	joinColumns = { @JoinColumn(name = "LIST_ID") }, 
+    	inverseJoinColumns = { @JoinColumn(name = "INSTRUMENT_ID") })
 	private Set<Instrument> instruments;
 	
 	
