@@ -226,4 +226,22 @@ public class ListTest {
 			fail("No general exception should have occurred. Just the NoItemsException.");
 		}
 	}
+	
+	
+	@Test
+	/**
+	 * Tests validation of a list where duplicate instruments have been added.
+	 */
+	public void testListContainsDuplicateInstrument() {
+		Instrument duplicateInstrument = new Instrument();
+		duplicateInstrument.setId(Integer.valueOf(1));
+		duplicateInstrument.setSymbol("AAPL");
+		duplicateInstrument.setType(InstrumentType.STOCK);
+		duplicateInstrument.setStockExchange(StockExchange.NYSE);
+		duplicateInstrument.setName("Apple");
+		
+		this.list.addInstrument(duplicateInstrument);
+		
+		assertEquals(1, this.list.getInstruments().size());
+	}
 }
