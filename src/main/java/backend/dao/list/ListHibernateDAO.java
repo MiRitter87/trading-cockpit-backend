@@ -1,5 +1,9 @@
 package backend.dao.list;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
@@ -84,8 +88,20 @@ public class ListHibernateDAO implements ListDAO {
 	
 	@Override
 	public List getList(Integer id) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		EntityManager entityManager = this.sessionFactory.createEntityManager();
+		
+		//Use entity graphs to load data of referenced instrument instances.
+		EntityGraph<List> graph = entityManager.createEntityGraph(List.class);
+		graph.addAttributeNodes("instruments");
+		Map<String, Object> hints = new HashMap<String, Object>();
+		hints.put("javax.persistence.loadgraph", graph);
+		
+		entityManager.getTransaction().begin();
+		List list = entityManager.find(List.class, id, hints);
+		entityManager.getTransaction().commit();
+		entityManager.close();
+		
+		return list;
 	}
 
 	

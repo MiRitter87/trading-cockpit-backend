@@ -1,13 +1,17 @@
 package backend.webservice.common;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
@@ -16,6 +20,8 @@ import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.list.List;
+import backend.model.webservice.WebServiceResult;
+import backend.tools.WebServiceTools;
 
 /**
  * Tests the list service.
@@ -219,5 +225,61 @@ public class ListServiceTest {
 		list.addInstrument(this.microsoftStock);
 		
 		return list;
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of a list.
+	 */
+	public void testGetList() {
+		WebServiceResult getListResult;
+		List list;
+		Instrument instrument;
+		Iterator<Instrument> instrumentIterator;
+		
+		//Get the list.
+		ListService service = new ListService();
+		getListResult = service.getList(this.multiInstrumentList.getId());
+		
+		//Assure no error message exists.
+		assertTrue(WebServiceTools.resultContainsErrorMessage(getListResult) == false);
+		
+		//Assure that a list is returned.
+		assertTrue(getListResult.getData() instanceof List);
+		
+		list = (List) getListResult.getData();
+		
+		//Check each attribute of the list.
+		assertEquals(this.multiInstrumentList.getId(), list.getId());
+		assertEquals(this.multiInstrumentList.getName(), list.getName());
+		assertEquals(this.multiInstrumentList.getDescription(), list.getDescription());
+		
+		//The returned list should have two instruments.
+		assertEquals(this.multiInstrumentList.getInstruments().size(), list.getInstruments().size());
+		
+		//Check the attributes of the instruments.
+		instrumentIterator = list.getInstruments().iterator();
+		while(instrumentIterator.hasNext()) {
+			instrument = instrumentIterator.next();
+			
+			if(instrument.getId() == this.amazonStock.getId()) {
+				assertEquals(this.amazonStock.getId(), instrument.getId());
+				assertEquals(this.amazonStock.getSymbol(), instrument.getSymbol());
+				assertEquals(this.amazonStock.getName(), instrument.getName());
+				assertEquals(this.amazonStock.getStockExchange(), instrument.getStockExchange());
+				assertEquals(this.amazonStock.getType(), instrument.getType());
+			}
+			else if(instrument.getId() == this.microsoftStock.getId()) {
+				assertEquals(this.microsoftStock.getId(), instrument.getId());
+				assertEquals(this.microsoftStock.getSymbol(), instrument.getSymbol());
+				assertEquals(this.microsoftStock.getName(), instrument.getName());
+				assertEquals(this.microsoftStock.getStockExchange(), instrument.getStockExchange());
+				assertEquals(this.microsoftStock.getType(), instrument.getType());
+			}
+			else {
+				fail("The list contains an unrelated instrument.");
+			}
+		}
 	}
 }

@@ -177,7 +177,7 @@ public class InstrumentServiceTest {
 		
 		instrument = (Instrument) getInstrumentResult.getData();
 		
-		//Check each attribute of the price alert.
+		//Check each attribute of the instrument.
 		assertEquals(this.appleStock.getId(), instrument.getId());
 		assertEquals(this.appleStock.getSymbol(), instrument.getSymbol());
 		assertEquals(this.appleStock.getName(), instrument.getName());
