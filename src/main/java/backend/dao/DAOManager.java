@@ -8,6 +8,8 @@ import javax.persistence.Persistence;
 
 import backend.dao.instrument.InstrumentDAO;
 import backend.dao.instrument.InstrumentHibernateDAO;
+import backend.dao.list.ListDAO;
+import backend.dao.list.ListHibernateDAO;
 import backend.dao.priceAlert.PriceAlertDAO;
 import backend.dao.priceAlert.PriceAlertHibernateDAO;
 import backend.dao.stockQuote.StockQuoteDAO;
@@ -43,6 +45,11 @@ public class DAOManager implements Closeable {
 	 * DAO to access instruments.
 	 */
 	private InstrumentDAO instrumentDAO;
+	
+	/**
+	 * DAO to access lists.
+	 */
+	private ListDAO listDAO;
 	
 	
 	/**
@@ -113,6 +120,19 @@ public class DAOManager implements Closeable {
 			this.instrumentDAO = new InstrumentHibernateDAO(this.sessionFactory);
 		
 		return this.instrumentDAO;
+	}
+	
+	
+	/**
+	 * Returns a DAO to access list data.
+	 * 
+	 * @return The ListDAO.
+	 */
+	public ListDAO getListDAO() {
+		if(this.listDAO == null)
+			this.listDAO = new ListHibernateDAO(this.sessionFactory);
+		
+		return this.listDAO;
 	}
 
 	

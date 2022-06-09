@@ -90,7 +90,7 @@ public class InstrumentServiceTest {
 	 * Tasks to be performed after each test has been run.
 	 */
 	private void tearDown() {
-		this.deleteDummyPriceAlerts();
+		this.deleteDummyInstruments();
 	}
 	
 	
@@ -113,7 +113,7 @@ public class InstrumentServiceTest {
 	/**
 	 * Deletes the dummy instruments from the database.
 	 */
-	private void deleteDummyPriceAlerts() {
+	private void deleteDummyInstruments() {
 		try {
 			instrumentDAO.deleteInstrument(this.microsoftStock);
 			instrumentDAO.deleteInstrument(this.appleStock);
