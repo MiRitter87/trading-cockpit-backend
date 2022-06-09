@@ -1,11 +1,14 @@
 package backend.webservice.common;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.Iterator;
+import java.util.ResourceBundle;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -20,6 +23,7 @@ import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.list.List;
+import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
 import backend.tools.WebServiceTools;
 
@@ -29,6 +33,11 @@ import backend.tools.WebServiceTools;
  * @author Michael
  */
 public class ListServiceTest {
+	/**
+	 * Access to localized application resources.
+	 */
+	private ResourceBundle resources = ResourceBundle.getBundle("backend");	
+	
 	/**
 	 * DAO to access instrument data.
 	 */
@@ -281,5 +290,32 @@ public class ListServiceTest {
 				fail("The list contains an unrelated instrument.");
 			}
 		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of a list with an id that is unknown.
+	 */
+	public void testGetListWithUnknownId() {
+		WebServiceResult getListResult;
+		final Integer unknownListId = 0;
+		String expectedErrorMessage, actualErrorMessage;
+		
+		//Get the list.
+		ListService service = new ListService();
+		getListResult = service.getList(unknownListId);
+		
+		//Assure that no list is returned
+		assertNull(getListResult.getData());
+				
+		//There should be a return message of type E.
+		assertTrue(getListResult.getMessages().size() == 1);
+		assertTrue(getListResult.getMessages().get(0).getType() == WebServiceMessageType.E);
+		
+		//Verify the expected error message.
+		expectedErrorMessage = MessageFormat.format(this.resources.getString("list.notFound"), unknownListId);
+		actualErrorMessage = getListResult.getMessages().get(0).getText();
+		assertEquals(expectedErrorMessage, actualErrorMessage);
 	}
 }

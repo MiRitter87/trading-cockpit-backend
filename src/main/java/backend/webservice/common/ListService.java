@@ -61,9 +61,9 @@ public class ListService {
 				getListResult.setData(list);
 			}
 			else {
-//				//Instrument not found
-//				getInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
-//						MessageFormat.format(this.resources.getString("instrument.notFound"), id)));
+				//List not found
+				getListResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
+						MessageFormat.format(this.resources.getString("list.notFound"), id)));
 			}
 		}
 		catch (Exception e) {

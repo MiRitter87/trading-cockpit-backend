@@ -192,7 +192,7 @@ public class InstrumentServiceTest {
 	 */
 	public void testGetInstrumentWithUnknownId() {
 		WebServiceResult getInstrumentResult;
-		Integer unknownInstrumentId = 0;
+		final Integer unknownInstrumentId = 0;
 		String expectedErrorMessage, actualErrorMessage;
 		
 		//Get the instrument.
