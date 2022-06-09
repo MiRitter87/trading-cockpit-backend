@@ -6,6 +6,10 @@ import java.util.Map;
 import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 import backend.dao.ObjectUnchangedException;
 import backend.model.list.List;
@@ -81,8 +85,38 @@ public class ListHibernateDAO implements ListDAO {
 	
 	@Override
 	public java.util.List<List> getLists() throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		java.util.List<List> lists = null;
+		EntityManager entityManager = this.sessionFactory.createEntityManager();
+		
+		//Use entity graphs to load data of referenced Instrument instances.
+		EntityGraph<List> graph = entityManager.createEntityGraph(List.class);
+		graph.addAttributeNodes("instruments");
+		
+		entityManager.getTransaction().begin();
+		
+		try {
+			CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+			CriteriaQuery<List> criteriaQuery = criteriaBuilder.createQuery(List.class);
+			Root<List> criteria = criteriaQuery.from(List.class);
+			criteriaQuery.select(criteria);
+			criteriaQuery.orderBy(criteriaBuilder.asc(criteria.get("id")));	//Order by id ascending
+			TypedQuery<List> typedQuery = entityManager.createQuery(criteriaQuery);
+			typedQuery.setHint("javax.persistence.loadgraph", graph);	//Also fetch all instrument data.
+			lists = typedQuery.getResultList();
+			
+			entityManager.getTransaction().commit();			
+		}
+		catch(Exception exception) {
+			//If something breaks a rollback is necessary.
+			if(entityManager.getTransaction().isActive())
+				entityManager.getTransaction().rollback();
+			throw exception;
+		}
+		finally {
+			entityManager.close();			
+		}
+		
+		return lists;
 	}
 
 	

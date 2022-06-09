@@ -23,6 +23,7 @@ import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.list.List;
+import backend.model.list.ListArray;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
 import backend.tools.WebServiceTools;
@@ -272,14 +273,14 @@ public class ListServiceTest {
 		while(instrumentIterator.hasNext()) {
 			instrument = instrumentIterator.next();
 			
-			if(instrument.getId() == this.amazonStock.getId()) {
+			if(instrument.getId().equals(this.amazonStock.getId())) {
 				assertEquals(this.amazonStock.getId(), instrument.getId());
 				assertEquals(this.amazonStock.getSymbol(), instrument.getSymbol());
 				assertEquals(this.amazonStock.getName(), instrument.getName());
 				assertEquals(this.amazonStock.getStockExchange(), instrument.getStockExchange());
 				assertEquals(this.amazonStock.getType(), instrument.getType());
 			}
-			else if(instrument.getId() == this.microsoftStock.getId()) {
+			else if(instrument.getId().equals(this.microsoftStock.getId())) {
 				assertEquals(this.microsoftStock.getId(), instrument.getId());
 				assertEquals(this.microsoftStock.getSymbol(), instrument.getSymbol());
 				assertEquals(this.microsoftStock.getName(), instrument.getName());
@@ -317,5 +318,79 @@ public class ListServiceTest {
 		expectedErrorMessage = MessageFormat.format(this.resources.getString("list.notFound"), unknownListId);
 		actualErrorMessage = getListResult.getMessages().get(0).getText();
 		assertEquals(expectedErrorMessage, actualErrorMessage);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of all lists.
+	 */
+	public void testGetAllLists() {
+		WebServiceResult getListsResult;
+		ListArray lists;
+		List list;
+		Instrument instrument;
+		Iterator<Instrument> instrumentIterator;
+		
+		//Get the lists.
+		ListService service = new ListService();
+		getListsResult = service.getLists();
+		lists = (ListArray) getListsResult.getData();
+		
+		//Assure no error message exists
+		assertTrue(WebServiceTools.resultContainsErrorMessage(getListsResult) == false);
+		
+		//Check if two lists are returned.
+		assertEquals(2, lists.getLists().size());
+		
+		//Check all lists by each attribute.
+		//First list
+		list = lists.getLists().get(0);
+		assertEquals(this.singleInstrumentList.getId(), list.getId());
+		assertEquals(this.singleInstrumentList.getName(), list.getName());
+		assertEquals(this.singleInstrumentList.getDescription(), list.getDescription());
+		
+		//The list should have one instrument.
+		assertEquals(this.singleInstrumentList.getInstruments().size(), list.getInstruments().size());
+		
+		//Check the attributes of the instrument.
+		instrument = list.getInstruments().iterator().next();
+		assertEquals(this.amazonStock.getId(), instrument.getId());
+		assertEquals(this.amazonStock.getSymbol(), instrument.getSymbol());
+		assertEquals(this.amazonStock.getName(), instrument.getName());
+		assertEquals(this.amazonStock.getStockExchange(), instrument.getStockExchange());
+		assertEquals(this.amazonStock.getType(), instrument.getType());
+		
+		//Second list
+		list = lists.getLists().get(1);
+		assertEquals(this.multiInstrumentList.getId(), list.getId());
+		assertEquals(this.multiInstrumentList.getName(), list.getName());
+		assertEquals(this.multiInstrumentList.getDescription(), list.getDescription());
+		
+		//The list should have two instruments.
+		assertEquals(this.multiInstrumentList.getInstruments().size(), list.getInstruments().size());
+		
+		instrumentIterator = list.getInstruments().iterator();
+		while(instrumentIterator.hasNext()) {
+			instrument = instrumentIterator.next();
+			
+			if(instrument.getId().equals(this.amazonStock.getId())) {
+				assertEquals(this.amazonStock.getId(), instrument.getId());
+				assertEquals(this.amazonStock.getSymbol(), instrument.getSymbol());
+				assertEquals(this.amazonStock.getName(), instrument.getName());
+				assertEquals(this.amazonStock.getStockExchange(), instrument.getStockExchange());
+				assertEquals(this.amazonStock.getType(), instrument.getType());
+			}
+			else if(instrument.getId().equals(this.microsoftStock.getId())) {
+				assertEquals(this.microsoftStock.getId(), instrument.getId());
+				assertEquals(this.microsoftStock.getSymbol(), instrument.getSymbol());
+				assertEquals(this.microsoftStock.getName(), instrument.getName());
+				assertEquals(this.microsoftStock.getStockExchange(), instrument.getStockExchange());
+				assertEquals(this.microsoftStock.getType(), instrument.getType());
+			}
+			else {
+				fail("The list contains an unrelated instrument.");
+			}
+		}
 	}
 }

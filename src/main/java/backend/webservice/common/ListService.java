@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import backend.dao.DAOManager;
 import backend.dao.list.ListDAO;
 import backend.model.list.List;
+import backend.model.list.ListArray;
 import backend.model.webservice.WebServiceMessage;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
@@ -74,5 +75,28 @@ public class ListService {
 		}
 		
 		return getListResult;
+	}
+	
+	
+	/**
+	 * Provides a list of all lists.
+	 * 
+	 * @return A list of all lists.
+	 */
+	public WebServiceResult getLists() {
+		ListArray lists = new ListArray();
+		WebServiceResult getListsResult = new WebServiceResult(null);
+		
+		try {
+			lists.setLists(this.listDAO.getLists());
+			getListsResult.setData(lists);
+		} catch (Exception e) {
+			getListsResult.addMessage(new WebServiceMessage(
+					WebServiceMessageType.E, this.resources.getString("list.getListsError")));
+			
+			logger.error(this.resources.getString("list.getListsError"), e);
+		}
+		
+		return getListsResult;
 	}
 }
