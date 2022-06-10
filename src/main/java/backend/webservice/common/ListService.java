@@ -121,11 +121,11 @@ public class ListService {
 				deleteListResult.addMessage(new WebServiceMessage(WebServiceMessageType.S, 
 						MessageFormat.format(this.resources.getString("list.deleteSuccess"), id)));
 			}
-//			else {
-//				//Instrument not found.
-//				deleteInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
-//						MessageFormat.format(this.resources.getString("instrument.notFound"), id)));
-//			}
+			else {
+				//List not found.
+				deleteListResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
+						MessageFormat.format(this.resources.getString("list.notFound"), id)));
+			}
 		}
 		catch (Exception e) {
 			deleteListResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,

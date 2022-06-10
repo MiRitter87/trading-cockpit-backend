@@ -435,4 +435,28 @@ public class ListServiceTest {
 			}
 		}
 	}
+	
+	
+	@Test
+	/**
+	 * Tests deletion of a list with an unknown ID.
+	 */
+	public void testeDeleteListWithUnknownId() {
+		WebServiceResult deleteListResult;
+		final Integer unknownListId = 0;
+		String expectedErrorMessage, actualErrorMessage;
+		
+		//Delete the list.
+		ListService service = new ListService();
+		deleteListResult = service.deleteList(unknownListId);
+		
+		//There should be a return message of type E.
+		assertTrue(deleteListResult.getMessages().size() == 1);
+		assertTrue(deleteListResult.getMessages().get(0).getType() == WebServiceMessageType.E);
+		
+		//Verify the expected error message.
+		expectedErrorMessage = MessageFormat.format(this.resources.getString("list.notFound"), unknownListId);
+		actualErrorMessage = deleteListResult.getMessages().get(0).getText();
+		assertEquals(expectedErrorMessage, actualErrorMessage);
+	}
 }

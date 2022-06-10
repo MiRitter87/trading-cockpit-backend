@@ -298,7 +298,7 @@ public class InstrumentServiceTest {
 	 */
 	public void testeDeleteInstrumentWithUnknownId() {
 		WebServiceResult deleteInstrumentResult;
-		Integer unknownInstrumentId = 0;
+		final Integer unknownInstrumentId = 0;
 		String expectedErrorMessage, actualErrorMessage;
 		
 		//Delete the instrument.
