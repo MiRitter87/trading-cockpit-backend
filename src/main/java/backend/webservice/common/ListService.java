@@ -147,13 +147,13 @@ public class ListService {
 	public WebServiceResult updateList(final List list) {
 		WebServiceResult updateListResult = new WebServiceResult(null);
 		
-		//Validation of the given instrument.
-//		try {
-//			instrument.validate();
-//		} catch (Exception validationException) {
-//			updateInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, validationException.getMessage()));
-//			return updateInstrumentResult;
-//		}
+		//Validation of the given list.
+		try {
+			list.validate();
+		} catch (Exception validationException) {
+			updateListResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, validationException.getMessage()));
+			return updateListResult;
+		}
 		
 		//Update list if validation is successful.
 		try {

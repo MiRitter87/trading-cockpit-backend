@@ -27,6 +27,7 @@ import backend.model.list.ListArray;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
 import backend.tools.WebServiceTools;
+import backend.tools.test.ValidationMessageProvider;
 
 /**
  * Tests the list service.
@@ -488,5 +489,30 @@ public class ListServiceTest {
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests updating a list with invalid data.
+	 */
+	public void testUpdateInvalidInstrument() {
+		WebServiceResult updateListResult;
+		ListService service = new ListService();
+		ValidationMessageProvider messageProvider = new ValidationMessageProvider();
+		String actualErrorMessage, expectedErrorMessage;
+		
+		//No name is given.
+		this.singleInstrumentList.setName(null);
+		updateListResult = service.updateList(this.singleInstrumentList);
+		
+		//There should be a return message of type E.
+		assertTrue(updateListResult.getMessages().size() == 1);
+		assertTrue(updateListResult.getMessages().get(0).getType() == WebServiceMessageType.E);
+		
+		//A proper message should be provided.
+		expectedErrorMessage = messageProvider.getNotNullValidationMessage("list", "name");
+		actualErrorMessage = updateListResult.getMessages().get(0).getText();
+		assertEquals(expectedErrorMessage, actualErrorMessage);
 	}
 }
