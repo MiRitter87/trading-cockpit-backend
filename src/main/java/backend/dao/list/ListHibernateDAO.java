@@ -141,7 +141,14 @@ public class ListHibernateDAO implements ListDAO {
 	
 	@Override
 	public void updateList(List list) throws ObjectUnchangedException, Exception {
-		// TODO Auto-generated method stub
-
+		EntityManager entityManager;
+		
+//		this.checkInstrumentDataChanged(instrument);
+		
+		entityManager = this.sessionFactory.createEntityManager();
+		entityManager.getTransaction().begin();
+		entityManager.merge(list);
+		entityManager.getTransaction().commit();
+		entityManager.close();
 	}
 }

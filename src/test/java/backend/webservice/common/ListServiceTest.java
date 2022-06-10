@@ -459,4 +459,34 @@ public class ListServiceTest {
 		actualErrorMessage = deleteListResult.getMessages().get(0).getText();
 		assertEquals(expectedErrorMessage, actualErrorMessage);
 	}
+	
+	
+	@Test
+	/**
+	 * Tests updating a list with valid data.
+	 */
+	public void testUpdateValidList() {
+		WebServiceResult updateListResult;
+		List updatedList;
+		ListService service = new ListService();
+		
+		//Update the name.
+		this.singleInstrumentList.setName("Single instrument - Updated name");
+		updateListResult = service.updateList(this.singleInstrumentList);
+		
+		//Assure no error message exists
+		assertTrue(WebServiceTools.resultContainsErrorMessage(updateListResult) == false);
+		
+		//There should be a success message
+		assertTrue(updateListResult.getMessages().size() == 1);
+		assertTrue(updateListResult.getMessages().get(0).getType() == WebServiceMessageType.S);
+		
+		//Retrieve the updated list and check if the changes have been persisted.
+		try {
+			updatedList = listDAO.getList(this.singleInstrumentList.getId());
+			assertEquals(this.singleInstrumentList.getName(), updatedList.getName());
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
 }

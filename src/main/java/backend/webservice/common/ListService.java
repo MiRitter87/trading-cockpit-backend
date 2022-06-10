@@ -136,4 +136,42 @@ public class ListService {
 		
 		return deleteListResult;
 	}
+	
+	
+	/**
+	 * Updates an existing list.
+	 * 
+	 * @param list The list to be updated.
+	 * @return The result of the update function.
+	 */
+	public WebServiceResult updateList(final List list) {
+		WebServiceResult updateListResult = new WebServiceResult(null);
+		
+		//Validation of the given instrument.
+//		try {
+//			instrument.validate();
+//		} catch (Exception validationException) {
+//			updateInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, validationException.getMessage()));
+//			return updateInstrumentResult;
+//		}
+		
+		//Update list if validation is successful.
+		try {
+			this.listDAO.updateList(list);
+			updateListResult.addMessage(new WebServiceMessage(WebServiceMessageType.S, 
+					MessageFormat.format(this.resources.getString("list.updateSuccess"), list.getId())));
+		} 
+//		catch(ObjectUnchangedException objectUnchangedException) {
+//			updateInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.I, 
+//					MessageFormat.format(this.resources.getString("instrument.updateUnchanged"), instrument.getId())));
+//		}
+		catch (Exception e) {
+			updateListResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
+					MessageFormat.format(this.resources.getString("list.updateError"), list.getId())));
+			
+			logger.error(MessageFormat.format(this.resources.getString("list.updateError"), list.getId()), e);
+		}
+		
+		return updateListResult;
+	}
 }
