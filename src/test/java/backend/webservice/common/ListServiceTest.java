@@ -393,4 +393,46 @@ public class ListServiceTest {
 			}
 		}
 	}
+	
+	
+	@Test
+	/**
+	 * Tests deletion of a list.
+	 */
+	public void testDeleteList() {
+		WebServiceResult deleteListResult;
+		List deletedList;
+		
+		try {
+			//Delete list using the service.
+			ListService service = new ListService();
+			deleteListResult = service.deleteList(this.singleInstrumentList.getId());
+			
+			//There should be no error messages
+			assertTrue(WebServiceTools.resultContainsErrorMessage(deleteListResult) == false);
+			
+			//There should be a success message
+			assertTrue(deleteListResult.getMessages().size() == 1);
+			assertTrue(deleteListResult.getMessages().get(0).getType() == WebServiceMessageType.S);
+			
+			//Check if the list is missing using the DAO.
+			deletedList = listDAO.getList(this.singleInstrumentList.getId());
+			
+			if(deletedList != null)
+				fail("The single instrument list is still persisted but should have been deleted by the WebService operation 'deleteList'.");
+		}
+		catch (Exception e) {
+			fail(e.getMessage());
+		}
+		finally {
+			//Restore old database state by adding the list that has been deleted previously.
+			try {
+				this.singleInstrumentList = this.getSingleInstrumentList();
+				listDAO.insertList(this.singleInstrumentList);
+			} 
+			catch (Exception e) {
+				fail(e.getMessage());
+			}
+		}
+	}
 }

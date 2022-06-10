@@ -99,4 +99,41 @@ public class ListService {
 		
 		return getListsResult;
 	}
+	
+	
+	/**
+	 * Deletes the list with the given id.
+	 * 
+	 * @param id The id of the list to be deleted.
+	 * @return The result of the delete function.
+	 */
+	public WebServiceResult deleteList(final Integer id) {
+		WebServiceResult deleteListResult = new WebServiceResult(null);
+		List list = null;
+		
+		//Check if a list with the given id exists.
+		try {
+			list = this.listDAO.getList(id);
+			
+			if(list != null) {
+				//Delete list if exists.
+				this.listDAO.deleteList(list);
+				deleteListResult.addMessage(new WebServiceMessage(WebServiceMessageType.S, 
+						MessageFormat.format(this.resources.getString("list.deleteSuccess"), id)));
+			}
+//			else {
+//				//Instrument not found.
+//				deleteInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
+//						MessageFormat.format(this.resources.getString("instrument.notFound"), id)));
+//			}
+		}
+		catch (Exception e) {
+			deleteListResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
+					MessageFormat.format(this.resources.getString("list.deleteError"), id)));
+			
+			logger.error(MessageFormat.format(this.resources.getString("list.deleteError"), id), e);
+		}
+		
+		return deleteListResult;
+	}
 }
