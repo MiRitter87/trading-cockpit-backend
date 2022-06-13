@@ -187,12 +187,12 @@ public class ListService {
 		WebServiceResult addListResult = new WebServiceResult();
 		
 		//Validate the given list.
-//		try {
-//			instrument.validate();
-//		} catch (Exception validationException) {
-//			addInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, validationException.getMessage()));
-//			return addInstrumentResult;
-//		}
+		try {
+			list.validate();
+		} catch (Exception validationException) {
+			addListResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, validationException.getMessage()));
+			return addListResult;
+		}
 		
 		//Insert instrument if validation is successful.
 		try {

@@ -602,4 +602,29 @@ public class ListServiceTest {
 			}
 		}		
 	}
+	
+	
+	@Test
+	/**
+	 * Tests adding of an invalid list.
+	 */
+	public void testAddInvalidList() {
+		List newList = new List();
+		WebServiceResult addListResult;
+		ListService service = new ListService();
+		
+		//Define the new list without an instrument.
+		newList.setName("New List");
+		newList.setDescription("A new list with a single instrument.");
+		
+		//Add a new list to the database via WebService
+		addListResult = service.addList(newList);
+		
+		//There should be a return message of type E.
+		assertTrue(addListResult.getMessages().size() == 1);
+		assertTrue(addListResult.getMessages().get(0).getType() == WebServiceMessageType.E);
+		
+		//The new instrument should not have been persisted
+		assertNull(newList.getId());
+	}
 }
