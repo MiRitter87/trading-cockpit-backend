@@ -108,13 +108,10 @@ public class StockAlertThread extends Thread {
 	private boolean isTimeIntervalActive() {
 		LocalTime currentTime = LocalTime.now();
 		
-		if(currentTime.getHour() >= startTime.getHour() && currentTime.getMinute() >= startTime.getMinute() &&
-				currentTime.getHour() <= endTime.getHour() && currentTime.getMinute() <= endTime.getMinute()) {
+		if(currentTime.isAfter(this.startTime) && currentTime.isBefore(this.endTime))
 			return true;
-		}
-		else {			
+		else
 			return false;
-		}
 	}
 	
 	
