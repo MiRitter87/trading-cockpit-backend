@@ -153,6 +153,105 @@ public class List {
 	}
 	
 	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((description == null) ? 0 : description.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((instruments == null) ? 0 : instruments.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		return result;
+	}
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		List other = (List) obj;
+		if (description == null) {
+			if (other.description != null) {
+				return false;
+			}
+		} else if (!description.equals(other.description)) {
+			return false;
+		}
+		if (id == null) {
+			if (other.id != null) {
+				return false;
+			}
+		} else if (!id.equals(other.id)) {
+			return false;
+		}
+		if (name == null) {
+			if (other.name != null) {
+				return false;
+			}
+		} else if (!name.equals(other.name)) {
+			return false;
+		}
+		
+		if(this.areInstrumentsEqual(other) == false)
+			return false;
+		
+		return true;
+	}
+	
+	
+	/**
+	 * Checks if the list of instruments is equal.
+	 * 
+	 * @param other The other list for comparison.
+	 * @return true, if instruments are equal; false otherwise.
+	 */
+	private boolean areInstrumentsEqual(List other) {
+		if (this.instruments == null && other.instruments != null)
+			return false;
+		
+		if (this.instruments != null && other.instruments == null)
+			return false;
+		
+		if(this.instruments.size() != other.instruments.size())
+			return false;
+		
+		for(Instrument tempInstrument:this.instruments) {
+			Instrument otherInstrument = other.getInstrumentWithId(tempInstrument.getId());
+			
+			if(otherInstrument == null)
+				return false;
+			
+			if(!tempInstrument.equals(otherInstrument))
+				return false;
+		}
+		
+		return true;
+	}
+	
+	
+	/**
+	 * Gets the instrument with the given id.
+	 * 
+	 * @param id The id of the instrument.
+	 * @return The instrument with the given id, if found.
+	 */
+	public Instrument getInstrumentWithId(Integer id) {
+		for(Instrument tempInstrument:this.instruments) {
+			if(tempInstrument.getId().equals(id))
+				return tempInstrument;
+		}
+		
+		return null;
+	}
+
+
 	/**
 	 * Validates the list.
 	 * 

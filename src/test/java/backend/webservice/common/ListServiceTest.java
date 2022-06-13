@@ -515,4 +515,27 @@ public class ListServiceTest {
 		actualErrorMessage = updateListResult.getMessages().get(0).getText();
 		assertEquals(expectedErrorMessage, actualErrorMessage);
 	}
+	
+	
+	@Test
+	/**
+	 * Tests updating a list without changing any data.
+	 */
+	public void testUpdateUnchangedList() {
+		WebServiceResult updateListResult;
+		ListService service = new ListService();
+		String actualErrorMessage, expectedErrorMessage;
+		
+		//Update list without changing any data.
+		updateListResult = service.updateList(this.singleInstrumentList);
+		
+		//There should be a return message of type I
+		assertTrue(updateListResult.getMessages().size() == 1);
+		assertTrue(updateListResult.getMessages().get(0).getType() == WebServiceMessageType.I);
+		
+		//A proper message should be provided.
+		expectedErrorMessage = MessageFormat.format(this.resources.getString("list.updateUnchanged"), this.singleInstrumentList.getId());
+		actualErrorMessage = updateListResult.getMessages().get(0).getText();
+		assertEquals(expectedErrorMessage, actualErrorMessage);
+	}
 }

@@ -143,12 +143,27 @@ public class ListHibernateDAO implements ListDAO {
 	public void updateList(List list) throws ObjectUnchangedException, Exception {
 		EntityManager entityManager;
 		
-//		this.checkInstrumentDataChanged(instrument);
+		this.checkListDataChanged(list);
 		
 		entityManager = this.sessionFactory.createEntityManager();
 		entityManager.getTransaction().begin();
 		entityManager.merge(list);
 		entityManager.getTransaction().commit();
 		entityManager.close();
+	}
+	
+	
+	/**
+	 * Checks if the data of the given list differ from the list that is persisted at database level.
+	 * 
+	 * @param list The list to be checked.
+	 * @throws ObjectUnchangedException In case the list has not been changed.
+	 * @throws Exception In case an error occurred during determination of the list stored at the database.
+	 */
+	private void checkListDataChanged(final List list) throws ObjectUnchangedException, Exception {
+		List databaseList = this.getList(list.getId());
+		
+		if(databaseList.equals(list))
+			throw new ObjectUnchangedException();
 	}
 }

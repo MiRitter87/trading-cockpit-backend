@@ -7,6 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import backend.dao.DAOManager;
+import backend.dao.ObjectUnchangedException;
 import backend.dao.list.ListDAO;
 import backend.model.list.List;
 import backend.model.list.ListArray;
@@ -161,10 +162,10 @@ public class ListService {
 			updateListResult.addMessage(new WebServiceMessage(WebServiceMessageType.S, 
 					MessageFormat.format(this.resources.getString("list.updateSuccess"), list.getId())));
 		} 
-//		catch(ObjectUnchangedException objectUnchangedException) {
-//			updateInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.I, 
-//					MessageFormat.format(this.resources.getString("instrument.updateUnchanged"), instrument.getId())));
-//		}
+		catch(ObjectUnchangedException objectUnchangedException) {
+			updateListResult.addMessage(new WebServiceMessage(WebServiceMessageType.I, 
+					MessageFormat.format(this.resources.getString("list.updateUnchanged"), list.getId())));
+		}
 		catch (Exception e) {
 			updateListResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
 					MessageFormat.format(this.resources.getString("list.updateError"), list.getId())));
