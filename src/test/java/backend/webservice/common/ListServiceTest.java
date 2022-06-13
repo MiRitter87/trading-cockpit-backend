@@ -1,6 +1,7 @@
 package backend.webservice.common;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -537,5 +538,68 @@ public class ListServiceTest {
 		expectedErrorMessage = MessageFormat.format(this.resources.getString("list.updateUnchanged"), this.singleInstrumentList.getId());
 		actualErrorMessage = updateListResult.getMessages().get(0).getText();
 		assertEquals(expectedErrorMessage, actualErrorMessage);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests adding of a new list.
+	 */
+	public void testAddValidList() {
+		List newList = new List();
+		List addedList;
+		WebServiceResult addListResult;
+		ListService service = new ListService();
+		Instrument instrument;
+		
+		//Define the new list.
+		newList.setName("New List");
+		newList.setDescription("A new list with a single instrument.");
+		newList.addInstrument(this.microsoftStock);
+		
+		//Add the new list to the database via WebService
+		addListResult = service.addList(newList);
+		
+		//Assure no error message exists
+		assertTrue(WebServiceTools.resultContainsErrorMessage(addListResult) == false);
+		
+		//There should be a success message
+		assertTrue(addListResult.getMessages().size() == 1);
+		assertTrue(addListResult.getMessages().get(0).getType() == WebServiceMessageType.S);
+		
+		//The ID of the newly created list should be provided in the data part of the WebService return.
+		assertNotNull(addListResult.getData());
+		assertTrue(addListResult.getData() instanceof Integer);
+		newList.setId((Integer) addListResult.getData());
+		
+		//Read the persisted list via DAO
+		try {
+			addedList = listDAO.getList(newList.getId());
+			
+			//Check if the list read by the DAO equals the list inserted using the WebService in each attribute.
+			assertEquals(newList.getId(), addedList.getId());
+			assertEquals(newList.getName(), addedList.getName());
+			assertEquals(newList.getDescription(), addedList.getDescription());
+			assertEquals(newList.getInstruments().size(), addedList.getInstruments().size());
+			
+			//Check the attributes of the instrument.
+			instrument = addedList.getInstruments().iterator().next();
+			assertEquals(this.microsoftStock.getId(), instrument.getId());
+			assertEquals(this.microsoftStock.getSymbol(), instrument.getSymbol());
+			assertEquals(this.microsoftStock.getName(), instrument.getName());
+			assertEquals(this.microsoftStock.getStockExchange(), instrument.getStockExchange());
+			assertEquals(this.microsoftStock.getType(), instrument.getType());
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+		finally {
+			//Delete the newly added price alert.
+			try {
+				listDAO.deleteList(newList);
+			} 
+			catch (Exception e) {
+				fail(e.getMessage());
+			}
+		}		
 	}
 }

@@ -175,4 +175,36 @@ public class ListService {
 		
 		return updateListResult;
 	}
+	
+	
+	/**
+	 * Adds a list.
+	 * 
+	 * @param list The list to be added.
+	 * @return The result of the add function.
+	 */
+	public WebServiceResult addList(final List list) {
+		WebServiceResult addListResult = new WebServiceResult();
+		
+		//Validate the given list.
+//		try {
+//			instrument.validate();
+//		} catch (Exception validationException) {
+//			addInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, validationException.getMessage()));
+//			return addInstrumentResult;
+//		}
+		
+		//Insert instrument if validation is successful.
+		try {
+			this.listDAO.insertList(list);
+			addListResult.addMessage(new WebServiceMessage(WebServiceMessageType.S, this.resources.getString("list.addSuccess")));
+			addListResult.setData(list.getId());
+		} 
+		catch (Exception e) {
+			addListResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, this.resources.getString("list.addError")));
+			logger.error(this.resources.getString("list.addError"), e);
+		}
+		
+		return addListResult;
+	}
 }

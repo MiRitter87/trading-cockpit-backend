@@ -456,7 +456,7 @@ public class InstrumentServiceTest {
 		assertTrue(addInstrumentResult.getMessages().size() == 1);
 		assertTrue(addInstrumentResult.getMessages().get(0).getType() == WebServiceMessageType.S);
 		
-		//The ID of the newly created price alert should be provided in the data part of the WebService return.
+		//The ID of the newly created instrument should be provided in the data part of the WebService return.
 		assertNotNull(addInstrumentResult.getData());
 		assertTrue(addInstrumentResult.getData() instanceof Integer);
 		newInstrument.setId((Integer) addInstrumentResult.getData());
