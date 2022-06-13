@@ -5,6 +5,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * Controls the process, that cyclically queries stock quotes and updates the alerts accordingly.
  * 
@@ -56,6 +59,11 @@ public class StockAlertController {
 	 */
 	private ScheduledExecutorService executorService;
 	
+	/**
+	 * Application logging.
+	 */
+	public static final Logger logger = LogManager.getLogger(StockAlertController.class);
+	
 	
 	/**
 	 * Initialization.
@@ -106,7 +114,12 @@ public class StockAlertController {
 	 * Stops the query and update process.
 	 */
 	public void stop() {
-		executorService.shutdown();
+		try {
+			executorService.shutdown();
+			executorService.awaitTermination(10, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+			logger.error("Failed to orderly shutdown Thread Executor Service.", e);
+		}
 	}
 	
 	
