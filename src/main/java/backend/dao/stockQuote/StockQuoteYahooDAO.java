@@ -51,7 +51,9 @@ public class StockQuoteYahooDAO implements StockQuoteDAO {
 	 */
 	protected String getStockQuoteJSONFromYahoo(final String symbol, final StockExchange stockExchange) throws Exception {
 		HttpClient client = HttpClient.newHttpClient();
-		HttpRequest request = HttpRequest.newBuilder().uri(URI.create(this.getQueryUrl(symbol, stockExchange))).build();
+		HttpRequest request = HttpRequest.newBuilder().uri(URI.create(this.getQueryUrl(symbol, stockExchange)))
+				.header("Connection", "close")	//Close the http connection after the request has been send.
+				.build();
 		HttpResponse<String> response;
 		
 		try {
