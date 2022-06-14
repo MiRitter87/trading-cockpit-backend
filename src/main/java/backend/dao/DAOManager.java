@@ -12,8 +12,6 @@ import backend.dao.list.ListDAO;
 import backend.dao.list.ListHibernateDAO;
 import backend.dao.priceAlert.PriceAlertDAO;
 import backend.dao.priceAlert.PriceAlertHibernateDAO;
-import backend.dao.stockQuote.StockQuoteDAO;
-import backend.dao.stockQuote.StockQuoteYahooDAO;
 
 /**
  * Manages a central database connection and provides DAOs for database access.
@@ -36,10 +34,6 @@ public class DAOManager implements Closeable {
 	 */
 	private PriceAlertDAO priceAlertDAO;
 	
-	/**
-	 * DAO to access stock quotes.
-	 */
-	private StockQuoteDAO stockQuoteDAO;
 	
 	/**
 	 * DAO to access instruments.
@@ -94,19 +88,6 @@ public class DAOManager implements Closeable {
 			this.priceAlertDAO = new PriceAlertHibernateDAO(this.sessionFactory);
 		
 		return this.priceAlertDAO;
-	}
-	
-	
-	/**
-	 * Returns a DAO to access stock quote data.
-	 * 
-	 * @return The StockQuoteDAO.
-	 */
-	public StockQuoteDAO getStockQuoteDAO() {
-		if(this.stockQuoteDAO == null)
-			this.stockQuoteDAO = new StockQuoteYahooDAO();
-		
-		return this.stockQuoteDAO;
 	}
 	
 	

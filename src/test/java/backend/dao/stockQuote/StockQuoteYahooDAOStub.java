@@ -20,7 +20,7 @@ import backend.model.stockQuote.StockQuote;
  * @author Michael
  *
  */
-public class StockQuoteYahooDAOStub extends StockQuoteYahooDAO {	
+public class StockQuoteYahooDAOStub extends StockQuoteYahooDAO {
 	@Override
 	public StockQuote getStockQuote(String symbol, StockExchange stockExchange) throws Exception {
 		StockQuote stockQuote = new StockQuote();

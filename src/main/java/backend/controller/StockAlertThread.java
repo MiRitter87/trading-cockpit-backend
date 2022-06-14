@@ -1,5 +1,6 @@
 package backend.controller;
 
+import java.net.http.HttpClient;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -12,6 +13,7 @@ import backend.dao.DAOManager;
 import backend.dao.priceAlert.PriceAlertDAO;
 import backend.dao.priceAlert.PriceAlertOrderAttribute;
 import backend.dao.stockQuote.StockQuoteDAO;
+import backend.dao.stockQuote.StockQuoteYahooDAO;
 import backend.model.priceAlert.ConfirmationStatus;
 import backend.model.priceAlert.PriceAlert;
 import backend.model.priceAlert.PriceAlertType;
@@ -60,7 +62,7 @@ public class StockAlertThread extends Thread {
 		this.startTime = startTime;
 		this.endTime = endTime;
 		
-		this.stockQuoteDAO = DAOManager.getInstance().getStockQuoteDAO();
+		this.stockQuoteDAO = new StockQuoteYahooDAO(HttpClient.newHttpClient());
 		this.priceAlertDAO = DAOManager.getInstance().getPriceAlertDAO();
 	}
 	

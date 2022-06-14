@@ -31,6 +31,29 @@ public class StockQuoteYahooDAO implements StockQuoteDAO {
 	 */
 	private static final String BASE_URL = "https://query1.finance.yahoo.com/v7/finance/quote?symbols=";
 	
+	/**
+	 * The HTTP client used for data queries.
+	 */
+	private HttpClient httpClient;
+	
+	
+	/**
+	 * Default constructor.
+	 */
+	public StockQuoteYahooDAO() {
+		
+	}
+	
+	
+	/**
+	 * Constructor.
+	 * 
+	 * @param httpClient The HTTP client used for data queries.
+	 */
+	public StockQuoteYahooDAO(final HttpClient httpClient) {
+		this.httpClient = httpClient;
+	}
+	
 	
 	@Override
 	public StockQuote getStockQuote(String symbol, StockExchange stockExchange) throws Exception {
@@ -50,14 +73,11 @@ public class StockQuoteYahooDAO implements StockQuoteDAO {
 	 * @throws Exception Stock quote determination failed.
 	 */
 	protected String getStockQuoteJSONFromYahoo(final String symbol, final StockExchange stockExchange) throws Exception {
-		HttpClient client = HttpClient.newHttpClient();
-		HttpRequest request = HttpRequest.newBuilder().uri(URI.create(this.getQueryUrl(symbol, stockExchange)))
-				.header("Connection", "close")	//Close the http connection after the request has been send.
-				.build();
+		HttpRequest request = HttpRequest.newBuilder().uri(URI.create(this.getQueryUrl(symbol, stockExchange))).build();
 		HttpResponse<String> response;
 		
 		try {
-			response = client.send(request, BodyHandlers.ofString());
+			response = this.httpClient.send(request, BodyHandlers.ofString());
 		} catch (IOException e) {
 			throw new Exception(e);
 		} catch (InterruptedException e) {
