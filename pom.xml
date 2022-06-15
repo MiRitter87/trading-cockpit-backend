@@ -25,6 +25,7 @@
 		<log4j2.version>2.17.2</log4j2.version>
 		<jersey.version>2.35</jersey.version>
 		<javax.servlet.version>4.0.1</javax.servlet.version>
+		<okhttp.version>4.10.0</okhttp.version>
 	</properties>
 	
 	<dependencies>
@@ -121,6 +122,13 @@
 			<artifactId>javax.servlet-api</artifactId>
 			<version>${javax.servlet.version}</version>
 			<scope>provided</scope>
+		</dependency>
+		
+		<!-- Used for HTTP queries of third-party WebServices -->
+		<dependency>
+    		<groupId>com.squareup.okhttp3</groupId>
+    		<artifactId>okhttp</artifactId>
+    		<version>${okhttp.version}</version>
 		</dependency>
 	</dependencies>
   

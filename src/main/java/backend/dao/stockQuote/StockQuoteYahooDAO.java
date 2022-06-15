@@ -2,11 +2,6 @@ package backend.dao.stockQuote;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.net.http.HttpResponse.BodyHandlers;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -18,6 +13,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import backend.model.Currency;
 import backend.model.StockExchange;
 import backend.model.stockQuote.StockQuote;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * Retrieves stock data using the finance API of Yahoo.
@@ -34,7 +32,7 @@ public class StockQuoteYahooDAO implements StockQuoteDAO {
 	/**
 	 * The HTTP client used for data queries.
 	 */
-	private HttpClient httpClient;
+	private OkHttpClient httpClient;
 	
 	
 	/**
@@ -50,8 +48,11 @@ public class StockQuoteYahooDAO implements StockQuoteDAO {
 	 * 
 	 * @param httpClient The HTTP client used for data queries.
 	 */
-	public StockQuoteYahooDAO(final HttpClient httpClient) {
+	public StockQuoteYahooDAO(final OkHttpClient  httpClient) {
 		this.httpClient = httpClient;
+		
+		//TODO: Execute this on shutdown of application
+		//this.httpClient.dispatcher().executorService().shutdown();
 	}
 	
 	
@@ -73,18 +74,22 @@ public class StockQuoteYahooDAO implements StockQuoteDAO {
 	 * @throws Exception Stock quote determination failed.
 	 */
 	protected String getStockQuoteJSONFromYahoo(final String symbol, final StockExchange stockExchange) throws Exception {
-		HttpRequest request = HttpRequest.newBuilder().uri(URI.create(this.getQueryUrl(symbol, stockExchange))).build();
-		HttpResponse<String> response;
+		Request request = new Request.Builder()
+				.url(this.getQueryUrl(symbol, stockExchange))
+				.header("Connection", "close")
+				.build();
+		Response response;
+		String jsonResult;
 		
 		try {
-			response = this.httpClient.send(request, BodyHandlers.ofString());
+			response = this.httpClient.newCall(request).execute();
+			jsonResult = response.body().string();
+			response.close();
 		} catch (IOException e) {
-			throw new Exception(e);
-		} catch (InterruptedException e) {
 			throw new Exception(e);
 		}
 		
-		return response.body();
+		return jsonResult;
 	}
 	
 	

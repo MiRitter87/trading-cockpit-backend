@@ -1,6 +1,5 @@
 package backend.controller;
 
-import java.net.http.HttpClient;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -19,6 +18,7 @@ import backend.model.priceAlert.PriceAlert;
 import backend.model.priceAlert.PriceAlertType;
 import backend.model.priceAlert.TriggerStatus;
 import backend.model.stockQuote.StockQuote;
+import okhttp3.OkHttpClient;
 
 /**
  * Queries stock quote data and updates stock alerts if the trigger price has been reached.
@@ -62,7 +62,7 @@ public class StockAlertThread extends Thread {
 		this.startTime = startTime;
 		this.endTime = endTime;
 		
-		this.stockQuoteDAO = new StockQuoteYahooDAO(HttpClient.newHttpClient());
+		this.stockQuoteDAO = new StockQuoteYahooDAO(new OkHttpClient());
 		this.priceAlertDAO = DAOManager.getInstance().getPriceAlertDAO();
 	}
 	
