@@ -50,9 +50,6 @@ public class StockQuoteYahooDAO implements StockQuoteDAO {
 	 */
 	public StockQuoteYahooDAO(final OkHttpClient  httpClient) {
 		this.httpClient = httpClient;
-		
-		//TODO: Execute this on shutdown of application
-		//this.httpClient.dispatcher().executorService().shutdown();
 	}
 	
 	
