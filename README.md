@@ -25,14 +25,14 @@ Lists allow you to organize sets of instruments. The list feature allows you for
 
 The Trading Cockpit is based on the following technologies and frameworks
 
--Java Persistence API and Hibernate for ORM (Object Relational Mapping)
--HSQLDB as database
--Bean Validation API for validation of model classes
--Jersey for RESTful WebServices
--Log4J for application logging
--JUnit for test-driven development
--okhttp to access third-party WebServices
--Apache Maven as build system
+ - **Java Persistence API** and **Hibernate** for ORM (Object Relational Mapping)
+ - **HSQLDB** as database
+ - **Bean Validation API** for validation of model classes
+ - **Jersey** for RESTful WebServices
+ - **Log4J** for application logging
+ - **JUnit** for test-driven development
+ - **okhttp** to access third-party WebServices
+ - **Apache Maven** as build system
 
 ## Installation
 
