@@ -24,6 +24,7 @@ import javax.validation.constraints.Size;
 import org.hibernate.validator.HibernateValidator;
 import org.hibernate.validator.messageinterpolation.ExpressionLanguageFeatureLevel;
 
+import backend.model.NoItemsException;
 import backend.model.instrument.Instrument;
 
 /**
@@ -283,21 +284,21 @@ public class List {
 	
 	
 	/**
-	 * Validates additional characteristics of the instrument besides annotations.
+	 * Validates additional characteristics of the list besides annotations.
 	 * 
-	 * @throws NoItemsException Indicates that the instrument has no items defined.
+	 * @throws NoItemsException Indicates that the list has no instruments defined.
 	 */
 	private void validateAdditionalCharacteristics() throws NoItemsException {
-		this.validateItemsDefined();
+		this.validateInstrumentsDefined();
 	}
 	
 	
 	/**
-	 * Checks if items are defined.
+	 * Checks if instruments are defined.
 	 * 
-	 * @throws NoItemsException If no items are defined.
+	 * @throws NoItemsException If no instruments are defined.
 	 */
-	private void validateItemsDefined() throws NoItemsException {
+	private void validateInstrumentsDefined() throws NoItemsException {
 		if(this.instruments == null || this.instruments.size() == 0)
 			throw new NoItemsException();
 	}

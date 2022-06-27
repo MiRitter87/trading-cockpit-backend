@@ -1,4 +1,4 @@
-package backend.model.list;
+package backend.model;
 
 /**
  * Exception that indicates that an object has no items defined.

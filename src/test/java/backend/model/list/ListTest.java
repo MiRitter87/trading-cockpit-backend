@@ -7,6 +7,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import backend.model.NoItemsException;
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;

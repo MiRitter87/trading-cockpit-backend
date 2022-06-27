@@ -4,6 +4,19 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
+import org.hibernate.validator.HibernateValidator;
+import org.hibernate.validator.messageinterpolation.ExpressionLanguageFeatureLevel;
+
+import backend.model.NoItemsException;
 import backend.model.list.List;
 
 /**
@@ -16,16 +29,20 @@ public class Scan {
 	/**
 	 * The ID.
 	 */
+	@Min(value = 1, message = "{scan.id.min.message}")
 	private Integer id;
 	
 	/**
 	 * The name.
 	 */
+	@NotNull(message = "{scan.name.notNull.message}")
+	@Size(min = 1, max = 50, message = "{scan.name.size.message}")
 	private String name;
 	
 	/**
 	 * The description.
 	 */
+	@Size(min = 0, max = 250, message = "{scan.description.size.message}")
 	private String description;
 	
 	/**
@@ -41,6 +58,9 @@ public class Scan {
 	/**
 	 * The percentage value indicating how much of the scan has been executed.
 	 */
+	@Min(value = 0, message = "{scan.percentCompleted.min.message}")
+	@Max(value = 100, message = "{scan.percentCompleted.max.message}")
+	@NotNull(message = "{scan.percentCompleted.notNull.message}")
 	private Integer percentCompleted;
 	
 	/**
@@ -53,6 +73,8 @@ public class Scan {
 	 * Default constructor.
 	 */
 	public Scan() {
+		this.isRunning = false;
+		this.percentCompleted = 0;
 		this.lists = new HashSet<List>();
 	}
 
@@ -166,5 +188,66 @@ public class Scan {
 	 */
 	public void setLists(Set<List> lists) {
 		this.lists = lists;
+	}
+	
+	
+	/**
+	 * Adds a list to the scan.
+	 * 
+	 * @param list The list to be added.
+	 */
+	public void addList(final List list) {
+		this.lists.add(list);
+	}
+	
+	
+	/**
+	 * Validates the scan.
+	 * 
+	 * @throws Exception In case a general validation error occurred.
+	 */
+	public void validate() throws Exception {
+		this.validateAnnotations();
+		this.validateAdditionalCharacteristics();
+	}
+	
+	
+	/**
+	 * Validates the scan according to the annotations of the validation framework.
+	 * 
+	 * @exception Exception In case the validation failed.
+	 */
+	private void validateAnnotations() throws Exception {
+		ValidatorFactory validatorFactory = Validation.byProvider(HibernateValidator.class)   
+                .configure().constraintExpressionLanguageFeatureLevel(ExpressionLanguageFeatureLevel.BEAN_METHODS)
+                .buildValidatorFactory();
+
+		Validator validator = validatorFactory.getValidator();
+		Set<ConstraintViolation<Scan>> violations = validator.validate(this);
+
+		for(ConstraintViolation<Scan> violation:violations) {
+			throw new Exception(violation.getMessage());
+		}
+	}
+	
+	
+	/**
+	 * Validates additional characteristics of the scan besides annotations.
+	 * 
+	 * @throws NoItemsException Indicates that the scan has no lists defined.
+	 */
+	private void validateAdditionalCharacteristics() throws NoItemsException {
+		this.validateListsDefined();
+	}
+	
+	
+	/**
+	 * Checks if lists are defined.
+	 * 
+	 * @throws NoItemsException If no lists are defined.
+	 */
+	private void validateListsDefined() throws NoItemsException {
+		if(this.lists == null || this.lists.size() == 0)
+			throw new NoItemsException();
 	}
 }
