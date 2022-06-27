@@ -4,6 +4,16 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -25,16 +35,23 @@ import backend.model.list.List;
  * @author Michael
  *
  */
+@Table(name="SCAN")
+@Entity
+@SequenceGenerator(name = "scanSequence", initialValue = 1, allocationSize = 1)
 public class Scan {
 	/**
 	 * The ID.
 	 */
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "scanSequence")
+	@Column(name="SCAN_ID")
 	@Min(value = 1, message = "{scan.id.min.message}")
 	private Integer id;
 	
 	/**
 	 * The name.
 	 */
+	@Column(name="NAME", length = 50)
 	@NotNull(message = "{scan.name.notNull.message}")
 	@Size(min = 1, max = 50, message = "{scan.name.size.message}")
 	private String name;
@@ -42,22 +59,26 @@ public class Scan {
 	/**
 	 * The description.
 	 */
+	@Column(name="DESCRIPTION", length = 250)
 	@Size(min = 0, max = 250, message = "{scan.description.size.message}")
 	private String description;
 	
 	/**
 	 * The date at which the scan has been started the last time.
 	 */
+	@Column(name="LAST_SCAN")
 	private Date lastScan;
 	
 	/**
 	 * Indicates if the scan is currently running.
 	 */
+	@Column(name="IS_RUNNING")
 	private boolean isRunning;
 	
 	/**
 	 * The percentage value indicating how much of the scan has been executed.
 	 */
+	@Column(name="PERCENT_COMPLETED")
 	@Min(value = 0, message = "{scan.percentCompleted.min.message}")
 	@Max(value = 100, message = "{scan.percentCompleted.max.message}")
 	@NotNull(message = "{scan.percentCompleted.notNull.message}")
@@ -66,6 +87,10 @@ public class Scan {
 	/**
 	 * The lists whose instruments are scanned.
 	 */
+	@ManyToMany
+	@JoinTable(name = "SCAN_LIST", 
+    	joinColumns = { @JoinColumn(name = "SCAN_ID") }, 
+    	inverseJoinColumns = { @JoinColumn(name = "LIST_ID") })
 	private Set<List> lists;
 	
 	
