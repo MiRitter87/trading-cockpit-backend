@@ -1,7 +1,10 @@
 package backend.dao.scan;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
@@ -86,8 +89,20 @@ public class ScanHibernateDAO implements ScanDAO {
 	
 	@Override
 	public Scan getScan(Integer id) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		EntityManager entityManager = this.sessionFactory.createEntityManager();
+		
+		//Use entity graphs to load data of referenced list instances.
+		EntityGraph<Scan> graph = entityManager.createEntityGraph(Scan.class);
+		graph.addAttributeNodes("lists");
+		Map<String, Object> hints = new HashMap<String, Object>();
+		hints.put("javax.persistence.loadgraph", graph);
+		
+		entityManager.getTransaction().begin();
+		Scan scan = entityManager.find(Scan.class, id, hints);
+		entityManager.getTransaction().commit();
+		entityManager.close();
+		
+		return scan;
 	}
 
 	

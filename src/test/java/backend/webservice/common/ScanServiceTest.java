@@ -1,13 +1,17 @@
 package backend.webservice.common;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
@@ -18,6 +22,8 @@ import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.list.List;
 import backend.model.scan.Scan;
+import backend.model.webservice.WebServiceResult;
+import backend.tools.WebServiceTools;
 
 /**
  * Tests the scan service.
@@ -301,5 +307,62 @@ public class ScanServiceTest {
 		scan.addList(this.multiInstrumentList);
 		
 		return scan;
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of a scan.
+	 */
+	public void testGetScan() {
+		WebServiceResult getScanResult;
+		Scan scan;
+		List list;
+		Iterator<List> listIterator;
+		
+		//Get the scan.
+		ScanService service = new ScanService();
+		getScanResult = service.getScan(this.multiListScan.getId());
+		
+		//Assure no error message exists.
+		assertTrue(WebServiceTools.resultContainsErrorMessage(getScanResult) == false);
+		
+		//Assure that a scan is returned.
+		assertTrue(getScanResult.getData() instanceof Scan);
+		
+		scan = (Scan) getScanResult.getData();
+		
+		//Check each attribute of the scan.
+		assertEquals(this.multiListScan.getId(), scan.getId());
+		assertEquals(this.multiListScan.getName(), scan.getName());
+		assertEquals(this.multiListScan.getDescription(), scan.getDescription());
+		assertEquals(this.multiListScan.getLastScan(), scan.getLastScan());
+		assertEquals(this.multiListScan.isRunning(), scan.isRunning());
+		assertEquals(this.multiListScan.getPercentCompleted(), scan.getPercentCompleted());
+		
+		//The returned scan should have two lists.
+		assertEquals(this.multiListScan.getLists().size(), scan.getLists().size());
+		
+		//Check the attributes of the lists.
+		listIterator = scan.getLists().iterator();
+		while(listIterator.hasNext()) {
+			list = listIterator.next();
+			
+			if(list.getId().equals(this.singleInstrumentList.getId())) {
+				assertEquals(this.singleInstrumentList.getId(), list.getId());
+				assertEquals(this.singleInstrumentList.getName(), list.getName());
+				assertEquals(this.singleInstrumentList.getDescription(), list.getDescription());
+				assertEquals(this.singleInstrumentList.getInstruments().size(), list.getInstruments().size());
+			}
+			else if(list.getId().equals(this.multiInstrumentList.getId())) {
+				assertEquals(this.multiInstrumentList.getId(), list.getId());
+				assertEquals(this.multiInstrumentList.getName(), list.getName());
+				assertEquals(this.multiInstrumentList.getDescription(), list.getDescription());
+				assertEquals(this.multiInstrumentList.getInstruments().size(), list.getInstruments().size());
+			}
+			else {
+				fail("The scan contains an unrelated list.");
+			}
+		}
 	}
 }
