@@ -1,0 +1,98 @@
+package backend.dao.scan;
+
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+
+import backend.dao.ObjectUnchangedException;
+import backend.model.scan.Scan;
+
+/**
+ * Provides access to scan database persistence using Hibernate.
+ * 
+ * @author Michael
+ */
+public class ScanHibernateDAO implements ScanDAO {
+	/**
+	 * Factory for database session.
+	 */
+	protected EntityManagerFactory sessionFactory;
+	
+	
+	/**
+	 * Default constructor.
+	 * 
+	 * @param sessionFactory
+	 */
+	public ScanHibernateDAO(final EntityManagerFactory sessionFactory) {
+		this.sessionFactory = sessionFactory;
+	}
+	
+	
+	@Override
+	public void insertScan(Scan scan) throws Exception {
+		EntityManager entityManager = this.sessionFactory.createEntityManager();
+		entityManager.getTransaction().begin();
+		
+		try {
+			entityManager.persist(scan);
+			entityManager.flush();	//Assures, that the generated ID is available.
+			entityManager.getTransaction().commit();
+		}
+		catch(Exception exception) {
+			//If something breaks a rollback is necessary!?
+			if(entityManager.getTransaction().isActive())
+				entityManager.getTransaction().rollback();
+			throw exception;
+		}
+		finally {
+			entityManager.close();			
+		}
+	}
+
+	
+	@Override
+	public void deleteScan(Scan scan) throws Exception {
+		EntityManager entityManager = this.sessionFactory.createEntityManager();
+		
+		//In order to successfully delete an entity, it first has to be fetched from the database.
+		Scan deleteScan = entityManager.find(Scan.class, scan.getId());
+		
+		entityManager.getTransaction().begin();
+		
+		try {
+			entityManager.remove(deleteScan);
+			entityManager.getTransaction().commit();			
+		}
+		catch(Exception exception) {
+			//If something breaks a rollback is necessary.
+			if(entityManager.getTransaction().isActive())
+				entityManager.getTransaction().rollback();
+			throw exception;
+		}
+		finally {
+			entityManager.close();			
+		}
+	}
+
+	
+	@Override
+	public List<Scan> getScans() throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	
+	@Override
+	public Scan getScan(Integer id) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	
+	@Override
+	public void updateScan(Scan scan) throws ObjectUnchangedException, Exception {
+		// TODO Auto-generated method stub
+	}
+}
