@@ -12,6 +12,8 @@ import backend.dao.list.ListDAO;
 import backend.dao.list.ListHibernateDAO;
 import backend.dao.priceAlert.PriceAlertDAO;
 import backend.dao.priceAlert.PriceAlertHibernateDAO;
+import backend.dao.scan.ScanDAO;
+import backend.dao.scan.ScanHibernateDAO;
 
 /**
  * Manages a central database connection and provides DAOs for database access.
@@ -34,7 +36,6 @@ public class DAOManager implements Closeable {
 	 */
 	private PriceAlertDAO priceAlertDAO;
 	
-	
 	/**
 	 * DAO to access instruments.
 	 */
@@ -44,6 +45,11 @@ public class DAOManager implements Closeable {
 	 * DAO to access lists.
 	 */
 	private ListDAO listDAO;
+	
+	/**
+	 * DAO to access scans.
+	 */
+	private ScanDAO scanDAO;
 	
 	
 	/**
@@ -114,6 +120,19 @@ public class DAOManager implements Closeable {
 			this.listDAO = new ListHibernateDAO(this.sessionFactory);
 		
 		return this.listDAO;
+	}
+	
+	
+	/**
+	 * Returns a DAO to access scan data.
+	 * 
+	 * @return The ScanDAO.
+	 */
+	public ScanDAO getScanDAO() {
+		if(this.scanDAO == null)
+			this.scanDAO = new ScanHibernateDAO(this.sessionFactory);
+		
+		return this.scanDAO;
 	}
 
 	
