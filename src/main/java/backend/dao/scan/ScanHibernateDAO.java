@@ -7,6 +7,10 @@ import java.util.Map;
 import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 import backend.dao.ObjectUnchangedException;
 import backend.model.scan.Scan;
@@ -82,8 +86,38 @@ public class ScanHibernateDAO implements ScanDAO {
 	
 	@Override
 	public List<Scan> getScans() throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		List<Scan> scans = null;
+		EntityManager entityManager = this.sessionFactory.createEntityManager();
+		
+		//Use entity graphs to load data of referenced list instances.
+		EntityGraph<Scan> graph = entityManager.createEntityGraph(Scan.class);
+		graph.addAttributeNodes("lists");
+		
+		entityManager.getTransaction().begin();
+		
+		try {
+			CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+			CriteriaQuery<Scan> criteriaQuery = criteriaBuilder.createQuery(Scan.class);
+			Root<Scan> criteria = criteriaQuery.from(Scan.class);
+			criteriaQuery.select(criteria);
+			criteriaQuery.orderBy(criteriaBuilder.asc(criteria.get("id")));	//Order by id ascending
+			TypedQuery<Scan> typedQuery = entityManager.createQuery(criteriaQuery);
+			typedQuery.setHint("javax.persistence.loadgraph", graph);	//Also fetch all instrument data.
+			scans = typedQuery.getResultList();
+			
+			entityManager.getTransaction().commit();			
+		}
+		catch(Exception exception) {
+			//If something breaks a rollback is necessary.
+			if(entityManager.getTransaction().isActive())
+				entityManager.getTransaction().rollback();
+			throw exception;
+		}
+		finally {
+			entityManager.close();			
+		}
+		
+		return scans;
 	}
 
 	

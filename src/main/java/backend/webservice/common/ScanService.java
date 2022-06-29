@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import backend.dao.DAOManager;
 import backend.dao.scan.ScanDAO;
 import backend.model.scan.Scan;
+import backend.model.scan.ScanArray;
 import backend.model.webservice.WebServiceMessage;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
@@ -74,5 +75,28 @@ public class ScanService {
 		}
 		
 		return getScanResult;
+	}
+	
+	
+	/**
+	 * Provides a list of all scans.
+	 * 
+	 * @return A list of all scans.
+	 */
+	public WebServiceResult getScans() {
+		ScanArray scans = new ScanArray();
+		WebServiceResult getScansResult = new WebServiceResult(null);
+		
+		try {
+			scans.setScans(scanDAO.getScans());
+			getScansResult.setData(scans);
+		} catch (Exception e) {
+			getScansResult.addMessage(new WebServiceMessage(
+					WebServiceMessageType.E, this.resources.getString("scan.getScansError")));
+			
+			logger.error(this.resources.getString("scan.getScansError"), e);
+		}
+		
+		return getScansResult;
 	}
 }

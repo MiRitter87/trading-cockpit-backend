@@ -25,6 +25,7 @@ import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.list.List;
 import backend.model.scan.Scan;
+import backend.model.scan.ScanArray;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
 import backend.tools.WebServiceTools;
@@ -400,5 +401,82 @@ public class ScanServiceTest {
 		expectedErrorMessage = MessageFormat.format(this.resources.getString("scan.notFound"), unknownScanId);
 		actualErrorMessage = getScanResult.getMessages().get(0).getText();
 		assertEquals(expectedErrorMessage, actualErrorMessage);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of all scans.
+	 */
+	public void testGetAllScans() {
+		WebServiceResult getScansResult;
+		ScanArray scans;
+		Scan scan;
+		List list;
+		Iterator<List> listIterator;
+		
+		//Get the scans.
+		ScanService service = new ScanService();
+		getScansResult = service.getScans();
+		scans = (ScanArray) getScansResult.getData();
+		
+		//Assure no error message exists
+		assertTrue(WebServiceTools.resultContainsErrorMessage(getScansResult) == false);
+		
+		//Check if two scans are returned.
+		assertEquals(2, scans.getScans().size());
+		
+		//Check all scans by each attribute.
+		//First scan
+		scan = scans.getScans().get(0);
+		assertEquals(this.singleListScan.getId(), scan.getId());
+		assertEquals(this.singleListScan.getName(), scan.getName());
+		assertEquals(this.singleListScan.getDescription(), scan.getDescription());
+		assertEquals(this.singleListScan.getLastScan(), scan.getLastScan());
+		assertEquals(this.singleListScan.isRunning(), scan.isRunning());
+		assertEquals(this.singleListScan.getPercentCompleted(), scan.getPercentCompleted());
+				
+		//The scan should have one list.
+		assertEquals(this.singleListScan.getLists().size(), scan.getLists().size());
+		
+		//Check the attributes of the list.
+		list = scan.getLists().iterator().next();
+		assertEquals(this.singleInstrumentList.getId(), list.getId());
+		assertEquals(this.singleInstrumentList.getName(), list.getName());
+		assertEquals(this.singleInstrumentList.getDescription(), list.getDescription());
+		assertEquals(this.singleInstrumentList.getInstruments().size(), list.getInstruments().size());
+		
+		//Second scan
+		scan = scans.getScans().get(1);
+		assertEquals(this.multiListScan.getId(), scan.getId());
+		assertEquals(this.multiListScan.getName(), scan.getName());
+		assertEquals(this.multiListScan.getDescription(), scan.getDescription());
+		assertEquals(this.multiListScan.getLastScan(), scan.getLastScan());
+		assertEquals(this.multiListScan.isRunning(), scan.isRunning());
+		assertEquals(this.multiListScan.getPercentCompleted(), scan.getPercentCompleted());
+		
+		//The scan should have two lists.
+		assertEquals(this.multiListScan.getLists().size(), scan.getLists().size());
+		
+		listIterator = scan.getLists().iterator();
+		while(listIterator.hasNext()) {
+			list = listIterator.next();
+			
+			if(list.getId().equals(this.singleInstrumentList.getId())) {
+				assertEquals(this.singleInstrumentList.getId(), list.getId());
+				assertEquals(this.singleInstrumentList.getName(), list.getName());
+				assertEquals(this.singleInstrumentList.getDescription(), list.getDescription());
+				assertEquals(this.singleInstrumentList.getInstruments().size(), list.getInstruments().size());
+			}
+			else if(list.getId().equals(this.multiInstrumentList.getId())) {
+				assertEquals(this.multiInstrumentList.getId(), list.getId());
+				assertEquals(this.multiInstrumentList.getName(), list.getName());
+				assertEquals(this.multiInstrumentList.getDescription(), list.getDescription());
+				assertEquals(this.multiInstrumentList.getInstruments().size(), list.getInstruments().size());
+			}
+			else {
+				fail("The scan contains an unrelated list.");
+			}
+		}
 	}
 }
