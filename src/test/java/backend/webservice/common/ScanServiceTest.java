@@ -545,4 +545,34 @@ public class ScanServiceTest {
 		actualErrorMessage = deleteScanResult.getMessages().get(0).getText();
 		assertEquals(expectedErrorMessage, actualErrorMessage);
 	}
+	
+	
+	@Test
+	/**
+	 * Tests updating a scan with valid data.
+	 */
+	public void testUpdateValidScan() {
+		WebServiceResult updateScanResult;
+		Scan updatedScan;
+		ScanService service = new ScanService();
+		
+		//Update the name.
+		this.singleListScan.setName("Single list - Updated name");
+		updateScanResult = service.updateScan(this.singleListScan);
+		
+		//Assure no error message exists
+		assertTrue(WebServiceTools.resultContainsErrorMessage(updateScanResult) == false);
+		
+		//There should be a success message
+		assertTrue(updateScanResult.getMessages().size() == 1);
+		assertTrue(updateScanResult.getMessages().get(0).getType() == WebServiceMessageType.S);
+		
+		//Retrieve the updated scan and check if the changes have been persisted.
+		try {
+			updatedScan = scanDAO.getScan(this.singleListScan.getId());
+			assertEquals(this.singleListScan.getName(), updatedScan.getName());
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
 }

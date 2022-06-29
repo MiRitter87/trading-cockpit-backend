@@ -136,4 +136,42 @@ public class ScanService {
 		
 		return deleteScanResult;
 	}
+	
+	
+	/**
+	 * Updates an existing scan.
+	 * 
+	 * @param scan The scan to be updated.
+	 * @return The result of the update function.
+	 */
+	public WebServiceResult updateScan(final Scan scan) {
+		WebServiceResult updateScanResult = new WebServiceResult(null);
+		
+		//Validation of the given list.
+//		try {
+//			list.validate();
+//		} catch (Exception validationException) {
+//			updateListResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, validationException.getMessage()));
+//			return updateListResult;
+//		}
+		
+		//Update scan if validation is successful.
+		try {
+			this.scanDAO.updateScan(scan);
+			updateScanResult.addMessage(new WebServiceMessage(WebServiceMessageType.S, 
+					MessageFormat.format(this.resources.getString("scan.updateSuccess"), scan.getId())));
+		} 
+//		catch(ObjectUnchangedException objectUnchangedException) {
+//			updateListResult.addMessage(new WebServiceMessage(WebServiceMessageType.I, 
+//					MessageFormat.format(this.resources.getString("list.updateUnchanged"), list.getId())));
+//		}
+		catch (Exception e) {
+			updateScanResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
+					MessageFormat.format(this.resources.getString("scan.updateError"), scan.getId())));
+			
+			logger.error(MessageFormat.format(this.resources.getString("scan.updateError"), scan.getId()), e);
+		}
+		
+		return updateScanResult;
+	}
 }

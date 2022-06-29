@@ -142,6 +142,14 @@ public class ScanHibernateDAO implements ScanDAO {
 	
 	@Override
 	public void updateScan(Scan scan) throws ObjectUnchangedException, Exception {
-		// TODO Auto-generated method stub
+		EntityManager entityManager;
+		
+		//this.checkScanDataChanged(scan);
+		
+		entityManager = this.sessionFactory.createEntityManager();
+		entityManager.getTransaction().begin();
+		entityManager.merge(scan);
+		entityManager.getTransaction().commit();
+		entityManager.close();
 	}
 }
