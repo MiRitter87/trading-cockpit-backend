@@ -479,4 +479,46 @@ public class ScanServiceTest {
 			}
 		}
 	}
+	
+	
+	@Test
+	/**
+	 * Tests deletion of a scan.
+	 */
+	public void testDeleteScan() {
+		WebServiceResult deleteScanResult;
+		Scan deletedScan;
+		
+		try {
+			//Delete scan using the service.
+			ScanService service = new ScanService();
+			deleteScanResult = service.deleteScan(this.singleListScan.getId());
+			
+			//There should be no error messages
+			assertTrue(WebServiceTools.resultContainsErrorMessage(deleteScanResult) == false);
+			
+			//There should be a success message
+			assertTrue(deleteScanResult.getMessages().size() == 1);
+			assertTrue(deleteScanResult.getMessages().get(0).getType() == WebServiceMessageType.S);
+			
+			//Check if the scan is missing using the DAO.
+			deletedScan = scanDAO.getScan(this.singleListScan.getId());
+			
+			if(deletedScan != null)
+				fail("The single list scan is still persisted but should have been deleted by the WebService operation 'deleteScan'.");
+		}
+		catch (Exception e) {
+			fail(e.getMessage());
+		}
+		finally {
+			//Restore old database state by adding the scan that has been deleted previously.
+			try {
+				this.singleListScan = this.getSingleListScan();
+				scanDAO.insertScan(this.singleListScan);
+			} 
+			catch (Exception e) {
+				fail(e.getMessage());
+			}
+		}
+	}
 }

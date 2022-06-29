@@ -99,4 +99,41 @@ public class ScanService {
 		
 		return getScansResult;
 	}
+	
+	
+	/**
+	 * Deletes the scan with the given id.
+	 * 
+	 * @param id The id of the scan to be deleted.
+	 * @return The result of the delete function.
+	 */
+	public WebServiceResult deleteScan(final Integer id) {
+		WebServiceResult deleteScanResult = new WebServiceResult(null);
+		Scan scan = null;
+		
+		//Check if a list with the given id exists.
+		try {
+			scan = this.scanDAO.getScan(id);
+			
+			if(scan != null) {
+				//Delete scan if exists.
+				this.scanDAO.deleteScan(scan);
+				deleteScanResult.addMessage(new WebServiceMessage(WebServiceMessageType.S, 
+						MessageFormat.format(this.resources.getString("scan.deleteSuccess"), id)));
+			}
+//			else {
+//				//List not found.
+//				deleteListResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
+//						MessageFormat.format(this.resources.getString("list.notFound"), id)));
+//			}
+		}
+		catch (Exception e) {
+			deleteScanResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
+					MessageFormat.format(this.resources.getString("scan.deleteError"), id)));
+			
+			logger.error(MessageFormat.format(this.resources.getString("scan.deleteError"), id), e);
+		}
+		
+		return deleteScanResult;
+	}
 }
