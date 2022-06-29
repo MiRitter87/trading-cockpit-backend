@@ -1,11 +1,14 @@
 package backend.webservice.common;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.Iterator;
+import java.util.ResourceBundle;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -22,6 +25,7 @@ import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.list.List;
 import backend.model.scan.Scan;
+import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
 import backend.tools.WebServiceTools;
 
@@ -31,6 +35,11 @@ import backend.tools.WebServiceTools;
  * @author Michael
  */
 public class ScanServiceTest {
+	/**
+	 * Access to localized application resources.
+	 */
+	private ResourceBundle resources = ResourceBundle.getBundle("backend");		
+	
 	/**
 	 * DAO to access instrument data.
 	 */
@@ -364,5 +373,32 @@ public class ScanServiceTest {
 				fail("The scan contains an unrelated list.");
 			}
 		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of a scan with an id that is unknown.
+	 */
+	public void testGetScanWithUnknownId() {
+		WebServiceResult getScanResult;
+		final Integer unknownScanId = 0;
+		String expectedErrorMessage, actualErrorMessage;
+		
+		//Get the scan.
+		ScanService service = new ScanService();
+		getScanResult = service.getScan(unknownScanId);
+		
+		//Assure that no scan is returned
+		assertNull(getScanResult.getData());
+				
+		//There should be a return message of type E.
+		assertTrue(getScanResult.getMessages().size() == 1);
+		assertTrue(getScanResult.getMessages().get(0).getType() == WebServiceMessageType.E);
+		
+		//Verify the expected error message.
+		expectedErrorMessage = MessageFormat.format(this.resources.getString("scan.notFound"), unknownScanId);
+		actualErrorMessage = getScanResult.getMessages().get(0).getText();
+		assertEquals(expectedErrorMessage, actualErrorMessage);
 	}
 }

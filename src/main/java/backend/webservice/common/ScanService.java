@@ -61,9 +61,9 @@ public class ScanService {
 				getScanResult.setData(scan);
 			}
 			else {
-				//List not found
-//				getListResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
-//						MessageFormat.format(this.resources.getString("list.notFound"), id)));
+				//Scan not found
+				getScanResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
+						MessageFormat.format(this.resources.getString("scan.notFound"), id)));
 			}
 		}
 		catch (Exception e) {
