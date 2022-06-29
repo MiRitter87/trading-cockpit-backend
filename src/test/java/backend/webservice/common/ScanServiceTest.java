@@ -521,4 +521,28 @@ public class ScanServiceTest {
 			}
 		}
 	}
+	
+	
+	@Test
+	/**
+	 * Tests deletion of a scan with an unknown ID.
+	 */
+	public void testDeleteScanWithUnknownId() {
+		WebServiceResult deleteScanResult;
+		final Integer unknownScanId = 0;
+		String expectedErrorMessage, actualErrorMessage;
+		
+		//Delete the scan.
+		ScanService service = new ScanService();
+		deleteScanResult = service.deleteScan(unknownScanId);
+		
+		//There should be a return message of type E.
+		assertTrue(deleteScanResult.getMessages().size() == 1);
+		assertTrue(deleteScanResult.getMessages().get(0).getType() == WebServiceMessageType.E);
+		
+		//Verify the expected error message.
+		expectedErrorMessage = MessageFormat.format(this.resources.getString("scan.notFound"), unknownScanId);
+		actualErrorMessage = deleteScanResult.getMessages().get(0).getText();
+		assertEquals(expectedErrorMessage, actualErrorMessage);
+	}
 }

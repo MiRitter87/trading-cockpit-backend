@@ -121,11 +121,11 @@ public class ScanService {
 				deleteScanResult.addMessage(new WebServiceMessage(WebServiceMessageType.S, 
 						MessageFormat.format(this.resources.getString("scan.deleteSuccess"), id)));
 			}
-//			else {
-//				//List not found.
-//				deleteListResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
-//						MessageFormat.format(this.resources.getString("list.notFound"), id)));
-//			}
+			else {
+				//Scan not found.
+				deleteScanResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
+						MessageFormat.format(this.resources.getString("scan.notFound"), id)));
+			}
 		}
 		catch (Exception e) {
 			deleteScanResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
