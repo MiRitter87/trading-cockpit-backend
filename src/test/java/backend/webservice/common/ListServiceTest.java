@@ -593,7 +593,7 @@ public class ListServiceTest {
 			fail(e.getMessage());
 		}
 		finally {
-			//Delete the newly added price alert.
+			//Delete the newly added list.
 			try {
 				listDAO.deleteList(newList);
 			} 

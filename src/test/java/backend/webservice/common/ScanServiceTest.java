@@ -1,6 +1,7 @@
 package backend.webservice.common;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -623,5 +624,70 @@ public class ScanServiceTest {
 		expectedErrorMessage = MessageFormat.format(this.resources.getString("scan.updateUnchanged"), this.singleListScan.getId());
 		actualErrorMessage = updateScanResult.getMessages().get(0).getText();
 		assertEquals(expectedErrorMessage, actualErrorMessage);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests adding of a new scan.
+	 */
+	public void testAddValidScan() {
+		Scan newScan = new Scan();
+		Scan addedScan;
+		WebServiceResult addScanResult;
+		ScanService service = new ScanService();
+		List list;
+		
+		//Define the new Scan.
+		newScan.setName("New Scan");
+		newScan.setDescription("A new scan with a single list.");
+		newScan.addList(this.singleInstrumentList);
+		
+		//Add the new scan to the database via WebService
+		addScanResult = service.addScan(newScan);
+		
+		//Assure no error message exists
+		assertTrue(WebServiceTools.resultContainsErrorMessage(addScanResult) == false);
+		
+		//There should be a success message
+		assertTrue(addScanResult.getMessages().size() == 1);
+		assertTrue(addScanResult.getMessages().get(0).getType() == WebServiceMessageType.S);
+		
+		//The ID of the newly created scan should be provided in the data part of the WebService return.
+		assertNotNull(addScanResult.getData());
+		assertTrue(addScanResult.getData() instanceof Integer);
+		newScan.setId((Integer) addScanResult.getData());
+		
+		//Read the persisted scan via DAO
+		try {
+			addedScan = scanDAO.getScan(newScan.getId());
+			
+			//Check if the scan read by the DAO equals the scan inserted using the WebService in each attribute.
+			assertEquals(newScan.getId(), addedScan.getId());
+			assertEquals(newScan.getName(), addedScan.getName());
+			assertEquals(newScan.getDescription(), addedScan.getDescription());
+			assertEquals(newScan.getLastScan(), addedScan.getLastScan());
+			assertEquals(newScan.isRunning(), addedScan.isRunning());
+			assertEquals(newScan.getPercentCompleted(), addedScan.getPercentCompleted());
+			assertEquals(newScan.getLists().size(), addedScan.getLists().size());
+			
+			//Check the attributes of the list.
+			list = addedScan.getLists().iterator().next();
+			assertEquals(this.singleInstrumentList.getId(), list.getId());
+			assertEquals(this.singleInstrumentList.getName(), list.getName());
+			assertEquals(this.singleInstrumentList.getDescription(), list.getDescription());
+			assertEquals(this.singleInstrumentList.getInstruments().size(), list.getInstruments().size());
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+		finally {
+			//Delete the newly added scan.
+			try {
+				scanDAO.deleteScan(newScan);
+			} 
+			catch (Exception e) {
+				fail(e.getMessage());
+			}
+		}		
 	}
 }

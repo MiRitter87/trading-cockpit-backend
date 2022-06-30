@@ -175,4 +175,36 @@ public class ScanService {
 		
 		return updateScanResult;
 	}
+	
+	
+	/**
+	 * Adds a scan.
+	 * 
+	 * @param scan The scan to be added.
+	 * @return The result of the add function.
+	 */
+	public WebServiceResult addScan(final Scan scan) {
+		WebServiceResult addScanResult = new WebServiceResult();
+		
+		//Validate the given list.
+//		try {
+//			list.validate();
+//		} catch (Exception validationException) {
+//			addListResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, validationException.getMessage()));
+//			return addListResult;
+//		}
+		
+		//Insert scan if validation is successful.
+		try {
+			this.scanDAO.insertScan(scan);
+			addScanResult.addMessage(new WebServiceMessage(WebServiceMessageType.S, this.resources.getString("scan.addSuccess")));
+			addScanResult.setData(scan.getId());
+		} 
+		catch (Exception e) {
+			addScanResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, this.resources.getString("scan.addError")));
+			logger.error(this.resources.getString("scan.addError"), e);
+		}
+		
+		return addScanResult;
+	}
 }

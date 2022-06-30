@@ -194,7 +194,7 @@ public class ListService {
 			return addListResult;
 		}
 		
-		//Insert instrument if validation is successful.
+		//Insert list if validation is successful.
 		try {
 			this.listDAO.insertList(list);
 			addListResult.addMessage(new WebServiceMessage(WebServiceMessageType.S, this.resources.getString("list.addSuccess")));
