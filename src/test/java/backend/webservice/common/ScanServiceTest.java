@@ -29,6 +29,7 @@ import backend.model.scan.ScanArray;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
 import backend.tools.WebServiceTools;
+import backend.tools.test.ValidationMessageProvider;
 
 /**
  * Tests the scan service.
@@ -574,5 +575,30 @@ public class ScanServiceTest {
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests updating a scan with invalid data.
+	 */
+	public void testUpdateInvalidScan() {
+		WebServiceResult updateScanResult;
+		ScanService service = new ScanService();
+		ValidationMessageProvider messageProvider = new ValidationMessageProvider();
+		String actualErrorMessage, expectedErrorMessage;
+		
+		//No name is given.
+		this.singleListScan.setName(null);
+		updateScanResult = service.updateScan(this.singleListScan);
+		
+		//There should be a return message of type E.
+		assertTrue(updateScanResult.getMessages().size() == 1);
+		assertTrue(updateScanResult.getMessages().get(0).getType() == WebServiceMessageType.E);
+		
+		//A proper message should be provided.
+		expectedErrorMessage = messageProvider.getNotNullValidationMessage("scan", "name");
+		actualErrorMessage = updateScanResult.getMessages().get(0).getText();
+		assertEquals(expectedErrorMessage, actualErrorMessage);
 	}
 }

@@ -148,12 +148,12 @@ public class ScanService {
 		WebServiceResult updateScanResult = new WebServiceResult(null);
 		
 		//Validation of the given list.
-//		try {
-//			list.validate();
-//		} catch (Exception validationException) {
-//			updateListResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, validationException.getMessage()));
-//			return updateListResult;
-//		}
+		try {
+			scan.validate();
+		} catch (Exception validationException) {
+			updateScanResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, validationException.getMessage()));
+			return updateScanResult;
+		}
 		
 		//Update scan if validation is successful.
 		try {

@@ -497,7 +497,7 @@ public class ListServiceTest {
 	/**
 	 * Tests updating a list with invalid data.
 	 */
-	public void testUpdateInvalidInstrument() {
+	public void testUpdateInvalidList() {
 		WebServiceResult updateListResult;
 		ListService service = new ListService();
 		ValidationMessageProvider messageProvider = new ValidationMessageProvider();
