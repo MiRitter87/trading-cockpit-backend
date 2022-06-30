@@ -601,4 +601,27 @@ public class ScanServiceTest {
 		actualErrorMessage = updateScanResult.getMessages().get(0).getText();
 		assertEquals(expectedErrorMessage, actualErrorMessage);
 	}
+	
+	
+	@Test
+	/**
+	 * Tests updating a scan without changing any data.
+	 */
+	public void testUpdateUnchangedList() {
+		WebServiceResult updateScanResult;
+		ScanService service = new ScanService();
+		String actualErrorMessage, expectedErrorMessage;
+		
+		//Update scan without changing any data.
+		updateScanResult = service.updateScan(this.singleListScan);
+		
+		//There should be a return message of type I
+		assertTrue(updateScanResult.getMessages().size() == 1);
+		assertTrue(updateScanResult.getMessages().get(0).getType() == WebServiceMessageType.I);
+		
+		//A proper message should be provided.
+		expectedErrorMessage = MessageFormat.format(this.resources.getString("scan.updateUnchanged"), this.singleListScan.getId());
+		actualErrorMessage = updateScanResult.getMessages().get(0).getText();
+		assertEquals(expectedErrorMessage, actualErrorMessage);
+	}
 }

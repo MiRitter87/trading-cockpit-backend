@@ -7,6 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import backend.dao.DAOManager;
+import backend.dao.ObjectUnchangedException;
 import backend.dao.scan.ScanDAO;
 import backend.model.scan.Scan;
 import backend.model.scan.ScanArray;
@@ -161,10 +162,10 @@ public class ScanService {
 			updateScanResult.addMessage(new WebServiceMessage(WebServiceMessageType.S, 
 					MessageFormat.format(this.resources.getString("scan.updateSuccess"), scan.getId())));
 		} 
-//		catch(ObjectUnchangedException objectUnchangedException) {
-//			updateListResult.addMessage(new WebServiceMessage(WebServiceMessageType.I, 
-//					MessageFormat.format(this.resources.getString("list.updateUnchanged"), list.getId())));
-//		}
+		catch(ObjectUnchangedException objectUnchangedException) {
+			updateScanResult.addMessage(new WebServiceMessage(WebServiceMessageType.I, 
+					MessageFormat.format(this.resources.getString("scan.updateUnchanged"), scan.getId())));
+		}
 		catch (Exception e) {
 			updateScanResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
 					MessageFormat.format(this.resources.getString("scan.updateError"), scan.getId())));

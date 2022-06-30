@@ -144,12 +144,27 @@ public class ScanHibernateDAO implements ScanDAO {
 	public void updateScan(Scan scan) throws ObjectUnchangedException, Exception {
 		EntityManager entityManager;
 		
-		//this.checkScanDataChanged(scan);
+		this.checkScanDataChanged(scan);
 		
 		entityManager = this.sessionFactory.createEntityManager();
 		entityManager.getTransaction().begin();
 		entityManager.merge(scan);
 		entityManager.getTransaction().commit();
 		entityManager.close();
+	}
+	
+	
+	/**
+	 * Checks if the data of the given scan differ from the scan that is persisted at database level.
+	 * 
+	 * @param scan The scan to be checked.
+	 * @throws ObjectUnchangedException In case the scan has not been changed.
+	 * @throws Exception In case an error occurred during determination of the scan stored at the database.
+	 */
+	private void checkScanDataChanged(final Scan scan) throws ObjectUnchangedException, Exception {
+		Scan databaseScan = this.getScan(scan.getId());
+		
+		if(databaseScan.equals(scan))
+			throw new ObjectUnchangedException();
 	}
 }

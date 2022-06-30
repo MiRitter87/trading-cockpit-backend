@@ -216,6 +216,126 @@ public class Scan {
 	}
 	
 	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((description == null) ? 0 : description.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + (isRunning ? 1231 : 1237);
+		result = prime * result + ((lastScan == null) ? 0 : lastScan.hashCode());
+		result = prime * result + ((lists == null) ? 0 : lists.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((percentCompleted == null) ? 0 : percentCompleted.hashCode());
+		return result;
+	}
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		Scan other = (Scan) obj;
+		if (description == null) {
+			if (other.description != null) {
+				return false;
+			}
+		} else if (!description.equals(other.description)) {
+			return false;
+		}
+		if (id == null) {
+			if (other.id != null) {
+				return false;
+			}
+		} else if (!id.equals(other.id)) {
+			return false;
+		}
+		if (isRunning != other.isRunning) {
+			return false;
+		}
+		if (lastScan == null && other.lastScan != null)
+			return false;
+		if (lastScan != null && other.lastScan == null)
+			return false;
+		if(lastScan != null && other.lastScan != null) {
+			if (lastScan.getTime() != other.lastScan.getTime())
+				return false;
+		}	
+		if (name == null) {
+			if (other.name != null) {
+				return false;
+			}
+		} else if (!name.equals(other.name)) {
+			return false;
+		}
+		if (percentCompleted == null) {
+			if (other.percentCompleted != null) {
+				return false;
+			}
+		} else if (!percentCompleted.equals(other.percentCompleted)) {
+			return false;
+		}
+		
+		if(this.areListsEqual(other) == false)
+			return false;
+		
+		return true;
+	}
+	
+	
+	/**
+	 * Checks if the list of lists is equal.
+	 * 
+	 * @param other The other scan for comparison.
+	 * @return true, if lists are equal; false otherwise.
+	 */
+	private boolean areListsEqual(Scan other) {
+		if (this.lists == null && other.lists != null)
+			return false;
+		
+		if (this.lists != null && other.lists == null)
+			return false;
+		
+		if(this.lists.size() != other.lists.size())
+			return false;
+		
+		for(List tempList:this.lists) {
+			List otherList = other.getListWithId(tempList.getId());
+			
+			if(otherList == null)
+				return false;
+			
+			if(!tempList.equals(otherList))
+				return false;
+		}
+		
+		return true;
+	}
+	
+	
+	/**
+	 * Gets the list with the given id.
+	 * 
+	 * @param id The id of the list.
+	 * @return The list with the given id, if found.
+	 */
+	public List getListWithId(Integer id) {
+		for(List tempList:this.lists) {
+			if(tempList.getId().equals(id))
+				return tempList;
+		}
+		
+		return null;
+	}
+
+
 	/**
 	 * Adds a list to the scan.
 	 * 
