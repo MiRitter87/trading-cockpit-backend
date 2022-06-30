@@ -690,4 +690,29 @@ public class ScanServiceTest {
 			}
 		}		
 	}
+	
+	
+	@Test
+	/**
+	 * Tests adding of an invalid scan.
+	 */
+	public void testAddInvalidScan() {
+		Scan newScan = new Scan();
+		WebServiceResult addScanResult;
+		ScanService service = new ScanService();
+		
+		//Define the new scan without a list.
+		newScan.setName("New Scan");
+		newScan.setDescription("A new scan without a list.");
+		
+		//Add a new scan to the database via WebService
+		addScanResult = service.addScan(newScan);
+		
+		//There should be a return message of type E.
+		assertTrue(addScanResult.getMessages().size() == 1);
+		assertTrue(addScanResult.getMessages().get(0).getType() == WebServiceMessageType.E);
+		
+		//The new scan should not have been persisted
+		assertNull(newScan.getId());
+	}
 }

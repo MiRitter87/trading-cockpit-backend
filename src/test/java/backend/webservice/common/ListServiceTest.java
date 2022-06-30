@@ -615,7 +615,7 @@ public class ListServiceTest {
 		
 		//Define the new list without an instrument.
 		newList.setName("New List");
-		newList.setDescription("A new list with a single instrument.");
+		newList.setDescription("A new list without an instrument.");
 		
 		//Add a new list to the database via WebService
 		addListResult = service.addList(newList);
@@ -624,7 +624,7 @@ public class ListServiceTest {
 		assertTrue(addListResult.getMessages().size() == 1);
 		assertTrue(addListResult.getMessages().get(0).getType() == WebServiceMessageType.E);
 		
-		//The new instrument should not have been persisted
+		//The new list should not have been persisted
 		assertNull(newList.getId());
 	}
 }

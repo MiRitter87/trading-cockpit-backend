@@ -186,13 +186,13 @@ public class ScanService {
 	public WebServiceResult addScan(final Scan scan) {
 		WebServiceResult addScanResult = new WebServiceResult();
 		
-		//Validate the given list.
-//		try {
-//			list.validate();
-//		} catch (Exception validationException) {
-//			addListResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, validationException.getMessage()));
-//			return addListResult;
-//		}
+		//Validate the given scan.
+		try {
+			scan.validate();
+		} catch (Exception validationException) {
+			addScanResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, validationException.getMessage()));
+			return addScanResult;
+		}
 		
 		//Insert scan if validation is successful.
 		try {
