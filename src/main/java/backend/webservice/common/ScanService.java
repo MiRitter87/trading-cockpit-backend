@@ -112,7 +112,7 @@ public class ScanService {
 		WebServiceResult deleteScanResult = new WebServiceResult(null);
 		Scan scan = null;
 		
-		//Check if a list with the given id exists.
+		//Check if a scan with the given id exists.
 		try {
 			scan = this.scanDAO.getScan(id);
 			
