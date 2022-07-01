@@ -6,6 +6,8 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -70,10 +72,12 @@ public class Scan {
 	private Date lastScan;
 	
 	/**
-	 * Indicates if the scan is currently running.
+	 * The status.
 	 */
-	@Column(name="IS_RUNNING")
-	private boolean isRunning;
+	@Column(name="STATUS", length = 20)
+	@Enumerated(EnumType.STRING)
+	@NotNull(message = "{scan.status.notNull.message}")
+	private ScanStatus status;
 	
 	/**
 	 * The percentage value indicating how much of the scan has been executed.
@@ -98,7 +102,7 @@ public class Scan {
 	 * Default constructor.
 	 */
 	public Scan() {
-		this.isRunning = false;
+		this.status = ScanStatus.FINISHED;
 		this.percentCompleted = 0;
 		this.lists = new HashSet<List>();
 	}
@@ -169,18 +173,18 @@ public class Scan {
 
 
 	/**
-	 * @return the isRunning
+	 * @return the status
 	 */
-	public boolean isRunning() {
-		return isRunning;
+	public ScanStatus getStatus() {
+		return status;
 	}
 
 
 	/**
-	 * @param isRunning the isRunning to set
+	 * @param status the status to set
 	 */
-	public void setRunning(boolean isRunning) {
-		this.isRunning = isRunning;
+	public void setStatus(ScanStatus status) {
+		this.status = status;
 	}
 
 
@@ -222,7 +226,7 @@ public class Scan {
 		int result = 1;
 		result = prime * result + ((description == null) ? 0 : description.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result + (isRunning ? 1231 : 1237);
+		result = prime * result + ((status == null) ? 0 : status.hashCode());
 		result = prime * result + ((lastScan == null) ? 0 : lastScan.hashCode());
 		result = prime * result + ((lists == null) ? 0 : lists.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
@@ -257,7 +261,7 @@ public class Scan {
 		} else if (!id.equals(other.id)) {
 			return false;
 		}
-		if (isRunning != other.isRunning) {
+		if (status != other.status) {
 			return false;
 		}
 		if (lastScan == null && other.lastScan != null)

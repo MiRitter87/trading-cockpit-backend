@@ -225,6 +225,29 @@ public class ScanTest {
 	
 	@Test
 	/**
+	 * Tests validation of a scan whose status is null.
+	 */
+	public void testStatusIsNull() {
+		ValidationMessageProvider messageProvider = new ValidationMessageProvider();		
+		this.scan.setStatus(null);
+		
+		String expectedErrorMessage = messageProvider.getNotNullValidationMessage("scan", "status");
+		String errorMessage = "";
+		
+		try {
+			this.scan.validate();
+			fail("Validation should have failed because status is null.");
+		} 
+		catch (Exception expected) {
+			errorMessage = expected.getMessage();
+		}
+		
+		assertEquals(expectedErrorMessage, errorMessage);
+	}
+	
+	
+	@Test
+	/**
 	 * Tests validation of a scan that has no lists given.
 	 */
 	public void testNoListsGiven() {

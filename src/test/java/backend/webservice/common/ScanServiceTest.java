@@ -349,7 +349,7 @@ public class ScanServiceTest {
 		assertEquals(this.multiListScan.getName(), scan.getName());
 		assertEquals(this.multiListScan.getDescription(), scan.getDescription());
 		assertEquals(this.multiListScan.getLastScan(), scan.getLastScan());
-		assertEquals(this.multiListScan.isRunning(), scan.isRunning());
+		assertEquals(this.multiListScan.getStatus(), scan.getStatus());
 		assertEquals(this.multiListScan.getPercentCompleted(), scan.getPercentCompleted());
 		
 		//The returned scan should have two lists.
@@ -435,7 +435,7 @@ public class ScanServiceTest {
 		assertEquals(this.singleListScan.getName(), scan.getName());
 		assertEquals(this.singleListScan.getDescription(), scan.getDescription());
 		assertEquals(this.singleListScan.getLastScan(), scan.getLastScan());
-		assertEquals(this.singleListScan.isRunning(), scan.isRunning());
+		assertEquals(this.singleListScan.getStatus(), scan.getStatus());
 		assertEquals(this.singleListScan.getPercentCompleted(), scan.getPercentCompleted());
 				
 		//The scan should have one list.
@@ -454,7 +454,7 @@ public class ScanServiceTest {
 		assertEquals(this.multiListScan.getName(), scan.getName());
 		assertEquals(this.multiListScan.getDescription(), scan.getDescription());
 		assertEquals(this.multiListScan.getLastScan(), scan.getLastScan());
-		assertEquals(this.multiListScan.isRunning(), scan.isRunning());
+		assertEquals(this.multiListScan.getStatus(), scan.getStatus());
 		assertEquals(this.multiListScan.getPercentCompleted(), scan.getPercentCompleted());
 		
 		//The scan should have two lists.
@@ -667,7 +667,7 @@ public class ScanServiceTest {
 			assertEquals(newScan.getName(), addedScan.getName());
 			assertEquals(newScan.getDescription(), addedScan.getDescription());
 			assertEquals(newScan.getLastScan(), addedScan.getLastScan());
-			assertEquals(newScan.isRunning(), addedScan.isRunning());
+			assertEquals(newScan.getStatus(), addedScan.getStatus());
 			assertEquals(newScan.getPercentCompleted(), addedScan.getPercentCompleted());
 			assertEquals(newScan.getLists().size(), addedScan.getLists().size());
 			
