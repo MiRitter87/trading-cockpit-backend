@@ -8,9 +8,12 @@ import org.apache.logging.log4j.Logger;
 
 import backend.dao.DAOManager;
 import backend.dao.ObjectUnchangedException;
+import backend.dao.instrument.InstrumentDAO;
 import backend.dao.list.ListDAO;
+import backend.model.instrument.Instrument;
 import backend.model.list.List;
 import backend.model.list.ListArray;
+import backend.model.list.ListWS;
 import backend.model.webservice.WebServiceMessage;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
@@ -25,6 +28,11 @@ public class ListService {
 	 * DAO for list access.
 	 */
 	private ListDAO listDAO;
+	
+	/**
+	 * DAO for instrument access.
+	 */
+	private InstrumentDAO instrumentDAO;
 	
 	/**
 	 * Access to localized application resources.
@@ -42,6 +50,7 @@ public class ListService {
 	 */
 	public ListService() {
 		this.listDAO = DAOManager.getInstance().getListDAO();
+		this.instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
 	}
 	
 	
@@ -145,12 +154,24 @@ public class ListService {
 	 * @param list The list to be updated.
 	 * @return The result of the update function.
 	 */
-	public WebServiceResult updateList(final List list) {
+	public WebServiceResult updateList(final ListWS list) {
+		List convertedList = new List();
 		WebServiceResult updateListResult = new WebServiceResult(null);
+		
+		//Convert the WebService data transfer object to the internal data model.
+		try {
+			convertedList = this.convertList(list);
+		}
+		catch(Exception exception) {
+			updateListResult.addMessage(new WebServiceMessage(
+					WebServiceMessageType.E, this.resources.getString("list.updateError")));	
+			logger.error(this.resources.getString("list.updateError"), exception);
+			return updateListResult;
+		}
 		
 		//Validation of the given list.
 		try {
-			list.validate();
+			convertedList.validate();
 		} catch (Exception validationException) {
 			updateListResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, validationException.getMessage()));
 			return updateListResult;
@@ -158,7 +179,7 @@ public class ListService {
 		
 		//Update list if validation is successful.
 		try {
-			this.listDAO.updateList(list);
+			this.listDAO.updateList(convertedList);
 			updateListResult.addMessage(new WebServiceMessage(WebServiceMessageType.S, 
 					MessageFormat.format(this.resources.getString("list.updateSuccess"), list.getId())));
 		} 
@@ -183,12 +204,24 @@ public class ListService {
 	 * @param list The list to be added.
 	 * @return The result of the add function.
 	 */
-	public WebServiceResult addList(final List list) {
+	public WebServiceResult addList(final ListWS list) {
+		List convertedList = new List();
 		WebServiceResult addListResult = new WebServiceResult();
+		
+		//Convert the WebService data transfer object to the internal data model.
+		try {
+			convertedList = this.convertList(list);
+		}
+		catch(Exception exception) {
+			addListResult.addMessage(new WebServiceMessage(
+					WebServiceMessageType.E, this.resources.getString("list.addError")));	
+			logger.error(this.resources.getString("list.addError"), exception);
+			return addListResult;
+		}
 		
 		//Validate the given list.
 		try {
-			list.validate();
+			convertedList.validate();
 		} catch (Exception validationException) {
 			addListResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, validationException.getMessage()));
 			return addListResult;
@@ -196,9 +229,9 @@ public class ListService {
 		
 		//Insert list if validation is successful.
 		try {
-			this.listDAO.insertList(list);
+			this.listDAO.insertList(convertedList);
 			addListResult.addMessage(new WebServiceMessage(WebServiceMessageType.S, this.resources.getString("list.addSuccess")));
-			addListResult.setData(list.getId());
+			addListResult.setData(convertedList.getId());
 		} 
 		catch (Exception e) {
 			addListResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, this.resources.getString("list.addError")));
@@ -206,5 +239,31 @@ public class ListService {
 		}
 		
 		return addListResult;
+	}
+	
+	
+	/**
+	 * Converts the lean List representation that is provided by the WebService to the internal data model for further processing.
+	 * 
+	 * @param listWS The lean list representation provided by the WebService.
+	 * @return The List model that is used by the backend internally.
+	 * @throws Exception In case the conversion fails.
+	 */
+	private List convertList(final ListWS listWS) throws Exception {
+		List list = new List();
+		Instrument instrument;
+		
+		//Simple object attributes.
+		list.setId(listWS.getId());
+		list.setName(listWS.getName());
+		list.setDescription(listWS.getDescription());
+		
+		//Convert the instrument IDs into instrument objects.
+		for(Integer instrumentId:listWS.getInstrumentIds()) {
+			instrument = this.instrumentDAO.getInstrument(instrumentId);
+			list.addInstrument(instrument);
+		}
+		
+		return list;
 	}
 }

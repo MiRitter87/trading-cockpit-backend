@@ -10,7 +10,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import backend.model.list.List;
+import backend.model.list.ListWS;
 import backend.model.webservice.WebServiceResult;
 import backend.webservice.common.ListService;
 
@@ -58,7 +58,7 @@ public class ListRestService {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public WebServiceResult addList(final List list) {
+	public WebServiceResult addList(final ListWS list) {
 		ListService listService = new ListService();
 		return listService.addList(list);
 	}
@@ -73,7 +73,7 @@ public class ListRestService {
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public WebServiceResult updateList(final List list) {
+	public WebServiceResult updateList(final ListWS list) {
 		ListService listService = new ListService();
 		return listService.updateList(list);
 	}

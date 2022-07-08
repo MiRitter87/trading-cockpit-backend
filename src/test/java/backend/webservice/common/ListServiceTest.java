@@ -25,6 +25,7 @@ import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.list.List;
 import backend.model.list.ListArray;
+import backend.model.list.ListWS;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
 import backend.tools.WebServiceTools;
@@ -474,7 +475,7 @@ public class ListServiceTest {
 		
 		//Update the name.
 		this.singleInstrumentList.setName("Single instrument - Updated name");
-		updateListResult = service.updateList(this.singleInstrumentList);
+		updateListResult = service.updateList(this.convertToWsList(this.singleInstrumentList));
 		
 		//Assure no error message exists
 		assertTrue(WebServiceTools.resultContainsErrorMessage(updateListResult) == false);
@@ -505,7 +506,7 @@ public class ListServiceTest {
 		
 		//No name is given.
 		this.singleInstrumentList.setName(null);
-		updateListResult = service.updateList(this.singleInstrumentList);
+		updateListResult = service.updateList(this.convertToWsList(this.singleInstrumentList));
 		
 		//There should be a return message of type E.
 		assertTrue(updateListResult.getMessages().size() == 1);
@@ -528,7 +529,7 @@ public class ListServiceTest {
 		String actualErrorMessage, expectedErrorMessage;
 		
 		//Update list without changing any data.
-		updateListResult = service.updateList(this.singleInstrumentList);
+		updateListResult = service.updateList(this.convertToWsList(this.singleInstrumentList));
 		
 		//There should be a return message of type I
 		assertTrue(updateListResult.getMessages().size() == 1);
@@ -558,7 +559,7 @@ public class ListServiceTest {
 		newList.addInstrument(this.microsoftStock);
 		
 		//Add the new list to the database via WebService
-		addListResult = service.addList(newList);
+		addListResult = service.addList(this.convertToWsList(newList));
 		
 		//Assure no error message exists
 		assertTrue(WebServiceTools.resultContainsErrorMessage(addListResult) == false);
@@ -618,7 +619,7 @@ public class ListServiceTest {
 		newList.setDescription("A new list without an instrument.");
 		
 		//Add a new list to the database via WebService
-		addListResult = service.addList(newList);
+		addListResult = service.addList(this.convertToWsList(newList));
 		
 		//There should be a return message of type E.
 		assertTrue(addListResult.getMessages().size() == 1);
@@ -626,5 +627,32 @@ public class ListServiceTest {
 		
 		//The new list should not have been persisted
 		assertNull(newList.getId());
+	}
+	
+	
+	/**
+	 * Converts a list to the lean WebService representation.
+	 * 
+	 * @param list The list to be converted.
+	 * @return The lean WebService representation of the list.
+	 */
+	private ListWS convertToWsList(List list) {
+		ListWS listWS = new ListWS();
+		Iterator<Instrument> instrumentIterator;
+		Instrument instrument;
+		
+		//Head level
+		listWS.setId(list.getId());
+		listWS.setName(list.getName());
+		listWS.setDescription(list.getDescription());
+		
+		//Instruments
+		instrumentIterator = list.getInstruments().iterator();
+		while(instrumentIterator.hasNext()) {
+			instrument = instrumentIterator.next();
+			listWS.getInstrumentIds().add(instrument.getId());
+		}
+		
+		return listWS;
 	}
 }
