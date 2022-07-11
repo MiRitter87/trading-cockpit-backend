@@ -27,6 +27,7 @@ import backend.model.instrument.InstrumentType;
 import backend.model.list.List;
 import backend.model.scan.Scan;
 import backend.model.scan.ScanArray;
+import backend.model.scan.ScanWS;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
 import backend.tools.WebServiceTools;
@@ -560,7 +561,7 @@ public class ScanServiceTest {
 		
 		//Update the name.
 		this.singleListScan.setName("Single list - Updated name");
-		updateScanResult = service.updateScan(this.singleListScan);
+		updateScanResult = service.updateScan(this.convertToWsScan(this.singleListScan));
 		
 		//Assure no error message exists
 		assertTrue(WebServiceTools.resultContainsErrorMessage(updateScanResult) == false);
@@ -591,7 +592,7 @@ public class ScanServiceTest {
 		
 		//No name is given.
 		this.singleListScan.setName(null);
-		updateScanResult = service.updateScan(this.singleListScan);
+		updateScanResult = service.updateScan(this.convertToWsScan(this.singleListScan));
 		
 		//There should be a return message of type E.
 		assertTrue(updateScanResult.getMessages().size() == 1);
@@ -614,7 +615,7 @@ public class ScanServiceTest {
 		String actualErrorMessage, expectedErrorMessage;
 		
 		//Update scan without changing any data.
-		updateScanResult = service.updateScan(this.singleListScan);
+		updateScanResult = service.updateScan(this.convertToWsScan(this.singleListScan));
 		
 		//There should be a return message of type I
 		assertTrue(updateScanResult.getMessages().size() == 1);
@@ -644,7 +645,7 @@ public class ScanServiceTest {
 		newScan.addList(this.singleInstrumentList);
 		
 		//Add the new scan to the database via WebService
-		addScanResult = service.addScan(newScan);
+		addScanResult = service.addScan(this.convertToWsScan(newScan));
 		
 		//Assure no error message exists
 		assertTrue(WebServiceTools.resultContainsErrorMessage(addScanResult) == false);
@@ -706,7 +707,7 @@ public class ScanServiceTest {
 		newScan.setDescription("A new scan without a list.");
 		
 		//Add a new scan to the database via WebService
-		addScanResult = service.addScan(newScan);
+		addScanResult = service.addScan(this.convertToWsScan(newScan));
 		
 		//There should be a return message of type E.
 		assertTrue(addScanResult.getMessages().size() == 1);
@@ -714,5 +715,35 @@ public class ScanServiceTest {
 		
 		//The new scan should not have been persisted
 		assertNull(newScan.getId());
+	}
+	
+	
+	/**
+	 * Converts a Scan to the lean WebService representation.
+	 * 
+	 * @param scan The Scan to be converted.
+	 * @return The lean WebService representation of the Scan.
+	 */
+	private ScanWS convertToWsScan(final Scan scan) {
+		ScanWS scanWS = new ScanWS();
+		Iterator<List> listIterator;
+		List list;
+		
+		//Head level
+		scanWS.setId(scan.getId());
+		scanWS.setName(scan.getName());
+		scanWS.setDescription(scan.getDescription());
+		scanWS.setStatus(scan.getStatus());
+		scanWS.setPercentCompleted(scan.getPercentCompleted());
+		scanWS.setLastScan(scan.getLastScan());
+		
+		//Lists
+		listIterator = scan.getLists().iterator();
+		while(listIterator.hasNext()) {
+			list = listIterator.next();
+			scanWS.getListIds().add(list.getId());
+		}
+		
+		return scanWS;
 	}
 }

@@ -636,7 +636,7 @@ public class ListServiceTest {
 	 * @param list The list to be converted.
 	 * @return The lean WebService representation of the list.
 	 */
-	private ListWS convertToWsList(List list) {
+	private ListWS convertToWsList(final List list) {
 		ListWS listWS = new ListWS();
 		Iterator<Instrument> instrumentIterator;
 		Instrument instrument;

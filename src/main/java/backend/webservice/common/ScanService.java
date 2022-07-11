@@ -8,9 +8,12 @@ import org.apache.logging.log4j.Logger;
 
 import backend.dao.DAOManager;
 import backend.dao.ObjectUnchangedException;
+import backend.dao.list.ListDAO;
 import backend.dao.scan.ScanDAO;
+import backend.model.list.List;
 import backend.model.scan.Scan;
 import backend.model.scan.ScanArray;
+import backend.model.scan.ScanWS;
 import backend.model.webservice.WebServiceMessage;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
@@ -25,6 +28,11 @@ public class ScanService {
 	 * DAO for scan access.
 	 */
 	private ScanDAO scanDAO;
+	
+	/**
+	 * DAO for list access.
+	 */
+	private ListDAO listDAO;
 	
 	/**
 	 * Access to localized application resources.
@@ -42,6 +50,7 @@ public class ScanService {
 	 */
 	public ScanService() {
 		this.scanDAO = DAOManager.getInstance().getScanDAO();
+		this.listDAO = DAOManager.getInstance().getListDAO();
 	}
 	
 	
@@ -145,12 +154,23 @@ public class ScanService {
 	 * @param scan The scan to be updated.
 	 * @return The result of the update function.
 	 */
-	public WebServiceResult updateScan(final Scan scan) {
+	public WebServiceResult updateScan(final ScanWS scan) {
+		Scan convertedScan = new Scan();
 		WebServiceResult updateScanResult = new WebServiceResult(null);
 		
-		//Validation of the given list.
+		//Convert the WebService data transfer object to the internal data model.
 		try {
-			scan.validate();
+			convertedScan = this.convertScan(scan);
+		}
+		catch(Exception exception) {
+			updateScanResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, this.resources.getString("scan.updateError")));	
+			logger.error(this.resources.getString("scan.updateError"), exception);
+			return updateScanResult;
+		}
+		
+		//Validation of the given scan.
+		try {
+			convertedScan.validate();
 		} catch (Exception validationException) {
 			updateScanResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, validationException.getMessage()));
 			return updateScanResult;
@@ -158,19 +178,19 @@ public class ScanService {
 		
 		//Update scan if validation is successful.
 		try {
-			this.scanDAO.updateScan(scan);
+			this.scanDAO.updateScan(convertedScan);
 			updateScanResult.addMessage(new WebServiceMessage(WebServiceMessageType.S, 
-					MessageFormat.format(this.resources.getString("scan.updateSuccess"), scan.getId())));
+					MessageFormat.format(this.resources.getString("scan.updateSuccess"), convertedScan.getId())));
 		} 
 		catch(ObjectUnchangedException objectUnchangedException) {
 			updateScanResult.addMessage(new WebServiceMessage(WebServiceMessageType.I, 
-					MessageFormat.format(this.resources.getString("scan.updateUnchanged"), scan.getId())));
+					MessageFormat.format(this.resources.getString("scan.updateUnchanged"), convertedScan.getId())));
 		}
 		catch (Exception e) {
 			updateScanResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
-					MessageFormat.format(this.resources.getString("scan.updateError"), scan.getId())));
+					MessageFormat.format(this.resources.getString("scan.updateError"), convertedScan.getId())));
 			
-			logger.error(MessageFormat.format(this.resources.getString("scan.updateError"), scan.getId()), e);
+			logger.error(MessageFormat.format(this.resources.getString("scan.updateError"), convertedScan.getId()), e);
 		}
 		
 		return updateScanResult;
@@ -183,12 +203,23 @@ public class ScanService {
 	 * @param scan The scan to be added.
 	 * @return The result of the add function.
 	 */
-	public WebServiceResult addScan(final Scan scan) {
+	public WebServiceResult addScan(final ScanWS scan) {
+		Scan convertedScan = new Scan();
 		WebServiceResult addScanResult = new WebServiceResult();
+		
+		//Convert the WebService data transfer object to the internal data model.
+		try {
+			convertedScan = this.convertScan(scan);
+		}
+		catch(Exception exception) {
+			addScanResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, this.resources.getString("scan.addError")));	
+			logger.error(this.resources.getString("scan.addError"), exception);
+			return addScanResult;
+		}
 		
 		//Validate the given scan.
 		try {
-			scan.validate();
+			convertedScan.validate();
 		} catch (Exception validationException) {
 			addScanResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, validationException.getMessage()));
 			return addScanResult;
@@ -196,9 +227,9 @@ public class ScanService {
 		
 		//Insert scan if validation is successful.
 		try {
-			this.scanDAO.insertScan(scan);
+			this.scanDAO.insertScan(convertedScan);
 			addScanResult.addMessage(new WebServiceMessage(WebServiceMessageType.S, this.resources.getString("scan.addSuccess")));
-			addScanResult.setData(scan.getId());
+			addScanResult.setData(convertedScan.getId());
 		} 
 		catch (Exception e) {
 			addScanResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, this.resources.getString("scan.addError")));
@@ -206,5 +237,34 @@ public class ScanService {
 		}
 		
 		return addScanResult;
+	}
+	
+	
+	/**
+	 * Converts the lean Scan representation that is provided by the WebService to the internal data model for further processing.
+	 * 
+	 * @param scanWS The lean Scan representation provided by the WebService.
+	 * @return The Scan model that is used by the backend internally.
+	 * @throws Exception In case the conversion fails.
+	 */
+	private Scan convertScan(final ScanWS scanWS) throws Exception {
+		Scan scan = new Scan();
+		List list;
+		
+		//Simple object attributes.
+		scan.setId(scanWS.getId());
+		scan.setName(scanWS.getName());
+		scan.setDescription(scanWS.getDescription());
+		scan.setStatus(scanWS.getStatus());
+		scan.setPercentCompleted(scanWS.getPercentCompleted());
+		scan.setLastScan(scanWS.getLastScan());
+		
+		//Convert the list IDs into list objects.
+		for(Integer listId:scanWS.getListIds()) {
+			list = this.listDAO.getList(listId);
+			scan.addList(list);
+		}
+		
+		return scan;
 	}
 }

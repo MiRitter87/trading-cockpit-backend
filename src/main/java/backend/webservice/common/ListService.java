@@ -163,8 +163,7 @@ public class ListService {
 			convertedList = this.convertList(list);
 		}
 		catch(Exception exception) {
-			updateListResult.addMessage(new WebServiceMessage(
-					WebServiceMessageType.E, this.resources.getString("list.updateError")));	
+			updateListResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, this.resources.getString("list.updateError")));	
 			logger.error(this.resources.getString("list.updateError"), exception);
 			return updateListResult;
 		}
@@ -181,17 +180,17 @@ public class ListService {
 		try {
 			this.listDAO.updateList(convertedList);
 			updateListResult.addMessage(new WebServiceMessage(WebServiceMessageType.S, 
-					MessageFormat.format(this.resources.getString("list.updateSuccess"), list.getId())));
+					MessageFormat.format(this.resources.getString("list.updateSuccess"), convertedList.getId())));
 		} 
 		catch(ObjectUnchangedException objectUnchangedException) {
 			updateListResult.addMessage(new WebServiceMessage(WebServiceMessageType.I, 
-					MessageFormat.format(this.resources.getString("list.updateUnchanged"), list.getId())));
+					MessageFormat.format(this.resources.getString("list.updateUnchanged"), convertedList.getId())));
 		}
 		catch (Exception e) {
 			updateListResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
-					MessageFormat.format(this.resources.getString("list.updateError"), list.getId())));
+					MessageFormat.format(this.resources.getString("list.updateError"), convertedList.getId())));
 			
-			logger.error(MessageFormat.format(this.resources.getString("list.updateError"), list.getId()), e);
+			logger.error(MessageFormat.format(this.resources.getString("list.updateError"), convertedList.getId()), e);
 		}
 		
 		return updateListResult;
@@ -213,8 +212,7 @@ public class ListService {
 			convertedList = this.convertList(list);
 		}
 		catch(Exception exception) {
-			addListResult.addMessage(new WebServiceMessage(
-					WebServiceMessageType.E, this.resources.getString("list.addError")));	
+			addListResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, this.resources.getString("list.addError")));	
 			logger.error(this.resources.getString("list.addError"), exception);
 			return addListResult;
 		}

@@ -11,6 +11,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import backend.model.scan.Scan;
+import backend.model.scan.ScanWS;
 import backend.model.webservice.WebServiceResult;
 import backend.webservice.common.ScanService;
 
@@ -58,7 +59,7 @@ public class ScanRestService {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public WebServiceResult addScan(final Scan scan) {
+	public WebServiceResult addScan(final ScanWS scan) {
 		ScanService scanService = new ScanService();
 		return scanService.addScan(scan);
 	}
@@ -73,7 +74,7 @@ public class ScanRestService {
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public WebServiceResult updateScan(final Scan scan) {
+	public WebServiceResult updateScan(final ScanWS scan) {
 		ScanService scanService = new ScanService();
 		return scanService.updateScan(scan);
 	}
