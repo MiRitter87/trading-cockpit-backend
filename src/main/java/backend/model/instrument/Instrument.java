@@ -1,5 +1,6 @@
 package backend.model.instrument;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -11,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -73,12 +75,22 @@ public class Instrument {
 	@Size(min = 0, max = 50, message = "{instrument.name.size.message}")
 	private String name;
 	
+	/**
+	 * The quotations.
+	 */
+//	@ManyToMany
+//	@JoinTable(name = "INSTRUMENT_QUOTATION", 
+//    	joinColumns = { @JoinColumn(name = "INSTRUMENT_ID") }, 
+//    	inverseJoinColumns = { @JoinColumn(name = "QUOTATION_ID") })
+	@Transient	//Remove transient annotation as soon as JPA annotations have been added to Quotation and Indicator.
+	private Set<Quotation> quotations;
+	
 	
 	/**
 	 * Default constructor.
 	 */
 	public Instrument() {
-		
+		this.quotations = new HashSet<Quotation>();
 	}
 
 
@@ -162,6 +174,32 @@ public class Instrument {
 	}
 	
 	
+	/**
+	 * @return the quotations
+	 */
+	public Set<Quotation> getQuotations() {
+		return quotations;
+	}
+
+
+	/**
+	 * @param quotations the quotations to set
+	 */
+	public void setQuotations(Set<Quotation> quotations) {
+		this.quotations = quotations;
+	}
+	
+	
+	/**
+	 * Adds a quotation to the instrument.
+	 * 
+	 * @param quotation The quotation to be added.
+	 */
+	public void addQuotation(final Quotation quotation) {
+		this.quotations.add(quotation);
+	}
+
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -171,6 +209,7 @@ public class Instrument {
 		result = prime * result + ((stockExchange == null) ? 0 : stockExchange.hashCode());
 		result = prime * result + ((symbol == null) ? 0 : symbol.hashCode());
 		result = prime * result + ((type == null) ? 0 : type.hashCode());
+		result = prime * result + ((quotations == null) ? 0 : quotations.hashCode());
 		return result;
 	}
 
@@ -214,7 +253,57 @@ public class Instrument {
 		if (type != other.type) {
 			return false;
 		}
+		
+		if(this.areQuotationsEqual(other) == false)
+			return false;
+		
 		return true;
+	}
+	
+	
+	/**
+	 * Checks if the list of quotations is equal.
+	 * 
+	 * @param other The other instrument for comparison.
+	 * @return true, if quotations are equal; false otherwise.
+	 */
+	private boolean areQuotationsEqual(Instrument other) {
+		if (this.quotations == null && other.quotations != null)
+			return false;
+		
+		if (this.quotations != null && other.quotations == null)
+			return false;
+		
+		if(this.quotations.size() != other.quotations.size())
+			return false;
+		
+		for(Quotation tempQuotation:this.quotations) {
+			Quotation otherQuotation = other.getQuotationWithId(tempQuotation.getId());
+			
+			if(otherQuotation == null)
+				return false;
+			
+			if(!tempQuotation.equals(otherQuotation))
+				return false;
+		}
+		
+		return true;
+	}
+	
+	
+	/**
+	 * Gets the quotation with the given id.
+	 * 
+	 * @param id The id of the quotation.
+	 * @return The quotation with the given id, if found.
+	 */
+	public Quotation getQuotationWithId(Integer id) {
+		for(Quotation tempQuotation:this.quotations) {
+			if(tempQuotation.getId().equals(id))
+				return tempQuotation;
+		}
+		
+		return null;
 	}
 
 
