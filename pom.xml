@@ -135,13 +135,13 @@
   
   	<build>
 		<plugins>
-			<!-- Compile java 12 -->
+			<!-- Compile java 17 -->
 			<plugin>
 		    	<groupId>org.apache.maven.plugins</groupId>
 		     	<artifactId>maven-compiler-plugin</artifactId>
 		     	<version>${maven.compiler.version}</version>
 		     	<configuration>
-		     		<release>12</release>
+		     		<release>17</release>
 		     	</configuration>
 			</plugin>
 			
