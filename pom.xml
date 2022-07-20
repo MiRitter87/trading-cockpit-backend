@@ -16,6 +16,7 @@
   	<properties>
 		<maven.compiler.version>3.10.0</maven.compiler.version>
 		<maven.surefire.version>3.0.0-M5</maven.surefire.version>
+		<maven.war.version>3.3.2</maven.war.version>
 		<hsql.version>2.5.2</hsql.version>	<!-- Version 2.6 needs JRE 11 or newer -->
 		<hibernate.core.version>5.6.7.Final</hibernate.core.version>
 		<hibernate.validator.version>6.2.3.Final</hibernate.validator.version>
@@ -142,6 +143,12 @@
 		     	<configuration>
 		     		<release>12</release>
 		     	</configuration>
+			</plugin>
+			
+			<plugin>
+    			<groupId>org.apache.maven.plugins</groupId>
+    			<artifactId>maven-war-plugin</artifactId>
+    			<version>${maven.war.version}</version>
 			</plugin>
 			
 			<!-- This plugin executes JUnit 5 tests in the test phase of the build . -->
