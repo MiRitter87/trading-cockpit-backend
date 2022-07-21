@@ -271,7 +271,7 @@ public class InstrumentServiceTest {
 			assertTrue(deleteInstrumentResult.getMessages().get(0).getType() == WebServiceMessageType.S);
 			
 			//Check if Apple alert is missing using the DAO.
-			deletedInstrument = instrumentDAO.getInstrument(this.microsoftStock.getId());
+			deletedInstrument = instrumentDAO.getInstrument(this.microsoftStock.getId(), false);
 			
 			if(deletedInstrument != null)
 				fail("Microsoft instrument is still persisted but should have been deleted by the WebService operation 'deleteInstrument'.");
@@ -338,7 +338,7 @@ public class InstrumentServiceTest {
 		
 		//Retrieve the updated instrument and check if the changes have been persisted.
 		try {
-			updatedInstrument = instrumentDAO.getInstrument(this.appleStock.getId());
+			updatedInstrument = instrumentDAO.getInstrument(this.appleStock.getId(), false);
 			assertEquals(this.appleStock.getName(), updatedInstrument.getName());
 		} catch (Exception e) {
 			fail(e.getMessage());
@@ -422,7 +422,7 @@ public class InstrumentServiceTest {
 		
 		//The symbol change should not have been persisted.
 		try {
-			databaseInstrument = instrumentDAO.getInstrument(this.microsoftStock.getId());
+			databaseInstrument = instrumentDAO.getInstrument(this.microsoftStock.getId(), false);
 			assertEquals("MSFT", databaseInstrument.getSymbol());
 		} catch (Exception e) {
 			fail(e.getMessage());
@@ -463,7 +463,7 @@ public class InstrumentServiceTest {
 		
 		//Read the persisted instrument via DAO
 		try {
-			adddedInstrument = instrumentDAO.getInstrument(newInstrument.getId());
+			adddedInstrument = instrumentDAO.getInstrument(newInstrument.getId(), false);
 			
 			//Check if the instrument read by the DAO equals the instrument inserted using the WebService in each attribute.
 			assertEquals(newInstrument.getId(), adddedInstrument.getId());

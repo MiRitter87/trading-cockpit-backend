@@ -258,7 +258,7 @@ public class ListService {
 		
 		//Convert the instrument IDs into instrument objects.
 		for(Integer instrumentId:listWS.getInstrumentIds()) {
-			instrument = this.instrumentDAO.getInstrument(instrumentId);
+			instrument = this.instrumentDAO.getInstrument(instrumentId, true);
 			list.addInstrument(instrument);
 		}
 		

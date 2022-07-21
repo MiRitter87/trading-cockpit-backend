@@ -15,7 +15,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -81,11 +80,10 @@ public class Instrument {
 	/**
 	 * The quotations.
 	 */
-//	@ManyToMany
-//	@JoinTable(name = "INSTRUMENT_QUOTATION", 
-//    	joinColumns = { @JoinColumn(name = "INSTRUMENT_ID") }, 
-//    	inverseJoinColumns = { @JoinColumn(name = "QUOTATION_ID") })
-	@Transient	//Remove transient annotation as soon as JPA annotations have been added to Quotation and Indicator.
+	@ManyToMany
+	@JoinTable(name = "INSTRUMENT_QUOTATION", 
+    	joinColumns = { @JoinColumn(name = "INSTRUMENT_ID") }, 
+    	inverseJoinColumns = { @JoinColumn(name = "QUOTATION_ID") })
 	private Set<Quotation> quotations;
 	
 	

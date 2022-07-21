@@ -3,6 +3,7 @@ package backend.dao.instrument;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.TypedQuery;
@@ -119,13 +120,44 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 
 	
 	@Override
-	public Instrument getInstrument(Integer id) throws Exception {
+	public Instrument getInstrument(Integer id, final boolean withQuotations) throws Exception {
+		Instrument instrument = null;
+		List<Instrument> instruments = null;
 		EntityManager entityManager = this.sessionFactory.createEntityManager();
+		EntityGraph<Instrument> graph;
 		
 		entityManager.getTransaction().begin();
-		Instrument instrument = entityManager.find(Instrument.class, id);
-		entityManager.getTransaction().commit();
-		entityManager.close();
+		
+		try {
+			CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+			CriteriaQuery<Instrument> criteriaQuery = criteriaBuilder.createQuery(Instrument.class);
+			Root<Instrument> criteria = criteriaQuery.from(Instrument.class);
+			criteriaQuery.select(criteria);
+			criteriaQuery.where(criteriaBuilder.equal(criteria.get("id"), id));		//Only query the instrument with the given id.
+			TypedQuery<Instrument> typedQuery = entityManager.createQuery(criteriaQuery);
+			
+			if(withQuotations) {
+				//Use entity graphs to load data of referenced Quotation instances.
+				graph = entityManager.createEntityGraph(Instrument.class);
+				graph.addAttributeNodes("quotations");
+				typedQuery.setHint("javax.persistence.loadgraph", graph);	//Also fetch all quotation data.
+			}
+			
+			instruments = typedQuery.getResultList();		
+			entityManager.getTransaction().commit();			
+		}
+		catch(Exception exception) {
+			//If something breaks a rollback is necessary.
+			if(entityManager.getTransaction().isActive())
+				entityManager.getTransaction().rollback();
+			throw exception;
+		}
+		finally {
+			entityManager.close();			
+		}
+		
+		if(instruments.size() == 1)
+			instrument = instruments.get(0);
 		
 		return instrument;
 	}
@@ -154,7 +186,7 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 	 * @throws Exception In case an error occurred during determination of the instrument stored at the database.
 	 */
 	private void checkInstrumentDataChanged(final Instrument instrument) throws ObjectUnchangedException, Exception {
-		Instrument databaseInstrument = this.getInstrument(instrument.getId());
+		Instrument databaseInstrument = this.getInstrument(instrument.getId(), true);
 		
 		if(databaseInstrument.equals(instrument))
 			throw new ObjectUnchangedException();

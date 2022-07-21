@@ -57,7 +57,7 @@ public class InstrumentService {
 		WebServiceResult getInstrumentResult = new WebServiceResult(null);
 		
 		try {
-			instrument = this.instrumentDAO.getInstrument(id);
+			instrument = this.instrumentDAO.getInstrument(id, false);
 			
 			if(instrument != null) {
 				//Instrument found
@@ -149,7 +149,7 @@ public class InstrumentService {
 		
 		//Check if an instrument with the given id exists.
 		try {
-			instrument = this.instrumentDAO.getInstrument(id);
+			instrument = this.instrumentDAO.getInstrument(id, true);
 			
 			if(instrument != null) {
 				//Delete instrument if exists.
