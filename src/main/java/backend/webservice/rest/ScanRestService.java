@@ -10,7 +10,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import backend.model.scan.Scan;
 import backend.model.scan.ScanWS;
 import backend.model.webservice.WebServiceResult;
 import backend.webservice.common.ScanService;

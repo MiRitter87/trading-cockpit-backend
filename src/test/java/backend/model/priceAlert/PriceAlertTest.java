@@ -10,8 +10,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import backend.model.StockExchange;
-import backend.model.priceAlert.PriceAlert;
-import backend.model.priceAlert.PriceAlertType;
 import backend.tools.test.ValidationMessageProvider;
 
 /**

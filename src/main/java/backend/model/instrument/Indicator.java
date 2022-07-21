@@ -1,49 +1,65 @@
 package backend.model.instrument;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 /**
  * Indicator data that are calculated based on quotations.
  * 
  * @author Michael
  */
+@Table(name="INDICATOR")
+@Entity
 public class Indicator {
 	/**
 	 * The ID.
 	 */
+	@Id
+	@Column(name="INDICATOR_ID")
 	private Integer id;
 	
 	/**
 	 * The stage of an instrument.
 	 */
+	@Column(name="STAGE")
 	private int stage;
 	
 	/**
 	 * The distance in percent to the 52 week high of an instruments trading history.
 	 */
+	@Column(name="DISTANCE_TO_52_WEEK_HIGH")
 	private float distanceTo52WeekHigh;
 	
 	/**
 	 * The Bollinger Band Width (20,2)
 	 */
+	@Column(name="BOLLINGER_BAND_WIDTH")
 	private float bollingerBandWidth;
 	
 	/**
 	 * The simple moving average price of the last 50 trading days.
 	 */
+	@Column(name="SMA50")
 	private float sma50;
 	
 	/**
 	 * The simple moving average price of the last 150 trading days.
 	 */
+	@Column(name="SMA150")
 	private float sma150;
 	
 	/**
 	 * The simple moving average price of the last 200 trading days.
 	 */
+	@Column(name="SMA200")
 	private float sma200;
 	
 	/**
 	 * The relative strength percentile of the instrument in relation to a set of other instruments.
 	 */
+	@Column(name="RS_NUMBER")
 	private int rsNumber;
 	
 	

@@ -3,6 +3,19 @@ package backend.model.instrument;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
 import backend.model.Currency;
 
 /**
@@ -10,35 +23,48 @@ import backend.model.Currency;
  * 
  * @author Michael
  */
+@Table(name="QUOTATION")
+@Entity
+@SequenceGenerator(name = "quotationSequence", initialValue = 1, allocationSize = 1)
 public class Quotation {
 	/**
 	 * The ID.
 	 */
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "quotationSequence")
+	@Column(name="QUOTATION_ID")
 	private Integer id;
 	
 	/**
 	 * The date.
 	 */
+	@Column(name="DATE")
 	private Date date;
 	
 	/**
 	 * The price.
 	 */
+	@Column(name="PRICE")
 	private BigDecimal price;
 	
 	/**
 	 * The currency.
 	 */
+	@Column(name="CURRENCY", length = 3)
+	@Enumerated(EnumType.STRING)
 	private Currency currency;
 	
 	/**
 	 * The number of instruments traded.
 	 */
+	@Column(name="VOLUME")
 	private long volume;
 	
 	/**
 	 * Indicator data.
 	 */
+	@OneToOne(targetEntity = Indicator.class, cascade = CascadeType.ALL, orphanRemoval = true)
+	@JoinColumn(name="INDICATOR_ID")
 	private Indicator indicator;
 	
 	
