@@ -33,10 +33,11 @@ public interface InstrumentDAO {
 	/**
 	 * Gets all instruments.
 	 * 
+	 * @param withQuotations Provides the quotations if set to true.
 	 * @return All instruments.
 	 * @throws Exception Instrument retrieval failed.
 	 */
-	List<Instrument> getInstruments() throws Exception;
+	List<Instrument> getInstruments(final boolean withQuotations) throws Exception;
 	
 	
 	/**

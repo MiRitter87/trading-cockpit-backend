@@ -89,7 +89,7 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 
 	
 	@Override
-	public List<Instrument> getInstruments() throws Exception {
+	public List<Instrument> getInstruments(final boolean withQuotations) throws Exception {
 		List<Instrument> instruments = null;
 		EntityManager entityManager = this.sessionFactory.createEntityManager();
 		entityManager.getTransaction().begin();
@@ -114,6 +114,9 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 		finally {
 			entityManager.close();			
 		}
+		
+		if(!withQuotations)
+			this.setQuotationsToNull(instruments);
 		
 		return instruments;
 	}
@@ -268,5 +271,18 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 			return null;
 		else
 			return instruments.get(0);
+	}
+	
+	
+	/**
+	 * Sets all quotation references of the instruments to null.
+	 * This prevents serialization of lazily loaded quotations in the WebService communication, if no quotation data are requested.
+	 * 
+	 * @param instruments The list of instruments.
+	 */
+	private void setQuotationsToNull(List<Instrument> instruments) {
+		for(Instrument tempInstrument:instruments) {
+			tempInstrument.setQuotations(null);
+		}
 	}
 }

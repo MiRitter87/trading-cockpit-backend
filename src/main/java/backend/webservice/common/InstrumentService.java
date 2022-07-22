@@ -90,7 +90,7 @@ public class InstrumentService {
 		WebServiceResult getInstrumentsResult = new WebServiceResult(null);
 		
 		try {
-			instruments.setInstruments(this.instrumentDAO.getInstruments());
+			instruments.setInstruments(this.instrumentDAO.getInstruments(false));
 			getInstrumentsResult.setData(instruments);
 		} catch (Exception e) {
 			getInstrumentsResult.addMessage(new WebServiceMessage(
