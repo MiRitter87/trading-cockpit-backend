@@ -2,11 +2,18 @@ package backend.dao.instrument;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import backend.model.Currency;
 import backend.model.StockExchange;
+import backend.model.instrument.Quotation;
 
 /**
  * Tests the Yahoo quotation DAO.
@@ -36,6 +43,40 @@ public class QuotationYahooDAOTest {
 	 */
 	public static void tearDownClass() {
 		quotationYahooDAO = null;
+	}
+	
+	
+	/**
+	 * Gets historical quotations of Denison Mines stock.
+	 * The quotations of the three most recent trading days are provided.
+	 * 
+	 * @return Historical quotations of Denison Mines stock
+	 */
+	private List<Quotation> getDenisonMinesQuotationHistory() {
+		List<Quotation> historicalQuotations = new ArrayList<>();
+		Quotation quotation = new Quotation();
+		
+		quotation.setDate(new Date(1658496600));
+		quotation.setPrice(BigDecimal.valueOf(1.36));
+		quotation.setCurrency(Currency.CAD);
+		quotation.setVolume(1793300);
+		historicalQuotations.add(quotation);
+		
+		quotation = new Quotation();
+		quotation.setDate(new Date(1658410200));
+		quotation.setPrice(BigDecimal.valueOf(1.46));
+		quotation.setCurrency(Currency.CAD);
+		quotation.setVolume(1450900);
+		historicalQuotations.add(quotation);
+		
+		quotation = new Quotation();
+		quotation.setDate(new Date(1658323800));
+		quotation.setPrice(BigDecimal.valueOf(1.53));
+		quotation.setCurrency(Currency.CAD);
+		quotation.setVolume(1534800);
+		historicalQuotations.add(quotation);
+		
+		return historicalQuotations;
 	}
 	
 	
@@ -84,5 +125,24 @@ public class QuotationYahooDAOTest {
 		
 		actualURL = quotationYahooDAO.getQueryUrlQuotationHistory(symbol, stockExchange);
 		assertEquals(expectedURL, actualURL);
+	}
+	
+	
+	/**
+	 * Tests the retrieval of the quotation history of a stock traded at the TSX.
+	 */
+	public void testGetQuotationHistoryTSE() {
+		List<Quotation> actualQuotationHistory, expectedQuotationHistory;
+		
+		try {
+			actualQuotationHistory = quotationYahooDAO.getQuotationHistory("DML", StockExchange.TSX, 1);
+			expectedQuotationHistory = this.getDenisonMinesQuotationHistory();
+			
+			//252 Trading days of a full year.
+			assertEquals(252, actualQuotationHistory.size());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
