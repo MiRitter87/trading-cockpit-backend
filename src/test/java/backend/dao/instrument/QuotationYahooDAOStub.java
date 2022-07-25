@@ -34,14 +34,21 @@ public class QuotationYahooDAOStub extends QuotationYahooDAO {
 			ArrayList<?> result = (ArrayList<?>) quoteResponse.get("result");
 			LinkedHashMap<?, ?> resultAttributes = (LinkedHashMap<?, ?>) result.get(0);
 			ArrayList<?> timestamps = (ArrayList<?>) resultAttributes.get("timestamp");
+			LinkedHashMap<?, ?> metaAttributes = (LinkedHashMap<?, ?>) resultAttributes.get("meta");
+			LinkedHashMap<?, ?> indicators = (LinkedHashMap<?, ?>) resultAttributes.get("indicators");
+			ArrayList<?> quote = (ArrayList<?>) indicators.get("quote");
+			LinkedHashMap<?, ?> quoteAttributes = (LinkedHashMap<?, ?>) quote.get(0);
+			ArrayList<?> volume = (ArrayList<?>) quoteAttributes.get("volume");
 			
 			for(int i = timestamps.size(); i>0; i--) {
 				quotation = new Quotation();
 				quotation.setDate(this.getDate(timestamps.get(i-1)));
-				quotationHistory.add(quotation);				
+				quotation.setCurrency(this.getCurrency((String) metaAttributes.get("currency")));
+				quotation.setVolume(this.getVolumeFromQuotationHistoryResponse(volume, i-1));
+				quotationHistory.add(quotation);
 			}
 			
-			System.out.println("Test");
+			//System.out.println("Test");
 		} 
 		catch (JsonParseException e) {
 			throw new Exception(e);

@@ -1,8 +1,10 @@
 package backend.dao.instrument;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import backend.model.Currency;
 import backend.model.StockExchange;
 import backend.model.instrument.Quotation;
 
@@ -96,5 +98,35 @@ public class QuotationYahooDAO implements QuotationDAO {
 		long timestampInMilliseconds = timestampInSeconds * 1000;
 		
 		return new Date(timestampInMilliseconds);
+	}
+	
+	
+	/**
+	 * Gets the currency from the Yahoo finance API.
+	 * 
+	 * @param apiCurrency The currency as provided by Yahoo finance.
+	 * @return The currency as used by the backend.
+	 */
+	protected Currency getCurrency(String apiCurrency) {
+		switch(apiCurrency) {
+			case "USD":
+				return Currency.USD;
+			case "CAD":
+				return Currency.CAD;
+			default:
+				return null;
+		}
+	}
+	
+	
+	/**
+	 * Gets the volume data from the Yahoo finance API.
+	 * 
+	 * @param volume A list of historical volume data.
+	 * @param index The index at which the volume data are to be extracted.
+	 * @return The volume.
+	 */
+	protected long getVolumeFromQuotationHistoryResponse(final ArrayList<?> volume, final int index) {
+		return Long.valueOf((Integer)volume.get(index));
 	}
 }
