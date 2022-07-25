@@ -33,22 +33,24 @@ public class QuotationYahooDAOStub extends QuotationYahooDAO {
 			LinkedHashMap<?, ?> quoteResponse = (LinkedHashMap<?, ?>) map.get("chart");
 			ArrayList<?> result = (ArrayList<?>) quoteResponse.get("result");
 			LinkedHashMap<?, ?> resultAttributes = (LinkedHashMap<?, ?>) result.get(0);
-			ArrayList<?> timestamps = (ArrayList<?>) resultAttributes.get("timestamp");
+			ArrayList<?> timestampData = (ArrayList<?>) resultAttributes.get("timestamp");
 			LinkedHashMap<?, ?> metaAttributes = (LinkedHashMap<?, ?>) resultAttributes.get("meta");
 			LinkedHashMap<?, ?> indicators = (LinkedHashMap<?, ?>) resultAttributes.get("indicators");
 			ArrayList<?> quote = (ArrayList<?>) indicators.get("quote");
 			LinkedHashMap<?, ?> quoteAttributes = (LinkedHashMap<?, ?>) quote.get(0);
-			ArrayList<?> volume = (ArrayList<?>) quoteAttributes.get("volume");
+			ArrayList<?> volumeData = (ArrayList<?>) quoteAttributes.get("volume");
+			ArrayList<?> adjClose = (ArrayList<?>) indicators.get("adjclose");
+			LinkedHashMap<?, ?> adjCloseAttributes = (LinkedHashMap<?, ?>) adjClose.get(0);
+			ArrayList<?> adjCloseData = (ArrayList<?>) adjCloseAttributes.get("adjclose");
 			
-			for(int i = timestamps.size(); i>0; i--) {
+			for(int i = timestampData.size(); i>0; i--) {
 				quotation = new Quotation();
-				quotation.setDate(this.getDate(timestamps.get(i-1)));
+				quotation.setDate(this.getDate(timestampData.get(i-1)));
 				quotation.setCurrency(this.getCurrency((String) metaAttributes.get("currency")));
-				quotation.setVolume(this.getVolumeFromQuotationHistoryResponse(volume, i-1));
+				quotation.setVolume(this.getVolumeFromQuotationHistoryResponse(volumeData, i-1));
+				quotation.setPrice(this.getAdjustedCloseFromQuotationHistoryResponse(adjCloseData, i-1));
 				quotationHistory.add(quotation);
 			}
-			
-			//System.out.println("Test");
 		} 
 		catch (JsonParseException e) {
 			throw new Exception(e);

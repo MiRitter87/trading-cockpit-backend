@@ -1,5 +1,7 @@
 package backend.dao.instrument;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -128,5 +130,23 @@ public class QuotationYahooDAO implements QuotationDAO {
 	 */
 	protected long getVolumeFromQuotationHistoryResponse(final ArrayList<?> volume, final int index) {
 		return Long.valueOf((Integer)volume.get(index));
+	}
+	
+	
+	/**
+	 * Gets the adjusted closing price from the Yahoo finance API.
+	 * 
+	 * @param adjustedClose A list of historical adjusted closing prices.
+	 * @param index The index at which the adjusted closing price is to be extracted.
+	 * @return The adjusted closing price.
+	 */
+	protected BigDecimal getAdjustedCloseFromQuotationHistoryResponse(final ArrayList<?> adjustedClose, final int index) {
+		double adjustedCloseRaw = (double) adjustedClose.get(index);
+		BigDecimal adjustedClosingPrice = BigDecimal.valueOf(adjustedCloseRaw);
+		
+		adjustedClosingPrice = adjustedClosingPrice.setScale(2, RoundingMode.HALF_UP);
+		
+		
+		return adjustedClosingPrice;
 	}
 }
