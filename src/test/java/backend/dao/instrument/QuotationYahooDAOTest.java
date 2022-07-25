@@ -56,21 +56,21 @@ public class QuotationYahooDAOTest {
 		List<Quotation> historicalQuotations = new ArrayList<>();
 		Quotation quotation = new Quotation();
 		
-		quotation.setDate(new Date(1658496600));
+		quotation.setDate(new Date(1658496600 * 1000));
 		quotation.setPrice(BigDecimal.valueOf(1.36));
 		quotation.setCurrency(Currency.CAD);
 		quotation.setVolume(1793300);
 		historicalQuotations.add(quotation);
 		
 		quotation = new Quotation();
-		quotation.setDate(new Date(1658410200));
+		quotation.setDate(new Date(1658410200  * 1000));
 		quotation.setPrice(BigDecimal.valueOf(1.46));
 		quotation.setCurrency(Currency.CAD);
 		quotation.setVolume(1450900);
 		historicalQuotations.add(quotation);
 		
 		quotation = new Quotation();
-		quotation.setDate(new Date(1658323800));
+		quotation.setDate(new Date(1658323800  * 1000));
 		quotation.setPrice(BigDecimal.valueOf(1.53));
 		quotation.setCurrency(Currency.CAD);
 		quotation.setVolume(1534800);
@@ -128,6 +128,7 @@ public class QuotationYahooDAOTest {
 	}
 	
 	
+	@Test
 	/**
 	 * Tests the retrieval of the quotation history of a stock traded at the TSX.
 	 */

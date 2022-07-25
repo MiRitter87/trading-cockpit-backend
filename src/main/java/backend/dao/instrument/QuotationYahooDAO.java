@@ -1,5 +1,6 @@
 package backend.dao.instrument;
 
+import java.util.Date;
 import java.util.List;
 
 import backend.model.StockExchange;
@@ -32,8 +33,7 @@ public class QuotationYahooDAO implements QuotationDAO {
 
 	
 	@Override
-	public List<Quotation> getQuotationHistory(String symbol, StockExchange stockExchange, Integer years)
-			throws Exception {
+	public List<Quotation> getQuotationHistory(String symbol, StockExchange stockExchange, Integer years) throws Exception {
 		// TODO Auto-generated method stub
 		//Query the Yahoo WebService to get historical data.
 		return null;
@@ -82,5 +82,19 @@ public class QuotationYahooDAO implements QuotationDAO {
 			default:
 				return stockExchangeBuilder.toString();
 		}
+	}
+	
+	
+	/**
+	 * Provides a date based on the given timestamp.
+	 * 
+	 * @param timestamp Integer value representing date in seconds since 01.01.1970.
+	 * @return A date object.
+	 */
+	protected Date getDate(Object timestamp) {
+		long timestampInSeconds = Long.valueOf((Integer)timestamp);
+		long timestampInMilliseconds = timestampInSeconds * 1000;
+		
+		return new Date(timestampInMilliseconds);
 	}
 }
