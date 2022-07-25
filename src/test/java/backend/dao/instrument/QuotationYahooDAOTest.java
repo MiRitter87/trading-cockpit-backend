@@ -1,6 +1,8 @@
 package backend.dao.instrument;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -55,22 +57,26 @@ public class QuotationYahooDAOTest {
 	private List<Quotation> getDenisonMinesQuotationHistory() {
 		List<Quotation> historicalQuotations = new ArrayList<>();
 		Quotation quotation = new Quotation();
+		long secondsSince1970;
 		
-		quotation.setDate(new Date(1658496600 * 1000));
+		secondsSince1970 = 1658496600;
+		quotation.setDate(new Date(secondsSince1970 * 1000));
 		quotation.setPrice(BigDecimal.valueOf(1.36));
 		quotation.setCurrency(Currency.CAD);
 		quotation.setVolume(1793300);
 		historicalQuotations.add(quotation);
 		
 		quotation = new Quotation();
-		quotation.setDate(new Date(1658410200  * 1000));
+		secondsSince1970 = 1658410200;
+		quotation.setDate(new Date(secondsSince1970  * 1000));
 		quotation.setPrice(BigDecimal.valueOf(1.46));
 		quotation.setCurrency(Currency.CAD);
 		quotation.setVolume(1450900);
 		historicalQuotations.add(quotation);
 		
 		quotation = new Quotation();
-		quotation.setDate(new Date(1658323800  * 1000));
+		secondsSince1970 = 1658323800;
+		quotation.setDate(new Date(secondsSince1970  * 1000));
 		quotation.setPrice(BigDecimal.valueOf(1.53));
 		quotation.setCurrency(Currency.CAD);
 		quotation.setVolume(1534800);
@@ -134,6 +140,7 @@ public class QuotationYahooDAOTest {
 	 */
 	public void testGetQuotationHistoryTSE() {
 		List<Quotation> actualQuotationHistory, expectedQuotationHistory;
+		Quotation actualQuotation, expectedQuotation;
 		
 		try {
 			actualQuotationHistory = quotationYahooDAO.getQuotationHistory("DML", StockExchange.TSX, 1);
@@ -141,9 +148,30 @@ public class QuotationYahooDAOTest {
 			
 			//252 Trading days of a full year.
 			assertEquals(252, actualQuotationHistory.size());
+			
+			//Check the three most recent quotations.
+			actualQuotation = actualQuotationHistory.get(0);
+			expectedQuotation = expectedQuotationHistory.get(0);
+			assertEquals(expectedQuotation.getDate().getTime(), actualQuotation.getDate().getTime());
+			assertTrue(expectedQuotation.getPrice().compareTo(actualQuotation.getPrice()) == 0);
+			assertEquals(expectedQuotation.getCurrency(), actualQuotation.getCurrency());
+			assertEquals(expectedQuotation.getVolume(), actualQuotation.getVolume());
+			
+			actualQuotation = actualQuotationHistory.get(1);
+			expectedQuotation = expectedQuotationHistory.get(1);
+			assertEquals(expectedQuotation.getDate().getTime(), actualQuotation.getDate().getTime());
+			assertTrue(expectedQuotation.getPrice().compareTo(actualQuotation.getPrice()) == 0);
+			assertEquals(expectedQuotation.getCurrency(), actualQuotation.getCurrency());
+			assertEquals(expectedQuotation.getVolume(), actualQuotation.getVolume());
+			
+			actualQuotation = actualQuotationHistory.get(2);
+			expectedQuotation = expectedQuotationHistory.get(2);
+			assertEquals(expectedQuotation.getDate().getTime(), actualQuotation.getDate().getTime());
+			assertTrue(expectedQuotation.getPrice().compareTo(actualQuotation.getPrice()) == 0);
+			assertEquals(expectedQuotation.getCurrency(), actualQuotation.getCurrency());
+			assertEquals(expectedQuotation.getVolume(), actualQuotation.getVolume());
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			fail(e.getMessage());
 		}
 	}
 }
