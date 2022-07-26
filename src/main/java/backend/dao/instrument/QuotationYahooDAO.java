@@ -32,10 +32,15 @@ public class QuotationYahooDAO implements QuotationDAO {
 	private static final String PLACEHOLDER_SYMBOL = "{symbol}";
 	
 	/**
+	 * Placeholder for the number of years used in a query URL.
+	 */
+	private static final String PLACEHOLDER_YEARS = "{years}";
+	
+	/**
 	 * URL to quote API of Yahoo finance: Historical quotations.
 	 */
 	private static final String BASE_URL_QUOTATION_HISTORY = "https://query1.finance.yahoo.com/v7/finance/chart/"
-			+ PLACEHOLDER_SYMBOL + "?range=1y&interval=1d&indicators=quote&includeTimestamps=true";
+			+ PLACEHOLDER_SYMBOL + "?range=" + PLACEHOLDER_YEARS + "y&interval=1d&indicators=quote&includeTimestamps=true";
 	
 	/**
 	 * The HTTP client used for data queries.
@@ -89,7 +94,7 @@ public class QuotationYahooDAO implements QuotationDAO {
 	 */
 	protected String getQuotationHistoryJSONFromYahoo(final String symbol, final StockExchange stockExchange, final Integer years) throws Exception {
 		Request request = new Request.Builder()
-				.url(this.getQueryUrlQuotationHistory(symbol, stockExchange))
+				.url(this.getQueryUrlQuotationHistory(symbol, stockExchange, years))
 				.header("Connection", "close")
 				.build();
 		Response response;
@@ -160,9 +165,10 @@ public class QuotationYahooDAO implements QuotationDAO {
 	 * 
 	 * @param symbol The symbol to be queried.
 	 * @param stockExchange The stock exchange where the symbol is listed.
+	 * @param years The number of years to be queried.
 	 * @return The query URL.
 	 */
-	protected String getQueryUrlQuotationHistory(final String symbol, final StockExchange stockExchange) {
+	protected String getQueryUrlQuotationHistory(final String symbol, final StockExchange stockExchange, final Integer years) {
 		StringBuilder symbolForUrl = new StringBuilder();
 		String queryUrl = new String(BASE_URL_QUOTATION_HISTORY);
 		
@@ -170,6 +176,7 @@ public class QuotationYahooDAO implements QuotationDAO {
 		symbolForUrl.append(this.getExchangeForQueryURL(stockExchange));
 		
 		queryUrl = queryUrl.replace(PLACEHOLDER_SYMBOL, symbolForUrl.toString());
+		queryUrl = queryUrl.replace(PLACEHOLDER_YEARS, years.toString());
 		
 		return queryUrl;
 	}

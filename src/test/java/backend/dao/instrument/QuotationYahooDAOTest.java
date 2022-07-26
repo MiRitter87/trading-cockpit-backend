@@ -93,11 +93,12 @@ public class QuotationYahooDAOTest {
 	public void testGetQueryUrlQuotationHistoryTSX() {
 		final String symbol = "DML";
 		final StockExchange stockExchange = StockExchange.TSX;
+		final Integer years = 1;
 		final String expectedURL = 
 				"https://query1.finance.yahoo.com/v7/finance/chart/DML.TO?range=1y&interval=1d&indicators=quote&includeTimestamps=true";
 		String actualURL = "";
 		
-		actualURL = quotationYahooDAO.getQueryUrlQuotationHistory(symbol, stockExchange);
+		actualURL = quotationYahooDAO.getQueryUrlQuotationHistory(symbol, stockExchange, years);
 		assertEquals(expectedURL, actualURL);
 	}
 	
@@ -109,11 +110,12 @@ public class QuotationYahooDAOTest {
 	public void testGetQueryUrlTSXV() {
 		final String symbol = "RCK";
 		final StockExchange stockExchange = StockExchange.TSXV;
+		final Integer years = 1;
 		final String expectedURL = 
 				"https://query1.finance.yahoo.com/v7/finance/chart/RCK.V?range=1y&interval=1d&indicators=quote&includeTimestamps=true";
 		String actualURL = "";
 		
-		actualURL = quotationYahooDAO.getQueryUrlQuotationHistory(symbol, stockExchange);
+		actualURL = quotationYahooDAO.getQueryUrlQuotationHistory(symbol, stockExchange, years);
 		assertEquals(expectedURL, actualURL);
 	}
 	
@@ -125,11 +127,12 @@ public class QuotationYahooDAOTest {
 	public void testGetQueryUrlNYSE() {
 		final String symbol = "F";
 		final StockExchange stockExchange = StockExchange.NYSE;
+		final Integer years = 1;
 		final String expectedURL = 
 				"https://query1.finance.yahoo.com/v7/finance/chart/F?range=1y&interval=1d&indicators=quote&includeTimestamps=true";
 		String actualURL = "";
 		
-		actualURL = quotationYahooDAO.getQueryUrlQuotationHistory(symbol, stockExchange);
+		actualURL = quotationYahooDAO.getQueryUrlQuotationHistory(symbol, stockExchange, years);
 		assertEquals(expectedURL, actualURL);
 	}
 	
