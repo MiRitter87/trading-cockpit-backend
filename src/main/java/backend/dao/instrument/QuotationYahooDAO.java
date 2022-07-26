@@ -1,14 +1,24 @@
 package backend.dao.instrument;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import backend.model.Currency;
 import backend.model.StockExchange;
 import backend.model.instrument.Quotation;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * Provides access to quotation data using the finance API of Yahoo.
@@ -27,6 +37,29 @@ public class QuotationYahooDAO implements QuotationDAO {
 	private static final String BASE_URL_QUOTATION_HISTORY = "https://query1.finance.yahoo.com/v7/finance/chart/"
 			+ PLACEHOLDER_SYMBOL + "?range=1y&interval=1d&indicators=quote&includeTimestamps=true";
 	
+	/**
+	 * The HTTP client used for data queries.
+	 */
+	private OkHttpClient httpClient;
+	
+	
+	/**
+	 * Default constructor.
+	 */
+	public QuotationYahooDAO() {
+		
+	}
+	
+	
+	/**
+	 * Constructor.
+	 * 
+	 * @param httpClient The HTTP client used for data queries.
+	 */
+	public QuotationYahooDAO(final OkHttpClient  httpClient) {
+		this.httpClient = httpClient;
+	}
+	
 
 	@Override
 	public Quotation getCurrentQuotation(String symbol, StockExchange stockExchange) throws Exception {
@@ -38,9 +71,87 @@ public class QuotationYahooDAO implements QuotationDAO {
 	
 	@Override
 	public List<Quotation> getQuotationHistory(String symbol, StockExchange stockExchange, Integer years) throws Exception {
-		// TODO Auto-generated method stub
-		//Query the Yahoo WebService to get historical data.
-		return null;
+		String jsonQuotationHistory = this.getQuotationHistoryJSONFromYahoo(symbol, stockExchange, years);
+		List<Quotation> quotationHistory = this.convertJSONToQuotations(jsonQuotationHistory);
+		
+		return quotationHistory;
+	}
+	
+	
+	/**
+	 * Gets the quotation history data from Yahoo finance as JSON String.
+	 * 
+	 * @param symbol The symbol.
+	 * @param stockExchange The stock exchange.
+	 * @param years The number of years to be queried.
+	 * @return The quotation history as JSON string.
+	 * @throws Exception Quotation history determination failed.
+	 */
+	protected String getQuotationHistoryJSONFromYahoo(final String symbol, final StockExchange stockExchange, final Integer years) throws Exception {
+		Request request = new Request.Builder()
+				.url(this.getQueryUrlQuotationHistory(symbol, stockExchange))
+				.header("Connection", "close")
+				.build();
+		Response response;
+		String jsonResult;
+		
+		try {
+			response = this.httpClient.newCall(request).execute();
+			jsonResult = response.body().string();
+			response.close();
+		} catch (IOException e) {
+			throw new Exception(e);
+		}
+		
+		return jsonResult;
+	}
+	
+	
+	/**
+	 * Converts a JSON string containing the quotation history into a List of Quotation objects.
+	 * 
+	 * @param quotationHistoryAsJSON The quotation history as JSON String.
+	 * @return A List of Quotation objects.
+	 * @throws Exception Quotation conversion failed.
+	 */
+	protected List<Quotation> convertJSONToQuotations(final String quotationHistoryAsJSON) throws Exception {
+		List<Quotation> quotationHistory = new ArrayList<>();
+		Quotation quotation;
+		Map<?, ?> map;
+		ObjectMapper mapper = new ObjectMapper();
+		
+		try {
+			map = mapper.readValue(quotationHistoryAsJSON, Map.class);
+			LinkedHashMap<?, ?> quoteResponse = (LinkedHashMap<?, ?>) map.get("chart");
+			ArrayList<?> result = (ArrayList<?>) quoteResponse.get("result");
+			LinkedHashMap<?, ?> resultAttributes = (LinkedHashMap<?, ?>) result.get(0);
+			ArrayList<?> timestampData = (ArrayList<?>) resultAttributes.get("timestamp");
+			LinkedHashMap<?, ?> metaAttributes = (LinkedHashMap<?, ?>) resultAttributes.get("meta");
+			LinkedHashMap<?, ?> indicators = (LinkedHashMap<?, ?>) resultAttributes.get("indicators");
+			ArrayList<?> quote = (ArrayList<?>) indicators.get("quote");
+			LinkedHashMap<?, ?> quoteAttributes = (LinkedHashMap<?, ?>) quote.get(0);
+			ArrayList<?> volumeData = (ArrayList<?>) quoteAttributes.get("volume");
+			ArrayList<?> adjClose = (ArrayList<?>) indicators.get("adjclose");
+			LinkedHashMap<?, ?> adjCloseAttributes = (LinkedHashMap<?, ?>) adjClose.get(0);
+			ArrayList<?> adjCloseData = (ArrayList<?>) adjCloseAttributes.get("adjclose");
+			
+			for(int i = timestampData.size(); i>0; i--) {
+				quotation = new Quotation();
+				quotation.setDate(this.getDate(timestampData.get(i-1)));
+				quotation.setCurrency(this.getCurrency((String) metaAttributes.get("currency")));
+				quotation.setVolume(this.getVolumeFromQuotationHistoryResponse(volumeData, i-1));
+				quotation.setPrice(this.getAdjustedCloseFromQuotationHistoryResponse(adjCloseData, i-1));
+				quotationHistory.add(quotation);
+			}
+		}
+		catch (JsonMappingException e) {
+			throw new Exception(e);
+		} 
+		catch (JsonProcessingException e) {
+			throw new Exception(e);
+		}
+		
+		return quotationHistory;
 	}
 
 	
