@@ -1,8 +1,5 @@
 package backend.controller;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import backend.model.scan.Scan;
 import backend.model.scan.ScanStatus;
 
@@ -13,14 +10,37 @@ import backend.model.scan.ScanStatus;
  */
 public class ScanController {
 	/**
-	 * Application logging.
+	 * Property Key: Query interval.
 	 */
-	public static final Logger logger = LogManager.getLogger(ScanController.class);
+	protected static final String PROPERTY_QUERY_INTERVAL = "queryInterval.scan";
+	
+	/**
+	 * The interval in seconds between each query of historical quotations.
+	 */
+	private int queryInterval;
+	
+	
+	/**
+	 * Initialization.
+	 * 
+	 * @throws Exception In case the initialization failed.
+	 */
+	public ScanController() throws Exception {
+		this.initializeQueryInterval();
+	}
+	
+	
+	/**
+	 * @return the queryInterval
+	 */
+	public int getQueryInterval() {
+		return queryInterval;
+	}
 	
 	
 	/**
 	 * Checks if the execution of a scan is requested.
-	 * Starts execution if necessary.
+	 * Starts execution if requested.
 	 * 
 	 * @param scan The scan being updated.
 	 * @param databaseScan The database state of the scan before the update has been performed.
@@ -36,7 +56,18 @@ public class ScanController {
 	 * @param scan The scan to be executed.
 	 */
 	public void execute(final Scan scan) {		
-		Thread scanThread = new ScanThread(5, scan);
+		Thread scanThread = new ScanThread(this.queryInterval, scan);
 		scanThread.run();
+	}
+	
+	
+	/**
+	 * Initializes the query interval.
+	 * 
+	 * @Throws Exception In case the property could not be read or initialized.
+	 */
+	private void initializeQueryInterval() throws Exception {
+		String queryInterval = MainController.getInstance().getConfigurationProperty(PROPERTY_QUERY_INTERVAL);
+		this.queryInterval = Integer.valueOf(queryInterval);
 	}
 }

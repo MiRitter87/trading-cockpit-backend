@@ -17,7 +17,7 @@ public class StockAlertController {
 	/**
 	 * Property Key: Query interval.
 	 */
-	protected static final String PROPERTY_QUERY_INTERVAL = "queryInterval";
+	protected static final String PROPERTY_QUERY_INTERVAL = "queryInterval.priceAlert";
 	
 	/**
 	 * Property Key: Start Time - Hour.
