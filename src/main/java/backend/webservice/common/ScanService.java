@@ -6,6 +6,7 @@ import java.util.ResourceBundle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import backend.controller.ScanController;
 import backend.dao.DAOManager;
 import backend.dao.ObjectUnchangedException;
 import backend.dao.list.ListDAO;
@@ -157,6 +158,8 @@ public class ScanService {
 	public WebServiceResult updateScan(final ScanWS scan) {
 		Scan convertedScan = new Scan();
 		WebServiceResult updateScanResult = new WebServiceResult(null);
+		Scan databaseScan;
+		ScanController scanController;
 		
 		//Convert the WebService data transfer object to the internal data model.
 		try {
@@ -178,7 +181,10 @@ public class ScanService {
 		
 		//Update scan if validation is successful.
 		try {
+			scanController = new ScanController();
+			databaseScan = this.scanDAO.getScan(scan.getId());
 			this.scanDAO.updateScan(convertedScan);
+			scanController.checkAndExecute(convertedScan, databaseScan);
 			updateScanResult.addMessage(new WebServiceMessage(WebServiceMessageType.S, 
 					MessageFormat.format(this.resources.getString("scan.updateSuccess"), convertedScan.getId())));
 		} 
