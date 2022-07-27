@@ -57,7 +57,7 @@ public class ScanController {
 	 */
 	public void execute(final Scan scan) {		
 		Thread scanThread = new ScanThread(this.queryInterval, scan);
-		scanThread.run();
+		scanThread.start();
 	}
 	
 	
