@@ -1,6 +1,8 @@
 package backend.model.instrument;
 
+import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -198,6 +200,27 @@ public class Instrument {
 	 */
 	public void addQuotation(final Quotation quotation) {
 		this.quotations.add(quotation);
+	}
+	
+	
+	/**
+	 * Gets the quotation with the given date.
+	 * 
+	 * @param date The date of the quotation.
+	 * @return The quotation with the given date, if found.
+	 */
+	public Quotation getQuotationByDate(final Date date) {
+		Iterator<Quotation> quotationIterator = this.getQuotations().iterator();
+		Quotation quotation;
+		
+		while(quotationIterator.hasNext()) {
+			quotation = quotationIterator.next();
+			
+			if(quotation.getDate().getTime() == date.getTime())
+				return quotation;
+		}
+		
+		return null;
 	}
 
 

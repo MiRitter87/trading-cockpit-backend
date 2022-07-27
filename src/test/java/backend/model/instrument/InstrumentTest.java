@@ -1,12 +1,18 @@
 package backend.model.instrument;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+
+import java.math.BigDecimal;
+import java.util.Calendar;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import backend.model.Currency;
 import backend.model.StockExchange;
 import backend.tools.test.ValidationMessageProvider;
 
@@ -21,18 +27,46 @@ public class InstrumentTest {
 	 */
 	private Instrument instrument;
 	
+	/**
+	 * The first quotation under test.
+	 */
+	private Quotation quotation1;
+	
+	/**
+	 * The second quotation under test.
+	 */
+	private Quotation quotation2;
+	
 	
 	@BeforeEach
 	/**
 	 * Tasks to be performed before each test is run.
 	 */
 	private void setUp() {
+		Calendar calendar = Calendar.getInstance();
+		
+		this.quotation1 = new Quotation();
+		calendar.set(2022, 07, 26);
+		this.quotation1.setDate(calendar.getTime());
+		this.quotation1.setPrice(BigDecimal.valueOf(1.11));
+		this.quotation1.setCurrency(Currency.USD);
+		this.quotation1.setVolume(10000);
+		
+		this.quotation2 = new Quotation();
+		calendar.set(2022, 07, 27);
+		this.quotation2.setDate(calendar.getTime());
+		this.quotation2.setPrice(BigDecimal.valueOf(1.12));
+		this.quotation2.setCurrency(Currency.USD);
+		this.quotation2.setVolume(13400);
+		
 		this.instrument = new Instrument();
 		this.instrument.setId(Integer.valueOf(1));
 		this.instrument.setSymbol("AAPL");
 		this.instrument.setType(InstrumentType.STOCK);
 		this.instrument.setStockExchange(StockExchange.NYSE);
 		this.instrument.setName("Apple");
+		this.instrument.addQuotation(this.quotation1);
+		this.instrument.addQuotation(this.quotation2);
 	}
 	
 	
@@ -221,5 +255,40 @@ public class InstrumentTest {
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests getting a quotation by a given date.
+	 * A quotation for the date exists.
+	 */
+	public void testGetQuotationByDateExisting() {
+		Quotation quotation;
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(2022, 07, 26);		//Date of quotation1.
+		
+		quotation = this.instrument.getQuotationByDate(calendar.getTime());
+		
+		assertEquals(this.quotation1.getDate().getTime(), quotation.getDate().getTime());
+		assertTrue(this.quotation1.getPrice().compareTo(quotation.getPrice()) == 0);
+		assertEquals(this.quotation1.getCurrency(), quotation.getCurrency());
+		assertEquals(this.quotation1.getVolume(), quotation.getVolume());
+	}
+	
+	
+	@Test
+	/**
+	 * Tests getting a quotation by a given date.
+	 * A quotation for the date does not exist.
+	 */
+	public void testGetQuotationByDateNotExisting() {
+		Quotation quotation;
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(2022, 07, 25);		//No quotation at that date exists.
+		
+		quotation = this.instrument.getQuotationByDate(calendar.getTime());
+		
+		assertNull(quotation);
 	}
 }
