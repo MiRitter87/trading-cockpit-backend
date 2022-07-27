@@ -1,6 +1,7 @@
 package backend.model.instrument;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -270,6 +271,7 @@ public class InstrumentTest {
 		
 		quotation = this.instrument.getQuotationByDate(calendar.getTime());
 		
+		assertNotNull(quotation);
 		assertEquals(this.quotation1.getDate().getTime(), quotation.getDate().getTime());
 		assertTrue(this.quotation1.getPrice().compareTo(quotation.getPrice()) == 0);
 		assertEquals(this.quotation1.getCurrency(), quotation.getCurrency());
