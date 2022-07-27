@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -82,7 +83,7 @@ public class Instrument {
 	/**
 	 * The quotations.
 	 */
-	@ManyToMany
+	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "INSTRUMENT_QUOTATION", 
     	joinColumns = { @JoinColumn(name = "INSTRUMENT_ID") }, 
     	inverseJoinColumns = { @JoinColumn(name = "QUOTATION_ID") })
