@@ -1,8 +1,11 @@
 package backend.model.instrument;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -13,8 +16,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinTable;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -329,6 +332,19 @@ public class Instrument {
 		}
 		
 		return null;
+	}
+	
+	
+	/**
+	 * Gets all quotations sorted by date.
+	 * 
+	 * @return All quotations sorted by date.
+	 */
+	public List<Quotation> getQuotationsSortedByDate() {
+		List<Quotation> sortedQuotations = new ArrayList<>(this.quotations);
+		Collections.sort(sortedQuotations, new QuotationDateComparator());
+				
+		return sortedQuotations;
 	}
 
 

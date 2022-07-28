@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
+import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -292,5 +293,25 @@ public class InstrumentTest {
 		quotation = this.instrument.getQuotationByDate(calendar.getTime());
 		
 		assertNull(quotation);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests getting the quotations of an instrument as a list sorted by date.
+	 */
+	public void testGetQuotationsSortedByDate() {
+		List<Quotation> sortedQuotations = this.instrument.getQuotationsSortedByDate();
+		Quotation quotation;
+		
+		assertNotNull(sortedQuotations);
+		assertEquals(this.instrument.getQuotations().size(), sortedQuotations.size());
+		
+		//Assure correct sorting. Index 0 has to contain the quotation with the most recent date.
+		quotation = sortedQuotations.get(0);
+		assertEquals(this.quotation2.getDate().getTime(), quotation.getDate().getTime());
+		
+		quotation = sortedQuotations.get(1);
+		assertEquals(this.quotation1.getDate().getTime(), quotation.getDate().getTime());
 	}
 }
