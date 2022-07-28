@@ -55,6 +55,9 @@ public class IndicatorCalculator {
 		BigDecimal divisionResult = BigDecimal.valueOf(0);
 		int indexOfQuotationForInterval = indexOfQuotation + (TRADING_DAYS_PER_MONTH * months) -1;
 		
+		if(indexOfQuotationForInterval >= sortedQuotations.size())
+			return divisionResult;
+		
 		divisionResult = sortedQuotations.get(indexOfQuotation).getPrice().divide
 				(sortedQuotations.get(indexOfQuotationForInterval).getPrice(), 4, RoundingMode.HALF_UP);
 		divisionResult = divisionResult.subtract(BigDecimal.valueOf(1));
