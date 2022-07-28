@@ -1,5 +1,6 @@
-package backend.controller;
+package backend.controller.scan;
 
+import backend.controller.MainController;
 import backend.model.scan.Scan;
 import backend.model.scan.ScanStatus;
 

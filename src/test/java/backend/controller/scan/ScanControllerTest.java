@@ -1,4 +1,4 @@
-package backend.controller;
+package backend.controller.scan;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import backend.controller.scan.ScanController;
 
 /**
  * Tests the functionality of the ScanController
