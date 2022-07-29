@@ -32,6 +32,8 @@ import javax.validation.constraints.Size;
 import org.hibernate.validator.HibernateValidator;
 import org.hibernate.validator.messageinterpolation.ExpressionLanguageFeatureLevel;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import backend.model.StockExchange;
 
 /**
@@ -340,6 +342,7 @@ public class Instrument {
 	 * 
 	 * @return All quotations sorted by date.
 	 */
+	@JsonIgnore
 	public List<Quotation> getQuotationsSortedByDate() {
 		List<Quotation> sortedQuotations = new ArrayList<>(this.quotations);
 		Collections.sort(sortedQuotations, new QuotationDateComparator());
