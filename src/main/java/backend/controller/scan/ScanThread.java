@@ -14,6 +14,7 @@ import backend.dao.instrument.InstrumentDAO;
 import backend.dao.instrument.QuotationDAO;
 import backend.dao.instrument.QuotationYahooDAO;
 import backend.dao.scan.ScanDAO;
+import backend.model.instrument.Indicator;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
 import backend.model.list.List;
@@ -54,6 +55,11 @@ public class ScanThread extends Thread {
 	InstrumentDAO instrumentDAO;
 	
 	/**
+	 * Indicator Calculator.
+	 */
+	IndicatorCalculator indicatorCalculator;
+	
+	/**
 	 * Application logging.
 	 */
 	public static final Logger logger = LogManager.getLogger(ScanThread.class);
@@ -72,6 +78,8 @@ public class ScanThread extends Thread {
 		this.quotationDAO = new QuotationYahooDAO(new OkHttpClient());
 		this.scanDAO = DAOManager.getInstance().getScanDAO();
 		this.instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
+		
+		this.indicatorCalculator = new IndicatorCalculator();
 	}
 	
 	
@@ -133,10 +141,12 @@ public class ScanThread extends Thread {
 		boolean quotationDataChanged = false, indicatorDataChanged = false;
 		
 		quotationDataChanged = this.updateQuotationsOfInstrument(instrument);
-		indicatorDataChanged = this.updateIndicatorsOfInstrument(instrument);
-		
-		if(quotationDataChanged == true || indicatorDataChanged == true)
+		if(quotationDataChanged)
 			this.persistInstrumentChanges(instrument);
+		
+		indicatorDataChanged = this.updateIndicatorsOfInstrument(instrument);
+		if(indicatorDataChanged)
+			this.persistInstrumentChanges(instrument);		
 	}
 	
 	
@@ -177,7 +187,33 @@ public class ScanThread extends Thread {
 	 * @return true, if instrument has changed; false if nothing changed.
 	 */
 	private boolean updateIndicatorsOfInstrument(Instrument instrument) {
-		return false;
+		boolean indicatorsModified = false;
+		Indicator indicator;
+		java.util.List<Quotation> sortedQuotations = instrument.getQuotationsSortedByDate();
+		Quotation mostRecentQuotation;
+		Quotation quotationToBeUpdated = null;
+		
+		//TODO Read instruments from database to get quotations with database IDs (needed for IDs of indicators)
+		//TODO Use instrument ID as method parameter of updateIndicatorsOfInstrument
+		//TODO Move persistInstrumentChanges call to both update...Methods
+		
+		if(sortedQuotations.size() == 0)
+			return false;
+			
+		mostRecentQuotation = sortedQuotations.get(0);
+		
+		if(mostRecentQuotation.getIndicator() == null)
+			indicator = new Indicator();
+		else
+			indicator = mostRecentQuotation.getIndicator();
+		
+		indicator.setRsPercentSum(this.indicatorCalculator.getRSPercentSum(instrument, mostRecentQuotation));
+		
+		quotationToBeUpdated = instrument.getQuotationByDate(mostRecentQuotation.getDate());
+		if(quotationToBeUpdated != null)
+			quotationToBeUpdated.setIndicator(indicator);
+		
+		return indicatorsModified;
 	}
 	
 	

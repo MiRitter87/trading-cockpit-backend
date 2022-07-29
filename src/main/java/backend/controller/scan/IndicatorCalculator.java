@@ -1,7 +1,6 @@
 package backend.controller.scan;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.List;
 

@@ -56,6 +56,12 @@ public class Indicator {
 	@Column(name="SMA200")
 	private float sma200;
 	
+	@Column(name="RS_PERCENT_SUM")
+	/**
+	 * The sum of an instruments performance in different time frames used for rsNumber calculation.
+	 */
+	private float rsPercentSum;	
+	
 	/**
 	 * The relative strength percentile of the instrument in relation to a set of other instruments.
 	 */
@@ -180,6 +186,22 @@ public class Indicator {
 	 */
 	public void setSma200(float sma200) {
 		this.sma200 = sma200;
+	}
+
+
+	/**
+	 * @return the rsPercentSum
+	 */
+	public float getRsPercentSum() {
+		return rsPercentSum;
+	}
+
+
+	/**
+	 * @param rsPercentSum the rsPercentSum to set
+	 */
+	public void setRsPercentSum(float rsPercentSum) {
+		this.rsPercentSum = rsPercentSum;
 	}
 
 
