@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 
 import backend.dao.DAOManager;
 import backend.dao.ObjectUnchangedException;
+import backend.dao.instrument.DuplicateInstrumentException;
 import backend.dao.instrument.InstrumentDAO;
 import backend.dao.instrument.QuotationDAO;
 import backend.dao.instrument.QuotationYahooDAO;
@@ -89,7 +90,7 @@ public class ScanThread extends Thread {
 		
 		while(instrumentIterator.hasNext()) {
 			instrument = instrumentIterator.next();
-			this.updateQuotationsOfInstrument(instrument);
+			this.updateInstrument(instrument);
 			
 			try {
 				sleep(this.queryInterval * 1000);
@@ -124,12 +125,29 @@ public class ScanThread extends Thread {
 	
 	
 	/**
+	 * Updates quotations and indicators of the given instrument.
+	 * 
+	 * @param instrument The instrument to be updated.
+	 */
+	private void updateInstrument(Instrument instrument) {
+		boolean quotationDataChanged = false, indicatorDataChanged = false;
+		
+		quotationDataChanged = this.updateQuotationsOfInstrument(instrument);
+		indicatorDataChanged = this.updateIndicatorsOfInstrument(instrument);
+		
+		if(quotationDataChanged == true || indicatorDataChanged == true)
+			this.persistInstrumentChanges(instrument);
+	}
+	
+	
+	/**
 	 * Queries a third party WebService to get historical quotations of the given instrument.
 	 * Updates the instrument if new quotations are given.
 	 * 
 	 * @param instrument The Instrument to be updated.
+	 * @return true, if instrument has changed; false if nothing changed.
 	 */
-	private void updateQuotationsOfInstrument(Instrument instrument) {
+	private boolean updateQuotationsOfInstrument(Instrument instrument) {
 		Quotation databaseQuotation;
 		boolean newQuotationsAdded = false;
 		
@@ -144,12 +162,40 @@ public class ScanThread extends Thread {
 					newQuotationsAdded = true;
 				}
 			}
-			
-			if(newQuotationsAdded) {
-				this.instrumentDAO.updateInstrument(instrument);
-			}
 		} catch (Exception e) {
-			logger.error("Failed to update quotations of instrument with ID " +instrument.getId(), e);
+			logger.error("Failed to retrieve quotations of instrument with ID " +instrument.getId(), e);
+		}
+		
+		return newQuotationsAdded;
+	}
+	
+	
+	/**
+	 * Updates the indicators of the given instrument.
+	 * 
+	 * @param instrument The instrument to be updated.
+	 * @return true, if instrument has changed; false if nothing changed.
+	 */
+	private boolean updateIndicatorsOfInstrument(Instrument instrument) {
+		return false;
+	}
+	
+	
+	/**
+	 * Persists changes of an instrument if data have changed.
+	 * 
+	 * @param instrument The instrument to persist.
+	 */
+	private void persistInstrumentChanges(final Instrument instrument) {
+		try {
+			this.instrumentDAO.updateInstrument(instrument);
+		} catch (ObjectUnchangedException e) {
+			logger.error("Scanner found new quotations or indicators of but database did not detect any changes in instrument ID: "
+					+instrument.getId(), e);
+		} catch (DuplicateInstrumentException e) {
+			logger.error("Update would have resulted in duplicate instrument with ID: " +instrument.getId(), e);
+		} catch (Exception e) {
+			logger.error("Scanner failed to update instrument with ID: " +instrument.getId(), e);
 		}
 	}
 	
