@@ -24,6 +24,7 @@ import backend.model.Currency;
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentArray;
+import backend.model.instrument.InstrumentQuotationQueryParam;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 import backend.model.webservice.WebServiceMessageType;
@@ -235,7 +236,7 @@ public class InstrumentServiceTest {
 		
 		//Get the instruments.
 		InstrumentService service = new InstrumentService();
-		getInstrumentsResult = service.getInstruments(false);
+		getInstrumentsResult = service.getInstruments(InstrumentQuotationQueryParam.NONE);
 		instruments = (InstrumentArray) getInstrumentsResult.getData();
 		
 		//Assure no error message exists
@@ -275,7 +276,7 @@ public class InstrumentServiceTest {
 		
 		//Get the instruments.
 		InstrumentService service = new InstrumentService();
-		getInstrumentsResult = service.getInstruments(true);
+		getInstrumentsResult = service.getInstruments(InstrumentQuotationQueryParam.ALL);
 		instruments = (InstrumentArray) getInstrumentsResult.getData();
 		
 		//Assure no error message exists

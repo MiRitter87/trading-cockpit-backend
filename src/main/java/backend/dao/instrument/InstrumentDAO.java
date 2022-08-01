@@ -4,6 +4,7 @@ import java.util.List;
 
 import backend.dao.ObjectUnchangedException;
 import backend.model.instrument.Instrument;
+import backend.model.instrument.InstrumentQuotationQueryParam;
 
 /**
  * Interface for instrument persistence.
@@ -33,11 +34,11 @@ public interface InstrumentDAO {
 	/**
 	 * Gets all instruments.
 	 * 
-	 * @param withQuotations Provides the quotations if set to true.
+	 * @param instrumentQuotationQuery Defines what kind of quotations are requested.
 	 * @return All instruments.
 	 * @throws Exception Instrument retrieval failed.
 	 */
-	List<Instrument> getInstruments(final boolean withQuotations) throws Exception;
+	List<Instrument> getInstruments(final InstrumentQuotationQueryParam instrumentQuotationQuery) throws Exception;
 	
 	
 	/**

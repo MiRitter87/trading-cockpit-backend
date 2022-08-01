@@ -12,6 +12,7 @@ import backend.dao.instrument.DuplicateInstrumentException;
 import backend.dao.instrument.InstrumentDAO;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentArray;
+import backend.model.instrument.InstrumentQuotationQueryParam;
 import backend.model.webservice.WebServiceMessage;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
@@ -83,15 +84,15 @@ public class InstrumentService {
 	/**
 	 * Provides a list of all instruments.
 	 * 
-	 * @param withQuotations Load quotations of instruments, if set to true.
+	 * @param instrumentQuotationQuery Defines what kind of quotations are requested.
 	 * @return A list of all instruments.
 	 */
-	public WebServiceResult getInstruments(final boolean withQuotations) {
+	public WebServiceResult getInstruments(final InstrumentQuotationQueryParam instrumentQuotationQuery) {
 		InstrumentArray instruments = new InstrumentArray();
 		WebServiceResult getInstrumentsResult = new WebServiceResult(null);
 		
 		try {
-			instruments.setInstruments(this.instrumentDAO.getInstruments(withQuotations));
+			instruments.setInstruments(this.instrumentDAO.getInstruments(instrumentQuotationQuery));
 			getInstrumentsResult.setData(instruments);
 		} catch (Exception e) {
 			getInstrumentsResult.addMessage(new WebServiceMessage(

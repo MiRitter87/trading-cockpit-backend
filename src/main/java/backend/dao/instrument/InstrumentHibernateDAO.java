@@ -15,6 +15,7 @@ import javax.persistence.criteria.Root;
 import backend.dao.ObjectUnchangedException;
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
+import backend.model.instrument.InstrumentQuotationQueryParam;
 
 /**
  * Provides access to instrument database persistence using Hibernate.
@@ -89,7 +90,7 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 
 	
 	@Override
-	public List<Instrument> getInstruments(final boolean withQuotations) throws Exception {
+	public List<Instrument> getInstruments(final InstrumentQuotationQueryParam instrumentQuotationQuery) throws Exception {
 		List<Instrument> instruments = null;
 		EntityManager entityManager = this.sessionFactory.createEntityManager();
 		EntityGraph<Instrument> graph;
@@ -104,7 +105,7 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 			criteriaQuery.orderBy(criteriaBuilder.asc(criteria.get("id")));	//Order by id ascending
 			TypedQuery<Instrument> typedQuery = entityManager.createQuery(criteriaQuery);
 			
-			if(withQuotations) {
+			if(instrumentQuotationQuery == InstrumentQuotationQueryParam.ALL) {
 				//Use entity graphs to load data of referenced Quotation instances.
 				graph = entityManager.createEntityGraph(Instrument.class);
 				graph.addAttributeNodes("quotations");
@@ -124,7 +125,7 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 			entityManager.close();			
 		}
 		
-		if(!withQuotations)
+		if(instrumentQuotationQuery == InstrumentQuotationQueryParam.NONE)
 			this.setQuotationsToNull(instruments);
 		
 		return instruments;

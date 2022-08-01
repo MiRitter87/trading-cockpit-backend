@@ -12,6 +12,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import backend.model.instrument.Instrument;
+import backend.model.instrument.InstrumentQuotationQueryParam;
 import backend.model.webservice.WebServiceResult;
 import backend.webservice.common.InstrumentService;
 
@@ -44,9 +45,9 @@ public class InstrumentRestService {
 	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public WebServiceResult getInstruments(@QueryParam("withQuotations") final boolean withQuotations) {
+	public WebServiceResult getInstruments(@QueryParam("instrumentQuotationQuery") final InstrumentQuotationQueryParam instrumentQuotationQuery) {
 		InstrumentService instrumentService = new InstrumentService();
-		return instrumentService.getInstruments(withQuotations);
+		return instrumentService.getInstruments(instrumentQuotationQuery);
 	}
 	
 	
