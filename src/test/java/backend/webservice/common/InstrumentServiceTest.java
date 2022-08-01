@@ -9,7 +9,9 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.ResourceBundle;
 
 import org.junit.jupiter.api.AfterAll;
@@ -57,6 +59,16 @@ public class InstrumentServiceTest {
 	 * The stock of Microsoft.
 	 */
 	private Instrument microsoftStock;
+	
+	/**
+	 * The first Quotation of the Apple stock.
+	 */
+	private Quotation appleQuotation1;
+	
+	/**
+	 * The second Quotation of the Apple stock.
+	 */
+	private Quotation appleQuotation2;
 	
 	
 	@BeforeAll
@@ -134,19 +146,29 @@ public class InstrumentServiceTest {
 	 * @return The instrument of the Apple stock.
 	 */
 	private Instrument getAppleStock() {
+		Calendar calendar = Calendar.getInstance();
 		Instrument instrument = new Instrument();
-		Quotation quotation = new Quotation();
-		
-		quotation.setDate(new Date());
-		quotation.setPrice(BigDecimal.valueOf(78.54));
-		quotation.setCurrency(Currency.USD);
-		quotation.setVolume(6784544);
 		
 		instrument.setSymbol("AAPL");
 		instrument.setName("Apple");
 		instrument.setStockExchange(StockExchange.NYSE);
 		instrument.setType(InstrumentType.STOCK);
-		instrument.addQuotation(quotation);
+		
+		calendar.setTime(new Date());
+		this.appleQuotation1 = new Quotation();
+		this.appleQuotation1.setDate(calendar.getTime());
+		this.appleQuotation1.setPrice(BigDecimal.valueOf(78.54));
+		this.appleQuotation1.setCurrency(Currency.USD);
+		this.appleQuotation1.setVolume(6784544);
+		instrument.addQuotation(this.appleQuotation1);
+		
+		calendar.add(Calendar.DAY_OF_YEAR, 1);
+		this.appleQuotation2 = new Quotation();
+		this.appleQuotation2.setDate(calendar.getTime());
+		this.appleQuotation2.setPrice(BigDecimal.valueOf(79.14));
+		this.appleQuotation2.setCurrency(Currency.USD);
+		this.appleQuotation2.setVolume(4584544);
+		instrument.addQuotation(this.appleQuotation2);
 		
 		return instrument;
 	}
@@ -272,7 +294,8 @@ public class InstrumentServiceTest {
 		WebServiceResult getInstrumentsResult;
 		InstrumentArray instruments;
 		Instrument instrument;
-		Quotation expectedQuotation, actualQuotation;
+		Quotation actualQuotation;
+		Iterator<Quotation> quotationIterator;
 		
 		//Get the instruments.
 		InstrumentService service = new InstrumentService();
@@ -286,6 +309,7 @@ public class InstrumentServiceTest {
 		assertEquals(2, instruments.getInstruments().size());
 		
 		//Check all instruments by each attribute.
+		//First instrument - Apple Stock
 		instrument = instruments.getInstruments().get(0);
 		assertEquals(this.appleStock.getId(), instrument.getId());
 		assertEquals(this.appleStock.getSymbol(), instrument.getSymbol());
@@ -294,15 +318,79 @@ public class InstrumentServiceTest {
 		assertEquals(this.appleStock.getType(), instrument.getType());
 		assertEquals(this.appleStock.getQuotations().size(), instrument.getQuotations().size());
 		
-		//Check the quotation of the apple stock.
-		expectedQuotation = this.appleStock.getQuotations().iterator().next();
-		actualQuotation = instrument.getQuotations().iterator().next();
-		assertEquals(expectedQuotation.getId() , actualQuotation.getId());
-		assertEquals(expectedQuotation.getDate().getTime() , actualQuotation.getDate().getTime());
-		assertTrue(expectedQuotation.getPrice().compareTo(actualQuotation.getPrice()) == 0);
-		assertEquals(expectedQuotation.getCurrency() , actualQuotation.getCurrency());
-		assertEquals(expectedQuotation.getVolume() , actualQuotation.getVolume());
-				
+		//Check the quotations of the Apple stock.
+		quotationIterator = instrument.getQuotations().iterator();
+		while(quotationIterator.hasNext()) {
+			actualQuotation = quotationIterator.next();
+			
+			if(actualQuotation.getId().equals(this.appleQuotation1.getId())) {
+				assertEquals(this.appleQuotation1.getId() , actualQuotation.getId());
+				assertEquals(this.appleQuotation1.getDate().getTime() , actualQuotation.getDate().getTime());
+				assertTrue(this.appleQuotation1.getPrice().compareTo(actualQuotation.getPrice()) == 0);
+				assertEquals(this.appleQuotation1.getCurrency() , actualQuotation.getCurrency());
+				assertEquals(this.appleQuotation1.getVolume() , actualQuotation.getVolume());
+			}
+			else if(actualQuotation.getId().equals(this.appleQuotation2.getId())) {
+				assertEquals(this.appleQuotation2.getId() , actualQuotation.getId());
+				assertEquals(this.appleQuotation2.getDate().getTime() , actualQuotation.getDate().getTime());
+				assertTrue(this.appleQuotation2.getPrice().compareTo(actualQuotation.getPrice()) == 0);
+				assertEquals(this.appleQuotation2.getCurrency() , actualQuotation.getCurrency());
+				assertEquals(this.appleQuotation2.getVolume() , actualQuotation.getVolume());
+			}
+			else {
+				fail("The list contains an unrelated quotation.");
+			}
+		}
+		
+		//Second instrument - Microsoft stock
+		instrument = instruments.getInstruments().get(1);
+		assertEquals(this.microsoftStock.getId(), instrument.getId());
+		assertEquals(this.microsoftStock.getSymbol(), instrument.getSymbol());
+		assertEquals(this.microsoftStock.getName(), instrument.getName());
+		assertEquals(this.microsoftStock.getStockExchange(), instrument.getStockExchange());
+		assertEquals(this.microsoftStock.getType(), instrument.getType());
+		assertEquals(this.microsoftStock.getQuotations().size(), instrument.getQuotations().size());
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of all instruments. Each instrument only has the most recent quotation attached.
+	 */
+	public void testGetAllInstrumentsWithMostRecentQuotation() {
+		WebServiceResult getInstrumentsResult;
+		InstrumentArray instruments;
+		Instrument instrument;
+		
+		//Get the instruments.
+		InstrumentService service = new InstrumentService();
+		getInstrumentsResult = service.getInstruments(InstrumentQuotationQueryParam.MOST_RECENT);
+		instruments = (InstrumentArray) getInstrumentsResult.getData();
+		
+		//Assure no error message exists
+		assertTrue(WebServiceTools.resultContainsErrorMessage(getInstrumentsResult) == false);
+		
+		//Check if two instruments are returned.
+		assertEquals(2, instruments.getInstruments().size());
+		
+		//Check all instruments by each attribute.
+		//First instrument - Apple Stock
+		instrument = instruments.getInstruments().get(0);
+		assertEquals(this.appleStock.getId(), instrument.getId());
+		assertEquals(this.appleStock.getSymbol(), instrument.getSymbol());
+		assertEquals(this.appleStock.getName(), instrument.getName());
+		assertEquals(this.appleStock.getStockExchange(), instrument.getStockExchange());
+		assertEquals(this.appleStock.getType(), instrument.getType());
+		assertEquals(1, instrument.getQuotations().size());		//Only one quotation expected - the most recent one.
+		
+		Quotation actualQuotation = instrument.getQuotations().iterator().next();
+		assertEquals(this.appleQuotation2.getId() , actualQuotation.getId());
+		assertEquals(this.appleQuotation2.getDate().getTime() , actualQuotation.getDate().getTime());
+		assertTrue(this.appleQuotation2.getPrice().compareTo(actualQuotation.getPrice()) == 0);
+		assertEquals(this.appleQuotation2.getCurrency() , actualQuotation.getCurrency());
+		assertEquals(this.appleQuotation2.getVolume() , actualQuotation.getVolume());
+		
+		//Second instrument - Microsoft stock
 		instrument = instruments.getInstruments().get(1);
 		assertEquals(this.microsoftStock.getId(), instrument.getId());
 		assertEquals(this.microsoftStock.getSymbol(), instrument.getSymbol());

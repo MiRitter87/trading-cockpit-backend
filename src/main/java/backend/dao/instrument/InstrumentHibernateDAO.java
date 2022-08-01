@@ -1,7 +1,9 @@
 package backend.dao.instrument;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
@@ -16,6 +18,7 @@ import backend.dao.ObjectUnchangedException;
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentQuotationQueryParam;
+import backend.model.instrument.Quotation;
 
 /**
  * Provides access to instrument database persistence using Hibernate.
@@ -105,11 +108,13 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 			criteriaQuery.orderBy(criteriaBuilder.asc(criteria.get("id")));	//Order by id ascending
 			TypedQuery<Instrument> typedQuery = entityManager.createQuery(criteriaQuery);
 			
-			if(instrumentQuotationQuery == InstrumentQuotationQueryParam.ALL) {
+			if(instrumentQuotationQuery == InstrumentQuotationQueryParam.ALL || 
+					instrumentQuotationQuery == InstrumentQuotationQueryParam.MOST_RECENT) {
+				
 				//Use entity graphs to load data of referenced Quotation instances.
 				graph = entityManager.createEntityGraph(Instrument.class);
 				graph.addAttributeNodes("quotations");
-				typedQuery.setHint("javax.persistence.loadgraph", graph);	//Also fetch all quotation data.
+				typedQuery.setHint("javax.persistence.loadgraph", graph);	//Also fetch quotation data.
 			}
 			
 			instruments = typedQuery.getResultList();
@@ -127,6 +132,10 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 		
 		if(instrumentQuotationQuery == InstrumentQuotationQueryParam.NONE)
 			this.setQuotationsToNull(instruments);
+		
+		//TODO Select only most recent quotations in database query above. Don't filter afterwards.
+		if(instrumentQuotationQuery == InstrumentQuotationQueryParam.MOST_RECENT)
+			this.deleteQuotationsExceptMostRecent(instruments);
 		
 		return instruments;
 	}
@@ -293,6 +302,27 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 	private void setQuotationsToNull(List<Instrument> instruments) {
 		for(Instrument tempInstrument:instruments) {
 			tempInstrument.setQuotations(null);
+		}
+	}
+	
+	
+	/**
+	 * Deletes all quotations that are not the most recent one.
+	 * 
+	 * @param instruments The list of instruments.
+	 */
+	private void deleteQuotationsExceptMostRecent(List<Instrument> instruments) {
+		List<Quotation> quotationsSortedByDate;
+		Set<Quotation> quotations;
+		
+		for(Instrument tempInstrument:instruments) {
+			quotations = new HashSet<Quotation>();
+			quotationsSortedByDate = tempInstrument.getQuotationsSortedByDate();
+			
+			if(quotationsSortedByDate.size() > 0) {
+				quotations.add(quotationsSortedByDate.get(0));
+				tempInstrument.setQuotations(quotations);				
+			}
 		}
 	}
 }
