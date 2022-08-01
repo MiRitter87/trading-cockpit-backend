@@ -224,7 +224,7 @@ public class InstrumentServiceTest {
 		
 		//Get the instruments.
 		InstrumentService service = new InstrumentService();
-		getInstrumentsResult = service.getInstruments();
+		getInstrumentsResult = service.getInstruments(false);
 		instruments = (InstrumentArray) getInstrumentsResult.getData();
 		
 		//Assure no error message exists

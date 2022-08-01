@@ -92,6 +92,8 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 	public List<Instrument> getInstruments(final boolean withQuotations) throws Exception {
 		List<Instrument> instruments = null;
 		EntityManager entityManager = this.sessionFactory.createEntityManager();
+		EntityGraph<Instrument> graph;
+		
 		entityManager.getTransaction().begin();
 		
 		try {
@@ -101,8 +103,15 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 			criteriaQuery.select(criteria);
 			criteriaQuery.orderBy(criteriaBuilder.asc(criteria.get("id")));	//Order by id ascending
 			TypedQuery<Instrument> typedQuery = entityManager.createQuery(criteriaQuery);
-			instruments = typedQuery.getResultList();
 			
+			if(withQuotations) {
+				//Use entity graphs to load data of referenced Quotation instances.
+				graph = entityManager.createEntityGraph(Instrument.class);
+				graph.addAttributeNodes("quotations");
+				typedQuery.setHint("javax.persistence.loadgraph", graph);	//Also fetch all quotation data.
+			}
+			
+			instruments = typedQuery.getResultList();
 			entityManager.getTransaction().commit();			
 		}
 		catch(Exception exception) {

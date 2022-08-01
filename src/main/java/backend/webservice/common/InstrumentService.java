@@ -83,14 +83,15 @@ public class InstrumentService {
 	/**
 	 * Provides a list of all instruments.
 	 * 
+	 * @param withQuotations Load quotations of instruments, if set to true.
 	 * @return A list of all instruments.
 	 */
-	public WebServiceResult getInstruments() {
+	public WebServiceResult getInstruments(final boolean withQuotations) {
 		InstrumentArray instruments = new InstrumentArray();
 		WebServiceResult getInstrumentsResult = new WebServiceResult(null);
 		
 		try {
-			instruments.setInstruments(this.instrumentDAO.getInstruments(false));
+			instruments.setInstruments(this.instrumentDAO.getInstruments(withQuotations));
 			getInstrumentsResult.setData(instruments);
 		} catch (Exception e) {
 			getInstrumentsResult.addMessage(new WebServiceMessage(
