@@ -7,7 +7,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.MessageFormat;
+import java.util.Date;
 import java.util.ResourceBundle;
 
 import org.junit.jupiter.api.AfterAll;
@@ -18,10 +20,12 @@ import org.junit.jupiter.api.Test;
 
 import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
+import backend.model.Currency;
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentArray;
 import backend.model.instrument.InstrumentType;
+import backend.model.instrument.Quotation;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
 import backend.tools.WebServiceTools;
@@ -130,11 +134,18 @@ public class InstrumentServiceTest {
 	 */
 	private Instrument getAppleStock() {
 		Instrument instrument = new Instrument();
+		Quotation quotation = new Quotation();
+		
+		quotation.setDate(new Date());
+		quotation.setPrice(BigDecimal.valueOf(78.54));
+		quotation.setCurrency(Currency.USD);
+		quotation.setVolume(6784544);
 		
 		instrument.setSymbol("AAPL");
 		instrument.setName("Apple");
 		instrument.setStockExchange(StockExchange.NYSE);
 		instrument.setType(InstrumentType.STOCK);
+		instrument.addQuotation(quotation);
 		
 		return instrument;
 	}
@@ -215,9 +226,9 @@ public class InstrumentServiceTest {
 	
 	@Test
 	/**
-	 * Tests the retrieval of all instruments.
+	 * Tests the retrieval of all instruments without quotations.
 	 */
-	public void testGetAllInstruments() {
+	public void testGetAllInstrumentsWithoutQuotations() {
 		WebServiceResult getInstrumentsResult;
 		InstrumentArray instruments;
 		Instrument instrument;
@@ -240,6 +251,7 @@ public class InstrumentServiceTest {
 		assertEquals(this.appleStock.getName(), instrument.getName());
 		assertEquals(this.appleStock.getStockExchange(), instrument.getStockExchange());
 		assertEquals(this.appleStock.getType(), instrument.getType());
+		assertNull(instrument.getQuotations());
 		
 		instrument = instruments.getInstruments().get(1);
 		assertEquals(this.microsoftStock.getId(), instrument.getId());
@@ -247,6 +259,56 @@ public class InstrumentServiceTest {
 		assertEquals(this.microsoftStock.getName(), instrument.getName());
 		assertEquals(this.microsoftStock.getStockExchange(), instrument.getStockExchange());
 		assertEquals(this.microsoftStock.getType(), instrument.getType());
+		assertNull(instrument.getQuotations());
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of all instruments with quotations.
+	 */
+	public void testGetAllInstrumentsWithQuotations() {
+		WebServiceResult getInstrumentsResult;
+		InstrumentArray instruments;
+		Instrument instrument;
+		Quotation expectedQuotation, actualQuotation;
+		
+		//Get the instruments.
+		InstrumentService service = new InstrumentService();
+		getInstrumentsResult = service.getInstruments(true);
+		instruments = (InstrumentArray) getInstrumentsResult.getData();
+		
+		//Assure no error message exists
+		assertTrue(WebServiceTools.resultContainsErrorMessage(getInstrumentsResult) == false);
+		
+		//Check if two instruments are returned.
+		assertEquals(2, instruments.getInstruments().size());
+		
+		//Check all instruments by each attribute.
+		instrument = instruments.getInstruments().get(0);
+		assertEquals(this.appleStock.getId(), instrument.getId());
+		assertEquals(this.appleStock.getSymbol(), instrument.getSymbol());
+		assertEquals(this.appleStock.getName(), instrument.getName());
+		assertEquals(this.appleStock.getStockExchange(), instrument.getStockExchange());
+		assertEquals(this.appleStock.getType(), instrument.getType());
+		assertEquals(this.appleStock.getQuotations().size(), instrument.getQuotations().size());
+		
+		//Check the quotation of the apple stock.
+		expectedQuotation = this.appleStock.getQuotations().iterator().next();
+		actualQuotation = instrument.getQuotations().iterator().next();
+		assertEquals(expectedQuotation.getId() , actualQuotation.getId());
+		assertEquals(expectedQuotation.getDate().getTime() , actualQuotation.getDate().getTime());
+		assertTrue(expectedQuotation.getPrice().compareTo(actualQuotation.getPrice()) == 0);
+		assertEquals(expectedQuotation.getCurrency() , actualQuotation.getCurrency());
+		assertEquals(expectedQuotation.getVolume() , actualQuotation.getVolume());
+				
+		instrument = instruments.getInstruments().get(1);
+		assertEquals(this.microsoftStock.getId(), instrument.getId());
+		assertEquals(this.microsoftStock.getSymbol(), instrument.getSymbol());
+		assertEquals(this.microsoftStock.getName(), instrument.getName());
+		assertEquals(this.microsoftStock.getStockExchange(), instrument.getStockExchange());
+		assertEquals(this.microsoftStock.getType(), instrument.getType());
+		assertEquals(this.microsoftStock.getQuotations().size(), instrument.getQuotations().size());
 	}
 	
 	
