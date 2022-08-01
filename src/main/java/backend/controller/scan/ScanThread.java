@@ -138,15 +138,8 @@ public class ScanThread extends Thread {
 	 * @param instrument The instrument to be updated.
 	 */
 	private void updateInstrument(Instrument instrument) {
-		boolean quotationDataChanged = false, indicatorDataChanged = false;
-		
-		quotationDataChanged = this.updateQuotationsOfInstrument(instrument);
-		if(quotationDataChanged)
-			this.persistInstrumentChanges(instrument);
-		
-		indicatorDataChanged = this.updateIndicatorsOfInstrument(instrument);
-		if(indicatorDataChanged)
-			this.persistInstrumentChanges(instrument);		
+		this.updateQuotationsOfInstrument(instrument);
+		this.updateIndicatorsOfInstrument(instrument.getId());
 	}
 	
 	
@@ -155,11 +148,9 @@ public class ScanThread extends Thread {
 	 * Updates the instrument if new quotations are given.
 	 * 
 	 * @param instrument The Instrument to be updated.
-	 * @return true, if instrument has changed; false if nothing changed.
 	 */
-	private boolean updateQuotationsOfInstrument(Instrument instrument) {
+	private void updateQuotationsOfInstrument(Instrument instrument) {
 		Quotation databaseQuotation;
-		boolean newQuotationsAdded = false;
 		
 		try {
 			java.util.List<Quotation> wsQuotations = this.quotationDAO.getQuotationHistory(instrument.getSymbol(), instrument.getStockExchange(), 1);
@@ -169,51 +160,49 @@ public class ScanThread extends Thread {
 				
 				if(databaseQuotation == null) {
 					instrument.addQuotation(wsQuotation);
-					newQuotationsAdded = true;
+					this.persistInstrumentChanges(instrument);
 				}
 			}
 		} catch (Exception e) {
 			logger.error("Failed to retrieve quotations of instrument with ID " +instrument.getId(), e);
 		}
-		
-		return newQuotationsAdded;
 	}
 	
 	
 	/**
-	 * Updates the indicators of the given instrument.
+	 * Updates the indicators of the most recent quotation of the given Instrument.
 	 * 
-	 * @param instrument The instrument to be updated.
-	 * @return true, if instrument has changed; false if nothing changed.
+	 * @param instrumentId The id of the Instrument to be updated.
 	 */
-	private boolean updateIndicatorsOfInstrument(Instrument instrument) {
-		boolean indicatorsModified = false;
+	private void updateIndicatorsOfInstrument(final Integer instrumentId) {
 		Indicator indicator;
-		java.util.List<Quotation> sortedQuotations = instrument.getQuotationsSortedByDate();
+		java.util.List<Quotation> sortedQuotations;
 		Quotation mostRecentQuotation;
-		Quotation quotationToBeUpdated = null;
+		Instrument instrument;
 		
-		//TODO Read instruments from database to get quotations with database IDs (needed for IDs of indicators)
-		//TODO Use instrument ID as method parameter of updateIndicatorsOfInstrument
-		//TODO Move persistInstrumentChanges call to both update...Methods
-		
-		if(sortedQuotations.size() == 0)
-			return false;
+		try {
+			//Read instrument from database to get Quotations with IDs needed for setting Indicator ID.
+			instrument = this.instrumentDAO.getInstrument(instrumentId, true);	
+			sortedQuotations = instrument.getQuotationsSortedByDate();
 			
-		mostRecentQuotation = sortedQuotations.get(0);
-		
-		if(mostRecentQuotation.getIndicator() == null)
-			indicator = new Indicator();
-		else
-			indicator = mostRecentQuotation.getIndicator();
-		
-		indicator.setRsPercentSum(this.indicatorCalculator.getRSPercentSum(instrument, mostRecentQuotation));
-		
-		quotationToBeUpdated = instrument.getQuotationByDate(mostRecentQuotation.getDate());
-		if(quotationToBeUpdated != null)
-			quotationToBeUpdated.setIndicator(indicator);
-		
-		return indicatorsModified;
+			if(sortedQuotations.size() == 0)
+				return;
+			
+			mostRecentQuotation = sortedQuotations.get(0);
+			
+			if(mostRecentQuotation.getIndicator() == null)
+				indicator = new Indicator();
+			else
+				indicator = mostRecentQuotation.getIndicator();
+			
+			indicator.setRsPercentSum(this.indicatorCalculator.getRSPercentSum(instrument, mostRecentQuotation));
+			mostRecentQuotation.setIndicator(indicator);
+			
+			this.persistInstrumentChanges(instrument);
+		}
+		catch(Exception exception) {
+			logger.error("Failed to retrieve update indicators of instrument with ID " +instrumentId, exception);
+		}
 	}
 	
 	
