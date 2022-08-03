@@ -1,5 +1,7 @@
 package backend.controller.scan;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -90,6 +92,7 @@ public class ScanThread extends Thread {
 		Set<Instrument> instruments;
 		Iterator<Instrument> instrumentIterator;
 		Instrument instrument;
+		int instrumentsProcessed = 0;
 		
 		logger.info("Starting execution of scan with ID: " +this.scan.getId());
 		
@@ -99,6 +102,9 @@ public class ScanThread extends Thread {
 		while(instrumentIterator.hasNext()) {
 			instrument = instrumentIterator.next();
 			this.updateInstrument(instrument);
+			
+			instrumentsProcessed++;
+			this.updateScanPercentCompleted(instrumentsProcessed, instruments.size());
 			
 			try {
 				sleep(this.queryInterval * 1000);
@@ -151,6 +157,7 @@ public class ScanThread extends Thread {
 	 */
 	private void updateQuotationsOfInstrument(Instrument instrument) {
 		Quotation databaseQuotation;
+		boolean newQuotationsAdded = false;
 		
 		try {
 			java.util.List<Quotation> wsQuotations = this.quotationDAO.getQuotationHistory(instrument.getSymbol(), instrument.getStockExchange(), 1);
@@ -160,9 +167,12 @@ public class ScanThread extends Thread {
 				
 				if(databaseQuotation == null) {
 					instrument.addQuotation(wsQuotation);
-					this.persistInstrumentChanges(instrument);
+					newQuotationsAdded = true;
 				}
 			}
+			
+			if(newQuotationsAdded)
+				this.persistInstrumentChanges(instrument);
 		} catch (Exception e) {
 			logger.error("Failed to retrieve quotations of instrument with ID " +instrument.getId(), e);
 		}
@@ -222,6 +232,38 @@ public class ScanThread extends Thread {
 		} catch (Exception e) {
 			logger.error("Scanner failed to update instrument with ID: " +instrument.getId(), e);
 		}
+	}
+	
+	
+	/**
+	 * Updates the status field 'percentCompleted' of the running scan.
+	 * 
+	 * @param numberOfInstrumentsCompleted The number of instruments that already have been scanned.
+	 * @param totalNumberOfInstruments The total number of instruments of the scan.
+	 */
+	private void updateScanPercentCompleted(final int numberOfInstrumentsCompleted, final int totalNumberOfInstruments) {
+		BigDecimal percentCompleted, instrumentsCompleted, numberOfInstruments;
+		int roundedPercentCompleted = 0;
+		
+		instrumentsCompleted = BigDecimal.valueOf(numberOfInstrumentsCompleted);
+		numberOfInstruments = BigDecimal.valueOf(totalNumberOfInstruments);
+		
+		percentCompleted = instrumentsCompleted.divide(numberOfInstruments, 2, RoundingMode.HALF_UP);
+		percentCompleted = percentCompleted.multiply(BigDecimal.valueOf(100));
+		roundedPercentCompleted = percentCompleted.intValue();
+		
+		if(this.scan.getPercentCompleted().equals(roundedPercentCompleted)) {
+			return;
+		}
+		
+		try {			
+			this.scan.setPercentCompleted(roundedPercentCompleted);
+			this.scanDAO.updateScan(this.scan);
+		} catch (ObjectUnchangedException e) {
+			logger.error("Tried to update 'percentCompleted' in scan process but value did not change.", e);
+		} catch (Exception e) {
+			logger.error("Failed to update 'percentCompleted' of scan during scan process.", e);
+		}			
 	}
 	
 	
