@@ -343,12 +343,12 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 	 * @return The instrument with correctly initialized quotations.
 	 * @throws Exception Instrument quotations could not be updated.
 	 */
-	private Instrument getInstrumentWithUpdatedQuotations(Instrument instrument, final boolean updateQuotations) throws Exception {
-		Instrument updatedInstrument;
-		Instrument databaseInstrument = this.getInstrument(instrument.getId(), true);
+	private Instrument getInstrumentWithUpdatedQuotations(final Instrument instrument, final boolean updateQuotations) throws Exception {
+		Instrument updatedInstrument, databaseInstrument;
 		
 		if(!updateQuotations) {
 			updatedInstrument = instrument;
+			databaseInstrument = this.getInstrument(instrument.getId(), true);
 			updatedInstrument.setQuotations(databaseInstrument.getQuotations());
 			return updatedInstrument;
 		}
