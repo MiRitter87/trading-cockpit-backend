@@ -583,6 +583,47 @@ public class InstrumentServiceTest {
 	
 	@Test
 	/**
+	 * Tests updating of an instrument that has been previously retrieved without its quotations.
+	 * An attribute is updated but the instrument has no quotations set.
+	 * The update function has to update the instrument without deleting the quotations.
+	 */
+	public void testUpdateWithoutDeletingQuotations() {
+		WebServiceResult getInstrumentResult, updateInstrumentResult;
+		InstrumentService service = new InstrumentService();
+		Instrument instrumentWithoutQuotations, databaseInstrumentAfterUpdate;
+		final String newName = "Changed name.";
+		
+		//Get the instrument without quotations.
+		getInstrumentResult = service.getInstrument(this.appleStock.getId());
+		assertTrue(getInstrumentResult.getData() instanceof Instrument);
+		instrumentWithoutQuotations = (Instrument) getInstrumentResult.getData();
+		assertNull(instrumentWithoutQuotations.getQuotations());
+		
+		//Change the name of the instrument and update the database with those changes.
+		instrumentWithoutQuotations.setName(newName);
+		updateInstrumentResult = service.updateInstrument(instrumentWithoutQuotations);
+		
+		//Assure no error message exists
+		assertTrue(WebServiceTools.resultContainsErrorMessage(updateInstrumentResult) == false);
+		
+		//There should be a success message
+		assertTrue(updateInstrumentResult.getMessages().size() == 1);
+		assertTrue(updateInstrumentResult.getMessages().get(0).getType() == WebServiceMessageType.S);
+		
+		//Now retrieve the updated instrument and assure that the quotations still exist.
+		try {
+			databaseInstrumentAfterUpdate = instrumentDAO.getInstrument(this.appleStock.getId(), true);
+			assertEquals(newName, databaseInstrumentAfterUpdate.getName());
+			assertNotNull(databaseInstrumentAfterUpdate.getQuotations());
+			assertEquals(this.appleStock.getQuotations().size(), databaseInstrumentAfterUpdate.getQuotations().size());
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	@Test
+	/**
 	 * Tests adding of a new instrument.
 	 */
 	public void testAddValidInstrument() {

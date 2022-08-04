@@ -195,7 +195,7 @@ public class InstrumentService {
 		
 		//Update instrument if validation is successful.
 		try {
-			this.instrumentDAO.updateInstrument(instrument);
+			this.instrumentDAO.updateInstrument(instrument, false);
 			updateInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.S, 
 					MessageFormat.format(this.resources.getString("instrument.updateSuccess"), instrument.getId())));
 		} 

@@ -223,7 +223,7 @@ public class ScanThread extends Thread {
 	 */
 	private void persistInstrumentChanges(final Instrument instrument) {
 		try {
-			this.instrumentDAO.updateInstrument(instrument);
+			this.instrumentDAO.updateInstrument(instrument, true);
 		} catch (ObjectUnchangedException e) {
 			logger.error("Scanner found new quotations or indicators of but database did not detect any changes in instrument ID: "
 					+instrument.getId(), e);

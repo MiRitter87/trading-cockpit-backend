@@ -178,6 +178,9 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 			entityManager.close();			
 		}
 		
+		if(!withQuotations)
+			this.setQuotationsToNull(instruments);
+		
 		if(instruments.size() == 1)
 			instrument = instruments.get(0);
 		
@@ -186,15 +189,19 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 
 	
 	@Override
-	public void updateInstrument(Instrument instrument) throws ObjectUnchangedException, DuplicateInstrumentException, Exception {
+	public void updateInstrument(final Instrument instrument, final boolean updateQuotations) 
+			throws ObjectUnchangedException, DuplicateInstrumentException, Exception {
+		
+		Instrument instrumentToUpdate;
 		EntityManager entityManager;
 		
-		this.checkInstrumentDataChanged(instrument);
-		this.checkInstrumentExistsUpdate(instrument);
+		instrumentToUpdate = this.getInstrumentWithUpdatedQuotations(instrument, updateQuotations);
+		this.checkInstrumentDataChanged(instrumentToUpdate);
+		this.checkInstrumentExistsUpdate(instrumentToUpdate);
 		
 		entityManager = this.sessionFactory.createEntityManager();
 		entityManager.getTransaction().begin();
-		entityManager.merge(instrument);
+		entityManager.merge(instrumentToUpdate);
 		entityManager.getTransaction().commit();
 		entityManager.close();
 	}
@@ -294,7 +301,7 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 	
 	
 	/**
-	 * Sets all quotation references of the instruments to null.
+	 * Sets the quotations association of all instruments to null.
 	 * This prevents serialization of lazily loaded quotations in the WebService communication, if no quotation data are requested.
 	 * 
 	 * @param instruments The list of instruments.
@@ -323,6 +330,30 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 				quotations.add(quotationsSortedByDate.get(0));
 				tempInstrument.setQuotations(quotations);				
 			}
+		}
+	}
+	
+	
+	/**
+	 * Initializes the quotations of the instrument with the database state, if no update of quotations is requested.
+	 * If an update of quotations is requested the Instrument is returned 'as is'.
+	 * 
+	 * @param instrument The instrument to be updated.
+	 * @param updateQuotations Indicator if quotations are to be updated.
+	 * @return The instrument with correctly initialized quotations.
+	 * @throws Exception Instrument quotations could not be updated.
+	 */
+	private Instrument getInstrumentWithUpdatedQuotations(Instrument instrument, final boolean updateQuotations) throws Exception {
+		Instrument updatedInstrument;
+		Instrument databaseInstrument = this.getInstrument(instrument.getId(), true);
+		
+		if(!updateQuotations) {
+			updatedInstrument = instrument;
+			updatedInstrument.setQuotations(databaseInstrument.getQuotations());
+			return updatedInstrument;
+		}
+		else {
+			return instrument;			
 		}
 	}
 }
