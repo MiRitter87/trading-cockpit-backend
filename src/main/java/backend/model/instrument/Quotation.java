@@ -2,6 +2,7 @@ package backend.model.instrument;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Objects;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -172,5 +173,26 @@ public class Quotation {
 		
 		if(this.indicator != null)
 			this.indicator.setId(this.id);
+	}
+
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(currency, date, id, indicator, price, volume);
+	}
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Quotation other = (Quotation) obj;
+		return currency == other.currency && Objects.equals(date, other.date) && Objects.equals(id, other.id)
+				&& Objects.equals(indicator, other.indicator) && Objects.equals(price, other.price)
+				&& volume == other.volume;
 	}
 }

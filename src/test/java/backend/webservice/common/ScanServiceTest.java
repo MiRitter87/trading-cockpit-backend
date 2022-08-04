@@ -7,7 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.MessageFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.ResourceBundle;
 
@@ -21,9 +24,11 @@ import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
 import backend.dao.list.ListDAO;
 import backend.dao.scan.ScanDAO;
+import backend.model.Currency;
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
+import backend.model.instrument.Quotation;
 import backend.model.list.List;
 import backend.model.scan.Scan;
 import backend.model.scan.ScanArray;
@@ -68,6 +73,16 @@ public class ScanServiceTest {
 	 * The stock of Amazon.
 	 */
 	private Instrument amazonStock;
+	
+	/**
+	 * The first Quotation of the Amazon stock.
+	 */
+	private Quotation amazonQuotation1;
+	
+	/**
+	 * The second Quotation of the Amazon stock.
+	 */
+	private Quotation amazonQuotation2;
 	
 	/**
 	 * A list containing a single instrument.
@@ -246,12 +261,29 @@ public class ScanServiceTest {
 	 * @return The instrument of the Amazon stock.
 	 */
 	private Instrument getAmazonStock() {
+		Calendar calendar = Calendar.getInstance();
 		Instrument instrument = new Instrument();
 		
 		instrument.setSymbol("AMZN");
 		instrument.setName("Amazon");
 		instrument.setStockExchange(StockExchange.NYSE);
 		instrument.setType(InstrumentType.STOCK);
+		
+		calendar.setTime(new Date());
+		this.amazonQuotation1 = new Quotation();
+		this.amazonQuotation1.setDate(calendar.getTime());
+		this.amazonQuotation1.setPrice(BigDecimal.valueOf(78.54));
+		this.amazonQuotation1.setCurrency(Currency.USD);
+		this.amazonQuotation1.setVolume(6784544);
+		instrument.addQuotation(this.amazonQuotation1);
+		
+		calendar.add(Calendar.DAY_OF_YEAR, 1);
+		this.amazonQuotation2 = new Quotation();
+		this.amazonQuotation2.setDate(calendar.getTime());
+		this.amazonQuotation2.setPrice(BigDecimal.valueOf(79.14));
+		this.amazonQuotation2.setCurrency(Currency.USD);
+		this.amazonQuotation2.setVolume(4584544);
+		instrument.addQuotation(this.amazonQuotation2);
 		
 		return instrument;
 	}
@@ -609,7 +641,7 @@ public class ScanServiceTest {
 	/**
 	 * Tests updating a scan without changing any data.
 	 */
-	public void testUpdateUnchangedList() {
+	public void testUpdateUnchangedScan() {
 		WebServiceResult updateScanResult;
 		ScanService service = new ScanService();
 		String actualErrorMessage, expectedErrorMessage;

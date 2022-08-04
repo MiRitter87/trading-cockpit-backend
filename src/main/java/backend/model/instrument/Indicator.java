@@ -1,5 +1,7 @@
 package backend.model.instrument;
 
+import java.util.Objects;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -218,5 +220,31 @@ public class Indicator {
 	 */
 	public void setRsNumber(int rsNumber) {
 		this.rsNumber = rsNumber;
+	}
+
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(bollingerBandWidth, distanceTo52WeekHigh, id, rsNumber, rsPercentSum, sma150, sma200, sma50,
+				stage);
+	}
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Indicator other = (Indicator) obj;
+		return Float.floatToIntBits(bollingerBandWidth) == Float.floatToIntBits(other.bollingerBandWidth)
+				&& Float.floatToIntBits(distanceTo52WeekHigh) == Float.floatToIntBits(other.distanceTo52WeekHigh)
+				&& Objects.equals(id, other.id) && rsNumber == other.rsNumber
+				&& Float.floatToIntBits(rsPercentSum) == Float.floatToIntBits(other.rsPercentSum)
+				&& Float.floatToIntBits(sma150) == Float.floatToIntBits(other.sma150)
+				&& Float.floatToIntBits(sma200) == Float.floatToIntBits(other.sma200)
+				&& Float.floatToIntBits(sma50) == Float.floatToIntBits(other.sma50) && stage == other.stage;
 	}
 }
