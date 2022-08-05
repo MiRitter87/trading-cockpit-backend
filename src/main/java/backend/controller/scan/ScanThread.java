@@ -104,7 +104,7 @@ public class ScanThread extends Thread {
 			this.updateInstrument(instrument);
 			
 			instrumentsProcessed++;
-			this.updateScanPercentCompleted(instrumentsProcessed, instruments.size());
+			//this.updateScanPercentCompleted(instrumentsProcessed, instruments.size());
 			
 			try {
 				sleep(this.queryInterval * 1000);
