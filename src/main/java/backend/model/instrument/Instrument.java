@@ -13,12 +13,12 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.ConstraintViolation;
@@ -88,10 +88,8 @@ public class Instrument {
 	/**
 	 * The quotations.
 	 */
-	@ManyToMany(cascade = CascadeType.ALL)
-	@JoinTable(name = "INSTRUMENT_QUOTATION", 
-    	joinColumns = { @JoinColumn(name = "INSTRUMENT_ID") }, 
-    	inverseJoinColumns = { @JoinColumn(name = "QUOTATION_ID") })
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	@JoinColumn(name="INSTRUMENT_ID")
 	private Set<Quotation> quotations;
 	
 	
