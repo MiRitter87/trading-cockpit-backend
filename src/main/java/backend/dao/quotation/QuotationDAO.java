@@ -50,4 +50,14 @@ public interface QuotationDAO {
 	 * @throws Exception Deletion failed.
 	 */
 	void deleteQuotations(final List<Quotation> quotations) throws Exception;
+	
+	
+	/**
+	 * Gets the Quotation with the given ID.
+	 * 
+	 * @param id The ID of the Quotation.
+	 * @return The Quotation with the given ID.
+	 * @throws Exception Quotation determination failed.
+	 */
+	Quotation getQuotation(final Integer id) throws Exception;
 }

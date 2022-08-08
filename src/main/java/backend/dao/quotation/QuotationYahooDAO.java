@@ -279,4 +279,10 @@ public class QuotationYahooDAO implements QuotationDAO {
 	public void deleteQuotations(List<Quotation> quotations) throws Exception {
 		throw new Exception("Operation not supported.");
 	}
+
+
+	@Override
+	public Quotation getQuotation(Integer id) throws Exception {
+		throw new Exception("Operation not supported.");
+	}
 }

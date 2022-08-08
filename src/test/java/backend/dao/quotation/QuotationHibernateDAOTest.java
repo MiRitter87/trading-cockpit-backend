@@ -1,5 +1,8 @@
 package backend.dao.quotation;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
@@ -13,6 +16,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import backend.dao.DAOManager;
 import backend.dao.instrument.DuplicateInstrumentException;
@@ -150,6 +154,111 @@ public class QuotationHibernateDAOTest {
 			
 			quotationDAO.deleteQuotations(quotations);
 			instrumentDAO.deleteInstrument(this.appleStock);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests insertion of a Quotation using the 'insertQuotations' method.
+	 */
+	public void testInsertQuotations() {
+		Calendar calendar = Calendar.getInstance();
+		List<Quotation> quotations = new ArrayList<>();
+		Quotation newQuotation, databaseQuotation;
+		
+		//Define a new Quotation to be added.
+		calendar.add(Calendar.DAY_OF_YEAR, 2);
+		newQuotation = new Quotation();
+		newQuotation.setDate(calendar.getTime());
+		newQuotation.setPrice(BigDecimal.valueOf(78.19));
+		newQuotation.setCurrency(Currency.USD);
+		newQuotation.setVolume(1184234);
+		newQuotation.setInstrument(this.appleStock);
+		quotations.add(newQuotation);
+		
+		try {
+			//Add Quotation to database.
+			quotationDAO.insertQuotations(quotations);
+			
+			//Check if Quotation has been correctly persisted.
+			databaseQuotation = quotationDAO.getQuotation(newQuotation.getId());
+			assertEquals(newQuotation.getId(), databaseQuotation.getId());
+			assertEquals(newQuotation.getDate().getTime(), databaseQuotation.getDate().getTime());
+			assertTrue(newQuotation.getPrice().compareTo(databaseQuotation.getPrice()) == 0);
+			assertEquals(newQuotation.getCurrency(), databaseQuotation.getCurrency());
+			assertEquals(newQuotation.getVolume(), databaseQuotation.getVolume());
+			assertEquals(newQuotation.getInstrument().getId(), databaseQuotation.getInstrument().getId());
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+		finally {
+			//Remove the newly added quotation from the database.
+			try {
+				quotationDAO.deleteQuotations(quotations);
+			} catch (Exception e) {
+				fail(e.getMessage());
+			}
+		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests deletion of a Quotation using the 'deleteQuotations' method.
+	 */
+	public void testDeleteQuotations() {
+		List<Quotation> quotations = new ArrayList<>();
+		Quotation deletedQuotation;
+		
+		try {
+			//Delete Quotation.
+			quotations.add(this.appleQuotation1);
+			quotationDAO.deleteQuotations(quotations);
+			
+			//Try to get the previously deleted Quotation.
+			deletedQuotation = quotationDAO.getQuotation(this.appleQuotation1.getId());
+			
+			//Assure the Quotation does not exist anymore.
+			assertNull(deletedQuotation);
+			
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+		finally {
+			//Add the previously deleted quotation back to the database.
+			this.appleQuotation1.setId(null);
+			quotations.clear();
+			quotations.add(this.appleQuotation1);
+			
+			try {
+				quotationDAO.insertQuotations(quotations);
+			} catch (Exception e) {
+				fail(e.getMessage());
+			}
+		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of a Quotation with a given ID.
+	 */
+	public void testGetQuotation() {
+		Quotation databaseQuotation;
+		
+		try {
+			databaseQuotation = quotationDAO.getQuotation(this.appleQuotation2.getId());
+			
+			//Check the attributes of the database Quotation.
+			assertEquals(databaseQuotation.getId(), this.appleQuotation2.getId());
+			assertEquals(databaseQuotation.getDate().getTime(), this.appleQuotation2.getDate().getTime());
+			assertTrue(databaseQuotation.getPrice().compareTo(this.appleQuotation2.getPrice()) == 0);
+			assertEquals(databaseQuotation.getCurrency(), this.appleQuotation2.getCurrency());
+			assertEquals(databaseQuotation.getVolume(), this.appleQuotation2.getVolume());
+			assertEquals(databaseQuotation.getInstrument().getId(), this.appleQuotation2.getInstrument().getId());
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
