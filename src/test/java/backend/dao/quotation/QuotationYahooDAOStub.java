@@ -1,9 +1,10 @@
-package backend.dao.instrument;
+package backend.dao.quotation;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
+import backend.dao.quotation.QuotationYahooDAO;
 import backend.model.StockExchange;
 import backend.model.instrument.Quotation;
 

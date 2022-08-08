@@ -1,4 +1,4 @@
-package backend.dao.instrument;
+package backend.dao.quotation;
 
 import java.util.List;
 
@@ -32,4 +32,22 @@ public interface QuotationDAO {
 	 * @throws Exception In case the quotation retrieval failed.
 	 */
 	List<Quotation> getQuotationHistory(final String symbol, final StockExchange stockExchange, final Integer years) throws Exception;
+	
+	
+	/**
+	 * Inserts the given quotations.
+	 * 
+	 * @param quotations The quotations to be inserted.
+	 * @throws Exception Insertion failed.
+	 */
+	void insertQuotations(final List<Quotation> quotations) throws Exception;
+	
+	
+	/**
+	 * Deletes the given quotations.
+	 * 
+	 * @param quotations The quotations to be deleted.
+	 * @throws Exception Deletion failed.
+	 */
+	void deleteQuotations(final List<Quotation> quotations) throws Exception;
 }

@@ -13,8 +13,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import backend.dao.instrument.QuotationYahooDAO;
-import backend.dao.instrument.QuotationYahooDAOStub;
+import backend.dao.quotation.QuotationYahooDAO;
+import backend.dao.quotation.QuotationYahooDAOStub;
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;

@@ -1,4 +1,4 @@
-package backend.dao.instrument;
+package backend.dao.quotation;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -266,5 +266,17 @@ public class QuotationYahooDAO implements QuotationDAO {
 		
 		
 		return adjustedClosingPrice;
+	}
+
+
+	@Override
+	public void insertQuotations(List<Quotation> quotations) throws Exception {
+		throw new Exception("Operation not supported.");		
+	}
+
+
+	@Override
+	public void deleteQuotations(List<Quotation> quotations) throws Exception {
+		throw new Exception("Operation not supported.");
 	}
 }
