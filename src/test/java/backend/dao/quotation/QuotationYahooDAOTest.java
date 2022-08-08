@@ -13,7 +13,6 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import backend.dao.quotation.QuotationYahooDAO;
 import backend.model.Currency;
 import backend.model.StockExchange;
 import backend.model.instrument.Quotation;

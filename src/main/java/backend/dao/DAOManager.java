@@ -12,6 +12,8 @@ import backend.dao.list.ListDAO;
 import backend.dao.list.ListHibernateDAO;
 import backend.dao.priceAlert.PriceAlertDAO;
 import backend.dao.priceAlert.PriceAlertHibernateDAO;
+import backend.dao.quotation.QuotationDAO;
+import backend.dao.quotation.QuotationHibernateDAO;
 import backend.dao.scan.ScanDAO;
 import backend.dao.scan.ScanHibernateDAO;
 
@@ -40,6 +42,11 @@ public class DAOManager implements Closeable {
 	 * DAO to access instruments.
 	 */
 	private InstrumentDAO instrumentDAO;
+	
+	/**
+	 * DAO to access quotations.
+	 */
+	private QuotationDAO quotationDAO;
 	
 	/**
 	 * DAO to access lists.
@@ -85,7 +92,7 @@ public class DAOManager implements Closeable {
 	
 	
 	/**
-	 * Returns a DAO to manage price alert data.
+	 * Returns a DAO to manage PriceAlert data.
 	 * 
 	 * @return The PriceAlertDAO.
 	 */
@@ -98,7 +105,7 @@ public class DAOManager implements Closeable {
 	
 	
 	/**
-	 * Returns a DAO to access instrument data.
+	 * Returns a DAO to access Instrument data.
 	 * 
 	 * @return The InstrumentDAO.
 	 */
@@ -111,7 +118,20 @@ public class DAOManager implements Closeable {
 	
 	
 	/**
-	 * Returns a DAO to access list data.
+	 * Returns a DAO to access Quotation data.
+	 * 
+	 * @return The InstrumentDAO.
+	 */
+	public QuotationDAO getQuotationDAO() {
+		if(this.quotationDAO == null)
+			this.quotationDAO = new QuotationHibernateDAO(this.sessionFactory);
+		
+		return this.quotationDAO;
+	}
+	
+	
+	/**
+	 * Returns a DAO to access List data.
 	 * 
 	 * @return The ListDAO.
 	 */
@@ -124,7 +144,7 @@ public class DAOManager implements Closeable {
 	
 	
 	/**
-	 * Returns a DAO to access scan data.
+	 * Returns a DAO to access Scan data.
 	 * 
 	 * @return The ScanDAO.
 	 */

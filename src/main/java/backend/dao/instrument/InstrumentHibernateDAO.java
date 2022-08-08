@@ -17,7 +17,7 @@ import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentQuotationQueryParam;
 
 /**
- * Provides access to instrument database persistence using Hibernate.
+ * Provides access to Instrument database persistence using Hibernate.
  * 
  * @author Michael
  */
