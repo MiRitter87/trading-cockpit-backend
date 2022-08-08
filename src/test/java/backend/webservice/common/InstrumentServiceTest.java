@@ -7,11 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.text.MessageFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Iterator;
 import java.util.ResourceBundle;
 
 import org.junit.jupiter.api.AfterAll;
@@ -22,13 +18,10 @@ import org.junit.jupiter.api.Test;
 
 import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
-import backend.model.Currency;
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentArray;
-import backend.model.instrument.InstrumentQuotationQueryParam;
 import backend.model.instrument.InstrumentType;
-import backend.model.instrument.Quotation;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
 import backend.tools.WebServiceTools;
@@ -59,16 +52,6 @@ public class InstrumentServiceTest {
 	 * The stock of Microsoft.
 	 */
 	private Instrument microsoftStock;
-	
-	/**
-	 * The first Quotation of the Apple stock.
-	 */
-	private Quotation appleQuotation1;
-	
-	/**
-	 * The second Quotation of the Apple stock.
-	 */
-	private Quotation appleQuotation2;
 	
 	
 	@BeforeAll
@@ -146,29 +129,12 @@ public class InstrumentServiceTest {
 	 * @return The instrument of the Apple stock.
 	 */
 	private Instrument getAppleStock() {
-		Calendar calendar = Calendar.getInstance();
 		Instrument instrument = new Instrument();
 		
 		instrument.setSymbol("AAPL");
 		instrument.setName("Apple");
 		instrument.setStockExchange(StockExchange.NYSE);
 		instrument.setType(InstrumentType.STOCK);
-		
-		calendar.setTime(new Date());
-		this.appleQuotation1 = new Quotation();
-		this.appleQuotation1.setDate(calendar.getTime());
-		this.appleQuotation1.setPrice(BigDecimal.valueOf(78.54));
-		this.appleQuotation1.setCurrency(Currency.USD);
-		this.appleQuotation1.setVolume(6784544);
-		instrument.addQuotation(this.appleQuotation1);
-		
-		calendar.add(Calendar.DAY_OF_YEAR, 1);
-		this.appleQuotation2 = new Quotation();
-		this.appleQuotation2.setDate(calendar.getTime());
-		this.appleQuotation2.setPrice(BigDecimal.valueOf(79.14));
-		this.appleQuotation2.setCurrency(Currency.USD);
-		this.appleQuotation2.setVolume(4584544);
-		instrument.addQuotation(this.appleQuotation2);
 		
 		return instrument;
 	}
@@ -258,7 +224,7 @@ public class InstrumentServiceTest {
 		
 		//Get the instruments.
 		InstrumentService service = new InstrumentService();
-		getInstrumentsResult = service.getInstruments(InstrumentQuotationQueryParam.NONE);
+		getInstrumentsResult = service.getInstruments();
 		instruments = (InstrumentArray) getInstrumentsResult.getData();
 		
 		//Assure no error message exists
@@ -283,73 +249,6 @@ public class InstrumentServiceTest {
 		assertEquals(this.microsoftStock.getStockExchange(), instrument.getStockExchange());
 		assertEquals(this.microsoftStock.getType(), instrument.getType());
 		assertEquals(0, instrument.getQuotations().size());
-	}
-	
-	
-	@Test
-	/**
-	 * Tests the retrieval of all instruments with quotations.
-	 */
-	public void testGetAllInstrumentsWithQuotations() {
-		WebServiceResult getInstrumentsResult;
-		InstrumentArray instruments;
-		Instrument instrument;
-		Quotation actualQuotation;
-		Iterator<Quotation> quotationIterator;
-		
-		//Get the instruments.
-		InstrumentService service = new InstrumentService();
-		getInstrumentsResult = service.getInstruments(InstrumentQuotationQueryParam.ALL);
-		instruments = (InstrumentArray) getInstrumentsResult.getData();
-		
-		//Assure no error message exists
-		assertTrue(WebServiceTools.resultContainsErrorMessage(getInstrumentsResult) == false);
-		
-		//Check if two instruments are returned.
-		assertEquals(2, instruments.getInstruments().size());
-		
-		//Check all instruments by each attribute.
-		//First instrument - Apple Stock
-		instrument = instruments.getInstruments().get(0);
-		assertEquals(this.appleStock.getId(), instrument.getId());
-		assertEquals(this.appleStock.getSymbol(), instrument.getSymbol());
-		assertEquals(this.appleStock.getName(), instrument.getName());
-		assertEquals(this.appleStock.getStockExchange(), instrument.getStockExchange());
-		assertEquals(this.appleStock.getType(), instrument.getType());
-		assertEquals(this.appleStock.getQuotations().size(), instrument.getQuotations().size());
-		
-		//Check the quotations of the Apple stock.
-		quotationIterator = instrument.getQuotations().iterator();
-		while(quotationIterator.hasNext()) {
-			actualQuotation = quotationIterator.next();
-			
-			if(actualQuotation.getId().equals(this.appleQuotation1.getId())) {
-				assertEquals(this.appleQuotation1.getId() , actualQuotation.getId());
-				assertEquals(this.appleQuotation1.getDate().getTime() , actualQuotation.getDate().getTime());
-				assertTrue(this.appleQuotation1.getPrice().compareTo(actualQuotation.getPrice()) == 0);
-				assertEquals(this.appleQuotation1.getCurrency() , actualQuotation.getCurrency());
-				assertEquals(this.appleQuotation1.getVolume() , actualQuotation.getVolume());
-			}
-			else if(actualQuotation.getId().equals(this.appleQuotation2.getId())) {
-				assertEquals(this.appleQuotation2.getId() , actualQuotation.getId());
-				assertEquals(this.appleQuotation2.getDate().getTime() , actualQuotation.getDate().getTime());
-				assertTrue(this.appleQuotation2.getPrice().compareTo(actualQuotation.getPrice()) == 0);
-				assertEquals(this.appleQuotation2.getCurrency() , actualQuotation.getCurrency());
-				assertEquals(this.appleQuotation2.getVolume() , actualQuotation.getVolume());
-			}
-			else {
-				fail("The list contains an unrelated quotation.");
-			}
-		}
-		
-		//Second instrument - Microsoft stock
-		instrument = instruments.getInstruments().get(1);
-		assertEquals(this.microsoftStock.getId(), instrument.getId());
-		assertEquals(this.microsoftStock.getSymbol(), instrument.getSymbol());
-		assertEquals(this.microsoftStock.getName(), instrument.getName());
-		assertEquals(this.microsoftStock.getStockExchange(), instrument.getStockExchange());
-		assertEquals(this.microsoftStock.getType(), instrument.getType());
-		assertEquals(this.microsoftStock.getQuotations().size(), instrument.getQuotations().size());
 	}
 	
 	
@@ -362,9 +261,9 @@ public class InstrumentServiceTest {
 		Instrument deletedInstrument;
 		
 		try {
-			//Delete Microsoft instrument using the service.
+			//Delete Apple Instrument using the service.
 			InstrumentService service = new InstrumentService();
-			deleteInstrumentResult = service.deleteInstrument(this.microsoftStock.getId());
+			deleteInstrumentResult = service.deleteInstrument(this.appleStock.getId());
 			
 			//There should be no error messages
 			assertTrue(WebServiceTools.resultContainsErrorMessage(deleteInstrumentResult) == false);
@@ -373,11 +272,14 @@ public class InstrumentServiceTest {
 			assertTrue(deleteInstrumentResult.getMessages().size() == 1);
 			assertTrue(deleteInstrumentResult.getMessages().get(0).getType() == WebServiceMessageType.S);
 			
-			//Check if Apple alert is missing using the DAO.
-			deletedInstrument = instrumentDAO.getInstrument(this.microsoftStock.getId(), false);
+			//Check if Apple Instrument is missing using the DAO.
+			deletedInstrument = instrumentDAO.getInstrument(this.appleStock.getId(), false);
 			
 			if(deletedInstrument != null)
-				fail("Microsoft instrument is still persisted but should have been deleted by the WebService operation 'deleteInstrument'.");
+				fail("Apple instrument is still persisted but should have been deleted by the WebService operation 'deleteInstrument'.");
+			
+			//Assure that the quotations of the Apple Instrument are also deleted.
+			
 		}
 		catch (Exception e) {
 			fail(e.getMessage());
@@ -385,8 +287,8 @@ public class InstrumentServiceTest {
 		finally {
 			//Restore old database state by adding the instrument that has been deleted previously.
 			try {
-				this.microsoftStock = this.getMicrosoftStock();
-				instrumentDAO.insertInstrument(this.microsoftStock);
+				this.appleStock = this.getAppleStock();
+				instrumentDAO.insertInstrument(this.appleStock);
 			} 
 			catch (Exception e) {
 				fail(e.getMessage());

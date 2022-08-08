@@ -87,12 +87,12 @@ public class InstrumentService {
 	 * @param instrumentQuotationQuery Defines what kind of quotations are requested.
 	 * @return A list of all instruments.
 	 */
-	public WebServiceResult getInstruments(final InstrumentQuotationQueryParam instrumentQuotationQuery) {
+	public WebServiceResult getInstruments() {
 		InstrumentArray instruments = new InstrumentArray();
 		WebServiceResult getInstrumentsResult = new WebServiceResult(null);
 		
 		try {
-			instruments.setInstruments(this.instrumentDAO.getInstruments(instrumentQuotationQuery));
+			instruments.setInstruments(this.instrumentDAO.getInstruments(InstrumentQuotationQueryParam.NONE));
 			getInstrumentsResult.setData(instruments);
 		} catch (Exception e) {
 			getInstrumentsResult.addMessage(new WebServiceMessage(

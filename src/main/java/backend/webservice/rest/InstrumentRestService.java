@@ -45,9 +45,9 @@ public class InstrumentRestService {
 	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public WebServiceResult getInstruments(@QueryParam("instrumentQuotationQuery") final InstrumentQuotationQueryParam instrumentQuotationQuery) {
+	public WebServiceResult getInstruments() {
 		InstrumentService instrumentService = new InstrumentService();
-		return instrumentService.getInstruments(instrumentQuotationQuery);
+		return instrumentService.getInstruments();
 	}
 	
 	
