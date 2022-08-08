@@ -1,11 +1,8 @@
 package backend.dao.instrument;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.TypedQuery;
@@ -18,7 +15,6 @@ import backend.dao.ObjectUnchangedException;
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentQuotationQueryParam;
-import backend.model.instrument.Quotation;
 
 /**
  * Provides access to instrument database persistence using Hibernate.
@@ -96,7 +92,6 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 	public List<Instrument> getInstruments(final InstrumentQuotationQueryParam instrumentQuotationQuery) throws Exception {
 		List<Instrument> instruments = null;
 		EntityManager entityManager = this.sessionFactory.createEntityManager();
-		EntityGraph<Instrument> graph;
 		
 		entityManager.getTransaction().begin();
 		
@@ -108,13 +103,8 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 			criteriaQuery.orderBy(criteriaBuilder.asc(criteria.get("id")));	//Order by id ascending
 			TypedQuery<Instrument> typedQuery = entityManager.createQuery(criteriaQuery);
 			
-			if(instrumentQuotationQuery == InstrumentQuotationQueryParam.ALL || 
-					instrumentQuotationQuery == InstrumentQuotationQueryParam.MOST_RECENT) {
-				
-				//Use entity graphs to load data of referenced Quotation instances.
-				graph = entityManager.createEntityGraph(Instrument.class);
-				graph.addAttributeNodes("quotations");
-				typedQuery.setHint("javax.persistence.loadgraph", graph);	//Also fetch quotation data.
+			if(instrumentQuotationQuery == InstrumentQuotationQueryParam.ALL) {
+				//TODO Load quotations using additional JPA query
 			}
 			
 			instruments = typedQuery.getResultList();
@@ -130,13 +120,6 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 			entityManager.close();			
 		}
 		
-		if(instrumentQuotationQuery == InstrumentQuotationQueryParam.NONE)
-			this.setQuotationsToNull(instruments);
-		
-		//TODO Select only most recent quotations in database query above. Don't filter afterwards.
-		if(instrumentQuotationQuery == InstrumentQuotationQueryParam.MOST_RECENT)
-			this.deleteQuotationsExceptMostRecent(instruments);
-		
 		return instruments;
 	}
 
@@ -146,7 +129,6 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 		Instrument instrument = null;
 		List<Instrument> instruments = null;
 		EntityManager entityManager = this.sessionFactory.createEntityManager();
-		EntityGraph<Instrument> graph;
 		
 		entityManager.getTransaction().begin();
 		
@@ -159,10 +141,7 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 			TypedQuery<Instrument> typedQuery = entityManager.createQuery(criteriaQuery);
 			
 			if(withQuotations) {
-				//Use entity graphs to load data of referenced Quotation instances.
-				graph = entityManager.createEntityGraph(Instrument.class);
-				graph.addAttributeNodes("quotations");
-				typedQuery.setHint("javax.persistence.loadgraph", graph);	//Also fetch all quotation data.
+				//TODO Load quotations using additional JPA query
 			}
 			
 			instruments = typedQuery.getResultList();		
@@ -177,9 +156,6 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 		finally {
 			entityManager.close();			
 		}
-		
-		if(!withQuotations)
-			this.setQuotationsToNull(instruments);
 		
 		if(instruments.size() == 1)
 			instrument = instruments.get(0);
@@ -297,40 +273,6 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 			return null;
 		else
 			return instruments.get(0);
-	}
-	
-	
-	/**
-	 * Sets the quotations association of all instruments to null.
-	 * This prevents serialization of lazily loaded quotations in the WebService communication, if no quotation data are requested.
-	 * 
-	 * @param instruments The list of instruments.
-	 */
-	private void setQuotationsToNull(List<Instrument> instruments) {
-		for(Instrument tempInstrument:instruments) {
-			tempInstrument.setQuotations(null);
-		}
-	}
-	
-	
-	/**
-	 * Deletes all quotations that are not the most recent one.
-	 * 
-	 * @param instruments The list of instruments.
-	 */
-	private void deleteQuotationsExceptMostRecent(List<Instrument> instruments) {
-		List<Quotation> quotationsSortedByDate;
-		Set<Quotation> quotations;
-		
-		for(Instrument tempInstrument:instruments) {
-			quotations = new HashSet<Quotation>();
-			quotationsSortedByDate = tempInstrument.getQuotationsSortedByDate();
-			
-			if(quotationsSortedByDate.size() > 0) {
-				quotations.add(quotationsSortedByDate.get(0));
-				tempInstrument.setQuotations(quotations);				
-			}
-		}
 	}
 	
 	

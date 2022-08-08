@@ -274,7 +274,7 @@ public class InstrumentServiceTest {
 		assertEquals(this.appleStock.getName(), instrument.getName());
 		assertEquals(this.appleStock.getStockExchange(), instrument.getStockExchange());
 		assertEquals(this.appleStock.getType(), instrument.getType());
-		assertNull(instrument.getQuotations());
+		assertEquals(0, instrument.getQuotations().size());
 		
 		instrument = instruments.getInstruments().get(1);
 		assertEquals(this.microsoftStock.getId(), instrument.getId());
@@ -282,7 +282,7 @@ public class InstrumentServiceTest {
 		assertEquals(this.microsoftStock.getName(), instrument.getName());
 		assertEquals(this.microsoftStock.getStockExchange(), instrument.getStockExchange());
 		assertEquals(this.microsoftStock.getType(), instrument.getType());
-		assertNull(instrument.getQuotations());
+		assertEquals(0, instrument.getQuotations().size());
 	}
 	
 	
@@ -341,54 +341,6 @@ public class InstrumentServiceTest {
 				fail("The list contains an unrelated quotation.");
 			}
 		}
-		
-		//Second instrument - Microsoft stock
-		instrument = instruments.getInstruments().get(1);
-		assertEquals(this.microsoftStock.getId(), instrument.getId());
-		assertEquals(this.microsoftStock.getSymbol(), instrument.getSymbol());
-		assertEquals(this.microsoftStock.getName(), instrument.getName());
-		assertEquals(this.microsoftStock.getStockExchange(), instrument.getStockExchange());
-		assertEquals(this.microsoftStock.getType(), instrument.getType());
-		assertEquals(this.microsoftStock.getQuotations().size(), instrument.getQuotations().size());
-	}
-	
-	
-	@Test
-	/**
-	 * Tests the retrieval of all instruments. Each instrument only has the most recent quotation attached.
-	 */
-	public void testGetAllInstrumentsWithMostRecentQuotation() {
-		WebServiceResult getInstrumentsResult;
-		InstrumentArray instruments;
-		Instrument instrument;
-		
-		//Get the instruments.
-		InstrumentService service = new InstrumentService();
-		getInstrumentsResult = service.getInstruments(InstrumentQuotationQueryParam.MOST_RECENT);
-		instruments = (InstrumentArray) getInstrumentsResult.getData();
-		
-		//Assure no error message exists
-		assertTrue(WebServiceTools.resultContainsErrorMessage(getInstrumentsResult) == false);
-		
-		//Check if two instruments are returned.
-		assertEquals(2, instruments.getInstruments().size());
-		
-		//Check all instruments by each attribute.
-		//First instrument - Apple Stock
-		instrument = instruments.getInstruments().get(0);
-		assertEquals(this.appleStock.getId(), instrument.getId());
-		assertEquals(this.appleStock.getSymbol(), instrument.getSymbol());
-		assertEquals(this.appleStock.getName(), instrument.getName());
-		assertEquals(this.appleStock.getStockExchange(), instrument.getStockExchange());
-		assertEquals(this.appleStock.getType(), instrument.getType());
-		assertEquals(1, instrument.getQuotations().size());		//Only one quotation expected - the most recent one.
-		
-		Quotation actualQuotation = instrument.getQuotations().iterator().next();
-		assertEquals(this.appleQuotation2.getId() , actualQuotation.getId());
-		assertEquals(this.appleQuotation2.getDate().getTime() , actualQuotation.getDate().getTime());
-		assertTrue(this.appleQuotation2.getPrice().compareTo(actualQuotation.getPrice()) == 0);
-		assertEquals(this.appleQuotation2.getCurrency() , actualQuotation.getCurrency());
-		assertEquals(this.appleQuotation2.getVolume() , actualQuotation.getVolume());
 		
 		//Second instrument - Microsoft stock
 		instrument = instruments.getInstruments().get(1);
@@ -575,47 +527,6 @@ public class InstrumentServiceTest {
 		try {
 			databaseInstrument = instrumentDAO.getInstrument(this.microsoftStock.getId(), false);
 			assertEquals("MSFT", databaseInstrument.getSymbol());
-		} catch (Exception e) {
-			fail(e.getMessage());
-		}
-	}
-	
-	
-	@Test
-	/**
-	 * Tests updating of an instrument that has been previously retrieved without its quotations.
-	 * An attribute is updated but the instrument has no quotations set.
-	 * The update function has to update the instrument without deleting the quotations.
-	 */
-	public void testUpdateWithoutDeletingQuotations() {
-		WebServiceResult getInstrumentResult, updateInstrumentResult;
-		InstrumentService service = new InstrumentService();
-		Instrument instrumentWithoutQuotations, databaseInstrumentAfterUpdate;
-		final String newName = "Changed name.";
-		
-		//Get the instrument without quotations.
-		getInstrumentResult = service.getInstrument(this.appleStock.getId());
-		assertTrue(getInstrumentResult.getData() instanceof Instrument);
-		instrumentWithoutQuotations = (Instrument) getInstrumentResult.getData();
-		assertNull(instrumentWithoutQuotations.getQuotations());
-		
-		//Change the name of the instrument and update the database with those changes.
-		instrumentWithoutQuotations.setName(newName);
-		updateInstrumentResult = service.updateInstrument(instrumentWithoutQuotations);
-		
-		//Assure no error message exists
-		assertTrue(WebServiceTools.resultContainsErrorMessage(updateInstrumentResult) == false);
-		
-		//There should be a success message
-		assertTrue(updateInstrumentResult.getMessages().size() == 1);
-		assertTrue(updateInstrumentResult.getMessages().get(0).getType() == WebServiceMessageType.S);
-		
-		//Now retrieve the updated instrument and assure that the quotations still exist.
-		try {
-			databaseInstrumentAfterUpdate = instrumentDAO.getInstrument(this.appleStock.getId(), true);
-			assertEquals(newName, databaseInstrumentAfterUpdate.getName());
-			assertNotNull(databaseInstrumentAfterUpdate.getQuotations());
-			assertEquals(this.appleStock.getQuotations().size(), databaseInstrumentAfterUpdate.getQuotations().size());
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
