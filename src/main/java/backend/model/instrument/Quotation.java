@@ -9,10 +9,12 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -60,6 +62,10 @@ public class Quotation {
 	 */
 	@Column(name="VOLUME")
 	private long volume;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name="INSTRUMENT_ID")
+	private Instrument instrument;
 	
 	/**
 	 * Indicator data.
@@ -158,6 +164,22 @@ public class Quotation {
 
 
 	/**
+	 * @return the instrument
+	 */
+	public Instrument getInstrument() {
+		return instrument;
+	}
+
+
+	/**
+	 * @param instrument the instrument to set
+	 */
+	public void setInstrument(Instrument instrument) {
+		this.instrument = instrument;
+	}
+
+
+	/**
 	 * @return the indicator
 	 */
 	public Indicator getIndicator() {
@@ -178,7 +200,7 @@ public class Quotation {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(currency, date, id, indicator, price, volume);
+		return Objects.hash(currency, date, id, indicator, instrument, price, volume);
 	}
 
 
@@ -192,7 +214,7 @@ public class Quotation {
 			return false;
 		Quotation other = (Quotation) obj;
 		return currency == other.currency && Objects.equals(date, other.date) && Objects.equals(id, other.id)
-				&& Objects.equals(indicator, other.indicator) && Objects.equals(price, other.price)
-				&& volume == other.volume;
+				&& Objects.equals(indicator, other.indicator) && Objects.equals(instrument, other.instrument)
+				&& Objects.equals(price, other.price) && volume == other.volume;
 	}
 }
