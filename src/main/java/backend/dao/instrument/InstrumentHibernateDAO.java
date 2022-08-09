@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -66,6 +67,7 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 	@Override
 	public void deleteInstrument(Instrument instrument) throws Exception {
 		EntityManager entityManager = this.sessionFactory.createEntityManager();
+		Query deleteQuery;
 		
 		//In order to successfully delete an entity, it first has to be fetched from the database.
 		Instrument deleteInstrument = entityManager.find(Instrument.class, instrument.getId());
@@ -73,7 +75,14 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 		entityManager.getTransaction().begin();
 		
 		try {
+			//Remove quotations of Instrument.
+			deleteQuery = entityManager.createQuery("DELETE FROM Quotation WHERE INSTRUMENT_ID = :instrumentId");
+			deleteQuery.setParameter("instrumentId", instrument.getId());
+			deleteQuery.executeUpdate();
+			
+			//Remove Instrument.
 			entityManager.remove(deleteInstrument);
+			
 			entityManager.getTransaction().commit();			
 		}
 		catch(Exception exception) {

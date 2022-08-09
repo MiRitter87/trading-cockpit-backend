@@ -277,9 +277,6 @@ public class InstrumentServiceTest {
 			
 			if(deletedInstrument != null)
 				fail("Apple instrument is still persisted but should have been deleted by the WebService operation 'deleteInstrument'.");
-			
-			//Assure that the quotations of the Apple Instrument are also deleted.
-			
 		}
 		catch (Exception e) {
 			fail(e.getMessage());
