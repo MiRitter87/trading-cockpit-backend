@@ -53,6 +53,15 @@ public interface QuotationDAO {
 	
 	
 	/**
+	 * Updates the given quotations.
+	 * 
+	 * @param quotations The quotations to be updated.
+	 * @throws Exception Updating failed.
+	 */
+	void updateQuotations(final List<Quotation> quotations) throws Exception;
+	
+	
+	/**
 	 * Gets the Quotation with the given ID.
 	 * 
 	 * @param id The ID of the Quotation.

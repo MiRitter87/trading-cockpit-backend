@@ -29,7 +29,7 @@ import backend.model.instrument.Quotation;
  * 
  * @author Michael
  */
-public class InstrumentHibenateDAOTest {
+public class InstrumentHibernateDAOTest {
 	/**
 	 * DAO to access Instrument data.
 	 */

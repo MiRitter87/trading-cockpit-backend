@@ -1,6 +1,7 @@
 package backend.dao.quotation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -23,6 +24,7 @@ import backend.dao.instrument.DuplicateInstrumentException;
 import backend.dao.instrument.InstrumentDAO;
 import backend.model.Currency;
 import backend.model.StockExchange;
+import backend.model.instrument.Indicator;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
@@ -301,6 +303,47 @@ public class QuotationHibernateDAOTest {
 			}
 		} catch (Exception e) {
 			fail(e.getMessage());
+		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests updating a Quotation adding a new Indicator relation.
+	 */
+	public void testUpdateQuotationWithNewIndicator() {
+		List<Quotation> updateQuotations = new ArrayList<>();
+		Quotation databaseQuotation;
+		Indicator newIndicator = new Indicator();
+		final int indicatorStage = 3;
+		
+		//Define the new Indicator and add relation to existing Quotation.
+		newIndicator.setStage(indicatorStage);
+		this.appleQuotation2.setIndicator(newIndicator);
+		
+		try {
+			//Persist the new Quotation-Indicator relation.
+			updateQuotations.add(this.appleQuotation2);
+			quotationDAO.updateQuotations(updateQuotations);
+			
+			//Retrieve the updated Quotation from the database and check if the Indicator has been persisted.
+			databaseQuotation = quotationDAO.getQuotation(this.appleQuotation2.getId());
+			assertNotNull(databaseQuotation);
+			assertNotNull(databaseQuotation.getIndicator());
+			assertEquals(indicatorStage, databaseQuotation.getIndicator().getStage());
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+		finally	{
+			try {
+				//Remove the newly created Indicator.
+				this.appleQuotation2.setIndicator(null);
+				updateQuotations.clear();
+				updateQuotations.add(this.appleQuotation2);
+				quotationDAO.updateQuotations(updateQuotations);
+			} catch (Exception e) {
+				fail(e.getMessage());
+			}
 		}
 	}
 }

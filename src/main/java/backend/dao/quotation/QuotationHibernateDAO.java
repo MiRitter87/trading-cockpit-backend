@@ -176,4 +176,38 @@ public class QuotationHibernateDAO implements QuotationDAO {
 		
 		return quotationIds;
 	}
+
+
+	@Override
+	public void updateQuotations(final List<Quotation> quotations) throws Exception {
+		EntityManager entityManager = this.sessionFactory.createEntityManager();
+		Quotation quotation;
+		
+		try {
+			entityManager.getTransaction().begin();
+		 
+		    for(int i = 0; i < quotations.size(); i++) {
+		    	if(i > 0 && i % BATCH_SIZE == 0) {
+		    		entityManager.getTransaction().commit();
+		    		entityManager.getTransaction().begin();
+		        	entityManager.clear();
+		        }
+		 
+		    	quotation = quotations.get(i);
+		        entityManager.merge(quotation);
+		    }
+		    
+		    entityManager.flush();
+		    entityManager.getTransaction().commit();
+		}
+		catch(Exception exception) {
+			//If something breaks a rollback is necessary!?
+			if(entityManager.getTransaction().isActive())
+				entityManager.getTransaction().rollback();
+			throw exception;
+		}
+		finally {
+			entityManager.close();			
+		}
+	}
 }

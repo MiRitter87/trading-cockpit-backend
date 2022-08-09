@@ -290,4 +290,10 @@ public class QuotationYahooDAO implements QuotationDAO {
 	public List<Quotation> getQuotationsOfInstrument(Integer instrumentId) throws Exception {
 		throw new Exception("Operation not supported.");
 	}
+
+
+	@Override
+	public void updateQuotations(List<Quotation> quotations) throws Exception {
+		throw new Exception("Operation not supported.");
+	}
 }
