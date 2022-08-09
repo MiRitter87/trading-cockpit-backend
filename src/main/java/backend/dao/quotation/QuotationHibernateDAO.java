@@ -99,6 +99,7 @@ public class QuotationHibernateDAO implements QuotationDAO {
 		entityManager.getTransaction().begin();
 		
 		try {
+			//TODO Remove indicators of quotations.
 			deleteQuery = entityManager.createQuery("DELETE FROM Quotation WHERE QUOTATION_ID IN :idList");
 			deleteQuery.setParameter("idList", quotationIds);
 			deleteQuery.executeUpdate();			

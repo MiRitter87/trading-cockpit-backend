@@ -75,9 +75,6 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 		entityManager.getTransaction().begin();
 		
 		try {
-			//TODO Remove indicators from quotations.
-			//DELETE FROM Indicator WHERE INDICATOR_ID IN (SELECT QUOTATION_ID FROM Quotation WHERE INSTRUMENT_ID = :instrumendId
-			
 			//Remove quotations of Instrument.
 			deleteQuery = entityManager.createQuery("DELETE FROM Quotation WHERE INSTRUMENT_ID = :instrumentId");
 			deleteQuery.setParameter("instrumentId", instrument.getId());

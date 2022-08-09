@@ -60,6 +60,11 @@ public class QuotationHibernateDAOTest {
 	 */
 	private Quotation appleQuotation2;
 	
+	/**
+	 * Indicator of the Second Quotation of the Apple stock.
+	 */
+	private Indicator appleQuotation2Indicator;
+	
 	
 	@BeforeAll
 	/**
@@ -117,7 +122,6 @@ public class QuotationHibernateDAOTest {
 			this.appleStock.setType(InstrumentType.STOCK);
 			instrumentDAO.insertInstrument(this.appleStock);
 			
-			
 			calendar.setTime(new Date());
 			this.appleQuotation1 = new Quotation();
 			this.appleQuotation1.setDate(calendar.getTime());
@@ -136,7 +140,14 @@ public class QuotationHibernateDAOTest {
 			this.appleQuotation2.setInstrument(this.appleStock);
 			quotations.add(this.appleQuotation2);
 			
-			quotationDAO.insertQuotations(quotations);			
+			quotationDAO.insertQuotations(quotations);
+			
+			this.appleQuotation2Indicator = new Indicator();
+			this.appleQuotation2Indicator.setStage(3);
+			this.appleQuotation2.setIndicator(this.appleQuotation2Indicator);
+			quotations.clear();
+			quotations.add(this.appleQuotation2);
+			quotationDAO.updateQuotations(quotations);
 		} catch (DuplicateInstrumentException e) {
 			fail(e.getMessage());
 		} catch (Exception e) {
@@ -150,12 +161,6 @@ public class QuotationHibernateDAOTest {
 	 */
 	private void deleteTestData() {
 		try {
-			List<Quotation> quotations = new ArrayList<>();
-			
-			quotations.add(this.appleQuotation1);
-			quotations.add(this.appleQuotation2);
-			
-			quotationDAO.deleteQuotations(quotations);
 			instrumentDAO.deleteInstrument(this.appleStock);
 		} catch (Exception e) {
 			fail(e.getMessage());
@@ -226,7 +231,6 @@ public class QuotationHibernateDAOTest {
 			
 			//Assure the Quotation does not exist anymore.
 			assertNull(deletedQuotation);
-			
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
@@ -262,6 +266,9 @@ public class QuotationHibernateDAOTest {
 			assertEquals(databaseQuotation.getCurrency(), this.appleQuotation2.getCurrency());
 			assertEquals(databaseQuotation.getVolume(), this.appleQuotation2.getVolume());
 			assertEquals(databaseQuotation.getInstrument().getId(), this.appleQuotation2.getInstrument().getId());
+			
+			assertNotNull(databaseQuotation.getIndicator());
+			assertEquals(this.appleQuotation2Indicator.getStage(), databaseQuotation.getIndicator().getStage());
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
@@ -278,8 +285,6 @@ public class QuotationHibernateDAOTest {
 		try {
 			quotations = quotationDAO.getQuotationsOfInstrument(this.appleStock.getId());
 			
-			//TODO Test if indicators are provided.
-			
 			for(Quotation databaseQuotation:quotations) {
 				if(databaseQuotation.getId() == this.appleQuotation1.getId()) {
 					assertEquals(this.appleQuotation1.getId(), databaseQuotation.getId());
@@ -288,6 +293,8 @@ public class QuotationHibernateDAOTest {
 					assertEquals(this.appleQuotation1.getCurrency(), databaseQuotation.getCurrency());
 					assertEquals(this.appleQuotation1.getVolume(), databaseQuotation.getVolume());
 					assertEquals(this.appleQuotation1.getInstrument().getId(), databaseQuotation.getInstrument().getId());
+					
+					assertNull(databaseQuotation.getIndicator());
 				}
 				else if(databaseQuotation.getId() == this.appleQuotation2.getId()) {
 					assertEquals(this.appleQuotation2.getId(), databaseQuotation.getId());
@@ -296,6 +303,9 @@ public class QuotationHibernateDAOTest {
 					assertEquals(this.appleQuotation2.getCurrency(), databaseQuotation.getCurrency());
 					assertEquals(this.appleQuotation2.getVolume(), databaseQuotation.getVolume());
 					assertEquals(this.appleQuotation2.getInstrument().getId(), databaseQuotation.getInstrument().getId());
+					
+					assertNotNull(databaseQuotation.getIndicator());
+					assertEquals(this.appleQuotation2Indicator.getStage(), databaseQuotation.getIndicator().getStage());
 				}
 				else {
 					fail("The method 'getQuotationsOfInstrument' has returned an unrelated quotation.");
