@@ -68,8 +68,7 @@ public class QuotationYahooDAO implements QuotationDAO {
 
 	@Override
 	public Quotation getCurrentQuotation(String symbol, StockExchange stockExchange) throws Exception {
-		// TODO Auto-generated method stub
-		//The functionality of the StockQuoteYahooDAO, method "getStockQuote" can be integrated into this method.
+		// TODO The functionality of the StockQuoteYahooDAO, method "getStockQuote" can be integrated into this method.
 		return null;
 	}
 
@@ -283,6 +282,12 @@ public class QuotationYahooDAO implements QuotationDAO {
 
 	@Override
 	public Quotation getQuotation(Integer id) throws Exception {
+		throw new Exception("Operation not supported.");
+	}
+
+
+	@Override
+	public List<Quotation> getQuotationsOfInstrument(Integer instrumentId) throws Exception {
 		throw new Exception("Operation not supported.");
 	}
 }

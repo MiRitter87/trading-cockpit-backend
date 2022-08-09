@@ -115,6 +115,7 @@ public class QuotationHibernateDAOTest {
 			this.appleStock.setType(InstrumentType.STOCK);
 			instrumentDAO.insertInstrument(this.appleStock);
 			
+			
 			calendar.setTime(new Date());
 			this.appleQuotation1 = new Quotation();
 			this.appleQuotation1.setDate(calendar.getTime());
@@ -259,6 +260,45 @@ public class QuotationHibernateDAOTest {
 			assertEquals(databaseQuotation.getCurrency(), this.appleQuotation2.getCurrency());
 			assertEquals(databaseQuotation.getVolume(), this.appleQuotation2.getVolume());
 			assertEquals(databaseQuotation.getInstrument().getId(), this.appleQuotation2.getInstrument().getId());
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of all quotations of an Instrument.
+	 */
+	public void testGetQuotationsOfInstrument() {
+		List<Quotation> quotations;
+		
+		try {
+			quotations = quotationDAO.getQuotationsOfInstrument(this.appleStock.getId());
+			
+			//TODO Test if indicators are provided.
+			
+			for(Quotation databaseQuotation:quotations) {
+				if(databaseQuotation.getId() == this.appleQuotation1.getId()) {
+					assertEquals(this.appleQuotation1.getId(), databaseQuotation.getId());
+					assertEquals(this.appleQuotation1.getDate().getTime(), databaseQuotation.getDate().getTime());
+					assertTrue(this.appleQuotation1.getPrice().compareTo(databaseQuotation.getPrice()) == 0);
+					assertEquals(this.appleQuotation1.getCurrency(), databaseQuotation.getCurrency());
+					assertEquals(this.appleQuotation1.getVolume(), databaseQuotation.getVolume());
+					assertEquals(this.appleQuotation1.getInstrument().getId(), databaseQuotation.getInstrument().getId());
+				}
+				else if(databaseQuotation.getId() == this.appleQuotation2.getId()) {
+					assertEquals(this.appleQuotation2.getId(), databaseQuotation.getId());
+					assertEquals(this.appleQuotation2.getDate().getTime(), databaseQuotation.getDate().getTime());
+					assertTrue(this.appleQuotation2.getPrice().compareTo(databaseQuotation.getPrice()) == 0);
+					assertEquals(this.appleQuotation2.getCurrency(), databaseQuotation.getCurrency());
+					assertEquals(this.appleQuotation2.getVolume(), databaseQuotation.getVolume());
+					assertEquals(this.appleQuotation2.getInstrument().getId(), databaseQuotation.getInstrument().getId());
+				}
+				else {
+					fail("The method 'getQuotationsOfInstrument' has returned an unrelated quotation.");
+				}
+			}
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}

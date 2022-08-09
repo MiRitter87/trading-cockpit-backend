@@ -60,4 +60,14 @@ public interface QuotationDAO {
 	 * @throws Exception Quotation determination failed.
 	 */
 	Quotation getQuotation(final Integer id) throws Exception;
+	
+	
+	/**
+	 * Gets the quotations of the Instrument with the given ID.
+	 * 
+	 * @param instrumentId The ID of the Instrument.
+	 * @return The quotations of that Instrument.
+	 * @throws Exception Quotation determination failed.
+	 */
+	List<Quotation> getQuotationsOfInstrument(final Integer instrumentId) throws Exception;
 }

@@ -6,6 +6,10 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 import backend.model.StockExchange;
 import backend.model.instrument.Quotation;
@@ -122,6 +126,38 @@ public class QuotationHibernateDAO implements QuotationDAO {
 		entityManager.close();
 		
 		return quotation;
+	}
+	
+	
+	@Override
+	public List<Quotation> getQuotationsOfInstrument(final Integer instrumentId) throws Exception {
+		List<Quotation> quotations = null;
+		EntityManager entityManager = this.sessionFactory.createEntityManager();
+		
+		entityManager.getTransaction().begin();
+		
+		try {
+			CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+			CriteriaQuery<Quotation> criteriaQuery = criteriaBuilder.createQuery(Quotation.class);
+			Root<Quotation> criteria = criteriaQuery.from(Quotation.class);
+			criteriaQuery.select(criteria);
+			criteriaQuery.where(criteriaBuilder.equal(criteria.get("instrument"), instrumentId));
+			TypedQuery<Quotation> typedQuery = entityManager.createQuery(criteriaQuery);
+			
+			quotations = typedQuery.getResultList();		
+			entityManager.getTransaction().commit();			
+		}
+		catch(Exception exception) {
+			//If something breaks a rollback is necessary.
+			if(entityManager.getTransaction().isActive())
+				entityManager.getTransaction().rollback();
+			throw exception;
+		}
+		finally {
+			entityManager.close();			
+		}
+		
+		return quotations;
 	}
 	
 	
