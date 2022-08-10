@@ -296,4 +296,10 @@ public class QuotationYahooDAO implements QuotationDAO {
 	public void updateQuotations(List<Quotation> quotations) throws Exception {
 		throw new Exception("Operation not supported.");
 	}
+
+
+	@Override
+	public List<Quotation> getRecentQuotations() throws Exception {
+		throw new Exception("Operation not supported.");
+	}
 }

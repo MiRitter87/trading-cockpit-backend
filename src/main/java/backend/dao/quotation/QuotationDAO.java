@@ -79,4 +79,14 @@ public interface QuotationDAO {
 	 * @throws Exception Quotation determination failed.
 	 */
 	List<Quotation> getQuotationsOfInstrument(final Integer instrumentId) throws Exception;
+	
+	
+	/**
+	 * Gets the most recent Quotation of each Instrument.
+	 * Only those quotations are provided that have an Indicator associated with them.
+	 * 
+	 * @return The most recent Quotation of each Instrument.
+	 * @throws Exception Quotation determination failed.
+	 */
+	List<Quotation> getRecentQuotations() throws Exception;
 }

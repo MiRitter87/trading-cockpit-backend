@@ -1,5 +1,7 @@
 package backend.webservice.common;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
@@ -13,6 +15,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
@@ -23,6 +26,9 @@ import backend.model.instrument.Indicator;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
+import backend.model.instrument.QuotationArray;
+import backend.model.webservice.WebServiceResult;
+import backend.tools.WebServiceTools;
 
 /**
  * Tests the QuotationService.
@@ -101,6 +107,7 @@ public class QuotationServiceTest {
 	private void setUp() {
 		this.createDummyInstruments();
 		this.createDummyQuotations();
+		this.createDummyIndicators();
 	}
 	
 	
@@ -246,16 +253,12 @@ public class QuotationServiceTest {
 	 */
 	private Quotation getAppleQuotation2() {
 		Quotation quotation = new Quotation();
-		this.appleQuotation2Indicator = new Indicator();
 		
 		quotation.setDate(new Date());
 		quotation.setPrice(BigDecimal.valueOf(77.52));
 		quotation.setCurrency(Currency.USD);
 		quotation.setVolume(12373654);
 		quotation.setInstrument(this.appleStock);
-		
-		this.appleQuotation2Indicator.setStage(3);
-		quotation.setIndicator(this.appleQuotation2Indicator);
 		
 		return quotation;
 	}
@@ -276,5 +279,61 @@ public class QuotationServiceTest {
 		quotation.setInstrument(this.microsoftStock);
 		
 		return quotation;
+	}
+	
+	
+	/**
+	 * Initializes the database with dummy indicators.
+	 */
+	private void createDummyIndicators() {
+		List<Quotation> quotations = new ArrayList<>();
+		
+		this.appleQuotation2Indicator = new Indicator();
+		this.appleQuotation2Indicator.setStage(3);
+		this.appleQuotation2.setIndicator(this.appleQuotation2Indicator);
+		
+		quotations.add(this.appleQuotation2);
+		
+		try {
+			quotationDAO.updateQuotations(quotations);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of the most recent quotation with its corresponding Indicator and Instrument.
+	 * Only those quotations should be returned that have an Indicator associated with them.
+	 */
+	public void testGetQuotations() {
+		QuotationArray quotations;
+		WebServiceResult getRecentQuotationsResult;
+		Quotation quotation;
+		
+		//Get the quotations.
+		QuotationService service = new QuotationService();
+		getRecentQuotationsResult = service.getQuotations();
+		quotations = (QuotationArray) getRecentQuotationsResult.getData();
+		
+		//Assure no error message exists
+		assertTrue(WebServiceTools.resultContainsErrorMessage(getRecentQuotationsResult) == false);
+		
+		//Check if one Quotation is returned.
+		assertEquals(1, quotations.getQuotations().size());
+		
+		//Check if the correct Quotation is returned.
+		quotation = quotations.getQuotations().get(0);
+		assertEquals(this.appleQuotation2.getId(), quotation.getId());
+		assertEquals(this.appleQuotation2.getDate().getTime(), quotation.getDate().getTime());
+		assertTrue(this.appleQuotation2.getPrice().compareTo(quotation.getPrice()) == 0);
+		assertEquals(this.appleQuotation2.getCurrency(), quotation.getCurrency());
+		assertEquals(this.appleQuotation2.getVolume(), quotation.getVolume());
+		
+		//Check if Indicator and Instrument have been initialized and contain data.
+		assertEquals(this.appleQuotation2.getInstrument().getId(), quotation.getInstrument().getId());
+		assertEquals(this.appleQuotation2.getIndicator().getId(), quotation.getIndicator().getId());
+		assertEquals(this.appleQuotation2.getIndicator().getStage(), quotation.getIndicator().getStage());
 	}
 }

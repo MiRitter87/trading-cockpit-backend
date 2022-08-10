@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -198,5 +199,38 @@ public class QuotationHibernateDAO implements QuotationDAO {
 		finally {
 			entityManager.close();			
 		}
+	}
+
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Quotation> getRecentQuotations() throws Exception {
+		EntityManager entityManager = this.sessionFactory.createEntityManager();
+		List<Quotation> quotations;
+		Query query;
+
+		try {
+			entityManager.getTransaction().begin();
+			
+			//Find all quotations that have an Indicator defined and where the Quotation is the most recent one of an Instrument.
+			//Also fetch the Instrument data of those records.
+			query = entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i WHERE "
+					+ "date IN (SELECT max(date) AS date FROM Quotation q GROUP BY INSTRUMENT_ID) "
+					+ "AND q.indicator IS NOT NULL");
+			quotations = query.getResultList();
+			
+			entityManager.getTransaction().commit();			
+		}
+		catch(Exception exception) {
+			//If something breaks a rollback is necessary!?
+			if(entityManager.getTransaction().isActive())
+				entityManager.getTransaction().rollback();
+			throw exception;
+		}
+		finally {
+			entityManager.close();			
+		}
+		
+		return quotations;
 	}
 }
