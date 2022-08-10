@@ -1,6 +1,6 @@
 package backend.dao.instrument;
 
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
@@ -144,6 +144,12 @@ public class InstrumentHibernateDAOTest {
 	 */
 	private void deleteTestData() {
 		try {
+			List<Quotation> quotations = new ArrayList<>();
+
+			quotations.add(this.appleQuotation1);
+			quotations.add(this.appleQuotation2);
+
+			quotationDAO.deleteQuotations(quotations);
 			instrumentDAO.deleteInstrument(this.appleStock);
 		} catch (Exception e) {
 			fail(e.getMessage());
@@ -153,48 +159,22 @@ public class InstrumentHibernateDAOTest {
 	
 	@Test
 	/**
+	 * Explorative Test.
+	 * 
 	 * Tests deletion of an instrument.
-	 * If an instrument is deleted, all it's quotations also have to be deleted.
+	 * An Instrument can't be deleted as long as quotations are referenced to the Instrument.
 	 */
-	public void testDeleteInstrument() {
+	public void testDeleteInstrumentWithReferencedQuotations() {
 		Instrument deletedInstrument;
-		Quotation deletedQuotation;
-		List<Quotation> quotations = new ArrayList<>();
 		
 		try {
 			instrumentDAO.deleteInstrument(this.appleStock);
 			
-			//Assure that the Instrument has been deleted.
+			//The Instrument should not have been deleted.
 			deletedInstrument = instrumentDAO.getInstrument(this.appleStock.getId(), false);
-			assertNull(deletedInstrument);
-			
-			//Assure that the instruments quotations have been deleted.
-			deletedQuotation = quotationDAO.getQuotation(this.appleQuotation1.getId());
-			assertNull(deletedQuotation);
-			deletedQuotation = quotationDAO.getQuotation(this.appleQuotation2.getId());
-			assertNull(deletedQuotation);
-		} catch (Exception e) {
-			fail(e.getMessage());
+			assertNotNull(deletedInstrument);
+		} catch (Exception expected) {
+			//All is well.
 		}
-		finally {
-			try {
-				//Add the deleted instrument and quotations back to database to restore the original state.
-				this.appleStock.setId(null);
-				this.appleQuotation1.setId(null);
-				this.appleQuotation2.setId(null);
-				
-				quotations.clear();
-				quotations.add(this.appleQuotation1);
-				quotations.add(this.appleQuotation2);
-				
-				instrumentDAO.insertInstrument(this.appleStock);
-				quotationDAO.insertQuotations(quotations);
-			} catch (DuplicateInstrumentException e) {
-				fail(e.getMessage());
-			} catch (Exception e) {
-				fail(e.getMessage());
-			}
-		}
-		
 	}
 }

@@ -1,11 +1,9 @@
 package backend.dao.quotation;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -90,20 +88,27 @@ public class QuotationHibernateDAO implements QuotationDAO {
 	@Override
 	public void deleteQuotations(final List<Quotation> quotations) throws Exception {
 		EntityManager entityManager = this.sessionFactory.createEntityManager();
-		List<Integer> quotationIds = this.getQuotationIds(quotations);
-		Query deleteQuery;
-		
-		if(quotationIds.size() == 0)
-			return;
-		
-		entityManager.getTransaction().begin();
+		Quotation tempQuotation, databaseQuotation;
 		
 		try {
-			//TODO Remove indicators of quotations.
-			deleteQuery = entityManager.createQuery("DELETE FROM Quotation WHERE QUOTATION_ID IN :idList");
-			deleteQuery.setParameter("idList", quotationIds);
-			deleteQuery.executeUpdate();			
-			entityManager.getTransaction().commit();
+			entityManager.getTransaction().begin();
+		 
+		    for(int i = 0; i < quotations.size(); i++) {
+		    	if(i > 0 && i % BATCH_SIZE == 0) {
+		    		entityManager.getTransaction().commit();
+		    		entityManager.getTransaction().begin();
+		        	entityManager.clear();
+		        }
+		 
+		    	tempQuotation = quotations.get(i);
+		    	//In order to successfully delete an entity, it first has to be fetched from the database.
+		    	databaseQuotation = entityManager.find(Quotation.class, tempQuotation.getId());
+		    	if(databaseQuotation != null)
+		    		entityManager.remove(databaseQuotation);
+		    }
+		    
+		    entityManager.flush();
+		    entityManager.getTransaction().commit();
 		}
 		catch(Exception exception) {
 			//If something breaks a rollback is necessary!?
@@ -159,23 +164,6 @@ public class QuotationHibernateDAO implements QuotationDAO {
 		}
 		
 		return quotations;
-	}
-	
-	
-	/**
-	 * Returns the IDs of the given quotations.
-	 * 
-	 * @param quotations A list of quotations.
-	 * @return A list of Quotation IDs.
-	 */
-	private List<Integer> getQuotationIds(final List<Quotation> quotations) {
-		List<Integer> quotationIds = new ArrayList<>();
-		
-		for(Quotation tempQuotation:quotations) {
-			quotationIds.add(tempQuotation.getId());
-		}
-		
-		return quotationIds;
 	}
 
 

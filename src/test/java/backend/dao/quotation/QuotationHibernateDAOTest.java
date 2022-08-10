@@ -161,6 +161,12 @@ public class QuotationHibernateDAOTest {
 	 */
 	private void deleteTestData() {
 		try {
+			List<Quotation> quotations = new ArrayList<>();
+
+			quotations.add(this.appleQuotation1);
+			quotations.add(this.appleQuotation2);
+
+			quotationDAO.deleteQuotations(quotations);
 			instrumentDAO.deleteInstrument(this.appleStock);
 		} catch (Exception e) {
 			fail(e.getMessage());
