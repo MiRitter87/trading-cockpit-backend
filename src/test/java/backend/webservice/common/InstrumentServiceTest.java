@@ -7,7 +7,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import org.junit.jupiter.api.AfterAll;
@@ -18,10 +22,13 @@ import org.junit.jupiter.api.Test;
 
 import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
+import backend.dao.quotation.QuotationDAO;
+import backend.model.Currency;
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentArray;
 import backend.model.instrument.InstrumentType;
+import backend.model.instrument.Quotation;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
 import backend.tools.WebServiceTools;
@@ -44,6 +51,11 @@ public class InstrumentServiceTest {
 	private static InstrumentDAO instrumentDAO;
 	
 	/**
+	 * DAO to access Quotation data.
+	 */
+	private static QuotationDAO quotationDAO;
+	
+	/**
 	 * The stock of Apple.
 	 */
 	private Instrument appleStock;
@@ -53,6 +65,11 @@ public class InstrumentServiceTest {
 	 */
 	private Instrument microsoftStock;
 	
+	/**
+	 * A Quotation of the Apple stock.
+	 */
+	private Quotation appleQuotation1;
+	
 	
 	@BeforeAll
 	/**
@@ -60,6 +77,7 @@ public class InstrumentServiceTest {
 	 */
 	public static void setUpClass() {
 		instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
+		quotationDAO = DAOManager.getInstance().getQuotationDAO();
 	}
 	
 	
@@ -82,6 +100,7 @@ public class InstrumentServiceTest {
 	 */
 	private void setUp() {
 		this.createDummyInstruments();
+		this.createDummyQuotations();
 	}
 	
 	
@@ -90,6 +109,7 @@ public class InstrumentServiceTest {
 	 * Tasks to be performed after each test has been run.
 	 */
 	private void tearDown() {
+		this.deleteDummyQuotations();
 		this.deleteDummyInstruments();
 	}
 	
@@ -154,6 +174,55 @@ public class InstrumentServiceTest {
 		instrument.setType(InstrumentType.STOCK);
 		
 		return instrument;
+	}
+	
+	
+	/**
+	 * Initializes the database with dummy quotations.
+	 */
+	private void createDummyQuotations() {
+		List<Quotation> quotations = new ArrayList<>();
+		this.appleQuotation1 = this.getAppleQuotation();
+		quotations.add(this.appleQuotation1);
+		
+		try {
+			quotationDAO.insertQuotations(quotations);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	/**
+	 * Deletes the dummy quotations from the database.
+	 */
+	private void deleteDummyQuotations() {
+		List<Quotation> quotations = new ArrayList<>();
+		quotations.add(this.appleQuotation1);
+		
+		try {
+			quotationDAO.deleteQuotations(quotations);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	/**
+	 * Gets the Quotation of the Apple stock.
+	 * 
+	 * @return The Quotation of the Apple stock.
+	 */
+	private Quotation getAppleQuotation() {
+		Quotation quotation = new Quotation();
+		
+		quotation.setDate(new Date());
+		quotation.setPrice(BigDecimal.valueOf(78.54));
+		quotation.setCurrency(Currency.USD);
+		quotation.setVolume(28973654);
+		quotation.setInstrument(this.appleStock);
+		
+		return quotation;
 	}
 	
 	
@@ -259,8 +328,9 @@ public class InstrumentServiceTest {
 	public void testDeleteInstrument() {
 		WebServiceResult deleteInstrumentResult;
 		Instrument deletedInstrument;
+		Quotation databaseQuotation;
 		
-		try {
+		try {			
 			//Delete Apple Instrument using the service.
 			InstrumentService service = new InstrumentService();
 			deleteInstrumentResult = service.deleteInstrument(this.appleStock.getId());
@@ -277,6 +347,11 @@ public class InstrumentServiceTest {
 			
 			if(deletedInstrument != null)
 				fail("Apple instrument is still persisted but should have been deleted by the WebService operation 'deleteInstrument'.");
+			
+			//The Quotation of the Apple stock should have been deleted too.
+			databaseQuotation = quotationDAO.getQuotation(this.appleQuotation1.getId());
+			if(databaseQuotation != null)
+				fail("Apple quotation is still persisted but should have been deleted by the WebService operation 'deleteInstrument'.");
 		}
 		catch (Exception e) {
 			fail(e.getMessage());

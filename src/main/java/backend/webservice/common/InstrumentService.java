@@ -1,6 +1,8 @@
 package backend.webservice.common;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import org.apache.logging.log4j.LogManager;
@@ -10,9 +12,11 @@ import backend.dao.DAOManager;
 import backend.dao.ObjectUnchangedException;
 import backend.dao.instrument.DuplicateInstrumentException;
 import backend.dao.instrument.InstrumentDAO;
+import backend.dao.quotation.QuotationDAO;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentArray;
 import backend.model.instrument.InstrumentQuotationQueryParam;
+import backend.model.instrument.Quotation;
 import backend.model.webservice.WebServiceMessage;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
@@ -27,6 +31,11 @@ public class InstrumentService {
 	 * DAO for instrument access.
 	 */
 	private InstrumentDAO instrumentDAO;
+	
+	/**
+	 * DAO for Quotation access.
+	 */
+	private QuotationDAO quotationDAO;
 	
 	/**
 	 * Access to localized application resources.
@@ -44,6 +53,7 @@ public class InstrumentService {
 	 */
 	public InstrumentService() {
 		this.instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
+		this.quotationDAO = DAOManager.getInstance().getQuotationDAO();
 	}
 	
 	
@@ -148,12 +158,18 @@ public class InstrumentService {
 	public WebServiceResult deleteInstrument(final Integer id) {
 		WebServiceResult deleteInstrumentResult = new WebServiceResult(null);
 		Instrument instrument = null;
+		List<Quotation> quotationsOfInstrument = new ArrayList<>();
 		
 		//Check if an instrument with the given id exists.
 		try {
 			instrument = this.instrumentDAO.getInstrument(id, true);
 			
 			if(instrument != null) {
+				//If the Instrument has any quotations referenced, delete those first before deleting the Instrument.
+				quotationsOfInstrument = this.quotationDAO.getQuotationsOfInstrument(id);
+				if(quotationsOfInstrument.size() > 0)
+					this.quotationDAO.deleteQuotations(quotationsOfInstrument);
+				
 				//Delete instrument if exists.
 				this.instrumentDAO.deleteInstrument(instrument);
 				deleteInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.S, 
