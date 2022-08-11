@@ -3,6 +3,7 @@ package backend.dao.instrument;
 import java.util.List;
 
 import backend.dao.ObjectUnchangedException;
+import backend.model.ObjectInUseException;
 import backend.model.instrument.Instrument;
 
 /**
@@ -25,9 +26,10 @@ public interface InstrumentDAO {
 	 * Deletes an instrument.
 	 * 
 	 * @param instrument The instrument to be deleted.
+	 * @throws ObjectInUseException The Instrument is still used by other objects and can't be deleted.
 	 * @throws Exception Deletion failed.
 	 */
-	void deleteInstrument(final Instrument instrument) throws Exception;
+	void deleteInstrument(final Instrument instrument) throws ObjectInUseException, Exception;
 	
 	
 	/**

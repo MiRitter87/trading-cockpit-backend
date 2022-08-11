@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -12,6 +13,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import backend.dao.ObjectUnchangedException;
+import backend.model.ObjectInUseException;
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 
@@ -63,8 +65,10 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 
 	
 	@Override
-	public void deleteInstrument(Instrument instrument) throws Exception {
+	public void deleteInstrument(Instrument instrument) throws ObjectInUseException, Exception {
 		EntityManager entityManager = this.sessionFactory.createEntityManager();
+		
+		this.checkQuotationsExist(entityManager, instrument);
 		
 		//In order to successfully delete an entity, it first has to be fetched from the database.
 		Instrument deleteInstrument = entityManager.find(Instrument.class, instrument.getId());
@@ -192,6 +196,27 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 		
 		if(databaseInstrument != null && !databaseInstrument.getId().equals(instrument.getId()))
 			throw new DuplicateInstrumentException(databaseInstrument.getSymbol(), databaseInstrument.getStockExchange());
+	}
+	
+	
+	/**
+	 * Checks if the given Instrument has any quotation referenced.
+	 * 
+	 * @param entityManager The EntityManager used to check for existing quotations.
+	 * @param instrument The Instrument whose quotations are checked.
+	 * @throws ObjectInUseException In case the Instrument has quotations referenced.
+	 */
+	@SuppressWarnings("unchecked")
+	private void checkQuotationsExist(final EntityManager entityManager, final Instrument instrument) throws ObjectInUseException {
+		Query query = entityManager.createQuery("SELECT id FROM Quotation q WHERE INSTRUMENT_ID = :instrumentId");
+		List<Integer> quotations;
+		
+		query.setParameter("instrumentId", instrument.getId());
+		quotations = query.getResultList();
+		
+		if(quotations.size() > 0) {
+			throw new ObjectInUseException(quotations.get(0), instrument.getId(), instrument);
+		}
 	}
 	
 	

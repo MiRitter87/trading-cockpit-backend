@@ -1,6 +1,5 @@
 package backend.dao.instrument;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
@@ -19,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import backend.dao.DAOManager;
 import backend.dao.quotation.QuotationDAO;
 import backend.model.Currency;
+import backend.model.ObjectInUseException;
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
@@ -159,22 +159,16 @@ public class InstrumentHibernateDAOTest {
 	
 	@Test
 	/**
-	 * Explorative Test.
-	 * 
-	 * Tests deletion of an instrument.
+	 * Tests deletion of an Instrument.
 	 * An Instrument can't be deleted as long as quotations are referenced to the Instrument.
 	 */
 	public void testDeleteInstrumentWithReferencedQuotations() {
-		Instrument deletedInstrument;
-		
 		try {
 			instrumentDAO.deleteInstrument(this.appleStock);
-			
-			//The Instrument should not have been deleted.
-			deletedInstrument = instrumentDAO.getInstrument(this.appleStock.getId());
-			assertNotNull(deletedInstrument);
-		} catch (Exception expected) {
+		} catch (ObjectInUseException expected) {
 			//All is well.
+		} catch (Exception e) {
+			fail(e.getMessage());
 		}
 	}
 }
