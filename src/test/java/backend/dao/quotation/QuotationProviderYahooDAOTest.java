@@ -23,11 +23,11 @@ import backend.model.instrument.Quotation;
  * @author Michael
  *
  */
-public class QuotationYahooDAOTest {
+public class QuotationProviderYahooDAOTest {
 	/**
 	 * DAO to access quotation data from Yahoo.
 	 */
-	private static QuotationYahooDAO quotationYahooDAO;
+	private static QuotationProviderYahooDAO quotationProviderYahooDAO;
 	
 	
 	@BeforeAll
@@ -35,7 +35,7 @@ public class QuotationYahooDAOTest {
 	 * Tasks to be performed once at startup of test class.
 	 */
 	public static void setUpClass() {
-		quotationYahooDAO = new QuotationYahooDAOStub();
+		quotationProviderYahooDAO = new QuotationProviderYahooDAOStub();
 	}
 	
 	
@@ -44,7 +44,7 @@ public class QuotationYahooDAOTest {
 	 * Tasks to be performed once at end of test class.
 	 */
 	public static void tearDownClass() {
-		quotationYahooDAO = null;
+		quotationProviderYahooDAO = null;
 	}
 	
 	
@@ -98,7 +98,7 @@ public class QuotationYahooDAOTest {
 				"https://query1.finance.yahoo.com/v7/finance/chart/DML.TO?range=1y&interval=1d&indicators=quote&includeTimestamps=true";
 		String actualURL = "";
 		
-		actualURL = quotationYahooDAO.getQueryUrlQuotationHistory(symbol, stockExchange, years);
+		actualURL = quotationProviderYahooDAO.getQueryUrlQuotationHistory(symbol, stockExchange, years);
 		assertEquals(expectedURL, actualURL);
 	}
 	
@@ -115,7 +115,7 @@ public class QuotationYahooDAOTest {
 				"https://query1.finance.yahoo.com/v7/finance/chart/RCK.V?range=1y&interval=1d&indicators=quote&includeTimestamps=true";
 		String actualURL = "";
 		
-		actualURL = quotationYahooDAO.getQueryUrlQuotationHistory(symbol, stockExchange, years);
+		actualURL = quotationProviderYahooDAO.getQueryUrlQuotationHistory(symbol, stockExchange, years);
 		assertEquals(expectedURL, actualURL);
 	}
 	
@@ -132,7 +132,7 @@ public class QuotationYahooDAOTest {
 				"https://query1.finance.yahoo.com/v7/finance/chart/F?range=1y&interval=1d&indicators=quote&includeTimestamps=true";
 		String actualURL = "";
 		
-		actualURL = quotationYahooDAO.getQueryUrlQuotationHistory(symbol, stockExchange, years);
+		actualURL = quotationProviderYahooDAO.getQueryUrlQuotationHistory(symbol, stockExchange, years);
 		assertEquals(expectedURL, actualURL);
 	}
 	
@@ -146,7 +146,7 @@ public class QuotationYahooDAOTest {
 		Quotation actualQuotation, expectedQuotation;
 		
 		try {
-			actualQuotationHistory = quotationYahooDAO.getQuotationHistory("DML", StockExchange.TSX, 1);
+			actualQuotationHistory = quotationProviderYahooDAO.getQuotationHistory("DML", StockExchange.TSX, 1);
 			expectedQuotationHistory = this.getDenisonMinesQuotationHistory();
 			
 			//252 Trading days of a full year.

@@ -14,7 +14,7 @@ import backend.model.instrument.Quotation;
  * @author Michael
  *
  */
-public class QuotationYahooDAOStub extends QuotationYahooDAO {
+public class QuotationProviderYahooDAOStub extends QuotationProviderYahooDAO {
 	@Override
 	public List<Quotation> getQuotationHistory(String symbol, StockExchange stockExchange, Integer years) throws Exception {
 		String quotationHistoryJSON = Files.readString(Paths.get("src/test/resources/yahooTSEQuotationHistoryDML.json"));

@@ -14,7 +14,8 @@ import backend.dao.DAOManager;
 import backend.dao.ObjectUnchangedException;
 import backend.dao.instrument.InstrumentDAO;
 import backend.dao.quotation.QuotationDAO;
-import backend.dao.quotation.QuotationYahooDAO;
+import backend.dao.quotation.QuotationProviderDAO;
+import backend.dao.quotation.QuotationProviderYahooDAO;
 import backend.dao.scan.ScanDAO;
 import backend.model.instrument.Indicator;
 import backend.model.instrument.Instrument;
@@ -44,12 +45,12 @@ public class ScanThread extends Thread {
 	/**
 	 * DAO to access quotations from a third-party data provider of quotation data.
 	 */
-	QuotationDAO quotationDaoThirdParty;
+	QuotationProviderDAO quotationProviderDAO;
 	
 	/**
 	 * DAO to access quotations of the database.
 	 */
-	QuotationDAO quotationDaoDatabase;
+	QuotationDAO quotationDAO;
 	
 	
 	/**
@@ -83,8 +84,8 @@ public class ScanThread extends Thread {
 		this.queryInterval = queryInterval;
 		this.scan = scan;
 		
-		this.quotationDaoThirdParty = new QuotationYahooDAO(new OkHttpClient());
-		this.quotationDaoDatabase = DAOManager.getInstance().getQuotationDAO();
+		this.quotationProviderDAO = new QuotationProviderYahooDAO(new OkHttpClient());
+		this.quotationDAO = DAOManager.getInstance().getQuotationDAO();
 		this.scanDAO = DAOManager.getInstance().getScanDAO();
 		this.instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
 		
@@ -168,9 +169,9 @@ public class ScanThread extends Thread {
 		java.util.List<Quotation> newQuotations = new ArrayList<>();
 		
 		try {
-			databaseQuotations.addAll(this.quotationDaoDatabase.getQuotationsOfInstrument(instrument.getId()));
+			databaseQuotations.addAll(this.quotationDAO.getQuotationsOfInstrument(instrument.getId()));
 			instrument.setQuotations(databaseQuotations);
-			java.util.List<Quotation> wsQuotations = this.quotationDaoThirdParty.getQuotationHistory(instrument.getSymbol(), instrument.getStockExchange(), 1);
+			java.util.List<Quotation> wsQuotations = this.quotationProviderDAO.getQuotationHistory(instrument.getSymbol(), instrument.getStockExchange(), 1);
 			
 			for(Quotation wsQuotation:wsQuotations) {
 				databaseQuotation = instrument.getQuotationByDate(wsQuotation.getDate());
@@ -182,7 +183,7 @@ public class ScanThread extends Thread {
 			}
 			
 			if(newQuotations.size() > 0) {
-				this.quotationDaoDatabase.insertQuotations(newQuotations);
+				this.quotationDAO.insertQuotations(newQuotations);
 			}
 		} catch (Exception e) {
 			logger.error("Failed to update quotations of instrument with ID " +instrument.getId(), e);
@@ -204,7 +205,7 @@ public class ScanThread extends Thread {
 		
 		try {
 			//Read quotations of Instrument from database to get quotations with IDs needed for setting the Indicator ID.
-			databaseQuotations.addAll(this.quotationDaoDatabase.getQuotationsOfInstrument(instrument.getId()));
+			databaseQuotations.addAll(this.quotationDAO.getQuotationsOfInstrument(instrument.getId()));
 			instrument.setQuotations(databaseQuotations);
 			sortedQuotations = instrument.getQuotationsSortedByDate();
 			
@@ -222,7 +223,7 @@ public class ScanThread extends Thread {
 			mostRecentQuotation.setIndicator(indicator);
 			
 			modifiedQuotations.add(mostRecentQuotation);
-			this.quotationDaoDatabase.updateQuotations(modifiedQuotations);
+			this.quotationDAO.updateQuotations(modifiedQuotations);
 		}
 		catch(Exception exception) {
 			logger.error("Failed to retrieve or update indicators of instrument with ID " +instrument.getId(), exception);

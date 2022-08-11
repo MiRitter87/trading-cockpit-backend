@@ -25,7 +25,7 @@ import okhttp3.Response;
  * 
  * @author Michael
  */
-public class QuotationYahooDAO implements QuotationDAO {
+public class QuotationProviderYahooDAO implements QuotationProviderDAO {
 	/**
 	 * Placeholder for the symbol used in a query URL.
 	 */
@@ -51,7 +51,7 @@ public class QuotationYahooDAO implements QuotationDAO {
 	/**
 	 * Default constructor.
 	 */
-	public QuotationYahooDAO() {
+	public QuotationProviderYahooDAO() {
 		
 	}
 	
@@ -61,7 +61,7 @@ public class QuotationYahooDAO implements QuotationDAO {
 	 * 
 	 * @param httpClient The HTTP client used for data queries.
 	 */
-	public QuotationYahooDAO(final OkHttpClient  httpClient) {
+	public QuotationProviderYahooDAO(final OkHttpClient  httpClient) {
 		this.httpClient = httpClient;
 	}
 	
@@ -265,41 +265,5 @@ public class QuotationYahooDAO implements QuotationDAO {
 		
 		
 		return adjustedClosingPrice;
-	}
-
-
-	@Override
-	public void insertQuotations(List<Quotation> quotations) throws Exception {
-		throw new Exception("Operation not supported.");		
-	}
-
-
-	@Override
-	public void deleteQuotations(List<Quotation> quotations) throws Exception {
-		throw new Exception("Operation not supported.");
-	}
-
-
-	@Override
-	public Quotation getQuotation(Integer id) throws Exception {
-		throw new Exception("Operation not supported.");
-	}
-
-
-	@Override
-	public List<Quotation> getQuotationsOfInstrument(Integer instrumentId) throws Exception {
-		throw new Exception("Operation not supported.");
-	}
-
-
-	@Override
-	public void updateQuotations(List<Quotation> quotations) throws Exception {
-		throw new Exception("Operation not supported.");
-	}
-
-
-	@Override
-	public List<Quotation> getRecentQuotations() throws Exception {
-		throw new Exception("Operation not supported.");
 	}
 }

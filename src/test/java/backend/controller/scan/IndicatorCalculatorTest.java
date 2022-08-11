@@ -13,8 +13,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import backend.dao.quotation.QuotationYahooDAO;
-import backend.dao.quotation.QuotationYahooDAOStub;
+import backend.dao.quotation.QuotationProviderDAO;
+import backend.dao.quotation.QuotationProviderYahooDAOStub;
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
@@ -39,7 +39,7 @@ public class IndicatorCalculatorTest {
 	/**
 	 * DAO to access quotation data from Yahoo.
 	 */
-	private static QuotationYahooDAO quotationYahooDAO;
+	private static QuotationProviderDAO quotationProviderYahooDAO;
 	
 	
 	@BeforeAll
@@ -48,7 +48,7 @@ public class IndicatorCalculatorTest {
 	 */
 	public static void setUpClass() {
 		try {
-			quotationYahooDAO = new QuotationYahooDAOStub();
+			quotationProviderYahooDAO = new QuotationProviderYahooDAOStub();
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
@@ -60,7 +60,7 @@ public class IndicatorCalculatorTest {
 	 * Tasks to be performed once at the end of the test class.
 	 */
 	public static void tearDownClass() {
-		quotationYahooDAO = null;
+		quotationProviderYahooDAO = null;
 	}
 	
 	
@@ -101,7 +101,7 @@ public class IndicatorCalculatorTest {
 		this.dmlStock.setName("Denison Mines");
 		
 		try {
-			quotations.addAll(quotationYahooDAO.getQuotationHistory("DML", StockExchange.TSX, 1));
+			quotations.addAll(quotationProviderYahooDAO.getQuotationHistory("DML", StockExchange.TSX, 1));
 			this.dmlStock.setQuotations(quotations);
 		} catch (Exception e) {
 			fail(e.getMessage());

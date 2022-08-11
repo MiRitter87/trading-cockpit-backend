@@ -10,7 +10,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import backend.model.StockExchange;
 import backend.model.instrument.Quotation;
 
 /**
@@ -37,18 +36,6 @@ public class QuotationHibernateDAO implements QuotationDAO {
 	 */
 	public QuotationHibernateDAO(final EntityManagerFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
-	}
-	
-
-	@Override
-	public Quotation getCurrentQuotation(String symbol, StockExchange stockExchange) throws Exception {
-		throw new Exception("Operation not supported.");
-	}
-
-	
-	@Override
-	public List<Quotation> getQuotationHistory(String symbol, StockExchange stockExchange, Integer years) throws Exception {
-		throw new Exception("Operation not supported.");
 	}
 
 	
