@@ -292,7 +292,7 @@ public class QuotationHibernateDAOTest {
 			quotations = quotationDAO.getQuotationsOfInstrument(this.appleStock.getId());
 			
 			for(Quotation databaseQuotation:quotations) {
-				if(databaseQuotation.getId() == this.appleQuotation1.getId()) {
+				if(databaseQuotation.getId().equals(appleQuotation1.getId())) {
 					assertEquals(this.appleQuotation1.getId(), databaseQuotation.getId());
 					assertEquals(this.appleQuotation1.getDate().getTime(), databaseQuotation.getDate().getTime());
 					assertTrue(this.appleQuotation1.getPrice().compareTo(databaseQuotation.getPrice()) == 0);
@@ -302,7 +302,7 @@ public class QuotationHibernateDAOTest {
 					
 					assertNull(databaseQuotation.getIndicator());
 				}
-				else if(databaseQuotation.getId() == this.appleQuotation2.getId()) {
+				else if(databaseQuotation.getId().equals(this.appleQuotation2.getId())) {
 					assertEquals(this.appleQuotation2.getId(), databaseQuotation.getId());
 					assertEquals(this.appleQuotation2.getDate().getTime(), databaseQuotation.getDate().getTime());
 					assertTrue(this.appleQuotation2.getPrice().compareTo(databaseQuotation.getPrice()) == 0);
