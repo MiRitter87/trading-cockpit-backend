@@ -2,6 +2,7 @@ package backend.controller.scan;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -11,7 +12,6 @@ import org.apache.logging.log4j.Logger;
 
 import backend.dao.DAOManager;
 import backend.dao.ObjectUnchangedException;
-import backend.dao.instrument.DuplicateInstrumentException;
 import backend.dao.instrument.InstrumentDAO;
 import backend.dao.quotation.QuotationDAO;
 import backend.dao.quotation.QuotationYahooDAO;
@@ -42,9 +42,15 @@ public class ScanThread extends Thread {
 	private Scan scan;
 	
 	/**
-	 * DAO to access quotations.
+	 * DAO to access quotations from a third-party data provider of quotation data.
 	 */
-	QuotationDAO quotationDAO;
+	QuotationDAO quotationDaoThirdParty;
+	
+	/**
+	 * DAO to access quotations of the database.
+	 */
+	QuotationDAO quotationDaoDatabase;
+	
 	
 	/**
 	 * DAO for scan persistence.
@@ -77,7 +83,8 @@ public class ScanThread extends Thread {
 		this.queryInterval = queryInterval;
 		this.scan = scan;
 		
-		this.quotationDAO = new QuotationYahooDAO(new OkHttpClient());
+		this.quotationDaoThirdParty = new QuotationYahooDAO(new OkHttpClient());
+		this.quotationDaoDatabase = DAOManager.getInstance().getQuotationDAO();
 		this.scanDAO = DAOManager.getInstance().getScanDAO();
 		this.instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
 		
@@ -104,7 +111,7 @@ public class ScanThread extends Thread {
 			this.updateInstrument(instrument);
 			
 			instrumentsProcessed++;
-			//this.updateScanPercentCompleted(instrumentsProcessed, instruments.size());
+			this.updateScanPercentCompleted(instrumentsProcessed, instruments.size());
 			
 			try {
 				sleep(this.queryInterval * 1000);
@@ -145,36 +152,40 @@ public class ScanThread extends Thread {
 	 */
 	private void updateInstrument(Instrument instrument) {
 		this.updateQuotationsOfInstrument(instrument);
-		this.updateIndicatorsOfInstrument(instrument.getId());
+		this.updateIndicatorsOfInstrument(instrument);
 	}
 	
 	
 	/**
 	 * Queries a third party WebService to get historical quotations of the given instrument.
-	 * Updates the instrument if new quotations are given.
+	 * Persists new quotations.
 	 * 
 	 * @param instrument The Instrument to be updated.
 	 */
 	private void updateQuotationsOfInstrument(Instrument instrument) {
 		Quotation databaseQuotation;
-		boolean newQuotationsAdded = false;
+		Set<Quotation> databaseQuotations = new HashSet<>();
+		java.util.List<Quotation> newQuotations = new ArrayList<>();
 		
 		try {
-			java.util.List<Quotation> wsQuotations = this.quotationDAO.getQuotationHistory(instrument.getSymbol(), instrument.getStockExchange(), 1);
+			databaseQuotations.addAll(this.quotationDaoDatabase.getQuotationsOfInstrument(instrument.getId()));
+			instrument.setQuotations(databaseQuotations);
+			java.util.List<Quotation> wsQuotations = this.quotationDaoThirdParty.getQuotationHistory(instrument.getSymbol(), instrument.getStockExchange(), 1);
 			
 			for(Quotation wsQuotation:wsQuotations) {
 				databaseQuotation = instrument.getQuotationByDate(wsQuotation.getDate());
 				
 				if(databaseQuotation == null) {
+					newQuotations.add(wsQuotation);
 					instrument.addQuotation(wsQuotation);
-					newQuotationsAdded = true;
 				}
 			}
 			
-			if(newQuotationsAdded)
-				this.persistInstrumentChanges(instrument);
+			if(newQuotations.size() > 0) {
+				this.quotationDaoDatabase.insertQuotations(newQuotations);
+			}
 		} catch (Exception e) {
-			logger.error("Failed to retrieve quotations of instrument with ID " +instrument.getId(), e);
+			logger.error("Failed to update quotations of instrument with ID " +instrument.getId(), e);
 		}
 	}
 	
@@ -182,18 +193,19 @@ public class ScanThread extends Thread {
 	/**
 	 * Updates the indicators of the most recent quotation of the given Instrument.
 	 * 
-	 * @param instrumentId The id of the Instrument to be updated.
+	 * @param instrument The Instrument to be updated.
 	 */
-	private void updateIndicatorsOfInstrument(final Integer instrumentId) {
-		Indicator indicator;
+	private void updateIndicatorsOfInstrument(Instrument instrument) {
 		java.util.List<Quotation> sortedQuotations;
+		java.util.List<Quotation> modifiedQuotations = new ArrayList<>();
+		Set<Quotation> databaseQuotations = new HashSet<>();
+		Indicator indicator;
 		Quotation mostRecentQuotation;
-		Instrument instrument;
 		
 		try {
-			//Read instrument from database to get Quotations with IDs needed for setting Indicator ID.
-			instrument = this.instrumentDAO.getInstrument(instrumentId);
-			//TODO load and set quotations of instrument.
+			//Read quotations of Instrument from database to get quotations with IDs needed for setting the Indicator ID.
+			databaseQuotations.addAll(this.quotationDaoDatabase.getQuotationsOfInstrument(instrument.getId()));
+			instrument.setQuotations(databaseQuotations);
 			sortedQuotations = instrument.getQuotationsSortedByDate();
 			
 			if(sortedQuotations.size() == 0)
@@ -209,30 +221,11 @@ public class ScanThread extends Thread {
 			indicator.setRsPercentSum(this.indicatorCalculator.getRSPercentSum(instrument, mostRecentQuotation));
 			mostRecentQuotation.setIndicator(indicator);
 			
-			this.persistInstrumentChanges(instrument);
+			modifiedQuotations.add(mostRecentQuotation);
+			this.quotationDaoDatabase.updateQuotations(modifiedQuotations);
 		}
 		catch(Exception exception) {
-			logger.error("Failed to retrieve update indicators of instrument with ID " +instrumentId, exception);
-		}
-	}
-	
-	
-	/**
-	 * Persists changes of an instrument if data have changed.
-	 * 
-	 * @param instrument The instrument to persist.
-	 */
-	private void persistInstrumentChanges(final Instrument instrument) {
-		try {
-			this.instrumentDAO.updateInstrument(instrument);
-			//TODO Persist changed quotations.
-		} catch (ObjectUnchangedException e) {
-			logger.error("Scanner found new quotations or indicators of but database did not detect any changes in instrument ID: "
-					+instrument.getId(), e);
-		} catch (DuplicateInstrumentException e) {
-			logger.error("Update would have resulted in duplicate instrument with ID: " +instrument.getId(), e);
-		} catch (Exception e) {
-			logger.error("Scanner failed to update instrument with ID: " +instrument.getId(), e);
+			logger.error("Failed to retrieve or update indicators of instrument with ID " +instrument.getId(), exception);
 		}
 	}
 	
