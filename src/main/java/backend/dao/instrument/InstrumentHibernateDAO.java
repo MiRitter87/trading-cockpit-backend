@@ -14,7 +14,6 @@ import javax.persistence.criteria.Root;
 import backend.dao.ObjectUnchangedException;
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
-import backend.model.instrument.InstrumentQuotationQueryParam;
 
 /**
  * Provides access to Instrument database persistence using Hibernate.
@@ -90,7 +89,7 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 
 	
 	@Override
-	public List<Instrument> getInstruments(final InstrumentQuotationQueryParam instrumentQuotationQuery) throws Exception {
+	public List<Instrument> getInstruments() throws Exception {
 		List<Instrument> instruments = null;
 		EntityManager entityManager = this.sessionFactory.createEntityManager();
 		
@@ -103,10 +102,6 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 			criteriaQuery.select(criteria);
 			criteriaQuery.orderBy(criteriaBuilder.asc(criteria.get("id")));	//Order by id ascending
 			TypedQuery<Instrument> typedQuery = entityManager.createQuery(criteriaQuery);
-			
-			if(instrumentQuotationQuery == InstrumentQuotationQueryParam.ALL) {
-				//TODO Load quotations using additional JPA query
-			}
 			
 			instruments = typedQuery.getResultList();
 			entityManager.getTransaction().commit();			
@@ -126,59 +121,28 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 
 	
 	@Override
-	public Instrument getInstrument(Integer id, final boolean withQuotations) throws Exception {
-		Instrument instrument = null;
-		List<Instrument> instruments = null;
+	public Instrument getInstrument(Integer id) throws Exception {
 		EntityManager entityManager = this.sessionFactory.createEntityManager();
 		
 		entityManager.getTransaction().begin();
-		
-		try {
-			CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-			CriteriaQuery<Instrument> criteriaQuery = criteriaBuilder.createQuery(Instrument.class);
-			Root<Instrument> criteria = criteriaQuery.from(Instrument.class);
-			criteriaQuery.select(criteria);
-			criteriaQuery.where(criteriaBuilder.equal(criteria.get("id"), id));		//Only query the instrument with the given id.
-			TypedQuery<Instrument> typedQuery = entityManager.createQuery(criteriaQuery);
-			
-			if(withQuotations) {
-				//TODO Load quotations using additional JPA query
-			}
-			
-			instruments = typedQuery.getResultList();		
-			entityManager.getTransaction().commit();			
-		}
-		catch(Exception exception) {
-			//If something breaks a rollback is necessary.
-			if(entityManager.getTransaction().isActive())
-				entityManager.getTransaction().rollback();
-			throw exception;
-		}
-		finally {
-			entityManager.close();			
-		}
-		
-		if(instruments.size() == 1)
-			instrument = instruments.get(0);
+		Instrument instrument = entityManager.find(Instrument.class, id);
+		entityManager.getTransaction().commit();
+		entityManager.close();
 		
 		return instrument;
 	}
 
 	
 	@Override
-	public void updateInstrument(final Instrument instrument, final boolean updateQuotations) 
-			throws ObjectUnchangedException, DuplicateInstrumentException, Exception {
-		
-		Instrument instrumentToUpdate;
+	public void updateInstrument(final Instrument instrument) throws ObjectUnchangedException, DuplicateInstrumentException, Exception {
 		EntityManager entityManager;
 		
-		instrumentToUpdate = this.getInstrumentWithUpdatedQuotations(instrument, updateQuotations);
-		this.checkInstrumentDataChanged(instrumentToUpdate);
-		this.checkInstrumentExistsUpdate(instrumentToUpdate);
+		this.checkInstrumentDataChanged(instrument);
+		this.checkInstrumentExistsUpdate(instrument);
 		
 		entityManager = this.sessionFactory.createEntityManager();
 		entityManager.getTransaction().begin();
-		entityManager.merge(instrumentToUpdate);
+		entityManager.merge(instrument);
 		entityManager.getTransaction().commit();
 		entityManager.close();
 	}
@@ -192,7 +156,7 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 	 * @throws Exception In case an error occurred during determination of the instrument stored at the database.
 	 */
 	private void checkInstrumentDataChanged(final Instrument instrument) throws ObjectUnchangedException, Exception {
-		Instrument databaseInstrument = this.getInstrument(instrument.getId(), true);
+		Instrument databaseInstrument = this.getInstrument(instrument.getId());
 		
 		if(databaseInstrument.equals(instrument))
 			throw new ObjectUnchangedException();
@@ -274,29 +238,5 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 			return null;
 		else
 			return instruments.get(0);
-	}
-	
-	
-	/**
-	 * Initializes the quotations of the instrument with the database state, if no update of quotations is requested.
-	 * If an update of quotations is requested the Instrument is returned 'as is'.
-	 * 
-	 * @param instrument The instrument to be updated.
-	 * @param updateQuotations Indicator if quotations are to be updated.
-	 * @return The instrument with correctly initialized quotations.
-	 * @throws Exception Instrument quotations could not be updated.
-	 */
-	private Instrument getInstrumentWithUpdatedQuotations(final Instrument instrument, final boolean updateQuotations) throws Exception {
-		Instrument updatedInstrument, databaseInstrument;
-		
-		if(!updateQuotations) {
-			updatedInstrument = instrument;
-			databaseInstrument = this.getInstrument(instrument.getId(), true);
-			updatedInstrument.setQuotations(databaseInstrument.getQuotations());
-			return updatedInstrument;
-		}
-		else {
-			return instrument;			
-		}
 	}
 }

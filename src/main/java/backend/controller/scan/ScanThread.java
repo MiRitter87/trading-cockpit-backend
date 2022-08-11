@@ -192,7 +192,8 @@ public class ScanThread extends Thread {
 		
 		try {
 			//Read instrument from database to get Quotations with IDs needed for setting Indicator ID.
-			instrument = this.instrumentDAO.getInstrument(instrumentId, true);	
+			instrument = this.instrumentDAO.getInstrument(instrumentId);
+			//TODO load and set quotations of instrument.
 			sortedQuotations = instrument.getQuotationsSortedByDate();
 			
 			if(sortedQuotations.size() == 0)
@@ -223,7 +224,8 @@ public class ScanThread extends Thread {
 	 */
 	private void persistInstrumentChanges(final Instrument instrument) {
 		try {
-			this.instrumentDAO.updateInstrument(instrument, true);
+			this.instrumentDAO.updateInstrument(instrument);
+			//TODO Persist changed quotations.
 		} catch (ObjectUnchangedException e) {
 			logger.error("Scanner found new quotations or indicators of but database did not detect any changes in instrument ID: "
 					+instrument.getId(), e);

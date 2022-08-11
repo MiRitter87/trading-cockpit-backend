@@ -15,7 +15,6 @@ import backend.dao.instrument.InstrumentDAO;
 import backend.dao.quotation.QuotationDAO;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentArray;
-import backend.model.instrument.InstrumentQuotationQueryParam;
 import backend.model.instrument.Quotation;
 import backend.model.webservice.WebServiceMessage;
 import backend.model.webservice.WebServiceMessageType;
@@ -68,7 +67,7 @@ public class InstrumentService {
 		WebServiceResult getInstrumentResult = new WebServiceResult(null);
 		
 		try {
-			instrument = this.instrumentDAO.getInstrument(id, false);
+			instrument = this.instrumentDAO.getInstrument(id);
 			
 			if(instrument != null) {
 				//Instrument found
@@ -102,7 +101,7 @@ public class InstrumentService {
 		WebServiceResult getInstrumentsResult = new WebServiceResult(null);
 		
 		try {
-			instruments.setInstruments(this.instrumentDAO.getInstruments(InstrumentQuotationQueryParam.NONE));
+			instruments.setInstruments(this.instrumentDAO.getInstruments());
 			getInstrumentsResult.setData(instruments);
 		} catch (Exception e) {
 			getInstrumentsResult.addMessage(new WebServiceMessage(
@@ -162,7 +161,7 @@ public class InstrumentService {
 		
 		//Check if an instrument with the given id exists.
 		try {
-			instrument = this.instrumentDAO.getInstrument(id, true);
+			instrument = this.instrumentDAO.getInstrument(id);
 			
 			if(instrument != null) {
 				//If the Instrument has any quotations referenced, delete those first before deleting the Instrument.
@@ -211,7 +210,7 @@ public class InstrumentService {
 		
 		//Update instrument if validation is successful.
 		try {
-			this.instrumentDAO.updateInstrument(instrument, false);
+			this.instrumentDAO.updateInstrument(instrument);
 			updateInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.S, 
 					MessageFormat.format(this.resources.getString("instrument.updateSuccess"), instrument.getId())));
 		} 

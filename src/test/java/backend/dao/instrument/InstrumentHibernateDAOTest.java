@@ -171,7 +171,7 @@ public class InstrumentHibernateDAOTest {
 			instrumentDAO.deleteInstrument(this.appleStock);
 			
 			//The Instrument should not have been deleted.
-			deletedInstrument = instrumentDAO.getInstrument(this.appleStock.getId(), false);
+			deletedInstrument = instrumentDAO.getInstrument(this.appleStock.getId());
 			assertNotNull(deletedInstrument);
 		} catch (Exception expected) {
 			//All is well.
