@@ -2,6 +2,7 @@ package backend.dao.quotation;
 
 import java.util.List;
 
+import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
@@ -128,6 +129,11 @@ public class QuotationHibernateDAO implements QuotationDAO {
 		List<Quotation> quotations = null;
 		EntityManager entityManager = this.sessionFactory.createEntityManager();
 		
+		//Use entity graphs to load data of referenced Instrument instances.
+		EntityGraph<Quotation> graph = entityManager.createEntityGraph(Quotation.class);
+		graph.addAttributeNodes("instrument");
+		graph.addAttributeNodes("indicator");
+		
 		entityManager.getTransaction().begin();
 		
 		try {
@@ -137,8 +143,9 @@ public class QuotationHibernateDAO implements QuotationDAO {
 			criteriaQuery.select(criteria);
 			criteriaQuery.where(criteriaBuilder.equal(criteria.get("instrument"), instrumentId));
 			TypedQuery<Quotation> typedQuery = entityManager.createQuery(criteriaQuery);
-			
+			typedQuery.setHint("javax.persistence.loadgraph", graph);	//Also fetch all instrument and indicator data.
 			quotations = typedQuery.getResultList();		
+			
 			entityManager.getTransaction().commit();			
 		}
 		catch(Exception exception) {
