@@ -177,8 +177,8 @@ public class ScanThread extends Thread {
 				databaseQuotation = instrument.getQuotationByDate(wsQuotation.getDate());
 				
 				if(databaseQuotation == null) {
+					wsQuotation.setInstrument(instrument);
 					newQuotations.add(wsQuotation);
-					instrument.addQuotation(wsQuotation);
 				}
 			}
 			
