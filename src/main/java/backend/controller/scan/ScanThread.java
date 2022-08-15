@@ -121,6 +121,7 @@ public class ScanThread extends Thread {
 			}
 		}
 		
+		this.updateRSNumbers();
 		this.setScanStatusFinished();
 		logger.info("Finished execution of scan with ID: " +this.scan.getId());
 	}
@@ -227,6 +228,21 @@ public class ScanThread extends Thread {
 		}
 		catch(Exception exception) {
 			logger.error("Failed to retrieve or update indicators of instrument with ID " +instrument.getId(), exception);
+		}
+	}
+	
+	
+	/**
+	 * Updates the RS number of all instruments that have quotations for the most recent date defined.
+	 */
+	private void updateRSNumbers() {
+		try {
+			java.util.List<Quotation> quotations = this.quotationDAO.getRecentQuotations();
+
+			this.indicatorCalculator.calculateRsNumbers(quotations);
+			this.quotationDAO.updateQuotations(quotations);
+		} catch (Exception e) {
+			logger.error("Failed to calculate RS numbers.", e);
 		}
 	}
 	
