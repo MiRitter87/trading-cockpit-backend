@@ -3,7 +3,9 @@ package backend.controller.scan;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import backend.model.instrument.Indicator;
 import backend.model.instrument.Instrument;
@@ -42,6 +44,44 @@ public class IndicatorCalculator {
 		rsPercentSum.setScale(2);
 		
 		return rsPercentSum.floatValue();
+	}
+	
+	
+	/**
+	 * Returns the Simple Moving Average.
+	 * 
+	 * @param days The number of days on which the Simple Moving Average is based.
+	 * @param quotation The Quotation for which the Simple Moving Average is calculated.
+	 * @param quotations A list of quotations that build the trading history used for Simple Moving Average calculation.
+	 * @return
+	 */
+	public float getSimpleMovingAverage(final int days, final Quotation quotation, final List<Quotation> quotations) {
+		Instrument instrument = new Instrument();
+		List<Quotation> sortedQuotations;
+		Set<Quotation> quotationSet = new HashSet<>(quotations);
+		int indexOfQuotation = 0;
+		BigDecimal sum = new BigDecimal(0), average;
+		
+		//Sort the quotations by date for calculation of average based on last x days.
+		instrument.setQuotations(quotationSet);
+		sortedQuotations = instrument.getQuotationsSortedByDate();
+		
+		//Get the starting point of average calculation.
+		indexOfQuotation = sortedQuotations.indexOf(quotation);
+		
+		//Check if enough quotations exist for average calculation.
+		if((sortedQuotations.size() - days - indexOfQuotation) < 0)
+			return 0;
+		
+		//Calculate the sum of the prices of the last x days.
+		for(int i = indexOfQuotation; i<days; i++) {
+			sum = sum.add(sortedQuotations.get(i).getPrice());
+		}
+		
+		//Build the average.
+		average = sum.divide(BigDecimal.valueOf(days), 2, RoundingMode.HALF_UP);
+		
+		return average.floatValue();
 	}
 	
 	

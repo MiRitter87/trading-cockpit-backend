@@ -221,6 +221,9 @@ public class ScanThread extends Thread {
 				indicator = mostRecentQuotation.getIndicator();
 			
 			indicator.setRsPercentSum(this.indicatorCalculator.getRSPercentSum(instrument, mostRecentQuotation));
+			indicator.setSma50(this.indicatorCalculator.getSimpleMovingAverage(50, mostRecentQuotation, sortedQuotations));
+			indicator.setSma150(this.indicatorCalculator.getSimpleMovingAverage(150, mostRecentQuotation, sortedQuotations));
+			indicator.setSma200(this.indicatorCalculator.getSimpleMovingAverage(200, mostRecentQuotation, sortedQuotations));
 			mostRecentQuotation.setIndicator(indicator);
 			
 			modifiedQuotations.add(mostRecentQuotation);

@@ -218,4 +218,46 @@ public class IndicatorCalculatorTest {
 		assertEquals(67, this.quotation3.getIndicator().getRsNumber());
 		assertEquals(100, this.quotation1.getIndicator().getRsNumber());
 	}
+	
+	
+	@Test
+	/**
+	 * Tests the calculation of the 50-day Simple Moving Average.
+	 */
+	public void testGetSimpleMovingAverage50Days() {
+		List<Quotation> sortedQuotations = this.dmlStock.getQuotationsSortedByDate();
+		float actualSma50, expectedSma50 = (float) 1.42;
+		
+		actualSma50 = this.indicatorCalculator.getSimpleMovingAverage(50, sortedQuotations.get(0), sortedQuotations);
+		
+		assertEquals(expectedSma50, actualSma50);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the calculation of the 150-day Simple Moving Average.
+	 */
+	public void testGetSimpleMovingAverage150Days() {
+		List<Quotation> sortedQuotations = this.dmlStock.getQuotationsSortedByDate();
+		float actualSma150, expectedSma150 = (float) 1.67;
+		
+		actualSma150 = this.indicatorCalculator.getSimpleMovingAverage(150, sortedQuotations.get(0), sortedQuotations);
+		
+		assertEquals(expectedSma150, actualSma150);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the calculation of the 200-day Simple Moving Average.
+	 */
+	public void testGetSimpleMovingAverage200Days() {
+		List<Quotation> sortedQuotations = this.dmlStock.getQuotationsSortedByDate();
+		float actualSma200, expectedSma200 = (float) 1.79;
+		
+		actualSma200 = this.indicatorCalculator.getSimpleMovingAverage(200, sortedQuotations.get(0), sortedQuotations);
+		
+		assertEquals(expectedSma200, actualSma200);
+	}
 }
