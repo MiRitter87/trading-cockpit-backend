@@ -233,7 +233,6 @@ public class Instrument {
 		result = prime * result + ((stockExchange == null) ? 0 : stockExchange.hashCode());
 		result = prime * result + ((symbol == null) ? 0 : symbol.hashCode());
 		result = prime * result + ((type == null) ? 0 : type.hashCode());
-		result = prime * result + ((quotations == null) ? 0 : quotations.hashCode());
 		return result;
 	}
 
@@ -276,39 +275,6 @@ public class Instrument {
 		}
 		if (type != other.type) {
 			return false;
-		}
-		
-		if(this.areQuotationsEqual(other) == false)
-			return false;
-		
-		return true;
-	}
-	
-	
-	/**
-	 * Checks if the list of quotations is equal.
-	 * 
-	 * @param other The other instrument for comparison.
-	 * @return true, if quotations are equal; false otherwise.
-	 */
-	private boolean areQuotationsEqual(Instrument other) {
-		if (this.quotations == null && other.quotations != null)
-			return false;
-		
-		if (this.quotations != null && other.quotations == null)
-			return false;
-		
-		if(this.quotations.size() != other.quotations.size())
-			return false;
-		
-		for(Quotation tempQuotation:this.quotations) {
-			Quotation otherQuotation = other.getQuotationWithId(tempQuotation.getId());
-			
-			if(otherQuotation == null)
-				return false;
-			
-			if(!tempQuotation.equals(otherQuotation))
-				return false;
 		}
 		
 		return true;
