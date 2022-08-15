@@ -209,7 +209,7 @@ public class QuotationHibernateDAO implements QuotationDAO {
 			//Find all quotations that have an Indicator defined and where the Quotation is the most recent one of an Instrument.
 			//Also fetch the Instrument data of those records.
 			query = entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i WHERE "
-					+ "date IN (SELECT max(date) AS date FROM Quotation q GROUP BY INSTRUMENT_ID) "
+					+ "date IN (SELECT max(date) AS date FROM Quotation q) "
 					+ "AND q.indicator IS NOT NULL");
 			quotations = query.getResultList();
 			
