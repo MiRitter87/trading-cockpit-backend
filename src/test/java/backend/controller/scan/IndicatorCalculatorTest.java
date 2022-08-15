@@ -3,6 +3,7 @@ package backend.controller.scan;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -16,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import backend.dao.quotation.QuotationProviderDAO;
 import backend.dao.quotation.QuotationProviderYahooDAOStub;
 import backend.model.StockExchange;
+import backend.model.instrument.Indicator;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
@@ -35,6 +37,21 @@ public class IndicatorCalculatorTest {
 	 * A trading instrument whose indicators are calculated.
 	 */
 	private Instrument dmlStock;
+	
+	/**
+	 * A Quotation for testing.
+	 */
+	private Quotation quotation1;
+	
+	/**
+	 * A Quotation for testing.
+	 */
+	private Quotation quotation2;
+	
+	/**
+	 * A Quotation for testing.
+	 */
+	private Quotation quotation3;
 	
 	/**
 	 * DAO to access quotation data from Yahoo.
@@ -72,6 +89,7 @@ public class IndicatorCalculatorTest {
 		try {
 			this.indicatorCalculator = new IndicatorCalculator();
 			this.initializeDummyInstrument();
+			this.initializeDummyQuotations();
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
@@ -85,6 +103,9 @@ public class IndicatorCalculatorTest {
 	private void tearDown() {
 		this.indicatorCalculator = null;
 		this.dmlStock = null;
+		this.quotation3 = null;
+		this.quotation2 = null;
+		this.quotation1 = null;
 	}
 	
 	
@@ -106,6 +127,24 @@ public class IndicatorCalculatorTest {
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
+	}
+	
+	
+	/**
+	 * Initializes dummy quotations.
+	 */
+	private void initializeDummyQuotations() {
+		this.quotation1 = new Quotation();
+		this.quotation1.setIndicator(new Indicator());
+		this.quotation1.getIndicator().setRsPercentSum((float) 34.5);
+		
+		this.quotation2 = new Quotation();
+		this.quotation2.setIndicator(new Indicator());
+		this.quotation2.getIndicator().setRsPercentSum((float) -5);
+		
+		this.quotation3 = new Quotation();
+		this.quotation3.setIndicator(new Indicator());
+		this.quotation3.getIndicator().setRsPercentSum((float) 12.35);
 	}
 	
 	
@@ -156,5 +195,27 @@ public class IndicatorCalculatorTest {
 		actualRSPercentSum = indicatorCalculator.getRSPercentSum(this.dmlStock,sortedQuotations.get(0));
 		
 		assertEquals(expectedRSPercentSum, actualRSPercentSum);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the calculation of RS numbers.
+	 */
+	public void testCalculateRsNumbers() {
+		List<Quotation> quotations = new ArrayList<>();
+		
+		//Prepare all quotations on which the RS number is to be calculated.
+		quotations.add(this.quotation1);
+		quotations.add(this.quotation2);
+		quotations.add(this.quotation3);
+		
+		//Calculate the RS numbers.
+		this.indicatorCalculator.calculateRsNumbers(quotations);
+		
+		//Verify the correct calculation.
+		assertEquals(33, this.quotation2.getIndicator().getRsNumber());
+		assertEquals(67, this.quotation3.getIndicator().getRsNumber());
+		assertEquals(100, this.quotation1.getIndicator().getRsNumber());
 	}
 }

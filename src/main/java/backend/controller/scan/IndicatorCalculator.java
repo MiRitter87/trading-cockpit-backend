@@ -2,10 +2,13 @@ package backend.controller.scan;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Collections;
 import java.util.List;
 
+import backend.model.instrument.Indicator;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
+import backend.model.instrument.QuotationRsPercentSumComparator;
 
 /**
  * Performs calculations of indicators based on the instruments quotations.
@@ -39,6 +42,30 @@ public class IndicatorCalculator {
 		rsPercentSum.setScale(2);
 		
 		return rsPercentSum.floatValue();
+	}
+	
+	
+	/**
+	 * Calculates the RS number for each Quotation.
+	 * 
+	 * @param quotations The quotations on which the calculation of the RS number is based.
+	 */
+	public void calculateRsNumbers(List<Quotation> quotations) {
+		Indicator indicator;
+		BigDecimal rsNumber, dividend, numberOfElements;
+		
+		Collections.sort(quotations, new QuotationRsPercentSumComparator());
+		numberOfElements = BigDecimal.valueOf(quotations.size());
+		
+		for(int i = 0; i < quotations.size(); i++) {
+			dividend = numberOfElements.subtract(BigDecimal.valueOf(i));
+			rsNumber = dividend.divide(numberOfElements, 2, RoundingMode.HALF_UP);
+			rsNumber = rsNumber.multiply(BigDecimal.valueOf(100));
+			
+			indicator = quotations.get(i).getIndicator();
+			if(indicator != null)
+				indicator.setRsNumber(rsNumber.intValue());
+		}
 	}
 	
 	
