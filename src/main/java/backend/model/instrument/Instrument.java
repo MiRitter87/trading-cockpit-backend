@@ -3,7 +3,6 @@ package backend.model.instrument;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -86,14 +85,14 @@ public class Instrument {
 	 * The quotations.
 	 */
 	@Transient
-	private Set<Quotation> quotations;
+	private List<Quotation> quotations;
 	
 	
 	/**
 	 * Default constructor.
 	 */
 	public Instrument() {
-		this.quotations = new HashSet<Quotation>();
+		this.quotations = new ArrayList<>();
 	}
 
 
@@ -180,7 +179,7 @@ public class Instrument {
 	/**
 	 * @return the quotations
 	 */
-	public Set<Quotation> getQuotations() {
+	public List<Quotation> getQuotations() {
 		return quotations;
 	}
 
@@ -188,7 +187,7 @@ public class Instrument {
 	/**
 	 * @param quotations the quotations to set
 	 */
-	public void setQuotations(Set<Quotation> quotations) {
+	public void setQuotations(List<Quotation> quotations) {
 		this.quotations = quotations;
 	}
 	
@@ -304,10 +303,9 @@ public class Instrument {
 	 */
 	@JsonIgnore
 	public List<Quotation> getQuotationsSortedByDate() {
-		List<Quotation> sortedQuotations = new ArrayList<>(this.quotations);
-		Collections.sort(sortedQuotations, new QuotationDateComparator());
+		Collections.sort(this.quotations, new QuotationDateComparator());
 				
-		return sortedQuotations;
+		return this.quotations;
 	}
 
 

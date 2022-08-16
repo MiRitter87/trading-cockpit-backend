@@ -166,7 +166,7 @@ public class ScanThread extends Thread {
 	 */
 	private void updateQuotationsOfInstrument(Instrument instrument) {
 		Quotation databaseQuotation;
-		Set<Quotation> databaseQuotations = new HashSet<>();
+		java.util.List<Quotation> databaseQuotations = new ArrayList<>();
 		java.util.List<Quotation> newQuotations = new ArrayList<>();
 		
 		try {
@@ -200,7 +200,7 @@ public class ScanThread extends Thread {
 	private void updateIndicatorsOfInstrument(Instrument instrument) {
 		java.util.List<Quotation> sortedQuotations;
 		java.util.List<Quotation> modifiedQuotations = new ArrayList<>();
-		Set<Quotation> databaseQuotations = new HashSet<>();
+		java.util.List<Quotation> databaseQuotations = new ArrayList<>();
 		Indicator indicator;
 		Quotation mostRecentQuotation;
 		

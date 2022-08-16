@@ -4,9 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -113,7 +111,7 @@ public class IndicatorCalculatorTest {
 	 * Initializes the dummy instrument.
 	 */
 	private void initializeDummyInstrument() {
-		Set<Quotation> quotations = new HashSet<>();
+		List<Quotation> quotations = new ArrayList<>();
 		
 		this.dmlStock = new Instrument();
 		this.dmlStock.setSymbol("DML");
@@ -181,7 +179,7 @@ public class IndicatorCalculatorTest {
 		
 		//Remove the last quote from the instrument. The 12 month performance can't be calculated then.
 		sortedQuotations.remove(sortedQuotations.size() - 1);
-		this.dmlStock.setQuotations(new HashSet<>(sortedQuotations));
+		this.dmlStock.setQuotations(sortedQuotations);
 		
 		//Actual price: 1,36
 		//Three months ago price: 1,75

@@ -3,9 +3,7 @@ package backend.controller.scan;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import backend.model.instrument.Indicator;
 import backend.model.instrument.Instrument;
@@ -58,12 +56,11 @@ public class IndicatorCalculator {
 	public float getSimpleMovingAverage(final int days, final Quotation quotation, final List<Quotation> quotations) {
 		Instrument instrument = new Instrument();
 		List<Quotation> sortedQuotations;
-		Set<Quotation> quotationSet = new HashSet<>(quotations);
 		int indexOfQuotation = 0;
 		BigDecimal sum = new BigDecimal(0), average;
 		
 		//Sort the quotations by date for calculation of average based on last x days.
-		instrument.setQuotations(quotationSet);
+		instrument.setQuotations(quotations);
 		sortedQuotations = instrument.getQuotationsSortedByDate();
 		
 		//Get the starting point of average calculation.
