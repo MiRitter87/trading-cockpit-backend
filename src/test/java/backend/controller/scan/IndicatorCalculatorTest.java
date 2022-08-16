@@ -258,4 +258,18 @@ public class IndicatorCalculatorTest {
 		
 		assertEquals(expectedSma200, actualSma200);
 	}
+	
+	
+	@Test
+	/**
+	 * Tests the calculation of the distance to the 52 week high.
+	 */
+	public void testGetDistanceTo52WeekHigh() {
+		List<Quotation> sortedQuotations = this.dmlStock.getQuotationsSortedByDate();
+		float actualDistanceTo52WeekHigh, expectedDistanceTo52WeekHigh = (float) 92.65;
+		
+		actualDistanceTo52WeekHigh = this.indicatorCalculator.getDistanceTo52WeekHigh(sortedQuotations.get(0), sortedQuotations);
+		
+		assertEquals(expectedDistanceTo52WeekHigh, actualDistanceTo52WeekHigh);
+	}
 }

@@ -51,7 +51,7 @@ public class IndicatorCalculator {
 	 * @param days The number of days on which the Simple Moving Average is based.
 	 * @param quotation The Quotation for which the Simple Moving Average is calculated.
 	 * @param quotations A list of quotations that build the trading history used for Simple Moving Average calculation.
-	 * @return
+	 * @return The Simple Moving Average.
 	 */
 	public float getSimpleMovingAverage(final int days, final Quotation quotation, final List<Quotation> quotations) {
 		Instrument instrument = new Instrument();
@@ -79,6 +79,45 @@ public class IndicatorCalculator {
 		average = sum.divide(BigDecimal.valueOf(days), 2, RoundingMode.HALF_UP);
 		
 		return average.floatValue();
+	}
+	
+	
+	/**
+	 * Returns the distance of the current Quotation to the 52 week high.
+	 * 
+	 * @param quotation The current Quotation for which the distance to the 52 week high is calculated.
+	 * @param quotations A list of quotations that build the trading history
+	 * @return The distance of the quotation to the 52 week high.
+	 */
+	public float getDistanceTo52WeekHigh(final Quotation quotation, final List<Quotation> quotations) {
+		Instrument instrument = new Instrument();
+		Quotation tempQuotation;
+		List<Quotation> sortedQuotations;
+		int indexOfQuotation = 0;
+		BigDecimal highPrice52Weeks = new BigDecimal(0), percentDistance = new BigDecimal(0);
+		
+		//Sort the quotations by date for determination of last 252 quotes.
+		instrument.setQuotations(quotations);
+		sortedQuotations = instrument.getQuotationsSortedByDate();
+		
+		//Get the starting point of 52 week high calculation.
+		indexOfQuotation = sortedQuotations.indexOf(quotation);
+		
+		//Get the highest price of the last 52 weeks.
+		//If the trading history does not span a whole year, take all data available.
+		for(int i = indexOfQuotation; i < (252 + indexOfQuotation) && i < sortedQuotations.size(); i++) {
+			tempQuotation = sortedQuotations.get(i);
+			
+			if(tempQuotation.getPrice().compareTo(highPrice52Weeks) == 1)
+				highPrice52Weeks = tempQuotation.getPrice();
+		}
+		
+		//Calculate the percent distance based on the quotation price and the 52 week high.
+		percentDistance = highPrice52Weeks.divide(quotation.getPrice(), 4, RoundingMode.HALF_UP);
+		percentDistance = percentDistance.subtract(BigDecimal.valueOf(1));
+		percentDistance = percentDistance.multiply(BigDecimal.valueOf(100));
+		
+		return percentDistance.floatValue();
 	}
 	
 	
