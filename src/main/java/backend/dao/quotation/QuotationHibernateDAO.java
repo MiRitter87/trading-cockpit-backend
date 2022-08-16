@@ -227,4 +227,41 @@ public class QuotationHibernateDAO implements QuotationDAO {
 		
 		return quotations;
 	}
+
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Quotation> getQuotationsMinerviniTrendTemplate() throws Exception {
+		EntityManager entityManager = this.sessionFactory.createEntityManager();
+		List<Quotation> quotations;
+		Query query;
+
+		try {
+			entityManager.getTransaction().begin();
+			
+			//Find all quotations that have an Indicator defined and where the Quotation is the most recent one of an Instrument.
+			//Also fetch the Instrument data of those records.
+			//Apply the criteria of the Minervini Trend Template to the quotations and indicators.
+			query = entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i JOIN q.indicator r WHERE "
+					+ "date IN (SELECT max(date) AS date FROM Quotation q) "
+					+ "AND q.indicator IS NOT NULL "
+					+ "AND q.price > r.sma50 "
+					+ "AND r.sma50 > r.sma150 "
+					+ "AND r.sma150 > r.sma200");
+			quotations = query.getResultList();
+			
+			entityManager.getTransaction().commit();			
+		}
+		catch(Exception exception) {
+			//If something breaks a rollback is necessary!?
+			if(entityManager.getTransaction().isActive())
+				entityManager.getTransaction().rollback();
+			throw exception;
+		}
+		finally {
+			entityManager.close();			
+		}
+		
+		return quotations;
+	}
 }

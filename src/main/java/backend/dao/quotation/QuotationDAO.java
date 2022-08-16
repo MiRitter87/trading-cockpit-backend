@@ -65,4 +65,14 @@ public interface QuotationDAO {
 	 * @throws Exception Quotation determination failed.
 	 */
 	List<Quotation> getRecentQuotations() throws Exception;
+	
+	
+	/**
+	 * Gets the most recent Quotation of each Instrument that matches the Minervini Trend Template.
+	 * Only those quotations are provided that have an Indicator associated with them.
+	 * 
+	 * @return The most recent Quotation of each Instrument that matches the Minervini Trend Template.
+	 * @throws Exception Quotation determination failed.
+	 */
+	List<Quotation> getQuotationsMinerviniTrendTemplate() throws Exception;
 }

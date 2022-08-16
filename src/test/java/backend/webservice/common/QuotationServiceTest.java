@@ -29,6 +29,7 @@ import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
 import backend.model.webservice.WebServiceResult;
 import backend.tools.WebServiceTools;
+import backend.webservice.ScanTemplate;
 
 /**
  * Tests the QuotationService.
@@ -289,7 +290,10 @@ public class QuotationServiceTest {
 		List<Quotation> quotations = new ArrayList<>();
 		
 		this.appleQuotation2Indicator = new Indicator();
-		this.appleQuotation2Indicator.setStage(3);
+		this.appleQuotation2Indicator.setStage(2);
+		this.appleQuotation2Indicator.setSma200(60);
+		this.appleQuotation2Indicator.setSma150((float) 63.45);
+		this.appleQuotation2Indicator.setSma50((float) 69.24);
 		this.appleQuotation2.setIndicator(this.appleQuotation2Indicator);
 		
 		quotations.add(this.appleQuotation2);
@@ -307,18 +311,54 @@ public class QuotationServiceTest {
 	 * Tests the retrieval of the most recent quotation with its corresponding Indicator and Instrument.
 	 * Only those quotations should be returned that have an Indicator associated with them.
 	 */
-	public void testGetQuotations() {
+	public void testGetRecentQuotations() {
 		QuotationArray quotations;
-		WebServiceResult getRecentQuotationsResult;
+		WebServiceResult getQuotationsResult;
 		Quotation quotation;
 		
 		//Get the quotations.
 		QuotationService service = new QuotationService();
-		getRecentQuotationsResult = service.getQuotations();
-		quotations = (QuotationArray) getRecentQuotationsResult.getData();
+		getQuotationsResult = service.getQuotations(null);
+		quotations = (QuotationArray) getQuotationsResult.getData();
 		
 		//Assure no error message exists
-		assertTrue(WebServiceTools.resultContainsErrorMessage(getRecentQuotationsResult) == false);
+		assertTrue(WebServiceTools.resultContainsErrorMessage(getQuotationsResult) == false);
+		
+		//Check if one Quotation is returned.
+		assertEquals(1, quotations.getQuotations().size());
+		
+		//Check if the correct Quotation is returned.
+		quotation = quotations.getQuotations().get(0);
+		assertEquals(this.appleQuotation2.getId(), quotation.getId());
+		assertEquals(this.appleQuotation2.getDate().getTime(), quotation.getDate().getTime());
+		assertTrue(this.appleQuotation2.getPrice().compareTo(quotation.getPrice()) == 0);
+		assertEquals(this.appleQuotation2.getCurrency(), quotation.getCurrency());
+		assertEquals(this.appleQuotation2.getVolume(), quotation.getVolume());
+		
+		//Check if Indicator and Instrument have been initialized and contain data.
+		assertEquals(this.appleQuotation2.getInstrument().getId(), quotation.getInstrument().getId());
+		assertEquals(this.appleQuotation2.getIndicator().getId(), quotation.getIndicator().getId());
+		assertEquals(this.appleQuotation2.getIndicator().getStage(), quotation.getIndicator().getStage());
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of the most recent quotations that match the Minervini Trend Template.
+	 * Only those quotations should be returned that have an Indicator associated with them.
+	 */
+	public void testGetQuotationsMinerviniTrendTemplate() {
+		QuotationArray quotations;
+		WebServiceResult getQuotationsResult;
+		Quotation quotation;
+		
+		//Get the quotations.
+		QuotationService service = new QuotationService();
+		getQuotationsResult = service.getQuotations(ScanTemplate.MINERVINI_TREND_TEMPLATE);
+		quotations = (QuotationArray) getQuotationsResult.getData();
+		
+		//Assure no error message exists
+		assertTrue(WebServiceTools.resultContainsErrorMessage(getQuotationsResult) == false);
 		
 		//Check if one Quotation is returned.
 		assertEquals(1, quotations.getQuotations().size());
