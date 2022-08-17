@@ -35,6 +35,12 @@ public class Indicator {
 	private float distanceTo52WeekHigh;
 	
 	/**
+	 * The distance in percent to the 52 week low of an instruments trading history.
+	 */
+	@Column(name="DISTANCE_TO_52_WEEK_LOW")
+	private float distanceTo52WeekLow;
+	
+	/**
 	 * The Bollinger Band Width (20,2)
 	 */
 	@Column(name="BOLLINGER_BAND_WIDTH")
@@ -124,6 +130,22 @@ public class Indicator {
 	 */
 	public void setDistanceTo52WeekHigh(float distanceTo52WeekHigh) {
 		this.distanceTo52WeekHigh = distanceTo52WeekHigh;
+	}
+
+
+	/**
+	 * @return the distanceTo52WeekLow
+	 */
+	public float getDistanceTo52WeekLow() {
+		return distanceTo52WeekLow;
+	}
+
+
+	/**
+	 * @param distanceTo52WeekLow the distanceTo52WeekLow to set
+	 */
+	public void setDistanceTo52WeekLow(float distanceTo52WeekLow) {
+		this.distanceTo52WeekLow = distanceTo52WeekLow;
 	}
 
 
@@ -225,8 +247,8 @@ public class Indicator {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(bollingerBandWidth, distanceTo52WeekHigh, id, rsNumber, rsPercentSum, sma150, sma200, sma50,
-				stage);
+		return Objects.hash(bollingerBandWidth, distanceTo52WeekHigh, distanceTo52WeekLow, rsNumber, rsPercentSum, 
+				sma150, sma200, sma50, stage);
 	}
 
 
@@ -241,6 +263,7 @@ public class Indicator {
 		Indicator other = (Indicator) obj;
 		return Float.floatToIntBits(bollingerBandWidth) == Float.floatToIntBits(other.bollingerBandWidth)
 				&& Float.floatToIntBits(distanceTo52WeekHigh) == Float.floatToIntBits(other.distanceTo52WeekHigh)
+				&& Float.floatToIntBits(distanceTo52WeekLow) == Float.floatToIntBits(other.distanceTo52WeekLow)
 				&& Objects.equals(id, other.id) && rsNumber == other.rsNumber
 				&& Float.floatToIntBits(rsPercentSum) == Float.floatToIntBits(other.rsPercentSum)
 				&& Float.floatToIntBits(sma150) == Float.floatToIntBits(other.sma150)

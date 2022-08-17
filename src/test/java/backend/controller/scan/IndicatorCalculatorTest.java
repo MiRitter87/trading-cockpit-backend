@@ -272,4 +272,18 @@ public class IndicatorCalculatorTest {
 		
 		assertEquals(expectedDistanceTo52WeekHigh, actualDistanceTo52WeekHigh);
 	}
+	
+	
+	@Test
+	/**
+	 * Tests the calculation of the distance to the 52 week low.
+	 */
+	public void testGetDistanceTo52WeekLow() {
+		List<Quotation> sortedQuotations = this.dmlStock.getQuotationsSortedByDate();
+		float actualDistanceTo52WeekLow, expectedDistanceTo52WeekLow = (float) 10.57;
+		
+		actualDistanceTo52WeekLow = this.indicatorCalculator.getDistanceTo52WeekLow(sortedQuotations.get(0), sortedQuotations);
+		
+		assertEquals(expectedDistanceTo52WeekLow, actualDistanceTo52WeekLow);
+	}
 }

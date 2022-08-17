@@ -122,6 +122,45 @@ public class IndicatorCalculator {
 	
 	
 	/**
+	 * Returns the distance of the current Quotation to the 52 week low.
+	 * 
+	 * @param quotation The current Quotation for which the distance to the 52 week low is calculated.
+	 * @param quotations A list of quotations that build the trading history
+	 * @return The distance of the quotation to the 52 week low.
+	 */
+	public float getDistanceTo52WeekLow(final Quotation quotation, final List<Quotation> quotations) {
+		Instrument instrument = new Instrument();
+		Quotation tempQuotation;
+		List<Quotation> sortedQuotations;
+		int indexOfQuotation = 0;
+		BigDecimal lowPrice52Weeks = quotation.getPrice(), percentDistance = new BigDecimal(0);
+		
+		//Sort the quotations by date for determination of last 252 quotes.
+		instrument.setQuotations(quotations);
+		sortedQuotations = instrument.getQuotationsSortedByDate();
+		
+		//Get the starting point of 52 week low calculation.
+		indexOfQuotation = sortedQuotations.indexOf(quotation);
+		
+		//Get the lowest price of the last 52 weeks.
+		//If the trading history does not span a whole year, take all data available.
+		for(int i = indexOfQuotation; i < (252 + indexOfQuotation) && i < sortedQuotations.size(); i++) {
+			tempQuotation = sortedQuotations.get(i);
+			
+			if(tempQuotation.getPrice().compareTo(lowPrice52Weeks) == -1)
+				lowPrice52Weeks = tempQuotation.getPrice();
+		}
+		
+		//Calculate the percent distance based on the quotation price and the 52 week low.
+		percentDistance = quotation.getPrice().divide(lowPrice52Weeks, 4, RoundingMode.HALF_UP);
+		percentDistance = percentDistance.subtract(BigDecimal.valueOf(1));
+		percentDistance = percentDistance.multiply(BigDecimal.valueOf(100));
+		
+		return percentDistance.floatValue();
+	}
+	
+	
+	/**
 	 * Calculates the RS number for each Quotation.
 	 * 
 	 * @param quotations The quotations on which the calculation of the RS number is based.
