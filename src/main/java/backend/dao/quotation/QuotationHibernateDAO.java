@@ -247,7 +247,10 @@ public class QuotationHibernateDAO implements QuotationDAO {
 					+ "AND q.indicator IS NOT NULL "
 					+ "AND q.price > r.sma50 "
 					+ "AND r.sma50 > r.sma150 "
-					+ "AND r.sma150 > r.sma200");
+					+ "AND r.sma150 > r.sma200 "
+					+ "AND r.distanceTo52WeekLow >= 30 "
+					+ "AND r.distanceTo52WeekHigh <= 25 "
+					+ "AND r.rsNumber >= 70");
 			quotations = query.getResultList();
 			
 			entityManager.getTransaction().commit();			

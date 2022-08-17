@@ -294,6 +294,9 @@ public class QuotationServiceTest {
 		this.appleQuotation2Indicator.setSma200(60);
 		this.appleQuotation2Indicator.setSma150((float) 63.45);
 		this.appleQuotation2Indicator.setSma50((float) 69.24);
+		this.appleQuotation2Indicator.setRsNumber(71);
+		this.appleQuotation2Indicator.setDistanceTo52WeekHigh((float) 21.4);
+		this.appleQuotation2Indicator.setDistanceTo52WeekLow((float) 78.81);
 		this.appleQuotation2.setIndicator(this.appleQuotation2Indicator);
 		
 		quotations.add(this.appleQuotation2);
