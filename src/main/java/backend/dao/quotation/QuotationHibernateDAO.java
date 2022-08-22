@@ -202,15 +202,23 @@ public class QuotationHibernateDAO implements QuotationDAO {
 		EntityManager entityManager = this.sessionFactory.createEntityManager();
 		List<Quotation> quotations;
 		Query query;
-
+		List<Object> quotationIdsWithMaxDate;
+		
 		try {
 			entityManager.getTransaction().begin();
 			
-			//Find all quotations that have an Indicator defined and where the Quotation is the most recent one of an Instrument.
-			//Also fetch the Instrument data of those records.
-			query = entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i WHERE "
-					+ "date IN (SELECT max(date) AS date FROM Quotation q) "
-					+ "AND q.indicator IS NOT NULL");
+			/*
+			 * The selection is split into two selects because JOINs with sub-queries are only possible in native SQL.
+			 * But the needed JOIN FETCH is not possible in native SQL.
+			 */
+			query = this.getQueryForQuotationIdsWithMaxDate(entityManager);
+			quotationIdsWithMaxDate = query.getResultList();
+			
+			//Now select final data using JOIN FETCH based on the Quotation IDs selected before.
+			query = entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i "
+					+ "WHERE quotation_id IN :quotationIds AND q.indicator IS NOT NULL");
+			
+			query.setParameter("quotationIds", quotationIdsWithMaxDate);
 			quotations = query.getResultList();
 			
 			entityManager.getTransaction().commit();			
@@ -235,15 +243,23 @@ public class QuotationHibernateDAO implements QuotationDAO {
 		EntityManager entityManager = this.sessionFactory.createEntityManager();
 		List<Quotation> quotations;
 		Query query;
+		List<Object> quotationIdsWithMaxDate;
 
 		try {
 			entityManager.getTransaction().begin();
+			
+			/*
+			 * The selection is split into two selects because JOINs with sub-queries are only possible in native SQL.
+			 * But the needed JOIN FETCH is not possible in native SQL.
+			 */
+			query = this.getQueryForQuotationIdsWithMaxDate(entityManager);
+			quotationIdsWithMaxDate = query.getResultList();
 			
 			//Find all quotations that have an Indicator defined and where the Quotation is the most recent one of an Instrument.
 			//Also fetch the Instrument data of those records.
 			//Apply the criteria of the Minervini Trend Template to the quotations and indicators.
 			query = entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i JOIN q.indicator r WHERE "
-					+ "date IN (SELECT max(date) AS date FROM Quotation q) "
+					+ "quotation_id IN :quotationIds "
 					+ "AND q.indicator IS NOT NULL "
 					+ "AND q.price > r.sma50 "
 					+ "AND r.sma50 > r.sma150 "
@@ -251,6 +267,8 @@ public class QuotationHibernateDAO implements QuotationDAO {
 					+ "AND r.distanceTo52WeekLow >= 30 "
 					+ "AND r.distanceTo52WeekHigh <= 25 "
 					+ "AND r.rsNumber >= 70");
+			
+			query.setParameter("quotationIds", quotationIdsWithMaxDate);
 			quotations = query.getResultList();
 			
 			entityManager.getTransaction().commit();			
@@ -266,5 +284,20 @@ public class QuotationHibernateDAO implements QuotationDAO {
 		}
 		
 		return quotations;
+	}
+	
+	
+	/**
+	 * Provides a native Query that determines the IDs of the quotations with the newest date for each Instrument.
+	 * 
+	 * @param entityManager The EntityManager used for Query creation.
+	 * @return The Query.
+	 */
+	private Query getQueryForQuotationIdsWithMaxDate(final EntityManager entityManager) {
+		Query query = entityManager.createNativeQuery("SELECT quotation_id FROM Quotation q "
+				+ "INNER JOIN (SELECT max(date) AS maxdate, instrument_id FROM Quotation GROUP BY instrument_id) jointable "
+				+ "ON q.instrument_id = jointable.instrument_id AND q.date = jointable.maxdate");
+		
+		return query;
 	}
 }

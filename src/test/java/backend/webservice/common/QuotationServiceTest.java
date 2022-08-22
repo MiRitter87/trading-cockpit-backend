@@ -58,6 +58,11 @@ public class QuotationServiceTest {
 	private Instrument microsoftStock;
 	
 	/**
+	 * The stock of Ford.
+	 */
+	private Instrument fordStock;
+	
+	/**
 	 * A Quotation of the Apple stock.
 	 */
 	private Quotation appleQuotation1;
@@ -73,9 +78,19 @@ public class QuotationServiceTest {
 	private Quotation microsoftQuotation1;
 	
 	/**
+	 * A Quotation of the Ford stock.
+	 */
+	private Quotation fordQuotation1;
+	
+	/**
 	 * The Indicator the Apple stock Quotation 2.
 	 */
 	private Indicator appleQuotation2Indicator;
+	
+	/**
+	 * The Indicator of the Ford stock Quotation 1.
+	 */
+	private Indicator fordQuotation1Indicator;
 	
 	
 	@BeforeAll
@@ -128,10 +143,12 @@ public class QuotationServiceTest {
 	private void createDummyInstruments() {
 		this.appleStock = this.getAppleStock();
 		this.microsoftStock = this.getMicrosoftStock();
+		this.fordStock = this.getFordStock();
 		
 		try {
 			instrumentDAO.insertInstrument(this.appleStock);
 			instrumentDAO.insertInstrument(this.microsoftStock);
+			instrumentDAO.insertInstrument(this.fordStock);
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
@@ -143,6 +160,7 @@ public class QuotationServiceTest {
 	 */
 	private void deleteDummyInstruments() {
 		try {
+			instrumentDAO.deleteInstrument(this.fordStock);
 			instrumentDAO.deleteInstrument(this.microsoftStock);
 			instrumentDAO.deleteInstrument(this.appleStock);
 		} catch (Exception e) {
@@ -152,9 +170,9 @@ public class QuotationServiceTest {
 	
 	
 	/**
-	 * Gets the instrument of the Apple stock.
+	 * Gets the Instrument of the Apple stock.
 	 * 
-	 * @return The instrument of the Apple stock.
+	 * @return The Instrument of the Apple stock.
 	 */
 	private Instrument getAppleStock() {
 		Instrument instrument = new Instrument();
@@ -169,15 +187,31 @@ public class QuotationServiceTest {
 	
 	
 	/**
-	 * Gets the instrument of the Microsoft stock.
+	 * Gets the Instrument of the Microsoft stock.
 	 * 
-	 * @return The instrument of the Microsoft stock.
+	 * @return The Instrument of the Microsoft stock.
 	 */
 	private Instrument getMicrosoftStock() {
 		Instrument instrument = new Instrument();
 		
 		instrument.setSymbol("MSFT");
 		instrument.setName("Microsoft");
+		instrument.setStockExchange(StockExchange.NYSE);
+		instrument.setType(InstrumentType.STOCK);
+		
+		return instrument;
+	}
+	
+	/**
+	 * Gets the Instrument of the Ford stock.
+	 * 
+	 * @return The Instrument of the Ford stock.
+	 */
+	private Instrument getFordStock() {
+		Instrument instrument = new Instrument();
+		
+		instrument.setSymbol("F");
+		instrument.setName("Ford Motor Company");
 		instrument.setStockExchange(StockExchange.NYSE);
 		instrument.setType(InstrumentType.STOCK);
 		
@@ -194,10 +228,12 @@ public class QuotationServiceTest {
 		this.appleQuotation1 = this.getAppleQuotation1();
 		this.appleQuotation2 = this.getAppleQuotation2();
 		this.microsoftQuotation1 = this.getMicrosoftQuotation1();
+		this.fordQuotation1 = this.getFordQuotation1();
 		
 		quotations.add(this.appleQuotation1);
 		quotations.add(this.appleQuotation2);
 		quotations.add(this.microsoftQuotation1);
+		quotations.add(this.fordQuotation1);
 		
 		try {
 			quotationDAO.insertQuotations(quotations);
@@ -213,9 +249,10 @@ public class QuotationServiceTest {
 	private void deleteDummyQuotations() {
 		List<Quotation> quotations = new ArrayList<>();
 		
-		quotations.add(this.appleQuotation1);
-		quotations.add(this.appleQuotation2);
+		quotations.add(this.fordQuotation1);
 		quotations.add(this.microsoftQuotation1);
+		quotations.add(this.appleQuotation2);
+		quotations.add(this.appleQuotation1);
 		
 		try {
 			quotationDAO.deleteQuotations(quotations);
@@ -254,8 +291,13 @@ public class QuotationServiceTest {
 	 */
 	private Quotation getAppleQuotation2() {
 		Quotation quotation = new Quotation();
+		Calendar calendar = Calendar.getInstance();
 		
-		quotation.setDate(new Date());
+		calendar.setTime(new Date());
+		calendar.set(Calendar.HOUR_OF_DAY, 15);
+		calendar.set(Calendar.MINUTE, 30);
+		
+		quotation.setDate(calendar.getTime());
 		quotation.setPrice(BigDecimal.valueOf(77.52));
 		quotation.setCurrency(Currency.USD);
 		quotation.setVolume(12373654);
@@ -284,6 +326,29 @@ public class QuotationServiceTest {
 	
 	
 	/**
+	 * Gets the Quotation 1 of the Ford stock.
+	 * 
+	 * @return The Quotation 1 of the Ford stock.
+	 */
+	private Quotation getFordQuotation1() {
+		Quotation quotation = new Quotation();
+		Calendar calendar = Calendar.getInstance();
+		
+		calendar.setTime(new Date());
+		calendar.set(Calendar.HOUR_OF_DAY, 22);
+		calendar.set(Calendar.MINUTE, 0);
+		
+		quotation.setDate(calendar.getTime());
+		quotation.setPrice(BigDecimal.valueOf(15.88));
+		quotation.setCurrency(Currency.USD);
+		quotation.setVolume(48600000);
+		quotation.setInstrument(this.fordStock);
+		
+		return quotation;
+	}
+	
+	
+	/**
 	 * Initializes the database with dummy indicators.
 	 */
 	private void createDummyIndicators() {
@@ -299,7 +364,18 @@ public class QuotationServiceTest {
 		this.appleQuotation2Indicator.setDistanceTo52WeekLow((float) 78.81);
 		this.appleQuotation2.setIndicator(this.appleQuotation2Indicator);
 		
+		this.fordQuotation1Indicator = new Indicator();
+		this.fordQuotation1Indicator.setStage(3);
+		this.fordQuotation1Indicator.setSma200((float) 16.36);
+		this.fordQuotation1Indicator.setSma150((float) 15.08);
+		this.fordQuotation1Indicator.setSma50((float) 13.07);
+		this.fordQuotation1Indicator.setRsNumber(45);
+		this.fordQuotation1Indicator.setDistanceTo52WeekHigh((float) 41.41);
+		this.fordQuotation1Indicator.setDistanceTo52WeekLow((float) 48.81);
+		this.fordQuotation1.setIndicator(this.fordQuotation1Indicator);
+		
 		quotations.add(this.appleQuotation2);
+		quotations.add(this.fordQuotation1);
 		
 		try {
 			quotationDAO.updateQuotations(quotations);
@@ -317,7 +393,6 @@ public class QuotationServiceTest {
 	public void testGetRecentQuotations() {
 		QuotationArray quotations;
 		WebServiceResult getQuotationsResult;
-		Quotation quotation;
 		
 		//Get the quotations.
 		QuotationService service = new QuotationService();
@@ -327,21 +402,37 @@ public class QuotationServiceTest {
 		//Assure no error message exists
 		assertTrue(WebServiceTools.resultContainsErrorMessage(getQuotationsResult) == false);
 		
-		//Check if one Quotation is returned.
-		assertEquals(1, quotations.getQuotations().size());
+		//Check if two quotations are returned.
+		assertEquals(2, quotations.getQuotations().size());
 		
-		//Check if the correct Quotation is returned.
-		quotation = quotations.getQuotations().get(0);
-		assertEquals(this.appleQuotation2.getId(), quotation.getId());
-		assertEquals(this.appleQuotation2.getDate().getTime(), quotation.getDate().getTime());
-		assertTrue(this.appleQuotation2.getPrice().compareTo(quotation.getPrice()) == 0);
-		assertEquals(this.appleQuotation2.getCurrency(), quotation.getCurrency());
-		assertEquals(this.appleQuotation2.getVolume(), quotation.getVolume());
-		
-		//Check if Indicator and Instrument have been initialized and contain data.
-		assertEquals(this.appleQuotation2.getInstrument().getId(), quotation.getInstrument().getId());
-		assertEquals(this.appleQuotation2.getIndicator().getId(), quotation.getIndicator().getId());
-		assertEquals(this.appleQuotation2.getIndicator().getStage(), quotation.getIndicator().getStage());
+		//Check if the correct quotations are returned.
+		for(Quotation tempQuotation: quotations.getQuotations()) {
+			if(tempQuotation.getId().equals(appleQuotation2.getId())) {
+				assertEquals(this.appleQuotation2.getDate().getTime(), tempQuotation.getDate().getTime());
+				assertTrue(this.appleQuotation2.getPrice().compareTo(tempQuotation.getPrice()) == 0);
+				assertEquals(this.appleQuotation2.getCurrency(), tempQuotation.getCurrency());
+				assertEquals(this.appleQuotation2.getVolume(), tempQuotation.getVolume());
+				
+				//Check if Indicator and Instrument have been initialized and contain data.
+				assertEquals(this.appleQuotation2.getInstrument().getId(), tempQuotation.getInstrument().getId());
+				assertEquals(this.appleQuotation2.getIndicator().getId(), tempQuotation.getIndicator().getId());
+				assertEquals(this.appleQuotation2.getIndicator().getStage(), tempQuotation.getIndicator().getStage());		
+			}
+			else if(tempQuotation.getId().equals(this.fordQuotation1.getId())) {
+				assertEquals(this.fordQuotation1.getDate().getTime(), tempQuotation.getDate().getTime());
+				assertTrue(this.fordQuotation1.getPrice().compareTo(tempQuotation.getPrice()) == 0);
+				assertEquals(this.fordQuotation1.getCurrency(), tempQuotation.getCurrency());
+				assertEquals(this.fordQuotation1.getVolume(), tempQuotation.getVolume());
+				
+				//Check if Indicator and Instrument have been initialized and contain data.
+				assertEquals(this.fordQuotation1.getInstrument().getId(), tempQuotation.getInstrument().getId());
+				assertEquals(this.fordQuotation1.getIndicator().getId(), tempQuotation.getIndicator().getId());
+				assertEquals(this.fordQuotation1.getIndicator().getStage(), tempQuotation.getIndicator().getStage());	
+			}
+			else {
+				fail("An unrelated Quotation has been returned.");
+			}
+		}
 	}
 	
 	
