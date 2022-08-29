@@ -3,6 +3,7 @@ package backend.controller.scan;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -122,7 +123,7 @@ public class ScanThread extends Thread {
 		}
 		
 		this.updateRSNumbers();
-		this.setScanStatusFinished();
+		this.setScanToFinished();
 		logger.info("Finished execution of scan with ID: " +this.scan.getId());
 	}
 	
@@ -285,11 +286,12 @@ public class ScanThread extends Thread {
 	
 	
 	/**
-	 * Sets the status of the scan to 'FINISHED'.
+	 * Sets the status of the scan to 'FINISHED' and updates the date of the last scan.
 	 */
-	private void setScanStatusFinished() {
+	private void setScanToFinished() {
 		try {
-			this.scan.setStatus(ScanStatus.FINISHED);			
+			this.scan.setLastScan(new Date());
+			this.scan.setStatus(ScanStatus.FINISHED);		
 			this.scanDAO.updateScan(this.scan);
 		} catch (ObjectUnchangedException e) {
 			logger.error("The scan was executed although being already in status 'FINISHED'.", e);
