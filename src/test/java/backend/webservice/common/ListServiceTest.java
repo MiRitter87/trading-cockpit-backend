@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.ResourceBundle;
 
@@ -20,12 +21,15 @@ import org.junit.jupiter.api.Test;
 import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
 import backend.dao.list.ListDAO;
+import backend.dao.scan.ScanDAO;
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.list.List;
 import backend.model.list.ListArray;
 import backend.model.list.ListWS;
+import backend.model.scan.Scan;
+import backend.model.scan.ScanStatus;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
 import backend.tools.WebServiceTools;
@@ -43,14 +47,19 @@ public class ListServiceTest {
 	private ResourceBundle resources = ResourceBundle.getBundle("backend");	
 	
 	/**
-	 * DAO to access instrument data.
+	 * DAO to access Instrument data.
 	 */
 	private static InstrumentDAO instrumentDAO;
 	
 	/**
-	 * DAO to access list data.
+	 * DAO to access List data.
 	 */
 	private static ListDAO listDAO;	
+	
+	/**
+	 * DAO to access Scan data.
+	 */
+	private static ScanDAO scanDAO;
 	
 	/**
 	 * The stock of Microsoft.
@@ -63,14 +72,19 @@ public class ListServiceTest {
 	private Instrument amazonStock;
 	
 	/**
-	 * A list containing a single instrument.
+	 * A List containing a single instrument.
 	 */
 	private List singleInstrumentList;
 	
 	/**
-	 * A list containing multiple instruments.
+	 * A List containing multiple instruments.
 	 */
 	private List multiInstrumentList;
+	
+	/**
+	 * A Scan.
+	 */
+	private Scan scan;
 	
 	
 	@BeforeAll
@@ -80,6 +94,7 @@ public class ListServiceTest {
 	public static void setUpClass() {
 		instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
 		listDAO = DAOManager.getInstance().getListDAO();
+		scanDAO = DAOManager.getInstance().getScanDAO();
 	}
 	
 	
@@ -103,6 +118,7 @@ public class ListServiceTest {
 	private void setUp() {
 		this.createDummyInstruments();
 		this.createDummyLists();
+		this.createDummyScans();
 	}
 	
 	
@@ -111,6 +127,7 @@ public class ListServiceTest {
 	 * Tasks to be performed after each test has been run.
 	 */
 	private void tearDown() {
+		this.deleteDummyScans();
 		this.deleteDummyLists();
 		this.deleteDummyInstruments();
 	}
@@ -168,6 +185,32 @@ public class ListServiceTest {
 		try {
 			listDAO.deleteList(this.multiInstrumentList);
 			listDAO.deleteList(this.singleInstrumentList);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	/**
+	 * Initializes the database with dummy scans.
+	 */
+	private void createDummyScans() {
+		this.scan = this.getScan();
+		
+		try {
+			scanDAO.insertScan(this.scan);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	/**
+	 * Deletes the dummy scans from the database.
+	 */
+	private void deleteDummyScans() {
+		try {
+			scanDAO.deleteScan(this.scan);
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
@@ -238,6 +281,24 @@ public class ListServiceTest {
 		list.addInstrument(this.microsoftStock);
 		
 		return list;
+	}
+	
+	
+	/**
+	 * Gets a Scan.
+	 * 
+	 * @return The Scan.
+	 */
+	private Scan getScan() {
+		Scan scan = new Scan();
+		
+		scan.setName("Dummy Scan");
+		scan.setDescription("Some Description");
+		scan.setStatus(ScanStatus.FINISHED);
+		scan.setLastScan(new Date());
+		scan.addList(this.multiInstrumentList);
+		
+		return scan;
 	}
 	
 	
@@ -459,6 +520,30 @@ public class ListServiceTest {
 		
 		//Verify the expected error message.
 		expectedErrorMessage = MessageFormat.format(this.resources.getString("list.notFound"), unknownListId);
+		actualErrorMessage = deleteListResult.getMessages().get(0).getText();
+		assertEquals(expectedErrorMessage, actualErrorMessage);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests deletion of a List that is used by a Scan.
+	 */
+	public void testDeleteListUsedInScan() {
+		WebServiceResult deleteListResult;
+		String expectedErrorMessage, actualErrorMessage;
+		
+		//Delete the List.
+		ListService service = new ListService();
+		deleteListResult = service.deleteList(this.multiInstrumentList.getId());
+		
+		//There should be a return message of type E.
+		assertTrue(deleteListResult.getMessages().size() == 1);
+		assertTrue(deleteListResult.getMessages().get(0).getType() == WebServiceMessageType.E);
+		
+		//Verify the expected error message.
+		expectedErrorMessage = MessageFormat.format(this.resources.getString("list.deleteUsedInScan"), 
+				this.multiInstrumentList.getId(), this.scan.getId());
 		actualErrorMessage = deleteListResult.getMessages().get(0).getText();
 		assertEquals(expectedErrorMessage, actualErrorMessage);
 	}

@@ -10,6 +10,7 @@ import backend.dao.DAOManager;
 import backend.dao.ObjectUnchangedException;
 import backend.dao.instrument.InstrumentDAO;
 import backend.dao.list.ListDAO;
+import backend.model.ObjectInUseException;
 import backend.model.instrument.Instrument;
 import backend.model.list.List;
 import backend.model.list.ListArray;
@@ -136,6 +137,10 @@ public class ListService {
 				deleteListResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
 						MessageFormat.format(this.resources.getString("list.notFound"), id)));
 			}
+		}
+		catch(ObjectInUseException objectInUseException) {
+			deleteListResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
+					MessageFormat.format(this.resources.getString("list.deleteUsedInScan"), id, objectInUseException.getUsedById())));
 		}
 		catch (Exception e) {
 			deleteListResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,

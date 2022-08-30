@@ -6,13 +6,16 @@ import java.util.Map;
 import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 import backend.dao.ObjectUnchangedException;
+import backend.model.ObjectInUseException;
 import backend.model.list.List;
+import backend.model.scan.Scan;
 
 /**
  * Provides access to list database persistence using Hibernate.
@@ -59,8 +62,10 @@ public class ListHibernateDAO implements ListDAO {
 
 	
 	@Override
-	public void deleteList(List list) throws Exception {
+	public void deleteList(List list) throws ObjectInUseException, Exception {
 		EntityManager entityManager = this.sessionFactory.createEntityManager();
+		
+		this.checkListInUse(list, entityManager);
 		
 		//In order to successfully delete an entity, it first has to be fetched from the database.
 		List deleteList = entityManager.find(List.class, list.getId());
@@ -165,5 +170,36 @@ public class ListHibernateDAO implements ListDAO {
 		
 		if(databaseList.equals(list))
 			throw new ObjectUnchangedException();
+	}
+	
+	
+	/**
+	 * Checks if the List is referenced by another business object.
+	 * 
+	 * @param list The List which is checked.
+	 * @throws ObjectInUseException In case the List is in use.
+	 */
+	private void checkListInUse(final List list, final EntityManager entityManager) throws ObjectInUseException {	
+		this.checkListUsedInScan(list, entityManager);
+	}
+	
+	
+	/**
+	 * Checks if the List is referenced by any Scan.
+	 * 
+	 * @param list The List which is checked.
+	 * @throws ObjectInUseException In case the List is in use.
+	 */
+	@SuppressWarnings("unchecked")
+	private void checkListUsedInScan(final List list, final EntityManager entityManager) throws ObjectInUseException {
+		Query query = entityManager.createQuery("SELECT s FROM Scan s INNER JOIN s.lists list WHERE list.id = :listId");
+		java.util.List<Scan> scans;
+		
+		query.setParameter("listId", list.getId());
+		scans = query.getResultList();
+		
+		if(scans.size() > 0) {
+			throw new ObjectInUseException(list.getId(), scans.get(0).getId(), scans.get(0));
+		}
 	}
 }
