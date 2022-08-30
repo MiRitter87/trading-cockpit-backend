@@ -113,7 +113,7 @@ public class IndicatorCalculator {
 		}
 		
 		//Calculate the percent distance based on the quotation price and the 52 week high.
-		percentDistance = highPrice52Weeks.divide(quotation.getPrice(), 4, RoundingMode.HALF_UP);
+		percentDistance = quotation.getPrice().divide(highPrice52Weeks, 4, RoundingMode.HALF_UP);
 		percentDistance = percentDistance.subtract(BigDecimal.valueOf(1));
 		percentDistance = percentDistance.multiply(BigDecimal.valueOf(100));
 		

@@ -266,7 +266,7 @@ public class IndicatorCalculatorTest {
 	 */
 	public void testGetDistanceTo52WeekHigh() {
 		List<Quotation> sortedQuotations = this.dmlStock.getQuotationsSortedByDate();
-		float actualDistanceTo52WeekHigh, expectedDistanceTo52WeekHigh = (float) 92.65;
+		float actualDistanceTo52WeekHigh, expectedDistanceTo52WeekHigh = (float) -48.09;
 		
 		actualDistanceTo52WeekHigh = this.indicatorCalculator.getDistanceTo52WeekHigh(sortedQuotations.get(0), sortedQuotations);
 		
