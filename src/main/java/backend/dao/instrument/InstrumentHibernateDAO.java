@@ -16,6 +16,7 @@ import backend.dao.ObjectUnchangedException;
 import backend.model.ObjectInUseException;
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
+import backend.model.instrument.Quotation;
 
 /**
  * Provides access to Instrument database persistence using Hibernate.
@@ -68,7 +69,7 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 	public void deleteInstrument(Instrument instrument) throws ObjectInUseException, Exception {
 		EntityManager entityManager = this.sessionFactory.createEntityManager();
 		
-		this.checkQuotationsExist(entityManager, instrument);
+		this.checkInstrumentInUse(instrument, entityManager);
 		
 		//In order to successfully delete an entity, it first has to be fetched from the database.
 		Instrument deleteInstrument = entityManager.find(Instrument.class, instrument.getId());
@@ -200,22 +201,54 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 	
 	
 	/**
-	 * Checks if the given Instrument has any quotation referenced.
+	 * Checks if the Instrument is referenced by another business object.
+	 * 
+	 * @param instrument The instrument which is checked.
+	 * @throws ObjectInUseException In case the Instrument is in use.
+	 */
+	private void checkInstrumentInUse(final Instrument instrument, final EntityManager entityManager) throws ObjectInUseException {	
+		this.checkQuotationsExist(instrument, entityManager);
+		this.checkInstrumentUsedInList(instrument, entityManager);
+	}
+	
+	
+	/**
+	 * Checks if the given Instrument has any Quotation referenced.
 	 * 
 	 * @param entityManager The EntityManager used to check for existing quotations.
 	 * @param instrument The Instrument whose quotations are checked.
 	 * @throws ObjectInUseException In case the Instrument has quotations referenced.
 	 */
 	@SuppressWarnings("unchecked")
-	private void checkQuotationsExist(final EntityManager entityManager, final Instrument instrument) throws ObjectInUseException {
-		Query query = entityManager.createQuery("SELECT id FROM Quotation q WHERE INSTRUMENT_ID = :instrumentId");
-		List<Integer> quotations;
+	private void checkQuotationsExist(final Instrument instrument, final EntityManager entityManager) throws ObjectInUseException {
+		Query query = entityManager.createQuery("SELECT q FROM Quotation q WHERE INSTRUMENT_ID = :instrumentId");
+		List<Quotation> quotations;
 		
 		query.setParameter("instrumentId", instrument.getId());
 		quotations = query.getResultList();
 		
 		if(quotations.size() > 0) {
-			throw new ObjectInUseException(quotations.get(0), instrument.getId(), instrument);
+			throw new ObjectInUseException(instrument.getId(), quotations.get(0).getId(), quotations.get(0));
+		}
+	}
+	
+	
+	/**
+	 * Checks if the Instrument is referenced by any List.
+	 * 
+	 * @param instrument The Instrument which is checked.
+	 * @throws ObjectInUseException In case the Instrument is in use.
+	 */
+	@SuppressWarnings("unchecked")
+	private void checkInstrumentUsedInList(final Instrument instrument, final EntityManager entityManager) throws ObjectInUseException {
+		Query query = entityManager.createQuery("SELECT l FROM List l INNER JOIN l.instruments instrument WHERE instrument.id = :instrumentId");
+		List<backend.model.list.List> lists;
+		
+		query.setParameter("instrumentId", instrument.getId());
+		lists = query.getResultList();
+		
+		if(lists.size() > 0) {
+			throw new ObjectInUseException(instrument.getId(), lists.get(0).getId(), lists.get(0));
 		}
 	}
 	

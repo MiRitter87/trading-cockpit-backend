@@ -13,6 +13,7 @@ import backend.dao.ObjectUnchangedException;
 import backend.dao.instrument.DuplicateInstrumentException;
 import backend.dao.instrument.InstrumentDAO;
 import backend.dao.quotation.QuotationDAO;
+import backend.model.ObjectInUseException;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentArray;
 import backend.model.instrument.Quotation;
@@ -180,7 +181,11 @@ public class InstrumentService {
 						MessageFormat.format(this.resources.getString("instrument.notFound"), id)));
 			}
 		}
-		catch (Exception e) {
+		catch(ObjectInUseException objectInUseException) {
+			deleteInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
+					MessageFormat.format(this.resources.getString("instrument.deleteUsedInList"), id, objectInUseException.getUsedById())));
+		}
+		catch(Exception e) {
 			deleteInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
 					MessageFormat.format(this.resources.getString("instrument.deleteError"), id)));
 			

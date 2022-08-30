@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 
 import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
+import backend.dao.list.ListDAO;
 import backend.dao.quotation.QuotationDAO;
 import backend.model.Currency;
 import backend.model.StockExchange;
@@ -56,6 +57,11 @@ public class InstrumentServiceTest {
 	private static QuotationDAO quotationDAO;
 	
 	/**
+	 * DAO to access List data.
+	 */
+	private static ListDAO listDAO;
+	
+	/**
 	 * The stock of Apple.
 	 */
 	private Instrument appleStock;
@@ -70,6 +76,11 @@ public class InstrumentServiceTest {
 	 */
 	private Quotation appleQuotation1;
 	
+	/**
+	 * A List of instruments.
+	 */
+	private backend.model.list.List list;
+	
 	
 	@BeforeAll
 	/**
@@ -78,6 +89,7 @@ public class InstrumentServiceTest {
 	public static void setUpClass() {
 		instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
 		quotationDAO = DAOManager.getInstance().getQuotationDAO();
+		listDAO = DAOManager.getInstance().getListDAO();
 	}
 	
 	
@@ -101,6 +113,7 @@ public class InstrumentServiceTest {
 	private void setUp() {
 		this.createDummyInstruments();
 		this.createDummyQuotations();
+		this.createDummyLists();
 	}
 	
 	
@@ -109,6 +122,7 @@ public class InstrumentServiceTest {
 	 * Tasks to be performed after each test has been run.
 	 */
 	private void tearDown() {
+		this.deleteDummyLists();
 		this.deleteDummyQuotations();
 		this.deleteDummyInstruments();
 	}
@@ -224,6 +238,48 @@ public class InstrumentServiceTest {
 		
 		return quotation;
 	}
+	
+	
+	/**
+	 * Initializes the database with dummy lists.
+	 */
+	private void createDummyLists() {
+		this.list = this.getList();
+		
+		try {
+			listDAO.insertList(this.list);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	/**
+	 * Deletes the dummy lists from the database.
+	 */
+	private void deleteDummyLists() {
+		try {
+			listDAO.deleteList(this.list);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	/**
+	 * Gets the List.
+	 * 
+	 * @return The List.
+	 */
+	private backend.model.list.List getList() {
+		backend.model.list.List list = new backend.model.list.List();
+		
+		list.setName("Dummy List");
+		list.setDescription("Some Description");
+		list.addInstrument(this.microsoftStock);
+		
+		return list;
+	}	
 	
 	
 	@Test
@@ -388,6 +444,30 @@ public class InstrumentServiceTest {
 		
 		//Verify the expected error message.
 		expectedErrorMessage = MessageFormat.format(this.resources.getString("instrument.notFound"), unknownInstrumentId);
+		actualErrorMessage = deleteInstrumentResult.getMessages().get(0).getText();
+		assertEquals(expectedErrorMessage, actualErrorMessage);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests deletion of an Instrument that is used in a List.
+	 */
+	public void testDeleteInstrumentUsedInList() {
+		WebServiceResult deleteInstrumentResult;
+		String expectedErrorMessage, actualErrorMessage;
+		
+		//Delete the instrument.
+		InstrumentService service = new InstrumentService();
+		deleteInstrumentResult = service.deleteInstrument(this.microsoftStock.getId());
+		
+		//There should be a return message of type E.
+		assertTrue(deleteInstrumentResult.getMessages().size() == 1);
+		assertTrue(deleteInstrumentResult.getMessages().get(0).getType() == WebServiceMessageType.E);
+		
+		//Verify the expected error message.
+		expectedErrorMessage = MessageFormat.format(this.resources.getString("instrument.deleteUsedInList"), 
+				this.microsoftStock.getId(), this.list.getId());
 		actualErrorMessage = deleteInstrumentResult.getMessages().get(0).getText();
 		assertEquals(expectedErrorMessage, actualErrorMessage);
 	}
