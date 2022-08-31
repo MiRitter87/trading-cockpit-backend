@@ -11,13 +11,13 @@ import org.apache.logging.log4j.Logger;
 import backend.dao.DAOManager;
 import backend.dao.priceAlert.PriceAlertDAO;
 import backend.dao.priceAlert.PriceAlertOrderAttribute;
-import backend.dao.stockQuote.StockQuoteDAO;
-import backend.dao.stockQuote.StockQuoteYahooDAO;
+import backend.dao.quotation.QuotationProviderDAO;
+import backend.dao.quotation.QuotationProviderYahooDAO;
+import backend.model.instrument.Quotation;
 import backend.model.priceAlert.ConfirmationStatus;
 import backend.model.priceAlert.PriceAlert;
 import backend.model.priceAlert.PriceAlertType;
 import backend.model.priceAlert.TriggerStatus;
-import backend.model.stockQuote.StockQuote;
 import okhttp3.OkHttpClient;
 
 /**
@@ -39,7 +39,7 @@ public class StockAlertThread extends Thread {
 	/**
 	 * DAO to access stock quotes.
 	 */
-	private StockQuoteDAO stockQuoteDAO;
+	private QuotationProviderDAO quotationProviderDAO;
 	
 	/**
 	 * DAO to access price alerts.
@@ -62,7 +62,7 @@ public class StockAlertThread extends Thread {
 		this.startTime = startTime;
 		this.endTime = endTime;
 		
-		this.stockQuoteDAO = new StockQuoteYahooDAO(new OkHttpClient());
+		this.quotationProviderDAO = new QuotationProviderYahooDAO(new OkHttpClient());
 		this.priceAlertDAO = DAOManager.getInstance().getPriceAlertDAO();
 	}
 	
@@ -72,7 +72,7 @@ public class StockAlertThread extends Thread {
 	 */
 	public void run() {
 		PriceAlert priceAlert = null;
-		StockQuote stockQuote;
+		Quotation quotation;
 		
 		if(this.isWeekend() || !this.isTimeIntervalActive())
 			return;
@@ -86,16 +86,16 @@ public class StockAlertThread extends Thread {
 		if(priceAlert == null)
 			return;
 			
-		//Get the quote of the stock defined in the price alert.
+		//Get the Quotation of the stock defined in the price alert.
 		try {
-			stockQuote = this.stockQuoteDAO.getStockQuote(priceAlert.getSymbol(), priceAlert.getStockExchange());
+			quotation = this.quotationProviderDAO.getCurrentQuotation(priceAlert.getSymbol(), priceAlert.getStockExchange());
 		} catch (Exception e) {
-			logger.error("Failed to determine stock quote for symbol: " +priceAlert.getSymbol(), e);
+			logger.error("Failed to determine quotation for symbol: " +priceAlert.getSymbol(), e);
 			return;
 		}
 			
 		try {
-			this.checkAndUpdatePriceAlert(priceAlert, stockQuote);
+			this.checkAndUpdatePriceAlert(priceAlert, quotation);
 		} catch (Exception e) {
 			logger.error("Failed to update price alert with ID: " +priceAlert.getId(), e);
 		}
@@ -158,14 +158,14 @@ public class StockAlertThread extends Thread {
 	 * Updates the price alert afterwards.
 	 * 
 	 * @param priceAlert The price alert.
-	 * @param stockQuote The stock quote.
+	 * @param quotation The Quotation.
 	 * @throws Exception In case the update failed.
 	 */
-	private void checkAndUpdatePriceAlert(PriceAlert priceAlert, final StockQuote stockQuote) throws Exception {
+	private void checkAndUpdatePriceAlert(PriceAlert priceAlert, final Quotation quotation) throws Exception {
 		//If the trigger price has been reached, set the trigger time of the price alert.
-		if(priceAlert.getAlertType() == PriceAlertType.GREATER_OR_EQUAL && stockQuote.getPrice().compareTo(priceAlert.getPrice()) >= 0)
+		if(priceAlert.getAlertType() == PriceAlertType.GREATER_OR_EQUAL && quotation.getPrice().compareTo(priceAlert.getPrice()) >= 0)
 			priceAlert.setTriggerTime(new Date());
-		else if(priceAlert.getAlertType() == PriceAlertType.LESS_OR_EQUAL && stockQuote.getPrice().compareTo(priceAlert.getPrice()) <= 0)
+		else if(priceAlert.getAlertType() == PriceAlertType.LESS_OR_EQUAL && quotation.getPrice().compareTo(priceAlert.getPrice()) <= 0)
 			priceAlert.setTriggerTime(new Date());
 		
 		priceAlert.setLastStockQuoteTime(new Date());
