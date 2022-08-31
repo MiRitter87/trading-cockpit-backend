@@ -21,4 +21,12 @@ public class QuotationProviderYahooDAOStub extends QuotationProviderYahooDAO {
 		
 		return this.convertJSONToQuotations(quotationHistoryJSON);
 	}
+	
+	
+	@Override
+	public Quotation getCurrentQuotation(final String symbol, final StockExchange stockExchange) throws Exception {
+		String currentQuotationJSON = Files.readString(Paths.get("src/test/resources/yahooTSEQuoteDML.json"));
+		
+		return this.convertJSONToQuotation(currentQuotationJSON);
+	}
 }

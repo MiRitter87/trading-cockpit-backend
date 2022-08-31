@@ -12,12 +12,12 @@ import backend.model.instrument.Quotation;
  */
 public interface QuotationProviderDAO {
 	/**
-	 * Provides a quotation with the most recent data of an instrument.
+	 * Provides a Quotation with the most recent data of an Instrument.
 	 * 
 	 * @param symbol The symbol.
 	 * @param stockExchange The stock exchange.
-	 * @return The most recent quotation of an instrument.
-	 * @throws Exception In case the quotation retrieval failed.
+	 * @return The most recent Quotation of an instrument.
+	 * @throws Exception In case the Quotation retrieval failed.
 	 */
 	Quotation getCurrentQuotation(final String symbol, final StockExchange stockExchange) throws Exception;
 	

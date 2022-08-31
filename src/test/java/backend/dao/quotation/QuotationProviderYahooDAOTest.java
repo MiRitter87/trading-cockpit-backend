@@ -86,6 +86,21 @@ public class QuotationProviderYahooDAOTest {
 	}
 	
 	
+	/**
+	 * Gets a Quotation as expected from the Yahoo service.
+	 * 
+	 * @return A Quotation.
+	 */
+	private Quotation getDenisonMinesQuotation() {
+		Quotation quotation = new Quotation();
+		
+		quotation.setPrice(BigDecimal.valueOf(1.88));
+		quotation.setCurrency(Currency.CAD);
+		
+		return quotation;
+	}
+	
+	
 	@Test
 	/**
 	 * Tests the retrieval of the query URL for historical quotations of a stock listed at the TSX.
@@ -105,9 +120,9 @@ public class QuotationProviderYahooDAOTest {
 	
 	@Test
 	/**
-	 * Tests the retrieval of the query URL for a stock listed at the TSXV.
+	 * Tests the retrieval of the query URL for historical quotations of a stock listed at the TSXV.
 	 */
-	public void testGetQueryUrlTSXV() {
+	public void testGetQueryUrlQuotationHistoryTSXV() {
 		final String symbol = "RCK";
 		final StockExchange stockExchange = StockExchange.TSXV;
 		final Integer years = 1;
@@ -122,9 +137,9 @@ public class QuotationProviderYahooDAOTest {
 	
 	@Test
 	/**
-	 * Tests the retrieval of the query URL for a stock listed at the NYSE.
+	 * Tests the retrieval of the query URL for historical quotations of a stock listed at the NYSE.
 	 */
-	public void testGetQueryUrlNYSE() {
+	public void testGetQueryUrlQuotationHistoryNYSE() {
 		final String symbol = "F";
 		final StockExchange stockExchange = StockExchange.NYSE;
 		final Integer years = 1;
@@ -141,7 +156,7 @@ public class QuotationProviderYahooDAOTest {
 	/**
 	 * Tests the retrieval of the quotation history of a stock traded at the TSX.
 	 */
-	public void testGetQuotationHistoryTSE() {
+	public void testGetQuotationHistoryTSX() {
 		List<Quotation> actualQuotationHistory, expectedQuotationHistory;
 		Quotation actualQuotation, expectedQuotation;
 		
@@ -173,6 +188,70 @@ public class QuotationProviderYahooDAOTest {
 			assertTrue(expectedQuotation.getPrice().compareTo(actualQuotation.getPrice()) == 0);
 			assertEquals(expectedQuotation.getCurrency(), actualQuotation.getCurrency());
 			assertEquals(expectedQuotation.getVolume(), actualQuotation.getVolume());
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of the query URL for the current quotation of a stock listed at the TSX.
+	 */
+	public void testGetQueryUrlCurrentQuotationTSX() {
+		final String symbol = "DML";
+		final StockExchange stockExchange = StockExchange.TSX;
+		final String expectedURL = "https://query1.finance.yahoo.com/v7/finance/quote?symbols=DML.TO";
+		String actualURL = "";
+		
+		actualURL = quotationProviderYahooDAO.getQueryUrlCurrentQuotation(symbol, stockExchange);
+		assertEquals(expectedURL, actualURL);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of the query URL for the current quotation of a stock listed at the TSXV.
+	 */
+	public void testGetQueryUrlCurrentQuotationTSXV() {
+		final String symbol = "RCK";
+		final StockExchange stockExchange = StockExchange.TSXV;
+		final String expectedURL = "https://query1.finance.yahoo.com/v7/finance/quote?symbols=RCK.V";
+		String actualURL = "";
+		
+		actualURL = quotationProviderYahooDAO.getQueryUrlCurrentQuotation(symbol, stockExchange);
+		assertEquals(expectedURL, actualURL);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of the query URL for the current quotation of a stock listed at the NYSE.
+	 */
+	public void testGetQueryUrlCurrentQuotationNYSE() {
+		final String symbol = "F";
+		final StockExchange stockExchange = StockExchange.NYSE;
+		final String expectedURL = "https://query1.finance.yahoo.com/v7/finance/quote?symbols=F";
+		String actualURL = "";
+		
+		actualURL = quotationProviderYahooDAO.getQueryUrlCurrentQuotation(symbol, stockExchange);
+		assertEquals(expectedURL, actualURL);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests getting current Quotation data from a stock listed at the TSE.
+	 */
+	public void testGetCurrentQuotationTSE() {
+		Quotation actualQuotation, expectedQuotation;
+		
+		try {
+			actualQuotation = quotationProviderYahooDAO.getCurrentQuotation("DML", StockExchange.TSX);
+			expectedQuotation = this.getDenisonMinesQuotation();
+			
+			assertTrue(expectedQuotation.getPrice().compareTo(actualQuotation.getPrice()) == 0);
+			assertEquals(expectedQuotation.getCurrency(), actualQuotation.getCurrency());
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}

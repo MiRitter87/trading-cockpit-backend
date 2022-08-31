@@ -43,6 +43,11 @@ public class QuotationProviderYahooDAO implements QuotationProviderDAO {
 			+ PLACEHOLDER_SYMBOL + "?range=" + PLACEHOLDER_YEARS + "y&interval=1d&indicators=quote&includeTimestamps=true";
 	
 	/**
+	 * URL to quote API of Yahoo finance: Current quotation.
+	 */
+	private static final String BASE_URL_CURRENT_QUOTATION = "https://query1.finance.yahoo.com/v7/finance/quote?symbols=";
+	
+	/**
 	 * The HTTP client used for data queries.
 	 */
 	private OkHttpClient httpClient;
@@ -68,8 +73,10 @@ public class QuotationProviderYahooDAO implements QuotationProviderDAO {
 
 	@Override
 	public Quotation getCurrentQuotation(String symbol, StockExchange stockExchange) throws Exception {
-		// TODO The functionality of the StockQuoteYahooDAO, method "getStockQuote" can be integrated into this method.
-		return null;
+		String jsonQuotation = this.getCurrentQuotationJSONFromYahoo(symbol, stockExchange);
+		Quotation quotation = this.convertJSONToQuotation(jsonQuotation);
+		
+		return quotation;
 	}
 
 	
@@ -157,6 +164,67 @@ public class QuotationProviderYahooDAO implements QuotationProviderDAO {
 		
 		return quotationHistory;
 	}
+	
+	
+	/**
+	 * Gets the current quotation data from Yahoo finance as JSON String.
+	 * 
+	 * @param symbol The symbol.
+	 * @param stockExchange The stock exchange.
+	 * @return The quotation data as JSON string.
+	 * @throws Exception Quotation data determination failed.
+	 */
+	protected String getCurrentQuotationJSONFromYahoo(final String symbol, final StockExchange stockExchange) throws Exception {
+		Request request = new Request.Builder()
+				.url(this.getQueryUrlCurrentQuotation(symbol, stockExchange))
+				.header("Connection", "close")
+				.build();
+		Response response;
+		String jsonResult;
+		
+		try {
+			response = this.httpClient.newCall(request).execute();
+			jsonResult = response.body().string();
+			response.close();
+		} catch (IOException e) {
+			throw new Exception(e);
+		}
+		
+		return jsonResult;
+	}
+	
+	
+	/**
+	 * Converts the quotation data from Yahoo provided as JSON String to a Quotation object.
+	 * 
+	 * @param quotationDataAsJSON The quotation data as JSON String.
+	 * @return The Quotation.
+	 * @throws Exception Quotation conversion failed.
+	 */
+	protected Quotation convertJSONToQuotation(final String quotationDataAsJSON) throws Exception {
+		Quotation quotation = new Quotation();
+		ObjectMapper mapper = new ObjectMapper();
+		Map<?, ?> map;
+		LinkedHashMap<?, ?> quoteResponse;
+		ArrayList<?> result;
+		LinkedHashMap<?, ?> resultAttributes;
+		
+		try {
+			map = mapper.readValue(quotationDataAsJSON, Map.class);
+			quoteResponse = (LinkedHashMap<?, ?>) map.get("quoteResponse");
+			result = (ArrayList<?>) quoteResponse.get("result");
+			resultAttributes = (LinkedHashMap<?, ?>) result.get(0);
+			
+			quotation.setPrice(this.getPrice((double) resultAttributes.get("regularMarketPrice")));
+			quotation.setCurrency(this.getCurrency((String) resultAttributes.get("financialCurrency")));
+		} catch (JsonMappingException e) {
+			throw new Exception(e);
+		} catch (JsonProcessingException e) {
+			throw new Exception(e);
+		}
+		
+		return quotation;
+	}
 
 	
 	/**
@@ -178,6 +246,23 @@ public class QuotationProviderYahooDAO implements QuotationProviderDAO {
 		queryUrl = queryUrl.replace(PLACEHOLDER_YEARS, years.toString());
 		
 		return queryUrl;
+	}
+	
+	
+	/**
+	 * Gets the query URL for the current quotation of the given symbol and stock exchange.
+	 * 
+	 * @param symbol The symbol to be queried.
+	 * @param stockExchange The stock exchange where the symbol is listed.
+	 * @return The query URL.
+	 */
+	protected String getQueryUrlCurrentQuotation(final String symbol, final StockExchange stockExchange) {
+		StringBuilder urlBuilder = new StringBuilder(BASE_URL_CURRENT_QUOTATION);
+		
+		urlBuilder.append(symbol);
+		urlBuilder.append(this.getExchangeForQueryURL(stockExchange));
+		
+		return urlBuilder.toString();
 	}
 	
 	
@@ -235,6 +320,17 @@ public class QuotationProviderYahooDAO implements QuotationProviderDAO {
 			default:
 				return null;
 		}
+	}
+	
+	
+	/**
+	 * Gets the price from the Yahoo finance API.
+	 * 
+	 * @param apiPrice The price as provided by Yahoo finance.
+	 * @return The price as used by the backend
+	 */
+	protected BigDecimal getPrice(double apiPrice) {
+		return BigDecimal.valueOf(apiPrice);
 	}
 	
 	
