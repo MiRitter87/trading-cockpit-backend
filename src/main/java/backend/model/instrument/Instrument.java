@@ -226,31 +226,27 @@ public class Instrument {
 	
 	
 	/**
-	 * Gets the quotations that are older than the date of the given Quotation but are still at the same day.
+	 * Gets the quotations that are older than the given date but are still at the same day.
 	 * 
-	 * @param quotation The Quotation for which older quotations of the same day are requested.
+	 * @param date The date for which older quotations of the same day are requested.
 	 * @return Older quotations of the same day.
 	 */
-	public List<Quotation> getOlderQuotationsOfSameDay(final Quotation quotation) {
+	public List<Quotation> getOlderQuotationsOfSameDay(final Date date) {
 		List<Quotation> quotationsSortedByDate = this.getQuotationsSortedByDate();
 		List<Quotation> olderQuotationsSameDay = new ArrayList<>();
-		Quotation tempQuotation;
-		int indexOfQuotation = quotationsSortedByDate.indexOf(quotation);
-		LocalDate quotationDate = quotation.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-		LocalDate tempQuotationDate;
+		LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		LocalDate tempQuotationLocalDate;
 		
-		if(indexOfQuotation == -1)
-			return olderQuotationsSameDay;
-		
-		for(int i = indexOfQuotation+1; i < quotationsSortedByDate.size(); i++) {
-			tempQuotation = quotationsSortedByDate.get(i);
-			tempQuotationDate = tempQuotation.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		for(Quotation tempQuotation:quotationsSortedByDate) {
+			tempQuotationLocalDate = tempQuotation.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 			
-			if(quotationDate.equals(tempQuotationDate)) {
-				olderQuotationsSameDay.add(tempQuotation);
+			if(localDate.equals(tempQuotationLocalDate)) {
+				if(tempQuotation.getDate().getTime() < date.getTime()) {
+					olderQuotationsSameDay.add(tempQuotation);					
+				}
 			}
 			else {
-				break;	//The quotations are sorted by date. Therefore all quotations coming next are not at the same day.
+				break;	//The quotations are sorted by date. Therefore all quotations coming afterwards are not at the same day.
 			}
 		}
 		

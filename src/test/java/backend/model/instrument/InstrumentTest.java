@@ -340,7 +340,7 @@ public class InstrumentTest {
 		List<Quotation> olderQuotationsSameDay;
 		Quotation olderQuotationOfSameDay;
 		
-		olderQuotationsSameDay = this.instrument.getOlderQuotationsOfSameDay(this.quotation2);
+		olderQuotationsSameDay = this.instrument.getOlderQuotationsOfSameDay(this.quotation2.getDate());
 		
 		assertEquals(1, olderQuotationsSameDay.size());
 		

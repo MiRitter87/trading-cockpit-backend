@@ -169,16 +169,16 @@ public class ScanThread extends Thread {
 		Quotation databaseQuotation;
 		java.util.List<Quotation> databaseQuotations = new ArrayList<>();
 		java.util.List<Quotation> newQuotations = new ArrayList<>();
+		Set<Quotation> obsoleteQuotations = new HashSet<>();
 		
 		try {
 			databaseQuotations.addAll(this.quotationDAO.getQuotationsOfInstrument(instrument.getId()));
 			instrument.setQuotations(databaseQuotations);
-			java.util.List<Quotation> wsQuotations = this.quotationProviderDAO.getQuotationHistory(instrument.getSymbol(), instrument.getStockExchange(), 1);
+			java.util.List<Quotation> wsQuotations = 
+					this.quotationProviderDAO.getQuotationHistory(instrument.getSymbol(), instrument.getStockExchange(), 1);
 			
 			for(Quotation wsQuotation:wsQuotations) {
-				//TODO Check if another Quotation for the same day but different time exists.
-				//Only keep the newest quotation for the day, delete older quotations of the day
-				//The goal is to have only the newest quotation for each day stored.
+				obsoleteQuotations.addAll(instrument.getOlderQuotationsOfSameDay(wsQuotation.getDate()));
 				databaseQuotation = instrument.getQuotationByDate(wsQuotation.getDate());
 				
 				if(databaseQuotation == null) {
@@ -187,9 +187,11 @@ public class ScanThread extends Thread {
 				}
 			}
 			
-			if(newQuotations.size() > 0) {
+			if(newQuotations.size() > 0) 
 				this.quotationDAO.insertQuotations(newQuotations);
-			}
+			
+			if(obsoleteQuotations.size() > 0)
+				this.quotationDAO.deleteQuotations(new ArrayList<>(obsoleteQuotations));
 		} catch (Exception e) {
 			logger.error("Failed to update quotations of instrument with ID " +instrument.getId(), e);
 		}
