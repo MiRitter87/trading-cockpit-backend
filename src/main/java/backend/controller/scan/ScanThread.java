@@ -176,6 +176,9 @@ public class ScanThread extends Thread {
 			java.util.List<Quotation> wsQuotations = this.quotationProviderDAO.getQuotationHistory(instrument.getSymbol(), instrument.getStockExchange(), 1);
 			
 			for(Quotation wsQuotation:wsQuotations) {
+				//TODO Check if another Quotation for the same day but different time exists.
+				//Only keep the newest quotation for the day, delete older quotations of the day
+				//The goal is to have only the newest quotation for each day stored.
 				databaseQuotation = instrument.getQuotationByDate(wsQuotation.getDate());
 				
 				if(databaseQuotation == null) {

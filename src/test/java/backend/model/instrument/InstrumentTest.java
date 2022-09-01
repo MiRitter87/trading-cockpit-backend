@@ -30,14 +30,19 @@ public class InstrumentTest {
 	private Instrument instrument;
 	
 	/**
-	 * The first quotation under test.
+	 * The first Quotation under test.
 	 */
 	private Quotation quotation1;
 	
 	/**
-	 * The second quotation under test.
+	 * The second Quotation under test.
 	 */
 	private Quotation quotation2;
+	
+	/**
+	 * The third Quotation under test.
+	 */
+	private Quotation quotation3;
 	
 	
 	@BeforeEach
@@ -48,18 +53,25 @@ public class InstrumentTest {
 		Calendar calendar = Calendar.getInstance();
 		
 		this.quotation1 = new Quotation();
-		calendar.set(2022, 07, 26);
+		calendar.set(2022, 07, 26, 15, 30, 0);
 		this.quotation1.setDate(calendar.getTime());
 		this.quotation1.setPrice(BigDecimal.valueOf(1.11));
 		this.quotation1.setCurrency(Currency.USD);
 		this.quotation1.setVolume(10000);
 		
 		this.quotation2 = new Quotation();
-		calendar.set(2022, 07, 27);
+		calendar.set(2022, 07, 27, 15, 30, 0);
 		this.quotation2.setDate(calendar.getTime());
 		this.quotation2.setPrice(BigDecimal.valueOf(1.12));
 		this.quotation2.setCurrency(Currency.USD);
 		this.quotation2.setVolume(13400);
+		
+		this.quotation3 = new Quotation();
+		calendar.set(2022, 07, 27, 14, 30, 0);
+		this.quotation3.setDate(calendar.getTime());
+		this.quotation3.setPrice(BigDecimal.valueOf(1.11));
+		this.quotation3.setCurrency(Currency.USD);
+		this.quotation3.setVolume(10110);
 		
 		this.instrument = new Instrument();
 		this.instrument.setId(Integer.valueOf(1));
@@ -69,6 +81,7 @@ public class InstrumentTest {
 		this.instrument.setName("Apple");
 		this.instrument.addQuotation(this.quotation1);
 		this.instrument.addQuotation(this.quotation2);
+		this.instrument.addQuotation(this.quotation3);
 	}
 	
 	
@@ -268,7 +281,7 @@ public class InstrumentTest {
 	public void testGetQuotationByDateExisting() {
 		Quotation quotation;
 		Calendar calendar = Calendar.getInstance();
-		calendar.set(2022, 07, 26);		//Date of quotation1.
+		calendar.set(2022, 07, 26, 15, 30, 0);		//Date of quotation1.
 		
 		quotation = this.instrument.getQuotationByDate(calendar.getTime());
 		
@@ -312,6 +325,26 @@ public class InstrumentTest {
 		assertEquals(this.quotation2.getDate().getTime(), quotation.getDate().getTime());
 		
 		quotation = sortedQuotations.get(1);
+		assertEquals(this.quotation3.getDate().getTime(), quotation.getDate().getTime());
+		
+		quotation = sortedQuotations.get(2);
 		assertEquals(this.quotation1.getDate().getTime(), quotation.getDate().getTime());
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of quotations that are older than the given Quotation but still on the same day.
+	 */
+	public void testGetOlderQuotationsOfSameDay() {
+		List<Quotation> olderQuotationsSameDay;
+		Quotation olderQuotationOfSameDay;
+		
+		olderQuotationsSameDay = this.instrument.getOlderQuotationsOfSameDay(this.quotation2);
+		
+		assertEquals(1, olderQuotationsSameDay.size());
+		
+		olderQuotationOfSameDay = olderQuotationsSameDay.get(0);
+		assertEquals(this.quotation3, olderQuotationOfSameDay);
 	}
 }

@@ -1,5 +1,7 @@
 package backend.model.instrument;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -220,6 +222,39 @@ public class Instrument {
 		}
 		
 		return null;
+	}
+	
+	
+	/**
+	 * Gets the quotations that are older than the date of the given Quotation but are still at the same day.
+	 * 
+	 * @param quotation The Quotation for which older quotations of the same day are requested.
+	 * @return Older quotations of the same day.
+	 */
+	public List<Quotation> getOlderQuotationsOfSameDay(final Quotation quotation) {
+		List<Quotation> quotationsSortedByDate = this.getQuotationsSortedByDate();
+		List<Quotation> olderQuotationsSameDay = new ArrayList<>();
+		Quotation tempQuotation;
+		int indexOfQuotation = quotationsSortedByDate.indexOf(quotation);
+		LocalDate quotationDate = quotation.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		LocalDate tempQuotationDate;
+		
+		if(indexOfQuotation == -1)
+			return olderQuotationsSameDay;
+		
+		for(int i = indexOfQuotation+1; i < quotationsSortedByDate.size(); i++) {
+			tempQuotation = quotationsSortedByDate.get(i);
+			tempQuotationDate = tempQuotation.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+			
+			if(quotationDate.equals(tempQuotationDate)) {
+				olderQuotationsSameDay.add(tempQuotation);
+			}
+			else {
+				break;	//The quotations are sorted by date. Therefore all quotations coming next are not at the same day.
+			}
+		}
+		
+		return olderQuotationsSameDay;
 	}
 
 
