@@ -56,3 +56,7 @@ The configuration file "tradingCockpitBackend.properties" has multiple propertie
 | startTime.minute 			|  Application starts stock quote queries at this time 				| 30       |
 | endTime.hour 				|  Application ends stock quote queries at this time 				| 22       |
 | endTime.minute 			|  Application ends stock quote queries at this time 				| 0        |
+
+## License
+
+Copyright © 2022, [MiRitter87](https://github.com/MiRitter87). No License.
