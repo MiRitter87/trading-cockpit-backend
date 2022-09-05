@@ -12,7 +12,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import backend.model.priceAlert.ConfirmationStatus;
-import backend.model.priceAlert.PriceAlert;
+import backend.model.priceAlert.PriceAlertWS;
 import backend.model.priceAlert.TriggerStatus;
 import backend.model.webservice.WebServiceResult;
 import backend.webservice.common.PriceAlertService;
@@ -63,7 +63,7 @@ public class PriceAlertRestService {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public WebServiceResult addPriceAlert(final PriceAlert priceAlert) {
+	public WebServiceResult addPriceAlert(final PriceAlertWS priceAlert) {
 		PriceAlertService priceAlertService = new PriceAlertService();
 		return priceAlertService.addPriceAlert(priceAlert);
 	}
@@ -78,7 +78,7 @@ public class PriceAlertRestService {
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public WebServiceResult updatePriceAlert(final PriceAlert priceAlert) {
+	public WebServiceResult updatePriceAlert(final PriceAlertWS priceAlert) {
 		PriceAlertService priceAlertService = new PriceAlertService();
 		return priceAlertService.updatePriceAlert(priceAlert);
 	}
