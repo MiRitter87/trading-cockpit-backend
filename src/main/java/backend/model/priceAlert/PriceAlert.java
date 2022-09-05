@@ -11,6 +11,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.ConstraintViolation;
@@ -21,12 +23,11 @@ import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 import org.hibernate.validator.HibernateValidator;
 import org.hibernate.validator.messageinterpolation.ExpressionLanguageFeatureLevel;
 
-import backend.model.StockExchange;
+import backend.model.instrument.Instrument;
 
 /**
  * An alert that a stock has reached a certain price at a stock exchange.
@@ -47,20 +48,12 @@ public class PriceAlert {
 	private Integer id;
 	
 	/**
-	 * The stock symbol.
+	 * The Instrument.
 	 */
-	@Column(name="SYMBOL", length = 6)
-	@NotNull(message = "{priceAlert.symbol.notNull.message}")
-	@Size(min = 1, max = 6, message = "{priceAlert.symbol.size.message}")
-	private String symbol;
-	
-	/**
-	 * The exchange where the stock is listed.
-	 */
-	@Column(name="STOCK_EXCHANGE", length = 4)
-	@Enumerated(EnumType.STRING)
-	@NotNull(message = "{priceAlert.stockExchange.notNull.message}")
-	private StockExchange stockExchange;
+	@OneToOne
+	@JoinColumn(name="INSTRUMENT_ID")
+	@NotNull(message = "{priceAlert.instrument.notNull.message}")
+	private Instrument instrument;
 	
 	/**
 	 * The type of the price alert.
@@ -123,34 +116,18 @@ public class PriceAlert {
 
 
 	/**
-	 * @return the symbol
+	 * @return the instrument
 	 */
-	public String getSymbol() {
-		return symbol;
+	public Instrument getInstrument() {
+		return instrument;
 	}
 
 
 	/**
-	 * @param symbol the symbol to set
+	 * @param instrument the instrument to set
 	 */
-	public void setSymbol(String symbol) {
-		this.symbol = symbol;
-	}
-
-
-	/**
-	 * @return the stockExchange
-	 */
-	public StockExchange getStockExchange() {
-		return stockExchange;
-	}
-
-
-	/**
-	 * @param stockExchange the stockExchange to set
-	 */
-	public void setStockExchange(StockExchange stockExchange) {
-		this.stockExchange = stockExchange;
+	public void setInstrument(Instrument instrument) {
+		this.instrument = instrument;
 	}
 
 
@@ -232,8 +209,8 @@ public class PriceAlert {
 	public void setLastStockQuoteTime(Date lastStockQuoteTime) {
 		this.lastStockQuoteTime = lastStockQuoteTime;
 	}
-
-
+	
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -242,14 +219,13 @@ public class PriceAlert {
 		result = prime * result + ((confirmationTime == null) ? 0 : confirmationTime.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((price == null) ? 0 : price.hashCode());
-		result = prime * result + ((stockExchange == null) ? 0 : stockExchange.hashCode());
-		result = prime * result + ((symbol == null) ? 0 : symbol.hashCode());
+		result = prime * result + ((instrument == null) ? 0 : instrument.hashCode());
 		result = prime * result + ((triggerTime == null) ? 0 : triggerTime.hashCode());
 		result = prime * result + ((lastStockQuoteTime == null) ? 0 : lastStockQuoteTime.hashCode());
 		return result;
 	}
-
-
+	
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
@@ -287,14 +263,11 @@ public class PriceAlert {
 		} else if (price.compareTo(other.price) != 0) {
 			return false;
 		}
-		if (stockExchange != other.stockExchange) {
-			return false;
-		}
-		if (symbol == null) {
-			if (other.symbol != null) {
+		if (instrument == null) {
+			if (other.instrument != null) {
 				return false;
 			}
-		} else if (!symbol.equals(other.symbol)) {
+		} else if (!instrument.equals(other.instrument)) {
 			return false;
 		}
 		if (triggerTime == null && other.triggerTime != null)
@@ -325,8 +298,8 @@ public class PriceAlert {
 	public void validate() throws Exception {
 		this.validateAnnotations();
 	}
-	
-	
+
+
 	/**
 	 * Validates the price alert according to the annotations of the validation framework.
 	 * 

@@ -19,8 +19,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import backend.dao.DAOManager;
+import backend.dao.instrument.InstrumentDAO;
 import backend.dao.priceAlert.PriceAlertDAO;
 import backend.model.StockExchange;
+import backend.model.instrument.Instrument;
+import backend.model.instrument.InstrumentType;
 import backend.model.priceAlert.ConfirmationStatus;
 import backend.model.priceAlert.PriceAlert;
 import backend.model.priceAlert.PriceAlertArray;
@@ -48,6 +51,11 @@ public class PriceAlertServiceTest {
 	private static PriceAlertDAO priceAlertDAO;
 	
 	/**
+	 * DAO to access Instrument data.
+	 */
+	private static InstrumentDAO instrumentDAO;
+	
+	/**
 	 * A price alert for the Apple stock.
 	 */
 	private PriceAlert appleAlert;
@@ -67,12 +75,33 @@ public class PriceAlertServiceTest {
 	 */
 	private PriceAlert nvidiaAlert;
 	
+	/**
+	 * Instrument of Apple stock.
+	 */
+	private Instrument appleInstrument;
+	
+	/**
+	 * Instrument of Microsoft stock.
+	 */
+	private Instrument microsoftInstrument;
+	
+	/**
+	 * Instrument of Netflix stock.
+	 */
+	private Instrument netflixInstrument;
+	
+	/**
+	 * Instrument of NVidia stock.
+	 */
+	private Instrument nvidiaInstrument;
+	
 	
 	@BeforeAll
 	/**
 	 * Tasks to be performed once at startup of test class.
 	 */
 	public static void setUpClass() {
+		instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
 		priceAlertDAO = DAOManager.getInstance().getPriceAlertDAO();
 	}
 	
@@ -95,6 +124,7 @@ public class PriceAlertServiceTest {
 	 * Tasks to be performed before each test is run.
 	 */
 	private void setUp() {
+		this.createDummyInstruments();
 		this.createDummyPriceAlerts();
 	}
 	
@@ -105,6 +135,7 @@ public class PriceAlertServiceTest {
 	 */
 	private void tearDown() {
 		this.deleteDummyPriceAlerts();
+		this.deleteDummyInstruments();
 	}
 	
 	
@@ -144,6 +175,41 @@ public class PriceAlertServiceTest {
 	
 	
 	/**
+	 * Initializes the database with dummy Instruments.
+	 */
+	private void createDummyInstruments() {
+		this.appleInstrument = this.getAppleInstrument();
+		this.microsoftInstrument = this.getMicrosoftInstrument();
+		this.netflixInstrument = this.getNetflixInstrument();
+		this.nvidiaInstrument = this.getNvidiaInstrument();
+		
+		try {
+			instrumentDAO.insertInstrument(this.appleInstrument);
+			instrumentDAO.insertInstrument(this.microsoftInstrument);
+			instrumentDAO.insertInstrument(this.netflixInstrument);
+			instrumentDAO.insertInstrument(this.nvidiaInstrument);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	/**
+	 * Deletes the dummy Instruments from the database.
+	 */
+	private void deleteDummyInstruments() {
+		try {
+			instrumentDAO.deleteInstrument(this.nvidiaInstrument);
+			instrumentDAO.deleteInstrument(this.netflixInstrument);
+			instrumentDAO.deleteInstrument(this.microsoftInstrument);
+			instrumentDAO.deleteInstrument(this.appleInstrument);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	/**
 	 * Gets a price alert for the Apple stock.
 	 * 
 	 * @return A price alert for the Apple stock.
@@ -151,8 +217,7 @@ public class PriceAlertServiceTest {
 	private PriceAlert getAppleAlert() {
 		PriceAlert alert = new PriceAlert();
 		
-		alert.setSymbol("AAPL");
-		alert.setStockExchange(StockExchange.NYSE);
+		alert.setInstrument(this.appleInstrument);
 		alert.setAlertType(PriceAlertType.GREATER_OR_EQUAL);
 		alert.setPrice(BigDecimal.valueOf(185.50));
 		
@@ -168,8 +233,7 @@ public class PriceAlertServiceTest {
 	private PriceAlert getMicrosoftAlert() {
 		PriceAlert alert = new PriceAlert();
 		
-		alert.setSymbol("MSFT");
-		alert.setStockExchange(StockExchange.NYSE);
+		alert.setInstrument(this.microsoftInstrument);
 		alert.setAlertType(PriceAlertType.LESS_OR_EQUAL);
 		alert.setPrice(BigDecimal.valueOf(250.00));
 		
@@ -186,8 +250,7 @@ public class PriceAlertServiceTest {
 		PriceAlert alert = new PriceAlert();
 		
 		alert = new PriceAlert();
-		alert.setSymbol("NFLX");
-		alert.setStockExchange(StockExchange.NYSE);
+		alert.setInstrument(this.netflixInstrument);
 		alert.setAlertType(PriceAlertType.LESS_OR_EQUAL);
 		alert.setPrice(BigDecimal.valueOf(199.99));
 		alert.setTriggerTime(new Date());
@@ -206,14 +269,81 @@ public class PriceAlertServiceTest {
 		PriceAlert alert = new PriceAlert();
 		
 		alert = new PriceAlert();
-		alert.setSymbol("NVDA");
-		alert.setStockExchange(StockExchange.NYSE);
+		alert.setInstrument(this.nvidiaInstrument);
 		alert.setAlertType(PriceAlertType.LESS_OR_EQUAL);
 		alert.setPrice(BigDecimal.valueOf(180.00));
 		alert.setTriggerTime(new Date());
 		alert.setConfirmationTime(new Date());
 		
 		return alert;
+	}
+	
+	
+	/**
+	 * Gets the Instrument of the Apple stock.
+	 * 
+	 * @return The Instrument of the Apple stock.
+	 */
+	private Instrument getAppleInstrument() {
+		Instrument instrument = new Instrument();
+		
+		instrument.setSymbol("AAPL");
+		instrument.setName("Apple");
+		instrument.setStockExchange(StockExchange.NYSE);
+		instrument.setType(InstrumentType.STOCK);
+		
+		return instrument;
+	}
+	
+	
+	/**
+	 * Gets the Instrument of the Microsoft stock.
+	 * 
+	 * @return The Instrument of the Microsoft stock.
+	 */
+	private Instrument getMicrosoftInstrument() {
+		Instrument instrument = new Instrument();
+		
+		instrument.setSymbol("MSFT");
+		instrument.setName("Microsoft");
+		instrument.setStockExchange(StockExchange.NYSE);
+		instrument.setType(InstrumentType.STOCK);
+		
+		return instrument;
+	}
+	
+	
+	/**
+	 * Gets the Instrument of the Netflix stock.
+	 * 
+	 * @return The Instrument of the Netflix stock.
+	 */
+	private Instrument getNetflixInstrument() {
+		Instrument instrument = new Instrument();
+		
+		instrument.setSymbol("NFLX");
+		instrument.setName("Netflix");
+		instrument.setStockExchange(StockExchange.NYSE);
+		instrument.setType(InstrumentType.STOCK);
+		
+		return instrument;
+	}
+	
+	
+	/**
+	 * Gets the Instrument of the NVidia stock.
+	 * 
+	 * @return The Instrument of the NVidia stock.
+	 */
+	private Instrument getNvidiaInstrument() {
+		Instrument instrument = new Instrument();
+		
+		instrument.setSymbol("NVDA");
+		instrument.setName("NVidia");
+		instrument.setStockExchange(StockExchange.NYSE);
+		instrument.setType(InstrumentType.STOCK);
+		
+		return instrument;
 	}
 	
 	
@@ -239,8 +369,7 @@ public class PriceAlertServiceTest {
 		
 		//Check each attribute of the price alert.
 		assertEquals(this.appleAlert.getId(), priceAlert.getId());
-		assertEquals(this.appleAlert.getSymbol(), priceAlert.getSymbol());
-		assertEquals(this.appleAlert.getStockExchange(), priceAlert.getStockExchange());
+		assertEquals(this.appleAlert.getInstrument(), priceAlert.getInstrument());
 		assertTrue(this.appleAlert.getPrice().compareTo(priceAlert.getPrice()) == 0);
 		assertEquals(this.appleAlert.getTriggerTime(), priceAlert.getTriggerTime());
 		assertEquals(this.appleAlert.getConfirmationTime(), priceAlert.getConfirmationTime());
@@ -297,8 +426,7 @@ public class PriceAlertServiceTest {
 		//Check all price alerts by each attribute
 		priceAlert = priceAlerts.getPriceAlerts().get(0);
 		assertEquals(this.appleAlert.getId(), priceAlert.getId());
-		assertEquals(this.appleAlert.getSymbol(), priceAlert.getSymbol());
-		assertEquals(this.appleAlert.getStockExchange(), priceAlert.getStockExchange());
+		assertEquals(this.appleAlert.getInstrument(), priceAlert.getInstrument());
 		assertTrue(this.appleAlert.getPrice().compareTo(priceAlert.getPrice()) == 0);
 		assertEquals(this.appleAlert.getTriggerTime(), priceAlert.getTriggerTime());
 		assertEquals(this.appleAlert.getConfirmationTime(), priceAlert.getConfirmationTime());
@@ -306,8 +434,7 @@ public class PriceAlertServiceTest {
 		
 		priceAlert = priceAlerts.getPriceAlerts().get(1);
 		assertEquals(this.microsoftAlert.getId(), priceAlert.getId());
-		assertEquals(this.microsoftAlert.getSymbol(), priceAlert.getSymbol());
-		assertEquals(this.microsoftAlert.getStockExchange(), priceAlert.getStockExchange());
+		assertEquals(this.microsoftAlert.getInstrument(), priceAlert.getInstrument());
 		assertTrue(this.microsoftAlert.getPrice().compareTo(priceAlert.getPrice()) == 0);
 		assertEquals(this.microsoftAlert.getTriggerTime(), priceAlert.getTriggerTime());
 		assertEquals(this.microsoftAlert.getConfirmationTime(), priceAlert.getConfirmationTime());
@@ -315,8 +442,7 @@ public class PriceAlertServiceTest {
 		
 		priceAlert = priceAlerts.getPriceAlerts().get(2);
 		assertEquals(this.netflixAlert.getId(), priceAlert.getId());
-		assertEquals(this.netflixAlert.getSymbol(), priceAlert.getSymbol());
-		assertEquals(this.netflixAlert.getStockExchange(), priceAlert.getStockExchange());
+		assertEquals(this.netflixAlert.getInstrument(), priceAlert.getInstrument());
 		assertTrue(this.netflixAlert.getPrice().compareTo(priceAlert.getPrice()) == 0);
 		assertEquals(this.netflixAlert.getTriggerTime(), priceAlert.getTriggerTime());
 		assertEquals(this.netflixAlert.getConfirmationTime(), priceAlert.getConfirmationTime());
@@ -324,8 +450,7 @@ public class PriceAlertServiceTest {
 		
 		priceAlert = priceAlerts.getPriceAlerts().get(3);
 		assertEquals(this.nvidiaAlert.getId(), priceAlert.getId());
-		assertEquals(this.nvidiaAlert.getSymbol(), priceAlert.getSymbol());
-		assertEquals(this.nvidiaAlert.getStockExchange(), priceAlert.getStockExchange());
+		assertEquals(this.nvidiaAlert.getInstrument(), priceAlert.getInstrument());
 		assertTrue(this.nvidiaAlert.getPrice().compareTo(priceAlert.getPrice()) == 0);
 		assertEquals(this.nvidiaAlert.getTriggerTime(), priceAlert.getTriggerTime());
 		assertEquals(this.nvidiaAlert.getConfirmationTime(), priceAlert.getConfirmationTime());
@@ -356,8 +481,7 @@ public class PriceAlertServiceTest {
 		//Check if the correct price alert is returned
 		priceAlert = priceAlerts.getPriceAlerts().get(0);
 		assertEquals(this.netflixAlert.getId(), priceAlert.getId());
-		assertEquals(this.netflixAlert.getSymbol(), priceAlert.getSymbol());
-		assertEquals(this.netflixAlert.getStockExchange(), priceAlert.getStockExchange());
+		assertEquals(this.netflixAlert.getInstrument(), priceAlert.getInstrument());
 		assertTrue(this.netflixAlert.getPrice().compareTo(priceAlert.getPrice()) == 0);
 		assertEquals(this.netflixAlert.getTriggerTime(), priceAlert.getTriggerTime());
 		assertEquals(this.netflixAlert.getConfirmationTime(), priceAlert.getConfirmationTime());
@@ -388,8 +512,7 @@ public class PriceAlertServiceTest {
 		//Check if the correct price alert is returned
 		priceAlert = priceAlerts.getPriceAlerts().get(0);
 		assertEquals(this.nvidiaAlert.getId(), priceAlert.getId());
-		assertEquals(this.nvidiaAlert.getSymbol(), priceAlert.getSymbol());
-		assertEquals(this.nvidiaAlert.getStockExchange(), priceAlert.getStockExchange());
+		assertEquals(this.nvidiaAlert.getInstrument(), priceAlert.getInstrument());
 		assertTrue(this.nvidiaAlert.getPrice().compareTo(priceAlert.getPrice()) == 0);
 		assertEquals(this.nvidiaAlert.getTriggerTime(), priceAlert.getTriggerTime());
 		assertEquals(this.nvidiaAlert.getConfirmationTime(), priceAlert.getConfirmationTime());
@@ -479,8 +602,8 @@ public class PriceAlertServiceTest {
 		ValidationMessageProvider messageProvider = new ValidationMessageProvider();
 		String actualErrorMessage, expectedErrorMessage;
 		
-		//Remove the symbol.
-		this.appleAlert.setSymbol("");
+		//Remove the instrument.
+		this.appleAlert.setInstrument(null);
 		updatePriceAlertResult = service.updatePriceAlert(this.appleAlert);
 		
 		//There should be a return message of type E.
@@ -488,7 +611,7 @@ public class PriceAlertServiceTest {
 		assertTrue(updatePriceAlertResult.getMessages().get(0).getType() == WebServiceMessageType.E);
 		
 		//A proper message should be provided.
-		expectedErrorMessage = messageProvider.getSizeValidationMessage("priceAlert", "symbol", String.valueOf(this.appleAlert.getSymbol().length()), "1", "6");
+		expectedErrorMessage = messageProvider.getNotNullValidationMessage("priceAlert", "instrument");
 		actualErrorMessage = updatePriceAlertResult.getMessages().get(0).getText();
 		assertEquals(expectedErrorMessage, actualErrorMessage);
 	}
@@ -528,8 +651,7 @@ public class PriceAlertServiceTest {
 		PriceAlertService service = new PriceAlertService();
 		
 		//Define the new price alert
-		newPriceAlert.setSymbol("TSLA");
-		newPriceAlert.setStockExchange(StockExchange.NYSE);
+		newPriceAlert.setInstrument(appleInstrument);
 		newPriceAlert.setAlertType(PriceAlertType.LESS_OR_EQUAL);
 		newPriceAlert.setPrice(BigDecimal.valueOf(149.99));
 		
@@ -554,8 +676,7 @@ public class PriceAlertServiceTest {
 			
 			//Check if the price alert read by the DAO equals the price alert inserted using the WebService in each attribute.
 			assertEquals(newPriceAlert.getId(), adddedPriceAlert.getId());
-			assertEquals(newPriceAlert.getSymbol(), adddedPriceAlert.getSymbol());
-			assertEquals(newPriceAlert.getStockExchange(), adddedPriceAlert.getStockExchange());
+			assertEquals(newPriceAlert.getInstrument(), adddedPriceAlert.getInstrument());
 			assertTrue(newPriceAlert.getPrice().compareTo(adddedPriceAlert.getPrice()) == 0);
 			assertEquals(newPriceAlert.getTriggerTime(), adddedPriceAlert.getTriggerTime());
 			assertEquals(newPriceAlert.getConfirmationTime(), adddedPriceAlert.getConfirmationTime());
@@ -583,8 +704,7 @@ public class PriceAlertServiceTest {
 		WebServiceResult addPriceAlertResult;
 		PriceAlertService service = new PriceAlertService();
 		
-		//Define the new price alert without a stock exchange.
-		newPriceAlert.setSymbol("TSLA");
+		//Define the new price alert without an Instrument.
 		newPriceAlert.setAlertType(PriceAlertType.LESS_OR_EQUAL);
 		newPriceAlert.setPrice(BigDecimal.valueOf(149.99));
 		

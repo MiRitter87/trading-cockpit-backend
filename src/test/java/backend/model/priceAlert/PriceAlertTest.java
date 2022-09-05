@@ -10,6 +10,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import backend.model.StockExchange;
+import backend.model.instrument.Instrument;
+import backend.model.instrument.InstrumentType;
 import backend.tools.test.ValidationMessageProvider;
 
 /**
@@ -23,16 +25,27 @@ public class PriceAlertTest {
 	 */
 	private PriceAlert priceAlert;
 	
+	/**
+	 * The Instrument of the PriceAlert.
+	 */
+	private Instrument instrument;
+	
 	
 	@BeforeEach
 	/**
 	 * Tasks to be performed before each test is run.
 	 */
 	private void setUp() {
+		this.instrument = new Instrument();
+		this.instrument.setId(Integer.valueOf(1));
+		this.instrument.setSymbol("AAPL");
+		this.instrument.setType(InstrumentType.STOCK);
+		this.instrument.setStockExchange(StockExchange.NYSE);
+		this.instrument.setName("Apple");
+		
 		this.priceAlert = new PriceAlert();
 		this.priceAlert.setId(Integer.valueOf(1));
-		this.priceAlert.setSymbol("AAPL");
-		this.priceAlert.setStockExchange(StockExchange.NYSE);
+		this.priceAlert.setInstrument(this.instrument);
 		this.priceAlert.setAlertType(PriceAlertType.GREATER_OR_EQUAL);
 		this.priceAlert.setPrice(BigDecimal.valueOf(185.50));
 	}
@@ -44,6 +57,7 @@ public class PriceAlertTest {
 	 */
 	private void tearDown() {
 		this.priceAlert = null;
+		this.instrument = null;
 	}
 	
 	
@@ -72,95 +86,23 @@ public class PriceAlertTest {
 	
 	@Test
 	/**
-	 * Tests validation of a price alert whose symbol is null.
+	 * Tests validation of a PriceAlert that has no Instrument defined.
 	 */
-	public void testSymbolIsNull() {
-		ValidationMessageProvider messageProvider = new ValidationMessageProvider();		
-		this.priceAlert.setSymbol(null);
+	public void testNoInstrumentDefined() {
+		ValidationMessageProvider messageProvider = new ValidationMessageProvider();	
+		String expectedErrorMessage = messageProvider.getNotNullValidationMessage("priceAlert", "instrument");
+		String actualErrorMessage = "";
 		
-		String expectedErrorMessage = messageProvider.getNotNullValidationMessage("priceAlert", "symbol");
-		String errorMessage = "";
+		this.priceAlert.setInstrument(null);
 		
 		try {
 			this.priceAlert.validate();
-			fail("Validation should have failed because symbol is null.");
-		} 
-		catch (Exception expected) {
-			errorMessage = expected.getMessage();
+			fail("Validation should have failed because no instrument is defined.");
+		} catch (Exception expected) {
+			actualErrorMessage = expected.getMessage();
 		}
 		
-		assertEquals(expectedErrorMessage, errorMessage);
-	}
-	
-	
-	@Test
-	/**
-	 * Tests validation of a price alert whose symbol is not given.
-	 */
-	public void testSymbolNotGiven() {
-		ValidationMessageProvider messageProvider = new ValidationMessageProvider();		
-		this.priceAlert.setSymbol("");
-		
-		String expectedErrorMessage = messageProvider.getSizeValidationMessage("priceAlert", "symbol", 
-				String.valueOf(this.priceAlert.getSymbol().length()), "1", "6");
-		String errorMessage = "";
-		
-		try {
-			this.priceAlert.validate();
-			fail("Validation should have failed because symbol is not given.");
-		} 
-		catch (Exception expected) {
-			errorMessage = expected.getMessage();
-		}
-		
-		assertEquals(expectedErrorMessage, errorMessage);
-	}
-	
-	
-	@Test
-	/**
-	 * Tests validation of a price alert whose symbol is too long.
-	 */
-	public void testSymbolTooLong() {
-		ValidationMessageProvider messageProvider = new ValidationMessageProvider();		
-		this.priceAlert.setSymbol("ABCDEFG");
-		
-		String expectedErrorMessage = messageProvider.getSizeValidationMessage("priceAlert", "symbol", 
-				String.valueOf(this.priceAlert.getSymbol().length()), "1", "6");
-		String errorMessage = "";
-		
-		try {
-			this.priceAlert.validate();
-			fail("Validation should have failed because symbol is too long.");
-		} 
-		catch (Exception expected) {
-			errorMessage = expected.getMessage();
-		}
-		
-		assertEquals(expectedErrorMessage, errorMessage);
-	}
-	
-	
-	@Test
-	/**
-	 * Tests validation of a price alert whose stock exchange is null.
-	 */
-	public void testStockExchangeIsNull() {
-		ValidationMessageProvider messageProvider = new ValidationMessageProvider();		
-		this.priceAlert.setStockExchange(null);
-		
-		String expectedErrorMessage = messageProvider.getNotNullValidationMessage("priceAlert", "stockExchange");
-		String errorMessage = "";
-		
-		try {
-			this.priceAlert.validate();
-			fail("Validation should have failed because stock exchange is null.");
-		} 
-		catch (Exception expected) {
-			errorMessage = expected.getMessage();
-		}
-		
-		assertEquals(expectedErrorMessage, errorMessage);
+		assertEquals(expectedErrorMessage, actualErrorMessage);
 	}
 	
 	

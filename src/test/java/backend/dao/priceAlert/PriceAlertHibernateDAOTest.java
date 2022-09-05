@@ -16,7 +16,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import backend.dao.DAOManager;
+import backend.dao.instrument.InstrumentDAO;
 import backend.model.StockExchange;
+import backend.model.instrument.Instrument;
+import backend.model.instrument.InstrumentType;
 import backend.model.priceAlert.ConfirmationStatus;
 import backend.model.priceAlert.PriceAlert;
 import backend.model.priceAlert.PriceAlertType;
@@ -32,6 +35,11 @@ public class PriceAlertHibernateDAOTest {
 	 * The DAO to access price alerts.
 	 */
 	private static PriceAlertDAO priceAlertDAO;
+	
+	/**
+	 * DAO to access Instrument data.
+	 */
+	private static InstrumentDAO instrumentDAO;
 	
 	/**
 	 * A price alert for the Apple stock.
@@ -53,12 +61,33 @@ public class PriceAlertHibernateDAOTest {
 	 */
 	private PriceAlert netflixAlert;
 	
+	/**
+	 * Instrument of Apple stock.
+	 */
+	private Instrument appleInstrument;
+	
+	/**
+	 * Instrument of Microsoft stock.
+	 */
+	private Instrument microsoftInstrument;
+	
+	/**
+	 * Instrument of Netflix stock.
+	 */
+	private Instrument netflixInstrument;
+	
+	/**
+	 * Instrument of NVidia stock.
+	 */
+	private Instrument nvidiaInstrument;
+	
 	
 	@BeforeAll
 	/**
 	 * Tasks to be performed once at startup of test class.
 	 */
 	public static void setUpClass() {
+		instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
 		priceAlertDAO = DAOManager.getInstance().getPriceAlertDAO();
 	}
 	
@@ -81,6 +110,7 @@ public class PriceAlertHibernateDAOTest {
 	 * Tasks to be performed before each test is run.
 	 */
 	private void setUp() {
+		this.createDummyInstruments();
 		this.createDummyPriceAlerts();
 	}
 	
@@ -91,6 +121,7 @@ public class PriceAlertHibernateDAOTest {
 	 */
 	private void tearDown() {
 		this.deleteDummyPriceAlerts();
+		this.deleteDummyInstruments();
 	}
 	
 	
@@ -101,31 +132,27 @@ public class PriceAlertHibernateDAOTest {
 		Calendar lastStockQuote = Calendar.getInstance();
 		
 		this.appleAlert = new PriceAlert();
-		this.appleAlert.setSymbol("AAPL");
-		this.appleAlert.setStockExchange(StockExchange.NYSE);
+		this.appleAlert.setInstrument(this.appleInstrument);
 		this.appleAlert.setAlertType(PriceAlertType.GREATER_OR_EQUAL);
 		this.appleAlert.setPrice(BigDecimal.valueOf(185.50));
 		this.appleAlert.setLastStockQuoteTime(null);
 		
 		this.microsoftAlert = new PriceAlert();
-		this.microsoftAlert.setSymbol("MSFT");
-		this.microsoftAlert.setStockExchange(StockExchange.NYSE);
+		this.microsoftAlert.setInstrument(this.microsoftInstrument);
 		this.microsoftAlert.setAlertType(PriceAlertType.LESS_OR_EQUAL);
 		this.microsoftAlert.setPrice(BigDecimal.valueOf(250.00));
 		lastStockQuote.add(Calendar.MINUTE, -1);
 		this.microsoftAlert.setLastStockQuoteTime(lastStockQuote.getTime());
 		
 		this.nvidiaAlert = new PriceAlert();
-		this.nvidiaAlert.setSymbol("NVDA");
-		this.nvidiaAlert.setStockExchange(StockExchange.NYSE);
+		this.nvidiaAlert.setInstrument(this.nvidiaInstrument);
 		this.nvidiaAlert.setAlertType(PriceAlertType.LESS_OR_EQUAL);
 		this.nvidiaAlert.setPrice(BigDecimal.valueOf(180.00));
 		lastStockQuote.add(Calendar.MINUTE, -2);
 		this.nvidiaAlert.setLastStockQuoteTime(lastStockQuote.getTime());
 		
 		this.netflixAlert = new PriceAlert();
-		this.netflixAlert.setSymbol("NFLX");
-		this.netflixAlert.setStockExchange(StockExchange.NYSE);
+		this.netflixAlert.setInstrument(this.netflixInstrument);
 		this.netflixAlert.setAlertType(PriceAlertType.LESS_OR_EQUAL);
 		this.netflixAlert.setPrice(BigDecimal.valueOf(199.99));
 		this.netflixAlert.setLastStockQuoteTime(null);
@@ -154,6 +181,109 @@ public class PriceAlertHibernateDAOTest {
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
+	}
+	
+	
+	/**
+	 * Initializes the database with dummy Instruments.
+	 */
+	private void createDummyInstruments() {
+		this.appleInstrument = this.getAppleInstrument();
+		this.microsoftInstrument = this.getMicrosoftInstrument();
+		this.netflixInstrument = this.getNetflixInstrument();
+		this.nvidiaInstrument = this.getNvidiaInstrument();
+		
+		try {
+			instrumentDAO.insertInstrument(this.appleInstrument);
+			instrumentDAO.insertInstrument(this.microsoftInstrument);
+			instrumentDAO.insertInstrument(this.netflixInstrument);
+			instrumentDAO.insertInstrument(this.nvidiaInstrument);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	/**
+	 * Deletes the dummy Instruments from the database.
+	 */
+	private void deleteDummyInstruments() {
+		try {
+			instrumentDAO.deleteInstrument(this.nvidiaInstrument);
+			instrumentDAO.deleteInstrument(this.netflixInstrument);
+			instrumentDAO.deleteInstrument(this.microsoftInstrument);
+			instrumentDAO.deleteInstrument(this.appleInstrument);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	/**
+	 * Gets the Instrument of the Apple stock.
+	 * 
+	 * @return The Instrument of the Apple stock.
+	 */
+	private Instrument getAppleInstrument() {
+		Instrument instrument = new Instrument();
+		
+		instrument.setSymbol("AAPL");
+		instrument.setName("Apple");
+		instrument.setStockExchange(StockExchange.NYSE);
+		instrument.setType(InstrumentType.STOCK);
+		
+		return instrument;
+	}
+	
+	
+	/**
+	 * Gets the Instrument of the Microsoft stock.
+	 * 
+	 * @return The Instrument of the Microsoft stock.
+	 */
+	private Instrument getMicrosoftInstrument() {
+		Instrument instrument = new Instrument();
+		
+		instrument.setSymbol("MSFT");
+		instrument.setName("Microsoft");
+		instrument.setStockExchange(StockExchange.NYSE);
+		instrument.setType(InstrumentType.STOCK);
+		
+		return instrument;
+	}
+	
+	
+	/**
+	 * Gets the Instrument of the Netflix stock.
+	 * 
+	 * @return The Instrument of the Netflix stock.
+	 */
+	private Instrument getNetflixInstrument() {
+		Instrument instrument = new Instrument();
+		
+		instrument.setSymbol("NFLX");
+		instrument.setName("Netflix");
+		instrument.setStockExchange(StockExchange.NYSE);
+		instrument.setType(InstrumentType.STOCK);
+		
+		return instrument;
+	}
+	
+	
+	/**
+	 * Gets the Instrument of the NVidia stock.
+	 * 
+	 * @return The Instrument of the NVidia stock.
+	 */
+	private Instrument getNvidiaInstrument() {
+		Instrument instrument = new Instrument();
+		
+		instrument.setSymbol("NVDA");
+		instrument.setName("NVidia");
+		instrument.setStockExchange(StockExchange.NYSE);
+		instrument.setType(InstrumentType.STOCK);
+		
+		return instrument;
 	}
 	
 	

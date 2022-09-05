@@ -172,7 +172,7 @@ public class InstrumentTest {
 		ValidationMessageProvider messageProvider = new ValidationMessageProvider();		
 		this.instrument.setSymbol("ABCDEFG");
 		
-		String expectedErrorMessage = messageProvider.getSizeValidationMessage("priceAlert", "symbol", 
+		String expectedErrorMessage = messageProvider.getSizeValidationMessage("instrument", "symbol", 
 				String.valueOf(this.instrument.getSymbol().length()), "1", "6");
 		String errorMessage = "";
 		
