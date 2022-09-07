@@ -51,6 +51,7 @@ public class InstrumentTest {
 	 */
 	private void setUp() {
 		Calendar calendar = Calendar.getInstance();
+		calendar.clear();
 		
 		this.quotation1 = new Quotation();
 		calendar.set(2022, 07, 26, 15, 30, 0);
@@ -281,6 +282,8 @@ public class InstrumentTest {
 	public void testGetQuotationByDateExisting() {
 		Quotation quotation;
 		Calendar calendar = Calendar.getInstance();
+		
+		calendar.clear();
 		calendar.set(2022, 07, 26, 15, 30, 0);		//Date of quotation1.
 		
 		quotation = this.instrument.getQuotationByDate(calendar.getTime());
