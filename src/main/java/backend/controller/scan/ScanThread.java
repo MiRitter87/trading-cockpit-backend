@@ -232,6 +232,7 @@ public class ScanThread extends Thread {
 			indicator.setSma200(this.indicatorCalculator.getSimpleMovingAverage(200, mostRecentQuotation, sortedQuotations));
 			indicator.setDistanceTo52WeekHigh(this.indicatorCalculator.getDistanceTo52WeekHigh(mostRecentQuotation, sortedQuotations));
 			indicator.setDistanceTo52WeekLow(this.indicatorCalculator.getDistanceTo52WeekLow(mostRecentQuotation, sortedQuotations));
+			indicator.setBollingerBandWidth(this.indicatorCalculator.getBollingerBandWidth(10, 2, mostRecentQuotation, sortedQuotations));
 			mostRecentQuotation.setIndicator(indicator);
 			
 			modifiedQuotations.add(mostRecentQuotation);

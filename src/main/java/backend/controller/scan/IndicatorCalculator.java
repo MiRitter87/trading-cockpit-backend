@@ -204,8 +204,8 @@ public class IndicatorCalculator {
 		
 		//Calculate the Bollinger Bands.
 		middleBand = simpleMovingAverage;
-		upperBand = simpleMovingAverage + (standardDeviation * 2);
-		lowerBand = simpleMovingAverage - (standardDeviation * 2);
+		upperBand = simpleMovingAverage + (standardDeviation * standardDeviations);
+		lowerBand = simpleMovingAverage - (standardDeviation * standardDeviations);
 		
 		//Calculate the Bollinger BandWidth.
 		bandWidth = ((upperBand - lowerBand) / middleBand) * 100;
