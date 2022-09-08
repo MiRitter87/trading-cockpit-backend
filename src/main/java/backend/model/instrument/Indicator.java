@@ -41,7 +41,7 @@ public class Indicator {
 	private float distanceTo52WeekLow;
 	
 	/**
-	 * The Bollinger Band Width (20,2)
+	 * The Bollinger Band Width (10,2)
 	 */
 	@Column(name="BOLLINGER_BAND_WIDTH")
 	private float bollingerBandWidth;

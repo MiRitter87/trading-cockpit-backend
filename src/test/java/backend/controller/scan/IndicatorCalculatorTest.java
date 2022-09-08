@@ -286,4 +286,18 @@ public class IndicatorCalculatorTest {
 		
 		assertEquals(expectedDistanceTo52WeekLow, actualDistanceTo52WeekLow);
 	}
+	
+	
+	@Test
+	/**
+	 * Tests the calculation of the standard deviation.
+	 */
+	public void testGetStandardDeviation() {
+		float[] inputValues = {46, 69, 32, 60, 52, 41};
+		float expectedStandardDeviation = (float) 12.15;
+		float actualStandardDeviation;
+		
+		actualStandardDeviation = this.indicatorCalculator.getStandardDeviation(inputValues);
+		assertEquals(expectedStandardDeviation, actualStandardDeviation);
+	}
 }

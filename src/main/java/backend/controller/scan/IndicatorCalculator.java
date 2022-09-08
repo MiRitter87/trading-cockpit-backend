@@ -185,6 +185,47 @@ public class IndicatorCalculator {
 	
 	
 	/**
+	 * Calculates the standard deviation based on the given input values.
+	 * 
+	 * @param inputValues The values for standard deviation calculation.
+	 * @return The standard deviation.
+	 */
+	public float getStandardDeviation(float[] inputValues) {
+		float sum = 0, mean, deviationFromMean, deviationFromMeanSquared, sumOfSquares = 0, variance, standardDeviation;
+		BigDecimal roundedResult;
+		
+		//1. Calculate the mean of all values.
+		for(int i = 0; i< inputValues.length; i++)
+			sum+=inputValues[i];
+		
+		mean = sum / inputValues.length;
+		
+		for(int i = 0; i< inputValues.length; i++) {
+			//2. Get the deviation from the mean.
+			deviationFromMean = inputValues[i] - mean;
+			
+			//3. Square deviation from mean.
+			deviationFromMeanSquared = (float) Math.pow(deviationFromMean, 2);
+			
+			//4. Calculate the sum of squares.
+			sumOfSquares += deviationFromMeanSquared;
+		}
+		
+		//5. Calculate the variance.
+		variance = sumOfSquares / inputValues.length;
+		
+		//6. Calculate the square root of the variance.
+		standardDeviation = (float) Math.sqrt(variance);
+		
+		//Round the result to two decimal places.
+		roundedResult = new BigDecimal(standardDeviation);
+		roundedResult = roundedResult.setScale(2, RoundingMode.HALF_UP);
+		
+		return roundedResult.floatValue();
+	}
+	
+	
+	/**
 	 * Provides the performance of a given interval.
 	 * 
 	 * @param sortedQuotations The quotations containing date and price information for performance calculation.
