@@ -185,6 +185,40 @@ public class IndicatorCalculator {
 	
 	
 	/**
+	 * Calculates the Bollinger BandWidth.
+	 * 
+	 * @param days The number of days on which the calculation is based.
+	 * @param standardDeviations The standard deviation used for calculation of the upper and lower Bollinger Band.
+	 * @param quotation The Quotation for which the Bollinger BandWidth is calculated.
+	 * @param quotations A list of quotations that build the trading history used for Bollinger BandWidth calculation.
+	 * @return The Bollinger BandWidth.
+	 */
+	public float getBollingerBandWidth(final int days, final float standardDeviations, final Quotation quotation, final List<Quotation> quotations) {
+		float standardDeviation = this.getStandardDeviation(this.getPricesAsArray(days, quotation, quotations));
+		float simpleMovingAverage = this.getSimpleMovingAverage(days, quotation, quotations);
+		float middleBand, upperBand, lowerBand, bandWidth;
+		BigDecimal roundedResult;
+		
+		if(standardDeviation == 0 || simpleMovingAverage == 0)
+			return 0;
+		
+		//Calculate the Bollinger Bands.
+		middleBand = simpleMovingAverage;
+		upperBand = simpleMovingAverage + (standardDeviation * 2);
+		lowerBand = simpleMovingAverage - (standardDeviation * 2);
+		
+		//Calculate the Bollinger BandWidth.
+		bandWidth = ((upperBand - lowerBand) / middleBand) * 100;
+		
+		//Round to two decimal places.
+		roundedResult = new BigDecimal(bandWidth);
+		roundedResult = roundedResult.setScale(2, RoundingMode.HALF_UP);
+		
+		return roundedResult.floatValue();
+	}
+	
+	
+	/**
 	 * Calculates the standard deviation based on the given input values.
 	 * 
 	 * @param inputValues The values for standard deviation calculation.
@@ -193,6 +227,9 @@ public class IndicatorCalculator {
 	public float getStandardDeviation(float[] inputValues) {
 		float sum = 0, mean, deviationFromMean, deviationFromMeanSquared, sumOfSquares = 0, variance, standardDeviation;
 		BigDecimal roundedResult;
+		
+		if(inputValues.length == 0)
+			return 0;
 		
 		//1. Calculate the mean of all values.
 		for(int i = 0; i< inputValues.length; i++)
@@ -217,9 +254,9 @@ public class IndicatorCalculator {
 		//6. Calculate the square root of the variance.
 		standardDeviation = (float) Math.sqrt(variance);
 		
-		//Round the result to two decimal places.
+		//Round the result to four decimal places. This precision is necessary when handling low priced instruments.
 		roundedResult = new BigDecimal(standardDeviation);
-		roundedResult = roundedResult.setScale(2, RoundingMode.HALF_UP);
+		roundedResult = roundedResult.setScale(4, RoundingMode.HALF_UP);
 		
 		return roundedResult.floatValue();
 	}
@@ -246,5 +283,40 @@ public class IndicatorCalculator {
 		divisionResult = divisionResult.multiply(BigDecimal.valueOf(100));
 		
 		return divisionResult;
+	}
+	
+	
+	/**
+	 * Provides an array of prices for the given days.
+	 * 
+	 * @param days The number of days for which prices are provided.
+	 * @param quotation The Quotation as starting point for prices.
+	 * @param quotations A list of quotations that build the trading history.
+	 * @return An array of prices.
+	 */
+	private float[] getPricesAsArray(final int days, final Quotation quotation, final List<Quotation> quotations) {
+		float[] prices = new float[days];
+		Instrument instrument = new Instrument();
+		List<Quotation> sortedQuotations;
+		int indexOfQuotation = 0, j = 0;
+		
+		//Sort the quotations by date for extraction of prices based on last x days.
+		instrument.setQuotations(quotations);
+		sortedQuotations = instrument.getQuotationsSortedByDate();
+		
+		//Get the starting point of average calculation.
+		indexOfQuotation = sortedQuotations.indexOf(quotation);
+		
+		//Check if enough quotations exist for average calculation.
+		if((sortedQuotations.size() - days - indexOfQuotation) < 0)
+			return prices;
+		
+		//Get the prices of the last x days.
+		for(int i = indexOfQuotation; i<days; i++) {
+			prices[j] = sortedQuotations.get(i).getPrice().floatValue();
+			j++;
+		}
+		
+		return prices;
 	}
 }
