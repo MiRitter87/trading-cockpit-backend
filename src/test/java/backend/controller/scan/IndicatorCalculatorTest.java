@@ -315,4 +315,18 @@ public class IndicatorCalculatorTest {
 		
 		assertEquals(expectedBollingerBandWidth, actualBollingerBandWidth);
 	}
+	
+	
+	@Test
+	/**
+	 * Tests the calculation of the 10-day Simple Moving Average Volume.
+	 */
+	public void testGetSimpleMovingAverageVolume() {
+		List<Quotation> sortedQuotations = this.dmlStock.getQuotationsSortedByDate();
+		long expectedVolume = 1440500, actualVolume;
+		
+		actualVolume = this.indicatorCalculator.getSimpleMovingAverageVolume(10, sortedQuotations.get(0), sortedQuotations);
+		
+		assertEquals(expectedVolume, actualVolume);
+	}
 }

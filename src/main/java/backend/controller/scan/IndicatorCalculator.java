@@ -263,6 +263,44 @@ public class IndicatorCalculator {
 	
 	
 	/**
+	 * Returns the Simple Moving Average of the Volume.
+	 * 
+	 * @param days The number of days on which the Simple Moving Average Volume is based.
+	 * @param quotation The Quotation for which the Simple Moving Average Volume is calculated.
+	 * @param quotations A list of quotations that build the trading history used for Simple Moving Average Volume calculation.
+	 * @return The Simple Moving Average Volume.
+	 */
+	public long getSimpleMovingAverageVolume(final int days, final Quotation quotation, final List<Quotation> quotations) {
+		Instrument instrument = new Instrument();
+		List<Quotation> sortedQuotations;
+		int indexOfQuotation = 0;
+		long sum = 0;
+		BigDecimal average;
+		
+		//Sort the quotations by date for calculation of average based on last x days.
+		instrument.setQuotations(quotations);
+		sortedQuotations = instrument.getQuotationsSortedByDate();
+		
+		//Get the starting point of average calculation.
+		indexOfQuotation = sortedQuotations.indexOf(quotation);
+		
+		//Check if enough quotations exist for average calculation.
+		if((sortedQuotations.size() - days - indexOfQuotation) < 0)
+			return 0;
+		
+		//Calculate the sum of the volume of the last x days.
+		for(int i = indexOfQuotation; i<days; i++) {
+			sum = sum += sortedQuotations.get(i).getVolume();
+		}
+		
+		//Build the average.
+		average = (new BigDecimal(sum)).divide(BigDecimal.valueOf(days), 0, RoundingMode.HALF_UP);
+		
+		return average.longValue();
+	}
+	
+	
+	/**
 	 * Provides the performance of a given interval.
 	 * 
 	 * @param sortedQuotations The quotations containing date and price information for performance calculation.
