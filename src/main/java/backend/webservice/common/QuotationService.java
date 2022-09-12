@@ -80,6 +80,8 @@ public class QuotationService {
 	private List<Quotation> getQuotationsByTemplate(final ScanTemplate scanTemplate) throws Exception {
 		if(scanTemplate == ScanTemplate.MINERVINI_TREND_TEMPLATE)
 			return this.quotationDAO.getQuotationsMinerviniTrendTemplate();
+		else if(scanTemplate == ScanTemplate.VOLATILITY_CONTRACTION_10_DAYS)
+			return this.quotationDAO.getQuotationsVolatilityContraction10Days();
 		else
 			return this.quotationDAO.getRecentQuotations();
 	}

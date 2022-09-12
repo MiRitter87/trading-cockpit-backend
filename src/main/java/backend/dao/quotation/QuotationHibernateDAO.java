@@ -287,6 +287,52 @@ public class QuotationHibernateDAO implements QuotationDAO {
 	}
 	
 	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Quotation> getQuotationsVolatilityContraction10Days() throws Exception {
+		EntityManager entityManager = this.sessionFactory.createEntityManager();
+		List<Quotation> quotations;
+		Query query;
+		List<Object> quotationIdsWithMaxDate;
+
+		try {
+			entityManager.getTransaction().begin();
+			
+			/*
+			 * The selection is split into two selects because JOINs with sub-queries are only possible in native SQL.
+			 * But the needed JOIN FETCH is not possible in native SQL.
+			 */
+			query = this.getQueryForQuotationIdsWithMaxDate(entityManager);
+			quotationIdsWithMaxDate = query.getResultList();
+			
+			//Find all quotations that have an Indicator defined and where the Quotation is the most recent one of an Instrument.
+			//Also fetch the Instrument data of those records.
+			//Apply the criteria of the Volatility Contraction Template to the quotations and indicators.
+			query = entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i JOIN q.indicator r WHERE "
+					+ "quotation_id IN :quotationIds "
+					+ "AND q.indicator IS NOT NULL "
+					+ "AND r.volumeDifferential10Days < 0"
+					+ "AND r.bollingerBandWidth < 10");
+			
+			query.setParameter("quotationIds", quotationIdsWithMaxDate);
+			quotations = query.getResultList();
+			
+			entityManager.getTransaction().commit();			
+		}
+		catch(Exception exception) {
+			//If something breaks a rollback is necessary!?
+			if(entityManager.getTransaction().isActive())
+				entityManager.getTransaction().rollback();
+			throw exception;
+		}
+		finally {
+			entityManager.close();			
+		}
+		
+		return quotations;
+	}
+	
+	
 	/**
 	 * Provides a native Query that determines the IDs of the quotations with the newest date for each Instrument.
 	 * 

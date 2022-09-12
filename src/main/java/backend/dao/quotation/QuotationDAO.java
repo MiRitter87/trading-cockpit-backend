@@ -75,4 +75,14 @@ public interface QuotationDAO {
 	 * @throws Exception Quotation determination failed.
 	 */
 	List<Quotation> getQuotationsMinerviniTrendTemplate() throws Exception;
+	
+	
+	/**
+	 * Gets the most recent Quotation of each Instrument that matches the Volatility Contraction Template.
+	 * Only those quotations are provided that have an Indicator associated with them.
+	 * 
+	 * @return The most recent Quotation of each Instrument that matches the Volatility Contraction Template.
+	 * @throws Exception Quotation determination failed.
+	 */
+	List<Quotation> getQuotationsVolatilityContraction10Days() throws Exception;
 }

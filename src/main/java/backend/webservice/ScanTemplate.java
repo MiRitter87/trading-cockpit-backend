@@ -9,5 +9,10 @@ public enum ScanTemplate {
 	/**
 	 * Minervini Trend Template.
 	 */
-	MINERVINI_TREND_TEMPLATE
+	MINERVINI_TREND_TEMPLATE,
+	
+	/**
+	 * A contraction in price and volume within the last 10 trading days.
+	 */
+	VOLATILITY_CONTRACTION_10_DAYS
 }

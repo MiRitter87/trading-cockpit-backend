@@ -362,6 +362,8 @@ public class QuotationServiceTest {
 		this.appleQuotation2Indicator.setRsNumber(71);
 		this.appleQuotation2Indicator.setDistanceTo52WeekHigh((float) 21.4);
 		this.appleQuotation2Indicator.setDistanceTo52WeekLow((float) 78.81);
+		this.appleQuotation2Indicator.setBollingerBandWidth((float) 8.71);
+		this.appleQuotation2Indicator.setVolumeDifferential10days((float) 19.34);
 		this.appleQuotation2.setIndicator(this.appleQuotation2Indicator);
 		
 		this.fordQuotation1Indicator = new Indicator();
@@ -372,6 +374,8 @@ public class QuotationServiceTest {
 		this.fordQuotation1Indicator.setRsNumber(45);
 		this.fordQuotation1Indicator.setDistanceTo52WeekHigh((float) 41.41);
 		this.fordQuotation1Indicator.setDistanceTo52WeekLow((float) 48.81);
+		this.fordQuotation1Indicator.setBollingerBandWidth((float) 4.11);
+		this.fordQuotation1Indicator.setVolumeDifferential10days((float) -9.67);
 		this.fordQuotation1.setIndicator(this.fordQuotation1Indicator);
 		
 		quotations.add(this.appleQuotation2);
@@ -469,5 +473,41 @@ public class QuotationServiceTest {
 		assertEquals(this.appleQuotation2.getInstrument().getId(), quotation.getInstrument().getId());
 		assertEquals(this.appleQuotation2.getIndicator().getId(), quotation.getIndicator().getId());
 		assertEquals(this.appleQuotation2.getIndicator().getStage(), quotation.getIndicator().getStage());
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of the most recent quotations that match the "Volatility Contraction 10 Days" template.
+	 * Only those quotations should be returned that have an Indicator associated with them.
+	 */
+	public void testGetQuotationsVolatiltyContraction10DaysTemplate() {
+		QuotationArray quotations;
+		WebServiceResult getQuotationsResult;
+		Quotation quotation;
+		
+		//Get the quotations.
+		QuotationService service = new QuotationService();
+		getQuotationsResult = service.getQuotations(ScanTemplate.VOLATILITY_CONTRACTION_10_DAYS);
+		quotations = (QuotationArray) getQuotationsResult.getData();
+		
+		//Assure no error message exists
+		assertTrue(WebServiceTools.resultContainsErrorMessage(getQuotationsResult) == false);
+		
+		//Check if one Quotation is returned.
+		assertEquals(1, quotations.getQuotations().size());
+		
+		//Check if the correct Quotation is returned.
+		quotation = quotations.getQuotations().get(0);
+		assertEquals(this.fordQuotation1.getId(), quotation.getId());
+		assertEquals(this.fordQuotation1.getDate().getTime(), quotation.getDate().getTime());
+		assertTrue(this.fordQuotation1.getPrice().compareTo(quotation.getPrice()) == 0);
+		assertEquals(this.fordQuotation1.getCurrency(), quotation.getCurrency());
+		assertEquals(this.fordQuotation1.getVolume(), quotation.getVolume());
+		
+		//Check if Indicator and Instrument have been initialized and contain data.
+		assertEquals(this.fordQuotation1.getInstrument().getId(), quotation.getInstrument().getId());
+		assertEquals(this.fordQuotation1.getIndicator().getId(), quotation.getIndicator().getId());
+		assertEquals(this.fordQuotation1.getIndicator().getStage(), quotation.getIndicator().getStage());
 	}
 }
