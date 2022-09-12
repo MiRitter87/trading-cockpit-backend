@@ -340,8 +340,12 @@ public class QuotationProviderYahooDAO implements QuotationProviderDAO {
 	 * @param volume A list of historical volume data.
 	 * @param index The index at which the volume data are to be extracted.
 	 * @return The volume.
+	 * @throws Exception Failed to read volume data.
 	 */
-	protected long getVolumeFromQuotationHistoryResponse(final ArrayList<?> volume, final int index) {
+	protected long getVolumeFromQuotationHistoryResponse(final ArrayList<?> volume, final int index) throws Exception {
+		if(volume.get(index) == null)
+			throw new Exception("Volume data contains null values.");
+		
 		return Long.valueOf((Integer)volume.get(index));
 	}
 	
@@ -352,11 +356,17 @@ public class QuotationProviderYahooDAO implements QuotationProviderDAO {
 	 * @param adjustedClose A list of historical adjusted closing prices.
 	 * @param index The index at which the adjusted closing price is to be extracted.
 	 * @return The adjusted closing price.
+	 * @throws Exception Failed to read price data.
 	 */
-	protected BigDecimal getAdjustedCloseFromQuotationHistoryResponse(final ArrayList<?> adjustedClose, final int index) {
-		double adjustedCloseRaw = (double) adjustedClose.get(index);
-		BigDecimal adjustedClosingPrice = BigDecimal.valueOf(adjustedCloseRaw);
+	protected BigDecimal getAdjustedCloseFromQuotationHistoryResponse(final ArrayList<?> adjustedClose, final int index) throws Exception {
+		double adjustedCloseRaw;
+		BigDecimal adjustedClosingPrice;
 		
+		if(adjustedClose.get(index) == null)
+			throw new Exception("Price data contains null values.");
+		
+		adjustedCloseRaw = (double) adjustedClose.get(index);
+		adjustedClosingPrice = BigDecimal.valueOf(adjustedCloseRaw);
 		adjustedClosingPrice = adjustedClosingPrice.setScale(2, RoundingMode.HALF_UP);
 		
 		

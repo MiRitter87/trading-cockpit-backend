@@ -17,7 +17,16 @@ import backend.model.instrument.Quotation;
 public class QuotationProviderYahooDAOStub extends QuotationProviderYahooDAO {
 	@Override
 	public List<Quotation> getQuotationHistory(String symbol, StockExchange stockExchange, Integer years) throws Exception {
-		String quotationHistoryJSON = Files.readString(Paths.get("src/test/resources/yahooTSEQuotationHistoryDML.json"));
+		String jsonPath = "";
+		
+		if(symbol.equals("DML") && stockExchange.equals(StockExchange.TSX))
+			jsonPath = "src/test/resources/yahooTSEQuotationHistoryDML.json";
+		else if(symbol.equals("BNCH") && stockExchange.equals(StockExchange.TSXV))
+			jsonPath = "src/test/resources/yahooTSXVQuotationHistoryBNCH.json";
+		else
+			return null;
+		
+		String quotationHistoryJSON = Files.readString(Paths.get(jsonPath));
 		
 		return this.convertJSONToQuotations(quotationHistoryJSON);
 	}
