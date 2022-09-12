@@ -196,6 +196,24 @@ public class QuotationProviderYahooDAOTest {
 	
 	@Test
 	/**
+	 * Tests the retrieval of the quotation history that has incomplete data.
+	 * Volume and/or price data are missing partially.
+	 */
+	public void testGetQuotationHistoryIncomplete() {
+		try {
+			quotationProviderYahooDAO.getQuotationHistory("BNCH", StockExchange.TSXV, 1);
+		} 
+		catch(NullPointerException nullPointerException) {
+			fail(nullPointerException.getMessage());
+		}
+		catch (Exception expected) {
+			//All is well.
+		}
+	}
+	
+	
+	@Test
+	/**
 	 * Tests the retrieval of the query URL for the current quotation of a stock listed at the TSX.
 	 */
 	public void testGetQueryUrlCurrentQuotationTSX() {
