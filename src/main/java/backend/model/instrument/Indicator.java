@@ -70,10 +70,16 @@ public class Indicator {
 	@Column(name="SMA30_VOLUME")
 	private long sma30Volume;
 	
-	@Column(name="RS_PERCENT_SUM")
+	/**
+	 * The difference in percent between the average volume of the last 10 days compared to the SMA(30) of the volume.
+	 */
+	@Column(name="VOLUME_DIFFERENTIAL_10_DAYS")
+	private float volumeDifferential10Days;
+	
 	/**
 	 * The sum of an instruments performance in different time frames used for rsNumber calculation.
 	 */
+	@Column(name="RS_PERCENT_SUM")
 	private float rsPercentSum;	
 	
 	/**
@@ -236,6 +242,22 @@ public class Indicator {
 
 
 	/**
+	 * @return the volumeDifferential10days
+	 */
+	public float getVolumeDifferential10days() {
+		return volumeDifferential10Days;
+	}
+
+
+	/**
+	 * @param volumeDifferential10days the volumeDifferential10days to set
+	 */
+	public void setVolumeDifferential10days(float volumeDifferential10days) {
+		this.volumeDifferential10Days = volumeDifferential10days;
+	}
+
+
+	/**
 	 * @return the rsPercentSum
 	 */
 	public float getRsPercentSum() {
@@ -270,7 +292,7 @@ public class Indicator {
 	@Override
 	public int hashCode() {
 		return Objects.hash(bollingerBandWidth, distanceTo52WeekHigh, distanceTo52WeekLow, rsNumber, rsPercentSum, 
-				sma150, sma200, sma50, stage, sma30Volume);
+				sma150, sma200, sma50, stage, sma30Volume, volumeDifferential10Days);
 	}
 
 
@@ -290,6 +312,8 @@ public class Indicator {
 				&& Float.floatToIntBits(rsPercentSum) == Float.floatToIntBits(other.rsPercentSum)
 				&& Float.floatToIntBits(sma150) == Float.floatToIntBits(other.sma150)
 				&& Float.floatToIntBits(sma200) == Float.floatToIntBits(other.sma200)
-				&& Float.floatToIntBits(sma50) == Float.floatToIntBits(other.sma50) && stage == other.stage;
+				&& Float.floatToIntBits(sma50) == Float.floatToIntBits(other.sma50) 
+				&& Float.floatToIntBits(volumeDifferential10Days) == Float.floatToIntBits(other.volumeDifferential10Days)
+				&& stage == other.stage;
 	}
 }
