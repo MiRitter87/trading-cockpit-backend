@@ -233,7 +233,6 @@ public class ScanThread extends Thread {
 			indicator.setDistanceTo52WeekHigh(this.indicatorCalculator.getDistanceTo52WeekHigh(mostRecentQuotation, sortedQuotations));
 			indicator.setDistanceTo52WeekLow(this.indicatorCalculator.getDistanceTo52WeekLow(mostRecentQuotation, sortedQuotations));
 			indicator.setBollingerBandWidth(this.indicatorCalculator.getBollingerBandWidth(10, 2, mostRecentQuotation, sortedQuotations));
-			indicator.setSma30Volume(this.indicatorCalculator.getSimpleMovingAverageVolume(30, mostRecentQuotation, sortedQuotations));
 			indicator.setVolumeDifferential10days(this.indicatorCalculator.getVolumeDifferential(30, 10, mostRecentQuotation, sortedQuotations));
 			mostRecentQuotation.setIndicator(indicator);
 			

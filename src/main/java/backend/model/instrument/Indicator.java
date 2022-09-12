@@ -65,12 +65,6 @@ public class Indicator {
 	private float sma200;
 	
 	/**
-	 * The simple moving average volume of the last 30 trading days.
-	 */
-	@Column(name="SMA30_VOLUME")
-	private long sma30Volume;
-	
-	/**
 	 * The difference in percent between the average volume of the last 10 days compared to the SMA(30) of the volume.
 	 */
 	@Column(name="VOLUME_DIFFERENTIAL_10_DAYS")
@@ -226,22 +220,6 @@ public class Indicator {
 
 
 	/**
-	 * @return the sma30Volume
-	 */
-	public long getSma30Volume() {
-		return sma30Volume;
-	}
-
-
-	/**
-	 * @param sma30Volume the sma30Volume to set
-	 */
-	public void setSma30Volume(long sma30Volume) {
-		this.sma30Volume = sma30Volume;
-	}
-
-
-	/**
 	 * @return the volumeDifferential10days
 	 */
 	public float getVolumeDifferential10days() {
@@ -292,7 +270,7 @@ public class Indicator {
 	@Override
 	public int hashCode() {
 		return Objects.hash(bollingerBandWidth, distanceTo52WeekHigh, distanceTo52WeekLow, rsNumber, rsPercentSum, 
-				sma150, sma200, sma50, stage, sma30Volume, volumeDifferential10Days);
+				sma150, sma200, sma50, stage, volumeDifferential10Days);
 	}
 
 
@@ -308,7 +286,7 @@ public class Indicator {
 		return Float.floatToIntBits(bollingerBandWidth) == Float.floatToIntBits(other.bollingerBandWidth)
 				&& Float.floatToIntBits(distanceTo52WeekHigh) == Float.floatToIntBits(other.distanceTo52WeekHigh)
 				&& Float.floatToIntBits(distanceTo52WeekLow) == Float.floatToIntBits(other.distanceTo52WeekLow)
-				&& Objects.equals(id, other.id) && rsNumber == other.rsNumber && sma30Volume == other.sma30Volume
+				&& Objects.equals(id, other.id) && rsNumber == other.rsNumber
 				&& Float.floatToIntBits(rsPercentSum) == Float.floatToIntBits(other.rsPercentSum)
 				&& Float.floatToIntBits(sma150) == Float.floatToIntBits(other.sma150)
 				&& Float.floatToIntBits(sma200) == Float.floatToIntBits(other.sma200)
