@@ -329,4 +329,18 @@ public class IndicatorCalculatorTest {
 		
 		assertEquals(expectedVolume, actualVolume);
 	}
+	
+	
+	@Test
+	/**
+	 * Tests the calculation of the volume differential between two moving averages of the volume.
+	 */
+	public void testGetVolumeDifferential() {
+		List<Quotation> sortedQuotations = this.dmlStock.getQuotationsSortedByDate();
+		float expectedDifferential = (float) -17.58, actualDifferential;
+		
+		actualDifferential = this.indicatorCalculator.getVolumeDifferential(30, 10, sortedQuotations.get(0), sortedQuotations);
+		
+		assertEquals(expectedDifferential, actualDifferential);
+	}
 }

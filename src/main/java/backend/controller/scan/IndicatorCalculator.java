@@ -301,6 +301,29 @@ public class IndicatorCalculator {
 	
 	
 	/**
+	 * Calculates the difference in percent between the average volume of two periods.
+	 * 
+	 * @param daysPeriod1 The first period in days on which the Simple Moving Average Volume is based. Usually the longer period.
+	 * @param daysPeriod2 The second period in days on which the Simple Moving Average Volume is based. Usually the shorter period.
+	 * @param quotation quotation The Quotation for which the volume differential is calculated.
+	 * @param quotations A list of quotations that build the trading history used for volume differential calculation.
+	 * @return The volume differential.
+	 */
+	public float getVolumeDifferential(final int daysPeriod1, final int daysPeriod2, final Quotation quotation, final List<Quotation> quotations) {
+		BigDecimal averageVolumePeriod1, averageVolumePeriod2, volumeDifferential;
+		
+		averageVolumePeriod1 = new BigDecimal(this.getSimpleMovingAverageVolume(daysPeriod1, quotation, quotations));
+		averageVolumePeriod2 = new BigDecimal(this.getSimpleMovingAverageVolume(daysPeriod2, quotation, quotations));
+		
+		volumeDifferential = averageVolumePeriod2.divide(averageVolumePeriod1, 4, RoundingMode.HALF_UP);
+		volumeDifferential = volumeDifferential.subtract(new BigDecimal(1));
+		volumeDifferential = volumeDifferential.multiply(new BigDecimal(100));
+		
+		return volumeDifferential.floatValue();
+	}
+	
+	
+	/**
 	 * Provides the performance of a given interval.
 	 * 
 	 * @param sortedQuotations The quotations containing date and price information for performance calculation.
