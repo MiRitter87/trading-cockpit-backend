@@ -222,7 +222,7 @@ public class Indicator {
 	/**
 	 * @return the volumeDifferential10days
 	 */
-	public float getVolumeDifferential10days() {
+	public float getVolumeDifferential10Days() {
 		return volumeDifferential10Days;
 	}
 
@@ -230,8 +230,8 @@ public class Indicator {
 	/**
 	 * @param volumeDifferential10days the volumeDifferential10days to set
 	 */
-	public void setVolumeDifferential10days(float volumeDifferential10days) {
-		this.volumeDifferential10Days = volumeDifferential10days;
+	public void setVolumeDifferential10Days(float volumeDifferential10Days) {
+		this.volumeDifferential10Days = volumeDifferential10Days;
 	}
 
 

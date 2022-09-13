@@ -363,7 +363,7 @@ public class QuotationServiceTest {
 		this.appleQuotation2Indicator.setDistanceTo52WeekHigh((float) 21.4);
 		this.appleQuotation2Indicator.setDistanceTo52WeekLow((float) 78.81);
 		this.appleQuotation2Indicator.setBollingerBandWidth((float) 8.71);
-		this.appleQuotation2Indicator.setVolumeDifferential10days((float) 19.34);
+		this.appleQuotation2Indicator.setVolumeDifferential10Days((float) 19.34);
 		this.appleQuotation2.setIndicator(this.appleQuotation2Indicator);
 		
 		this.fordQuotation1Indicator = new Indicator();
@@ -375,7 +375,7 @@ public class QuotationServiceTest {
 		this.fordQuotation1Indicator.setDistanceTo52WeekHigh((float) 41.41);
 		this.fordQuotation1Indicator.setDistanceTo52WeekLow((float) 48.81);
 		this.fordQuotation1Indicator.setBollingerBandWidth((float) 4.11);
-		this.fordQuotation1Indicator.setVolumeDifferential10days((float) -9.67);
+		this.fordQuotation1Indicator.setVolumeDifferential10Days((float) -9.67);
 		this.fordQuotation1.setIndicator(this.fordQuotation1Indicator);
 		
 		quotations.add(this.appleQuotation2);
