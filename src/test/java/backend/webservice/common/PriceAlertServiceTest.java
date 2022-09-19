@@ -734,6 +734,7 @@ public class PriceAlertServiceTest {
 		priceAlertWS.setId(priceAlert.getId());
 		priceAlertWS.setAlertType(priceAlert.getAlertType());
 		priceAlertWS.setPrice(priceAlert.getPrice());
+		priceAlertWS.setTriggerDistancePercent(priceAlert.getTriggerDistancePercent());
 		priceAlertWS.setConfirmationTime(priceAlert.getConfirmationTime());
 		priceAlertWS.setTriggerTime(priceAlert.getTriggerTime());
 		priceAlertWS.setLastStockQuoteTime(priceAlert.getLastStockQuoteTime());

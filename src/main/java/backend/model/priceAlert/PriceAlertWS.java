@@ -31,6 +31,11 @@ public class PriceAlertWS {
 	private BigDecimal price;
 	
 	/**
+	 * The distance between the current price and the trigger level in percent.
+	 */
+	private float triggerDistancePercent;
+	
+	/**
 	 * The time at which the alert has been triggered.
 	 */
 	private Date triggerTime;
@@ -115,6 +120,22 @@ public class PriceAlertWS {
 	 */
 	public void setPrice(BigDecimal price) {
 		this.price = price;
+	}
+
+
+	/**
+	 * @return the triggerDistancePercent
+	 */
+	public float getTriggerDistancePercent() {
+		return triggerDistancePercent;
+	}
+
+
+	/**
+	 * @param triggerDistancePercent the triggerDistancePercent to set
+	 */
+	public void setTriggerDistancePercent(float triggerDistancePercent) {
+		this.triggerDistancePercent = triggerDistancePercent;
 	}
 
 
