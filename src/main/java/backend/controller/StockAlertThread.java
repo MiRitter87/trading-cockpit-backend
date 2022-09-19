@@ -1,5 +1,7 @@
 package backend.controller;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -170,7 +172,26 @@ public class StockAlertThread extends Thread {
 			priceAlert.setTriggerTime(new Date());
 		
 		priceAlert.setLastStockQuoteTime(new Date());
+		priceAlert.setTriggerDistancePercent(this.getTriggerDistancePercent(priceAlert, quotation));
 		
 		this.priceAlertDAO.updatePriceAlert(priceAlert);
+	}
+	
+	
+	/**
+	 * Gets the distance between the current instrument price and the trigger price in percent.
+	 * 
+	 * @param priceAlert The PriceAlert defining the trigger price.
+	 * @param quotation The Quotation containing the current price.
+	 * @return The distance between current price and trigger price in percent.
+	 */
+	private float getTriggerDistancePercent(final PriceAlert priceAlert, final Quotation quotation) {
+		BigDecimal percentDistance = new BigDecimal(0);
+		
+		percentDistance = quotation.getPrice().divide(priceAlert.getPrice(), 4, RoundingMode.HALF_UP);
+		percentDistance = percentDistance.subtract(BigDecimal.valueOf(1));
+		percentDistance = percentDistance.multiply(BigDecimal.valueOf(100));
+		
+		return percentDistance.floatValue();
 	}
 }
