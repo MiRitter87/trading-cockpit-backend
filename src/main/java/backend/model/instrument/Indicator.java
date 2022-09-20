@@ -83,7 +83,7 @@ public class Indicator {
 	private int rsNumber;
 	
 	/**
-	 * The length of the most recent consolidation in weeks. Beginning at the most recent 52-week high.
+	 * The length of the most recent consolidation in weeks, beginning at the most recent 52-week high.
 	 */
 	@Column(name="BASE_LENGTH_WEEKS")
 	private int baseLengthWeeks;

@@ -324,6 +324,48 @@ public class IndicatorCalculator {
 	
 	
 	/**
+	 * Calculates the length of the most recent consolidation in weeks, beginning at the most recent 52-week high.
+	 * 
+	 * @param quotation The Quotation for which the base length is calculated.
+	 * @param quotations A list of quotations that build the trading history used for base length calculation.
+	 * @return The base length in weeks.
+	 */
+	public int getBaseLengthWeeks(final Quotation quotation, final List<Quotation> quotations) {
+		Instrument instrument = new Instrument();
+		Quotation tempQuotation;
+		List<Quotation> sortedQuotations;
+		BigDecimal highPrice52Weeks = new BigDecimal(0), baseLengthWeeks = new BigDecimal(0);
+		int indexOfQuotation = 0, indexOf52WeekHigh = 0, baseLengthDays;
+		
+		//Sort the quotations by date for determination of last 252 quotes.
+		instrument.setQuotations(quotations);
+		sortedQuotations = instrument.getQuotationsSortedByDate();
+		
+		//Get the starting point of 52 week high calculation.
+		indexOfQuotation = sortedQuotations.indexOf(quotation);
+		
+		//Get index of 52w high based on quotation within history.
+		//If the trading history does not span a whole year, take all data available.
+		for(int i = indexOfQuotation; i < (252 + indexOfQuotation) && i < sortedQuotations.size(); i++) {
+			tempQuotation = sortedQuotations.get(i);
+			
+			if(tempQuotation.getPrice().compareTo(highPrice52Weeks) == 1) {
+				indexOf52WeekHigh = i;
+				highPrice52Weeks = tempQuotation.getPrice();
+			}
+		}
+		
+		//Count number of days between quotation and 52 week high.
+		baseLengthDays = indexOf52WeekHigh - indexOfQuotation;
+		
+		//Divide result by 5 to get number in weeks.
+		baseLengthWeeks = new BigDecimal(baseLengthDays).divide(new BigDecimal(5), 0, RoundingMode.HALF_UP);
+		
+		return baseLengthWeeks.intValue();
+	}
+	
+	
+	/**
 	 * Provides the performance of a given interval.
 	 * 
 	 * @param sortedQuotations The quotations containing date and price information for performance calculation.

@@ -343,4 +343,18 @@ public class IndicatorCalculatorTest {
 		
 		assertEquals(expectedDifferential, actualDifferential);
 	}
+	
+	
+	@Test
+	/**
+	 * Tests the calculation of the base length in weeks since the last 52 week high.
+	 */
+	public void testGetBaseLengthWeeks() {
+		List<Quotation> sortedQuotations = this.dmlStock.getQuotationsSortedByDate();
+		int expectedBaseLength = 35, actualBaseLength;
+		
+		actualBaseLength = this.indicatorCalculator.getBaseLengthWeeks(sortedQuotations.get(0), sortedQuotations);
+		
+		assertEquals(expectedBaseLength, actualBaseLength);
+	}
 }
