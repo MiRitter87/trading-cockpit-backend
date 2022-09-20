@@ -82,6 +82,12 @@ public class Indicator {
 	@Column(name="RS_NUMBER")
 	private int rsNumber;
 	
+	/**
+	 * The length of the most recent consolidation in weeks. Beginning at the most recent 52-week high.
+	 */
+	@Column(name="BASE_LENGTH_WEEKS")
+	private int baseLengthWeeks;
+	
 	
 	/**
 	 * Default constructor.
@@ -267,10 +273,26 @@ public class Indicator {
 	}
 
 
+	/**
+	 * @return the baseLengthWeeks
+	 */
+	public int getBaseLengthWeeks() {
+		return baseLengthWeeks;
+	}
+
+
+	/**
+	 * @param baseLengthWeeks the baseLengthWeeks to set
+	 */
+	public void setBaseLengthWeeks(int baseLengthWeeks) {
+		this.baseLengthWeeks = baseLengthWeeks;
+	}
+
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(bollingerBandWidth, distanceTo52WeekHigh, distanceTo52WeekLow, rsNumber, rsPercentSum, 
-				sma150, sma200, sma50, stage, volumeDifferential10Days);
+				sma150, sma200, sma50, stage, volumeDifferential10Days, baseLengthWeeks);
 	}
 
 
@@ -292,6 +314,6 @@ public class Indicator {
 				&& Float.floatToIntBits(sma200) == Float.floatToIntBits(other.sma200)
 				&& Float.floatToIntBits(sma50) == Float.floatToIntBits(other.sma50) 
 				&& Float.floatToIntBits(volumeDifferential10Days) == Float.floatToIntBits(other.volumeDifferential10Days)
-				&& stage == other.stage;
+				&& stage == other.stage && baseLengthWeeks == other.baseLengthWeeks;
 	}
 }
