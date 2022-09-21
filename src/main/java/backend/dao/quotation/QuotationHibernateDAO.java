@@ -12,6 +12,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 import backend.model.instrument.Quotation;
+import backend.webservice.ScanTemplate;
 
 /**
  * Provides access to Quotation database persistence using Hibernate.
@@ -235,11 +236,11 @@ public class QuotationHibernateDAO implements QuotationDAO {
 		
 		return quotations;
 	}
-
-
+	
+	
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Quotation> getQuotationsMinerviniTrendTemplate() throws Exception {
+	public List<Quotation> getQuotationsByTemplate(ScanTemplate scanTemplate) throws Exception {
 		EntityManager entityManager = this.sessionFactory.createEntityManager();
 		List<Quotation> quotations;
 		Query query;
@@ -256,111 +257,20 @@ public class QuotationHibernateDAO implements QuotationDAO {
 			quotationIdsWithMaxDate = query.getResultList();
 			
 			//Find all quotations that have an Indicator defined and where the Quotation is the most recent one of an Instrument.
-			//Also fetch the Instrument data of those records.
-			//Apply the criteria of the Minervini Trend Template to the quotations and indicators.
-			query = entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i JOIN q.indicator r WHERE "
-					+ "quotation_id IN :quotationIds "
-					+ "AND q.indicator IS NOT NULL "
-					+ "AND q.price > r.sma50 "
-					+ "AND r.sma50 > r.sma150 "
-					+ "AND r.sma150 > r.sma200 "
-					+ "AND r.distanceTo52WeekLow >= 30 "
-					+ "AND r.distanceTo52WeekHigh >= -25 "
-					+ "AND r.rsNumber >= 70");
-			
-			query.setParameter("quotationIds", quotationIdsWithMaxDate);
-			quotations = query.getResultList();
-			
-			entityManager.getTransaction().commit();			
-		}
-		catch(Exception exception) {
-			//If something breaks a rollback is necessary!?
-			if(entityManager.getTransaction().isActive())
-				entityManager.getTransaction().rollback();
-			throw exception;
-		}
-		finally {
-			entityManager.close();			
-		}
-		
-		return quotations;
-	}
-	
-	
-	@SuppressWarnings("unchecked")
-	@Override
-	public List<Quotation> getQuotationsVolatilityContraction10Days() throws Exception {
-		EntityManager entityManager = this.sessionFactory.createEntityManager();
-		List<Quotation> quotations;
-		Query query;
-		List<Object> quotationIdsWithMaxDate;
-
-		try {
-			entityManager.getTransaction().begin();
-			
-			/*
-			 * The selection is split into two selects because JOINs with sub-queries are only possible in native SQL.
-			 * But the needed JOIN FETCH is not possible in native SQL.
-			 */
-			query = this.getQueryForQuotationIdsWithMaxDate(entityManager);
-			quotationIdsWithMaxDate = query.getResultList();
-			
-			//Find all quotations that have an Indicator defined and where the Quotation is the most recent one of an Instrument.
-			//Also fetch the Instrument data of those records.
-			//Apply the criteria of the Volatility Contraction Template to the quotations and indicators.
-			query = entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i JOIN q.indicator r WHERE "
-					+ "quotation_id IN :quotationIds "
-					+ "AND q.indicator IS NOT NULL "
-					+ "AND r.volumeDifferential10Days < 0"
-					+ "AND r.bollingerBandWidth < 10");
-			
-			query.setParameter("quotationIds", quotationIdsWithMaxDate);
-			quotations = query.getResultList();
-			
-			entityManager.getTransaction().commit();			
-		}
-		catch(Exception exception) {
-			//If something breaks a rollback is necessary!?
-			if(entityManager.getTransaction().isActive())
-				entityManager.getTransaction().rollback();
-			throw exception;
-		}
-		finally {
-			entityManager.close();			
-		}
-		
-		return quotations;
-	}
-	
-	
-	@SuppressWarnings("unchecked")
-	@Override
-	public List<Quotation> getQuotationsBreakoutCandidates() throws Exception {
-		EntityManager entityManager = this.sessionFactory.createEntityManager();
-		List<Quotation> quotations;
-		Query query;
-		List<Object> quotationIdsWithMaxDate;
-
-		try {
-			entityManager.getTransaction().begin();
-			
-			/*
-			 * The selection is split into two selects because JOINs with sub-queries are only possible in native SQL.
-			 * But the needed JOIN FETCH is not possible in native SQL.
-			 */
-			query = this.getQueryForQuotationIdsWithMaxDate(entityManager);
-			quotationIdsWithMaxDate = query.getResultList();
-			
-			//Find all quotations that have an Indicator defined and where the Quotation is the most recent one of an Instrument.
-			//Also fetch the Instrument data of those records.
-			//Apply the criteria of the Breakout Candidates Template to the quotations and indicators.
-			query = entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i JOIN q.indicator r WHERE "
-					+ "quotation_id IN :quotationIds "
-					+ "AND q.indicator IS NOT NULL "
-					+ "AND r.volumeDifferential10Days < 0"
-					+ "AND r.bollingerBandWidth < 10"
-					+ "AND r.baseLengthWeeks >= 3"
-					+ "AND r.distanceTo52WeekHigh >= -10");
+			//Also fetch the Instrument data of those records. Apply the criteria of the given template.
+			switch(scanTemplate) {
+				case MINERVINI_TREND_TEMPLATE:
+					query = this.getQueryForMinerviniTrendTemplate(entityManager);
+					break;
+				case BREAKOUT_CANDIDATES:
+					query = this.getQueryForBreakoutCandidatesTemplate(entityManager);
+					break;
+				case VOLATILITY_CONTRACTION_10_DAYS:
+					query = this.getQueryForVolatilityContractionTemplate(entityManager);
+					break;
+				default:
+					return null;
+			}
 			
 			query.setParameter("quotationIds", quotationIdsWithMaxDate);
 			quotations = query.getResultList();
@@ -388,10 +298,59 @@ public class QuotationHibernateDAO implements QuotationDAO {
 	 * @return The Query.
 	 */
 	private Query getQueryForQuotationIdsWithMaxDate(final EntityManager entityManager) {
-		Query query = entityManager.createNativeQuery("SELECT quotation_id FROM Quotation q "
+		return entityManager.createNativeQuery("SELECT quotation_id FROM Quotation q "
 				+ "INNER JOIN (SELECT max(date) AS maxdate, instrument_id FROM Quotation GROUP BY instrument_id) jointable "
 				+ "ON q.instrument_id = jointable.instrument_id AND q.date = jointable.maxdate");
-		
-		return query;
+	}
+	
+	
+	/**
+	 * Provides the Query for the Minervini Trend Template.
+	 * 
+	 * @param entityManager The EntityManager used for Query creation.
+	 * @return The Query.
+	 */
+	private Query getQueryForMinerviniTrendTemplate(final EntityManager entityManager) {
+		return entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i JOIN q.indicator r WHERE "
+				+ "quotation_id IN :quotationIds "
+				+ "AND q.indicator IS NOT NULL "
+				+ "AND q.price > r.sma50 "
+				+ "AND r.sma50 > r.sma150 "
+				+ "AND r.sma150 > r.sma200 "
+				+ "AND r.distanceTo52WeekLow >= 30 "
+				+ "AND r.distanceTo52WeekHigh >= -25 "
+				+ "AND r.rsNumber >= 70");
+	}
+	
+	
+	/**
+	 * Provides the Query for the Volatility Contraction Template.
+	 * 
+	 * @param entityManager The EntityManager used for Query creation.
+	 * @return The Query.
+	 */
+	private Query getQueryForVolatilityContractionTemplate(final EntityManager entityManager) {
+		return entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i JOIN q.indicator r WHERE "
+				+ "quotation_id IN :quotationIds "
+				+ "AND q.indicator IS NOT NULL "
+				+ "AND r.volumeDifferential10Days < 0"
+				+ "AND r.bollingerBandWidth < 10");
+	}
+	
+	
+	/**
+	 * Provides the Query for the Breakout Candidates Template.
+	 * 
+	 * @param entityManager The EntityManager used for Query creation.
+	 * @return The Query.
+	 */
+	private Query getQueryForBreakoutCandidatesTemplate(final EntityManager entityManager) {
+		return entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i JOIN q.indicator r WHERE "
+				+ "quotation_id IN :quotationIds "
+				+ "AND q.indicator IS NOT NULL "
+				+ "AND r.volumeDifferential10Days < 0"
+				+ "AND r.bollingerBandWidth < 10"
+				+ "AND r.baseLengthWeeks >= 3"
+				+ "AND r.distanceTo52WeekHigh >= -10");
 	}
 }

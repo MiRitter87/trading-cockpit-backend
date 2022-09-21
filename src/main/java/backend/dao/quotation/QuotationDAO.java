@@ -3,6 +3,7 @@ package backend.dao.quotation;
 import java.util.List;
 
 import backend.model.instrument.Quotation;
+import backend.webservice.ScanTemplate;
 
 /**
  * Interface for Quotation persistence.
@@ -68,31 +69,12 @@ public interface QuotationDAO {
 	
 	
 	/**
-	 * Gets the most recent Quotation of each Instrument that matches the Minervini Trend Template.
+	 * Gets the most recent Quotation of each Instrument that matches the given Template.
 	 * Only those quotations are provided that have an Indicator associated with them.
 	 * 
-	 * @return The most recent Quotation of each Instrument that matches the Minervini Trend Template.
+	 * @param scanTemplate The Template for Quotation query.
+	 * @return The most recent Quotation of each Instrument that matches the given Template.
 	 * @throws Exception Quotation determination failed.
 	 */
-	List<Quotation> getQuotationsMinerviniTrendTemplate() throws Exception;
-	
-	
-	/**
-	 * Gets the most recent Quotation of each Instrument that matches the Volatility Contraction Template.
-	 * Only those quotations are provided that have an Indicator associated with them.
-	 * 
-	 * @return The most recent Quotation of each Instrument that matches the Volatility Contraction Template.
-	 * @throws Exception Quotation determination failed.
-	 */
-	List<Quotation> getQuotationsVolatilityContraction10Days() throws Exception;
-	
-	
-	/**
-	 * Gets the most recent Quotation of each Instrument that matches the Breakout Candidates Template.
-	 * Only those quotations are provided that have an Indicator associated with them.
-	 * 
-	 * @return The most recent Quotation of each Instrument that matches the Breakout Candidates Template.
-	 * @throws Exception Quotation determination failed.
-	 */
-	List<Quotation> getQuotationsBreakoutCandidates() throws Exception;
+	List<Quotation> getQuotationsByTemplate(final ScanTemplate scanTemplate) throws Exception;
 }
