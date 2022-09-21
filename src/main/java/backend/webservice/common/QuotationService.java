@@ -82,6 +82,8 @@ public class QuotationService {
 			return this.quotationDAO.getQuotationsMinerviniTrendTemplate();
 		else if(scanTemplate == ScanTemplate.VOLATILITY_CONTRACTION_10_DAYS)
 			return this.quotationDAO.getQuotationsVolatilityContraction10Days();
+		else if(scanTemplate == ScanTemplate.BREAKOUT_CANDIDATES)
+			return this.quotationDAO.getQuotationsBreakoutCandidates();
 		else
 			return this.quotationDAO.getRecentQuotations();
 	}
