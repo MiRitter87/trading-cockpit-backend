@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 
 import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
+import backend.model.Currency;
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
@@ -135,12 +136,14 @@ public class PriceAlertHibernateDAOTest {
 		this.appleAlert.setInstrument(this.appleInstrument);
 		this.appleAlert.setAlertType(PriceAlertType.GREATER_OR_EQUAL);
 		this.appleAlert.setPrice(BigDecimal.valueOf(185.50));
+		this.appleAlert.setCurrency(Currency.USD);
 		this.appleAlert.setLastStockQuoteTime(null);
 		
 		this.microsoftAlert = new PriceAlert();
 		this.microsoftAlert.setInstrument(this.microsoftInstrument);
 		this.microsoftAlert.setAlertType(PriceAlertType.LESS_OR_EQUAL);
 		this.microsoftAlert.setPrice(BigDecimal.valueOf(250.00));
+		this.microsoftAlert.setCurrency(Currency.USD);
 		lastStockQuote.add(Calendar.MINUTE, -1);
 		this.microsoftAlert.setLastStockQuoteTime(lastStockQuote.getTime());
 		
@@ -148,6 +151,7 @@ public class PriceAlertHibernateDAOTest {
 		this.nvidiaAlert.setInstrument(this.nvidiaInstrument);
 		this.nvidiaAlert.setAlertType(PriceAlertType.LESS_OR_EQUAL);
 		this.nvidiaAlert.setPrice(BigDecimal.valueOf(180.00));
+		this.nvidiaAlert.setCurrency(Currency.USD);
 		lastStockQuote.add(Calendar.MINUTE, -2);
 		this.nvidiaAlert.setLastStockQuoteTime(lastStockQuote.getTime());
 		
@@ -155,6 +159,7 @@ public class PriceAlertHibernateDAOTest {
 		this.netflixAlert.setInstrument(this.netflixInstrument);
 		this.netflixAlert.setAlertType(PriceAlertType.LESS_OR_EQUAL);
 		this.netflixAlert.setPrice(BigDecimal.valueOf(199.99));
+		this.netflixAlert.setCurrency(Currency.USD);
 		this.netflixAlert.setLastStockQuoteTime(null);
 		this.netflixAlert.setTriggerTime(new Date());
 		

@@ -9,6 +9,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import backend.model.Currency;
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
@@ -48,6 +49,7 @@ public class PriceAlertTest {
 		this.priceAlert.setInstrument(this.instrument);
 		this.priceAlert.setAlertType(PriceAlertType.GREATER_OR_EQUAL);
 		this.priceAlert.setPrice(BigDecimal.valueOf(185.50));
+		this.priceAlert.setCurrency(Currency.USD);
 	}
 	
 	
@@ -189,6 +191,29 @@ public class PriceAlertTest {
 		try {
 			this.priceAlert.validate();
 			fail("Validation should have failed because price is too high.");
+		} 
+		catch (Exception expected) {
+			errorMessage = expected.getMessage();
+		}
+		
+		assertEquals(expectedErrorMessage, errorMessage);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests validation of a price alert whose currency is null.
+	 */
+	public void testCurencyIsNull() {
+		ValidationMessageProvider messageProvider = new ValidationMessageProvider();		
+		this.priceAlert.setCurrency(null);
+		
+		String expectedErrorMessage = messageProvider.getNotNullValidationMessage("priceAlert", "currency");
+		String errorMessage = "";
+		
+		try {
+			this.priceAlert.validate();
+			fail("Validation should have failed because currency is null.");
 		} 
 		catch (Exception expected) {
 			errorMessage = expected.getMessage();

@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
 import backend.dao.priceAlert.PriceAlertDAO;
+import backend.model.Currency;
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
@@ -221,6 +222,7 @@ public class PriceAlertServiceTest {
 		alert.setInstrument(this.appleInstrument);
 		alert.setAlertType(PriceAlertType.GREATER_OR_EQUAL);
 		alert.setPrice(BigDecimal.valueOf(185.50));
+		alert.setCurrency(Currency.USD);
 		
 		return alert;
 	}
@@ -237,6 +239,7 @@ public class PriceAlertServiceTest {
 		alert.setInstrument(this.microsoftInstrument);
 		alert.setAlertType(PriceAlertType.LESS_OR_EQUAL);
 		alert.setPrice(BigDecimal.valueOf(250.00));
+		alert.setCurrency(Currency.USD);
 		
 		return alert;
 	}
@@ -254,6 +257,7 @@ public class PriceAlertServiceTest {
 		alert.setInstrument(this.netflixInstrument);
 		alert.setAlertType(PriceAlertType.LESS_OR_EQUAL);
 		alert.setPrice(BigDecimal.valueOf(199.99));
+		alert.setCurrency(Currency.USD);
 		alert.setTriggerTime(new Date());
 		alert.setConfirmationTime(null);
 		
@@ -273,6 +277,7 @@ public class PriceAlertServiceTest {
 		alert.setInstrument(this.nvidiaInstrument);
 		alert.setAlertType(PriceAlertType.LESS_OR_EQUAL);
 		alert.setPrice(BigDecimal.valueOf(180.00));
+		alert.setCurrency(Currency.USD);
 		alert.setTriggerTime(new Date());
 		alert.setConfirmationTime(new Date());
 		
@@ -655,6 +660,7 @@ public class PriceAlertServiceTest {
 		newPriceAlert.setInstrument(appleInstrument);
 		newPriceAlert.setAlertType(PriceAlertType.LESS_OR_EQUAL);
 		newPriceAlert.setPrice(BigDecimal.valueOf(149.99));
+		newPriceAlert.setCurrency(Currency.USD);
 		
 		//Add a new price alert to the database via WebService
 		addPriceAlertResult = service.addPriceAlert(this.convertToWsPriceAlert(newPriceAlert));
@@ -734,6 +740,7 @@ public class PriceAlertServiceTest {
 		priceAlertWS.setId(priceAlert.getId());
 		priceAlertWS.setAlertType(priceAlert.getAlertType());
 		priceAlertWS.setPrice(priceAlert.getPrice());
+		priceAlertWS.setCurrency(priceAlert.getCurrency());
 		priceAlertWS.setTriggerDistancePercent(priceAlert.getTriggerDistancePercent());
 		priceAlertWS.setConfirmationTime(priceAlert.getConfirmationTime());
 		priceAlertWS.setTriggerTime(priceAlert.getTriggerTime());

@@ -3,6 +3,8 @@ package backend.model.priceAlert;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import backend.model.Currency;
+
 /**
  * A lean version of a PriceAlert that is used by the WebService to transfer object data.
  * The main difference to the regular PriceAlert is that IDs are used instead of object references.
@@ -29,6 +31,11 @@ public class PriceAlertWS {
 	 * The price at which the alert is activated.
 	 */
 	private BigDecimal price;
+	
+	/**
+	 * The currency.
+	 */
+	private Currency currency;
 	
 	/**
 	 * The distance between the current price and the trigger level in percent.
@@ -120,6 +127,22 @@ public class PriceAlertWS {
 	 */
 	public void setPrice(BigDecimal price) {
 		this.price = price;
+	}
+
+
+	/**
+	 * @return the currency
+	 */
+	public Currency getCurrency() {
+		return currency;
+	}
+
+
+	/**
+	 * @param currency the currency to set
+	 */
+	public void setCurrency(Currency currency) {
+		this.currency = currency;
 	}
 
 

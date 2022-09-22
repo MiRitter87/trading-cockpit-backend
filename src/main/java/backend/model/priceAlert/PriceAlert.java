@@ -27,6 +27,7 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.validator.HibernateValidator;
 import org.hibernate.validator.messageinterpolation.ExpressionLanguageFeatureLevel;
 
+import backend.model.Currency;
 import backend.model.instrument.Instrument;
 
 /**
@@ -71,6 +72,14 @@ public class PriceAlert {
 	@DecimalMin(value = "0.01", inclusive = true, message = "{priceAlert.price.decimalMin.message}")
 	@Max(value = 100000, message = "{priceAlert.price.max.message}")
 	private BigDecimal price;
+	
+	/**
+	 * The currency.
+	 */
+	@Column(name="CURRENCY", length = 3)
+	@Enumerated(EnumType.STRING)
+	@NotNull(message = "{priceAlert.currency.notNull.message}")
+	private Currency currency;
 	
 	/**
 	 * The distance between the current price and the trigger level in percent.
@@ -170,6 +179,22 @@ public class PriceAlert {
 
 
 	/**
+	 * @return the currency
+	 */
+	public Currency getCurrency() {
+		return currency;
+	}
+
+
+	/**
+	 * @param currency the currency to set
+	 */
+	public void setCurrency(Currency currency) {
+		this.currency = currency;
+	}
+
+
+	/**
 	 * @return the triggerDistancePercent
 	 */
 	public float getTriggerDistancePercent() {
@@ -241,6 +266,7 @@ public class PriceAlert {
 		result = prime * result + ((confirmationTime == null) ? 0 : confirmationTime.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((price == null) ? 0 : price.hashCode());
+		result = prime * result + ((currency == null) ? 0 : currency.hashCode());
 		result = prime * result + ((instrument == null) ? 0 : instrument.hashCode());
 		result = prime * result + ((triggerTime == null) ? 0 : triggerTime.hashCode());
 		result = prime * result + ((lastStockQuoteTime == null) ? 0 : lastStockQuoteTime.hashCode());
@@ -283,6 +309,13 @@ public class PriceAlert {
 				return false;
 			}
 		} else if (price.compareTo(other.price) != 0) {
+			return false;
+		}
+		if (currency == null) {
+			if (other.currency != null) {
+				return false;
+			}
+		} else if (currency.compareTo(other.currency) != 0) {
 			return false;
 		}
 		if (instrument == null) {

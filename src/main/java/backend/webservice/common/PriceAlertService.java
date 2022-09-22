@@ -257,6 +257,7 @@ public class PriceAlertService {
 		priceAlert.setId(priceAlertWS.getId());
 		priceAlert.setAlertType(priceAlertWS.getAlertType());
 		priceAlert.setPrice(priceAlertWS.getPrice());
+		priceAlert.setCurrency(priceAlertWS.getCurrency());
 		priceAlert.setTriggerDistancePercent(priceAlertWS.getTriggerDistancePercent());
 		priceAlert.setConfirmationTime(priceAlertWS.getConfirmationTime());
 		priceAlert.setTriggerTime(priceAlertWS.getTriggerTime());
