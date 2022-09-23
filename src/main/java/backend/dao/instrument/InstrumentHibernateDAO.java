@@ -17,6 +17,7 @@ import backend.model.ObjectInUseException;
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
+import backend.model.priceAlert.PriceAlert;
 
 /**
  * Provides access to Instrument database persistence using Hibernate.
@@ -209,6 +210,7 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 	private void checkInstrumentInUse(final Instrument instrument, final EntityManager entityManager) throws ObjectInUseException {	
 		this.checkQuotationsExist(instrument, entityManager);
 		this.checkInstrumentUsedInList(instrument, entityManager);
+		this.checkInstrumentUsedInPriceAlert(instrument, entityManager);
 	}
 	
 	
@@ -249,6 +251,26 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 		
 		if(lists.size() > 0) {
 			throw new ObjectInUseException(instrument.getId(), lists.get(0).getId(), lists.get(0));
+		}
+	}
+	
+	
+	/**
+	 * Checks if the Instrument is referenced by any PriceAlert.
+	 * 
+	 * @param instrument The Instrument which is checked.
+	 * @throws ObjectInUseException In case the Instrument is in use.
+	 */
+	@SuppressWarnings("unchecked")
+	private void checkInstrumentUsedInPriceAlert(final Instrument instrument, final EntityManager entityManager) throws ObjectInUseException {
+		Query query = entityManager.createQuery("SELECT p FROM PriceAlert p INNER JOIN p.instrument i WHERE i.id = :instrumentId");
+		List<PriceAlert> priceAlerts;
+		
+		query.setParameter("instrumentId", instrument.getId());
+		priceAlerts = query.getResultList();
+		
+		if(priceAlerts.size() > 0) {
+			throw new ObjectInUseException(instrument.getId(), priceAlerts.get(0).getId(), priceAlerts.get(0));
 		}
 	}
 	

@@ -17,6 +17,7 @@ import backend.model.ObjectInUseException;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentArray;
 import backend.model.instrument.Quotation;
+import backend.model.priceAlert.PriceAlert;
 import backend.model.webservice.WebServiceMessage;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
@@ -182,8 +183,14 @@ public class InstrumentService {
 			}
 		}
 		catch(ObjectInUseException objectInUseException) {
-			deleteInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
-					MessageFormat.format(this.resources.getString("instrument.deleteUsedInList"), id, objectInUseException.getUsedById())));
+			if(objectInUseException.getUsedByObject() instanceof backend.model.list.List) {
+				deleteInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
+						MessageFormat.format(this.resources.getString("instrument.deleteUsedInList"), id, objectInUseException.getUsedById())));
+			}
+			else if(objectInUseException.getUsedByObject() instanceof PriceAlert) {
+				deleteInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
+						MessageFormat.format(this.resources.getString("instrument.deleteUsedInPriceAlert"), id, objectInUseException.getUsedById())));
+			}
 		}
 		catch(Exception e) {
 			deleteInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,

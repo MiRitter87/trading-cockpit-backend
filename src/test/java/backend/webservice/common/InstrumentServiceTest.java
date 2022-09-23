@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
 import backend.dao.list.ListDAO;
+import backend.dao.priceAlert.PriceAlertDAO;
 import backend.dao.quotation.QuotationDAO;
 import backend.model.Currency;
 import backend.model.StockExchange;
@@ -30,6 +31,8 @@ import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentArray;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
+import backend.model.priceAlert.PriceAlert;
+import backend.model.priceAlert.PriceAlertType;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
 import backend.tools.WebServiceTools;
@@ -62,6 +65,11 @@ public class InstrumentServiceTest {
 	private static ListDAO listDAO;
 	
 	/**
+	 * DAO to access PriceAlert data.
+	 */
+	private static PriceAlertDAO priceAlertDAO;
+	
+	/**
 	 * The stock of Apple.
 	 */
 	private Instrument appleStock;
@@ -70,6 +78,11 @@ public class InstrumentServiceTest {
 	 * The stock of Microsoft.
 	 */
 	private Instrument microsoftStock;
+	
+	/**
+	 * The stock of NVidia.
+	 */
+	private Instrument nvidiaStock;
 	
 	/**
 	 * A Quotation of the Apple stock.
@@ -81,6 +94,11 @@ public class InstrumentServiceTest {
 	 */
 	private backend.model.list.List list;
 	
+	/**
+	 * A PriceAlert for the Apple stock.
+	 */
+	private PriceAlert nvidiaAlert;
+	
 	
 	@BeforeAll
 	/**
@@ -90,6 +108,7 @@ public class InstrumentServiceTest {
 		instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
 		quotationDAO = DAOManager.getInstance().getQuotationDAO();
 		listDAO = DAOManager.getInstance().getListDAO();
+		priceAlertDAO = DAOManager.getInstance().getPriceAlertDAO();
 	}
 	
 	
@@ -114,6 +133,7 @@ public class InstrumentServiceTest {
 		this.createDummyInstruments();
 		this.createDummyQuotations();
 		this.createDummyLists();
+		this.createDummyPriceAlerts();
 	}
 	
 	
@@ -122,6 +142,7 @@ public class InstrumentServiceTest {
 	 * Tasks to be performed after each test has been run.
 	 */
 	private void tearDown() {
+		this.deleteDummyPriceAlerts();
 		this.deleteDummyLists();
 		this.deleteDummyQuotations();
 		this.deleteDummyInstruments();
@@ -134,10 +155,12 @@ public class InstrumentServiceTest {
 	private void createDummyInstruments() {
 		this.appleStock = this.getAppleStock();
 		this.microsoftStock = this.getMicrosoftStock();
+		this.nvidiaStock = this.getNvidiaStock();
 		
 		try {
 			instrumentDAO.insertInstrument(this.appleStock);
 			instrumentDAO.insertInstrument(this.microsoftStock);
+			instrumentDAO.insertInstrument(this.nvidiaStock);
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
@@ -149,6 +172,7 @@ public class InstrumentServiceTest {
 	 */
 	private void deleteDummyInstruments() {
 		try {
+			instrumentDAO.deleteInstrument(this.nvidiaStock);
 			instrumentDAO.deleteInstrument(this.microsoftStock);
 			instrumentDAO.deleteInstrument(this.appleStock);
 		} catch (Exception e) {
@@ -184,6 +208,23 @@ public class InstrumentServiceTest {
 		
 		instrument.setSymbol("MSFT");
 		instrument.setName("Microsoft");
+		instrument.setStockExchange(StockExchange.NYSE);
+		instrument.setType(InstrumentType.STOCK);
+		
+		return instrument;
+	}
+	
+	
+	/**
+	 * Gets the instrument of the NVidia stock.
+	 * 
+	 * @return The instrument of the NVidia stock.
+	 */
+	private Instrument getNvidiaStock() {
+		Instrument instrument = new Instrument();
+		
+		instrument.setSymbol("NVDA");
+		instrument.setName("NVIDIA");
 		instrument.setStockExchange(StockExchange.NYSE);
 		instrument.setType(InstrumentType.STOCK);
 		
@@ -279,7 +320,50 @@ public class InstrumentServiceTest {
 		list.addInstrument(this.microsoftStock);
 		
 		return list;
-	}	
+	}
+	
+	
+	/**
+	 * Initializes the database with dummy price alerts.
+	 */
+	private void createDummyPriceAlerts() {
+		this.nvidiaAlert = this.getNvidiaAlert();
+		
+		try {
+			priceAlertDAO.insertPriceAlert(this.nvidiaAlert);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	/**
+	 * Deletes the dummy price alerts from the database.
+	 */
+	private void deleteDummyPriceAlerts() {
+		try {
+			priceAlertDAO.deletePriceAlert(this.nvidiaAlert);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	/**
+	 * Gets a PriceAlert for the NVIDIA stock.
+	 * 
+	 * @return A PriceAlert for the NVIDIA stock.
+	 */
+	private PriceAlert getNvidiaAlert() {
+		PriceAlert alert = new PriceAlert();
+		
+		alert.setInstrument(this.nvidiaStock);
+		alert.setAlertType(PriceAlertType.LESS_OR_EQUAL);
+		alert.setPrice(BigDecimal.valueOf(120.00));
+		alert.setCurrency(Currency.USD);
+		
+		return alert;
+	}
 	
 	
 	@Test
@@ -356,7 +440,7 @@ public class InstrumentServiceTest {
 		assertTrue(WebServiceTools.resultContainsErrorMessage(getInstrumentsResult) == false);
 		
 		//Check if two instruments are returned.
-		assertEquals(2, instruments.getInstruments().size());
+		assertEquals(3, instruments.getInstruments().size());
 		
 		//Check all instruments by each attribute.
 		instrument = instruments.getInstruments().get(0);
@@ -374,6 +458,9 @@ public class InstrumentServiceTest {
 		assertEquals(this.microsoftStock.getStockExchange(), instrument.getStockExchange());
 		assertEquals(this.microsoftStock.getType(), instrument.getType());
 		assertEquals(0, instrument.getQuotations().size());
+		
+		instrument = instruments.getInstruments().get(2);
+		assertEquals(this.nvidiaStock, instrument);
 	}
 	
 	
@@ -468,6 +555,30 @@ public class InstrumentServiceTest {
 		//Verify the expected error message.
 		expectedErrorMessage = MessageFormat.format(this.resources.getString("instrument.deleteUsedInList"), 
 				this.microsoftStock.getId(), this.list.getId());
+		actualErrorMessage = deleteInstrumentResult.getMessages().get(0).getText();
+		assertEquals(expectedErrorMessage, actualErrorMessage);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests deletion of an Instrument that is used in a PriceAlert.
+	 */
+	public void testDeleteInstrumentUsedInPriceAlert() {
+		WebServiceResult deleteInstrumentResult;
+		String expectedErrorMessage, actualErrorMessage;
+		
+		//Delete the instrument.
+		InstrumentService service = new InstrumentService();
+		deleteInstrumentResult = service.deleteInstrument(this.nvidiaStock.getId());
+		
+		//There should be a return message of type E.
+		assertTrue(deleteInstrumentResult.getMessages().size() == 1);
+		assertTrue(deleteInstrumentResult.getMessages().get(0).getType() == WebServiceMessageType.E);
+		
+		//Verify the expected error message.
+		expectedErrorMessage = MessageFormat.format(this.resources.getString("instrument.deleteUsedInPriceAlert"), 
+				this.nvidiaStock.getId(), this.nvidiaAlert.getId());
 		actualErrorMessage = deleteInstrumentResult.getMessages().get(0).getText();
 		assertEquals(expectedErrorMessage, actualErrorMessage);
 	}
