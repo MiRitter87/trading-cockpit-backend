@@ -366,6 +366,51 @@ public class IndicatorCalculator {
 	
 	
 	/**
+	 * Calculates the volume ratio between up-days and down-days for the given number of days.
+	 * 
+	 * @param days The number of the last trading days that are taken into account for calculation.
+	 * @param quotation The Quotation for which the U/D Volume Ratio is calculated.
+	 * @param quotations A list of quotations that build the trading history used for U/D Volume Ratio calculation.
+	 * @return The U/D Volume Ratio.
+	 */
+	public float getUpDownVolumeRatio(final int days, final Quotation quotation, final List<Quotation> quotations) {
+		Instrument instrument = new Instrument();
+		List<Quotation> sortedQuotations;
+		Quotation currentDayQuotation, previousDayQuotation;
+		int indexOfQuotation = 0;
+		long upVolumeSum = 0, downVolumeSum = 0;
+		BigDecimal upDownVolumeRatio;
+		
+		//Sort the quotations by date for calculation of volume sums based on last x days.
+		instrument.setQuotations(quotations);
+		sortedQuotations = instrument.getQuotationsSortedByDate();
+		
+		//Get the starting point of sum calculation.
+		indexOfQuotation = sortedQuotations.indexOf(quotation);
+		
+		//Check if enough quotations exist for sum calculation.
+		if((sortedQuotations.size() - days - indexOfQuotation - 1) < 0)
+			return 0;
+		
+		//Calculate the sum of the prices of the last x days.
+		for(int i = indexOfQuotation; i<days; i++) {
+			currentDayQuotation = sortedQuotations.get(i);
+			previousDayQuotation = sortedQuotations.get(i+1);
+			
+			if(currentDayQuotation.getPrice().compareTo(previousDayQuotation.getPrice()) == 1)
+				upVolumeSum = upVolumeSum + currentDayQuotation.getVolume();
+			else if(currentDayQuotation.getPrice().compareTo(previousDayQuotation.getPrice()) == -1)
+				downVolumeSum = downVolumeSum + currentDayQuotation.getVolume();
+		}
+		
+		//Build the ratio.
+		upDownVolumeRatio = new BigDecimal(upVolumeSum).divide(new BigDecimal(downVolumeSum), 2, RoundingMode.HALF_UP);
+		
+		return upDownVolumeRatio.floatValue();
+	}
+	
+	
+	/**
 	 * Provides the performance of a given interval.
 	 * 
 	 * @param sortedQuotations The quotations containing date and price information for performance calculation.

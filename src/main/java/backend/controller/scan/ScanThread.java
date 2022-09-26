@@ -235,6 +235,7 @@ public class ScanThread extends Thread {
 			indicator.setBollingerBandWidth(this.indicatorCalculator.getBollingerBandWidth(10, 2, mostRecentQuotation, sortedQuotations));
 			indicator.setVolumeDifferential10Days(this.indicatorCalculator.getVolumeDifferential(30, 10, mostRecentQuotation, sortedQuotations));
 			indicator.setBaseLengthWeeks(this.indicatorCalculator.getBaseLengthWeeks(mostRecentQuotation, sortedQuotations));
+			indicator.setUpDownVolumeRatio(this.indicatorCalculator.getUpDownVolumeRatio(50, mostRecentQuotation, sortedQuotations));
 			mostRecentQuotation.setIndicator(indicator);
 			
 			modifiedQuotations.add(mostRecentQuotation);

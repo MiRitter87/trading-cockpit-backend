@@ -92,7 +92,7 @@ public class Indicator {
 	 * The ratio of the volume between up-days and down-days.
 	 */
 	@Column(name="UD_VOL_RATIO")
-	private float udVolRatio;
+	private float upDownVolumeRatio;
 	
 	
 	/**
@@ -296,25 +296,25 @@ public class Indicator {
 
 
 	/**
-	 * @return the udVolRatio
+	 * @return the upDownVolumeRatio
 	 */
-	public float getUdVolRatio() {
-		return udVolRatio;
+	public float getUpDownVolumeRatio() {
+		return upDownVolumeRatio;
 	}
 
 
 	/**
-	 * @param udVolRatio the udVolRatio to set
+	 * @param upDownVolumeRatio the udVolRatio to set
 	 */
-	public void setUdVolRatio(float udVolRatio) {
-		this.udVolRatio = udVolRatio;
+	public void setUpDownVolumeRatio(float upDownVolumeRatio) {
+		this.upDownVolumeRatio = upDownVolumeRatio;
 	}
 
 
 	@Override
 	public int hashCode() {
 		return Objects.hash(bollingerBandWidth, distanceTo52WeekHigh, distanceTo52WeekLow, rsNumber, rsPercentSum, 
-				sma150, sma200, sma50, stage, volumeDifferential10Days, baseLengthWeeks, udVolRatio);
+				sma150, sma200, sma50, stage, volumeDifferential10Days, baseLengthWeeks, upDownVolumeRatio);
 	}
 
 
@@ -337,6 +337,6 @@ public class Indicator {
 				&& Float.floatToIntBits(sma50) == Float.floatToIntBits(other.sma50) 
 				&& Float.floatToIntBits(volumeDifferential10Days) == Float.floatToIntBits(other.volumeDifferential10Days)
 				&& stage == other.stage && baseLengthWeeks == other.baseLengthWeeks
-				&& udVolRatio == other.udVolRatio;
+				&& upDownVolumeRatio == other.upDownVolumeRatio;
 	}
 }

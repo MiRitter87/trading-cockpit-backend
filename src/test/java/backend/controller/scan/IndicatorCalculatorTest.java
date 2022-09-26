@@ -357,4 +357,18 @@ public class IndicatorCalculatorTest {
 		
 		assertEquals(expectedBaseLength, actualBaseLength);
 	}
+	
+	
+	@Test
+	/**
+	 * Tests the calculation of the Up/Down Volume ratio.
+	 */
+	public void testGetUpDownVolumeRatio() {
+		List<Quotation> sortedQuotations = this.dmlStock.getQuotationsSortedByDate();
+		float expectedUdVolRatio = (float) 0.95, actualUdVolRatio;
+		
+		actualUdVolRatio = this.indicatorCalculator.getUpDownVolumeRatio(50, sortedQuotations.get(0), sortedQuotations);
+		
+		assertEquals(expectedUdVolRatio, actualUdVolRatio);
+	}
 }
