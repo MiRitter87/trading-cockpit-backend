@@ -170,24 +170,15 @@ public class QuotationProviderYahooDAOTest {
 			//Check the three most recent quotations.
 			actualQuotation = actualQuotationHistory.get(0);
 			expectedQuotation = expectedQuotationHistory.get(0);
-			assertEquals(expectedQuotation.getDate().getTime(), actualQuotation.getDate().getTime());
-			assertTrue(expectedQuotation.getPrice().compareTo(actualQuotation.getPrice()) == 0);
-			assertEquals(expectedQuotation.getCurrency(), actualQuotation.getCurrency());
-			assertEquals(expectedQuotation.getVolume(), actualQuotation.getVolume());
+			assertEquals(expectedQuotation, actualQuotation);
 			
 			actualQuotation = actualQuotationHistory.get(1);
 			expectedQuotation = expectedQuotationHistory.get(1);
-			assertEquals(expectedQuotation.getDate().getTime(), actualQuotation.getDate().getTime());
-			assertTrue(expectedQuotation.getPrice().compareTo(actualQuotation.getPrice()) == 0);
-			assertEquals(expectedQuotation.getCurrency(), actualQuotation.getCurrency());
-			assertEquals(expectedQuotation.getVolume(), actualQuotation.getVolume());
+			assertEquals(expectedQuotation, actualQuotation);
 			
 			actualQuotation = actualQuotationHistory.get(2);
 			expectedQuotation = expectedQuotationHistory.get(2);
-			assertEquals(expectedQuotation.getDate().getTime(), actualQuotation.getDate().getTime());
-			assertTrue(expectedQuotation.getPrice().compareTo(actualQuotation.getPrice()) == 0);
-			assertEquals(expectedQuotation.getCurrency(), actualQuotation.getCurrency());
-			assertEquals(expectedQuotation.getVolume(), actualQuotation.getVolume());
+			assertEquals(expectedQuotation, actualQuotation);
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}

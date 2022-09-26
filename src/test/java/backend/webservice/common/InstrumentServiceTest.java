@@ -387,11 +387,7 @@ public class InstrumentServiceTest {
 		instrument = (Instrument) getInstrumentResult.getData();
 		
 		//Check each attribute of the instrument.
-		assertEquals(this.appleStock.getId(), instrument.getId());
-		assertEquals(this.appleStock.getSymbol(), instrument.getSymbol());
-		assertEquals(this.appleStock.getName(), instrument.getName());
-		assertEquals(this.appleStock.getStockExchange(), instrument.getStockExchange());
-		assertEquals(this.appleStock.getType(), instrument.getType());
+		assertEquals(this.appleStock, instrument);
 	}
 	
 	
@@ -444,20 +440,10 @@ public class InstrumentServiceTest {
 		
 		//Check all instruments by each attribute.
 		instrument = instruments.getInstruments().get(0);
-		assertEquals(this.appleStock.getId(), instrument.getId());
-		assertEquals(this.appleStock.getSymbol(), instrument.getSymbol());
-		assertEquals(this.appleStock.getName(), instrument.getName());
-		assertEquals(this.appleStock.getStockExchange(), instrument.getStockExchange());
-		assertEquals(this.appleStock.getType(), instrument.getType());
-		assertEquals(0, instrument.getQuotations().size());
+		assertEquals(this.appleStock, instrument);
 		
 		instrument = instruments.getInstruments().get(1);
-		assertEquals(this.microsoftStock.getId(), instrument.getId());
-		assertEquals(this.microsoftStock.getSymbol(), instrument.getSymbol());
-		assertEquals(this.microsoftStock.getName(), instrument.getName());
-		assertEquals(this.microsoftStock.getStockExchange(), instrument.getStockExchange());
-		assertEquals(this.microsoftStock.getType(), instrument.getType());
-		assertEquals(0, instrument.getQuotations().size());
+		assertEquals(this.microsoftStock, instrument);
 		
 		instrument = instruments.getInstruments().get(2);
 		assertEquals(this.nvidiaStock, instrument);
@@ -704,7 +690,7 @@ public class InstrumentServiceTest {
 	 */
 	public void testAddValidInstrument() {
 		Instrument newInstrument = new Instrument();
-		Instrument adddedInstrument;
+		Instrument addedInstrument;
 		WebServiceResult addInstrumentResult;
 		InstrumentService service = new InstrumentService();
 		
@@ -731,14 +717,10 @@ public class InstrumentServiceTest {
 		
 		//Read the persisted instrument via DAO
 		try {
-			adddedInstrument = instrumentDAO.getInstrument(newInstrument.getId());
+			addedInstrument = instrumentDAO.getInstrument(newInstrument.getId());
 			
 			//Check if the instrument read by the DAO equals the instrument inserted using the WebService in each attribute.
-			assertEquals(newInstrument.getId(), adddedInstrument.getId());
-			assertEquals(newInstrument.getSymbol(), adddedInstrument.getSymbol());
-			assertEquals(newInstrument.getName(), adddedInstrument.getName());
-			assertEquals(newInstrument.getStockExchange(), adddedInstrument.getStockExchange());
-			assertEquals(newInstrument.getType(), adddedInstrument.getType());
+			assertEquals(newInstrument, addedInstrument);
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}

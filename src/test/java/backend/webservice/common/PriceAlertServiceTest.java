@@ -374,11 +374,7 @@ public class PriceAlertServiceTest {
 		priceAlert = (PriceAlert) getPriceAlertResult.getData();
 		
 		//Check each attribute of the price alert.
-		assertEquals(this.appleAlert.getId(), priceAlert.getId());
-		assertEquals(this.appleAlert.getInstrument(), priceAlert.getInstrument());
-		assertTrue(this.appleAlert.getPrice().compareTo(priceAlert.getPrice()) == 0);
-		assertEquals(this.appleAlert.getTriggerTime(), priceAlert.getTriggerTime());
-		assertEquals(this.appleAlert.getConfirmationTime(), priceAlert.getConfirmationTime());
+		assertEquals(this.appleAlert, priceAlert);
 	}
 	
 	
@@ -431,36 +427,16 @@ public class PriceAlertServiceTest {
 		
 		//Check all price alerts by each attribute
 		priceAlert = priceAlerts.getPriceAlerts().get(0);
-		assertEquals(this.appleAlert.getId(), priceAlert.getId());
-		assertEquals(this.appleAlert.getInstrument(), priceAlert.getInstrument());
-		assertTrue(this.appleAlert.getPrice().compareTo(priceAlert.getPrice()) == 0);
-		assertEquals(this.appleAlert.getTriggerTime(), priceAlert.getTriggerTime());
-		assertEquals(this.appleAlert.getConfirmationTime(), priceAlert.getConfirmationTime());
-		assertEquals(this.appleAlert.getLastStockQuoteTime(), priceAlert.getLastStockQuoteTime());
+		assertEquals(this.appleAlert, priceAlert);
 		
 		priceAlert = priceAlerts.getPriceAlerts().get(1);
-		assertEquals(this.microsoftAlert.getId(), priceAlert.getId());
-		assertEquals(this.microsoftAlert.getInstrument(), priceAlert.getInstrument());
-		assertTrue(this.microsoftAlert.getPrice().compareTo(priceAlert.getPrice()) == 0);
-		assertEquals(this.microsoftAlert.getTriggerTime(), priceAlert.getTriggerTime());
-		assertEquals(this.microsoftAlert.getConfirmationTime(), priceAlert.getConfirmationTime());
-		assertEquals(this.microsoftAlert.getLastStockQuoteTime(), priceAlert.getLastStockQuoteTime());
+		assertEquals(this.microsoftAlert, priceAlert);
 		
 		priceAlert = priceAlerts.getPriceAlerts().get(2);
-		assertEquals(this.netflixAlert.getId(), priceAlert.getId());
-		assertEquals(this.netflixAlert.getInstrument(), priceAlert.getInstrument());
-		assertTrue(this.netflixAlert.getPrice().compareTo(priceAlert.getPrice()) == 0);
-		assertEquals(this.netflixAlert.getTriggerTime(), priceAlert.getTriggerTime());
-		assertEquals(this.netflixAlert.getConfirmationTime(), priceAlert.getConfirmationTime());
-		assertEquals(this.netflixAlert.getLastStockQuoteTime(), priceAlert.getLastStockQuoteTime());
+		assertEquals(this.netflixAlert, priceAlert);
 		
 		priceAlert = priceAlerts.getPriceAlerts().get(3);
-		assertEquals(this.nvidiaAlert.getId(), priceAlert.getId());
-		assertEquals(this.nvidiaAlert.getInstrument(), priceAlert.getInstrument());
-		assertTrue(this.nvidiaAlert.getPrice().compareTo(priceAlert.getPrice()) == 0);
-		assertEquals(this.nvidiaAlert.getTriggerTime(), priceAlert.getTriggerTime());
-		assertEquals(this.nvidiaAlert.getConfirmationTime(), priceAlert.getConfirmationTime());
-		assertEquals(this.nvidiaAlert.getLastStockQuoteTime(), priceAlert.getLastStockQuoteTime());
+		assertEquals(this.nvidiaAlert, priceAlert);
 	}
 	
 	
@@ -486,12 +462,7 @@ public class PriceAlertServiceTest {
 		
 		//Check if the correct price alert is returned
 		priceAlert = priceAlerts.getPriceAlerts().get(0);
-		assertEquals(this.netflixAlert.getId(), priceAlert.getId());
-		assertEquals(this.netflixAlert.getInstrument(), priceAlert.getInstrument());
-		assertTrue(this.netflixAlert.getPrice().compareTo(priceAlert.getPrice()) == 0);
-		assertEquals(this.netflixAlert.getTriggerTime(), priceAlert.getTriggerTime());
-		assertEquals(this.netflixAlert.getConfirmationTime(), priceAlert.getConfirmationTime());
-		assertEquals(this.netflixAlert.getLastStockQuoteTime(), priceAlert.getLastStockQuoteTime());
+		assertEquals(this.netflixAlert, priceAlert);
 	}
 	
 	
@@ -517,12 +488,7 @@ public class PriceAlertServiceTest {
 		
 		//Check if the correct price alert is returned
 		priceAlert = priceAlerts.getPriceAlerts().get(0);
-		assertEquals(this.nvidiaAlert.getId(), priceAlert.getId());
-		assertEquals(this.nvidiaAlert.getInstrument(), priceAlert.getInstrument());
-		assertTrue(this.nvidiaAlert.getPrice().compareTo(priceAlert.getPrice()) == 0);
-		assertEquals(this.nvidiaAlert.getTriggerTime(), priceAlert.getTriggerTime());
-		assertEquals(this.nvidiaAlert.getConfirmationTime(), priceAlert.getConfirmationTime());
-		assertEquals(this.nvidiaAlert.getLastStockQuoteTime(), priceAlert.getLastStockQuoteTime());
+		assertEquals(this.nvidiaAlert, priceAlert);
 	}
 	
 	
@@ -652,7 +618,7 @@ public class PriceAlertServiceTest {
 	 */
 	public void testAddValidPriceAlert() {
 		PriceAlert newPriceAlert = new PriceAlert();
-		PriceAlert adddedPriceAlert;
+		PriceAlert addedPriceAlert;
 		WebServiceResult addPriceAlertResult;
 		PriceAlertService service = new PriceAlertService();
 		
@@ -679,14 +645,10 @@ public class PriceAlertServiceTest {
 		
 		//Read the persisted price alert via DAO
 		try {
-			adddedPriceAlert = priceAlertDAO.getPriceAlert(newPriceAlert.getId());
+			addedPriceAlert = priceAlertDAO.getPriceAlert(newPriceAlert.getId());
 			
 			//Check if the price alert read by the DAO equals the price alert inserted using the WebService in each attribute.
-			assertEquals(newPriceAlert.getId(), adddedPriceAlert.getId());
-			assertEquals(newPriceAlert.getInstrument(), adddedPriceAlert.getInstrument());
-			assertTrue(newPriceAlert.getPrice().compareTo(adddedPriceAlert.getPrice()) == 0);
-			assertEquals(newPriceAlert.getTriggerTime(), adddedPriceAlert.getTriggerTime());
-			assertEquals(newPriceAlert.getConfirmationTime(), adddedPriceAlert.getConfirmationTime());
+			assertEquals(newPriceAlert, addedPriceAlert);
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}

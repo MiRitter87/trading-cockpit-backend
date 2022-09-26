@@ -414,26 +414,10 @@ public class QuotationServiceTest {
 		//Check if the correct quotations are returned.
 		for(Quotation tempQuotation: quotations.getQuotations()) {
 			if(tempQuotation.getId().equals(appleQuotation2.getId())) {
-				assertEquals(this.appleQuotation2.getDate().getTime(), tempQuotation.getDate().getTime());
-				assertTrue(this.appleQuotation2.getPrice().compareTo(tempQuotation.getPrice()) == 0);
-				assertEquals(this.appleQuotation2.getCurrency(), tempQuotation.getCurrency());
-				assertEquals(this.appleQuotation2.getVolume(), tempQuotation.getVolume());
-				
-				//Check if Indicator and Instrument have been initialized and contain data.
-				assertEquals(this.appleQuotation2.getInstrument().getId(), tempQuotation.getInstrument().getId());
-				assertEquals(this.appleQuotation2.getIndicator().getId(), tempQuotation.getIndicator().getId());
-				assertEquals(this.appleQuotation2.getIndicator().getStage(), tempQuotation.getIndicator().getStage());		
+				assertEquals(this.appleQuotation2, tempQuotation);	
 			}
 			else if(tempQuotation.getId().equals(this.fordQuotation1.getId())) {
-				assertEquals(this.fordQuotation1.getDate().getTime(), tempQuotation.getDate().getTime());
-				assertTrue(this.fordQuotation1.getPrice().compareTo(tempQuotation.getPrice()) == 0);
-				assertEquals(this.fordQuotation1.getCurrency(), tempQuotation.getCurrency());
-				assertEquals(this.fordQuotation1.getVolume(), tempQuotation.getVolume());
-				
-				//Check if Indicator and Instrument have been initialized and contain data.
-				assertEquals(this.fordQuotation1.getInstrument().getId(), tempQuotation.getInstrument().getId());
-				assertEquals(this.fordQuotation1.getIndicator().getId(), tempQuotation.getIndicator().getId());
-				assertEquals(this.fordQuotation1.getIndicator().getStage(), tempQuotation.getIndicator().getStage());	
+				assertEquals(this.fordQuotation1, tempQuotation);	
 			}
 			else {
 				fail("An unrelated Quotation has been returned.");
@@ -465,16 +449,7 @@ public class QuotationServiceTest {
 		
 		//Check if the correct Quotation is returned.
 		quotation = quotations.getQuotations().get(0);
-		assertEquals(this.appleQuotation2.getId(), quotation.getId());
-		assertEquals(this.appleQuotation2.getDate().getTime(), quotation.getDate().getTime());
-		assertTrue(this.appleQuotation2.getPrice().compareTo(quotation.getPrice()) == 0);
-		assertEquals(this.appleQuotation2.getCurrency(), quotation.getCurrency());
-		assertEquals(this.appleQuotation2.getVolume(), quotation.getVolume());
-		
-		//Check if Indicator and Instrument have been initialized and contain data.
-		assertEquals(this.appleQuotation2.getInstrument().getId(), quotation.getInstrument().getId());
-		assertEquals(this.appleQuotation2.getIndicator().getId(), quotation.getIndicator().getId());
-		assertEquals(this.appleQuotation2.getIndicator().getStage(), quotation.getIndicator().getStage());
+		assertEquals(this.appleQuotation2, quotation);
 	}
 	
 	
@@ -501,16 +476,7 @@ public class QuotationServiceTest {
 		
 		//Check if the correct Quotation is returned.
 		quotation = quotations.getQuotations().get(0);
-		assertEquals(this.fordQuotation1.getId(), quotation.getId());
-		assertEquals(this.fordQuotation1.getDate().getTime(), quotation.getDate().getTime());
-		assertTrue(this.fordQuotation1.getPrice().compareTo(quotation.getPrice()) == 0);
-		assertEquals(this.fordQuotation1.getCurrency(), quotation.getCurrency());
-		assertEquals(this.fordQuotation1.getVolume(), quotation.getVolume());
-		
-		//Check if Indicator and Instrument have been initialized and contain data.
-		assertEquals(this.fordQuotation1.getInstrument().getId(), quotation.getInstrument().getId());
-		assertEquals(this.fordQuotation1.getIndicator().getId(), quotation.getIndicator().getId());
-		assertEquals(this.fordQuotation1.getIndicator().getStage(), quotation.getIndicator().getStage());
+		assertEquals(this.fordQuotation1, quotation);
 	}
 	
 	
@@ -538,9 +504,5 @@ public class QuotationServiceTest {
 		//Check if the correct Quotation is returned.
 		quotation = quotations.getQuotations().get(0);
 		assertEquals(this.fordQuotation1, quotation);
-		
-		//Check if Indicator and Instrument have been initialized and contain data.
-		assertEquals(this.fordQuotation1.getInstrument().getId(), quotation.getInstrument().getId());
-		assertEquals(this.fordQuotation1.getIndicator(), quotation.getIndicator());
 	}
 }

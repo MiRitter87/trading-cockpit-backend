@@ -325,12 +325,7 @@ public class ListServiceTest {
 		list = (List) getListResult.getData();
 		
 		//Check each attribute of the list.
-		assertEquals(this.multiInstrumentList.getId(), list.getId());
-		assertEquals(this.multiInstrumentList.getName(), list.getName());
-		assertEquals(this.multiInstrumentList.getDescription(), list.getDescription());
-		
-		//The returned list should have two instruments.
-		assertEquals(this.multiInstrumentList.getInstruments().size(), list.getInstruments().size());
+		assertEquals(this.multiInstrumentList, list);
 		
 		//Check the attributes of the instruments.
 		instrumentIterator = list.getInstruments().iterator();
@@ -338,18 +333,10 @@ public class ListServiceTest {
 			instrument = instrumentIterator.next();
 			
 			if(instrument.getId().equals(this.amazonStock.getId())) {
-				assertEquals(this.amazonStock.getId(), instrument.getId());
-				assertEquals(this.amazonStock.getSymbol(), instrument.getSymbol());
-				assertEquals(this.amazonStock.getName(), instrument.getName());
-				assertEquals(this.amazonStock.getStockExchange(), instrument.getStockExchange());
-				assertEquals(this.amazonStock.getType(), instrument.getType());
+				assertEquals(this.amazonStock, instrument);
 			}
 			else if(instrument.getId().equals(this.microsoftStock.getId())) {
-				assertEquals(this.microsoftStock.getId(), instrument.getId());
-				assertEquals(this.microsoftStock.getSymbol(), instrument.getSymbol());
-				assertEquals(this.microsoftStock.getName(), instrument.getName());
-				assertEquals(this.microsoftStock.getStockExchange(), instrument.getStockExchange());
-				assertEquals(this.microsoftStock.getType(), instrument.getType());
+				assertEquals(this.microsoftStock, instrument);
 			}
 			else {
 				fail("The list contains an unrelated instrument.");
@@ -393,8 +380,6 @@ public class ListServiceTest {
 		WebServiceResult getListsResult;
 		ListArray lists;
 		List list;
-		Instrument instrument;
-		Iterator<Instrument> instrumentIterator;
 		
 		//Get the lists.
 		ListService service = new ListService();
@@ -410,52 +395,11 @@ public class ListServiceTest {
 		//Check all lists by each attribute.
 		//First list
 		list = lists.getLists().get(0);
-		assertEquals(this.singleInstrumentList.getId(), list.getId());
-		assertEquals(this.singleInstrumentList.getName(), list.getName());
-		assertEquals(this.singleInstrumentList.getDescription(), list.getDescription());
-		
-		//The list should have one instrument.
-		assertEquals(this.singleInstrumentList.getInstruments().size(), list.getInstruments().size());
-		
-		//Check the attributes of the instrument.
-		instrument = list.getInstruments().iterator().next();
-		assertEquals(this.amazonStock.getId(), instrument.getId());
-		assertEquals(this.amazonStock.getSymbol(), instrument.getSymbol());
-		assertEquals(this.amazonStock.getName(), instrument.getName());
-		assertEquals(this.amazonStock.getStockExchange(), instrument.getStockExchange());
-		assertEquals(this.amazonStock.getType(), instrument.getType());
+		assertEquals(this.singleInstrumentList, list);
 		
 		//Second list
 		list = lists.getLists().get(1);
-		assertEquals(this.multiInstrumentList.getId(), list.getId());
-		assertEquals(this.multiInstrumentList.getName(), list.getName());
-		assertEquals(this.multiInstrumentList.getDescription(), list.getDescription());
-		
-		//The list should have two instruments.
-		assertEquals(this.multiInstrumentList.getInstruments().size(), list.getInstruments().size());
-		
-		instrumentIterator = list.getInstruments().iterator();
-		while(instrumentIterator.hasNext()) {
-			instrument = instrumentIterator.next();
-			
-			if(instrument.getId().equals(this.amazonStock.getId())) {
-				assertEquals(this.amazonStock.getId(), instrument.getId());
-				assertEquals(this.amazonStock.getSymbol(), instrument.getSymbol());
-				assertEquals(this.amazonStock.getName(), instrument.getName());
-				assertEquals(this.amazonStock.getStockExchange(), instrument.getStockExchange());
-				assertEquals(this.amazonStock.getType(), instrument.getType());
-			}
-			else if(instrument.getId().equals(this.microsoftStock.getId())) {
-				assertEquals(this.microsoftStock.getId(), instrument.getId());
-				assertEquals(this.microsoftStock.getSymbol(), instrument.getSymbol());
-				assertEquals(this.microsoftStock.getName(), instrument.getName());
-				assertEquals(this.microsoftStock.getStockExchange(), instrument.getStockExchange());
-				assertEquals(this.microsoftStock.getType(), instrument.getType());
-			}
-			else {
-				fail("The list contains an unrelated instrument.");
-			}
-		}
+		assertEquals(this.multiInstrumentList, list);
 	}
 	
 	
@@ -636,7 +580,6 @@ public class ListServiceTest {
 		List addedList;
 		WebServiceResult addListResult;
 		ListService service = new ListService();
-		Instrument instrument;
 		
 		//Define the new list.
 		newList.setName("New List");
@@ -663,18 +606,7 @@ public class ListServiceTest {
 			addedList = listDAO.getList(newList.getId());
 			
 			//Check if the list read by the DAO equals the list inserted using the WebService in each attribute.
-			assertEquals(newList.getId(), addedList.getId());
-			assertEquals(newList.getName(), addedList.getName());
-			assertEquals(newList.getDescription(), addedList.getDescription());
-			assertEquals(newList.getInstruments().size(), addedList.getInstruments().size());
-			
-			//Check the attributes of the instrument.
-			instrument = addedList.getInstruments().iterator().next();
-			assertEquals(this.microsoftStock.getId(), instrument.getId());
-			assertEquals(this.microsoftStock.getSymbol(), instrument.getSymbol());
-			assertEquals(this.microsoftStock.getName(), instrument.getName());
-			assertEquals(this.microsoftStock.getStockExchange(), instrument.getStockExchange());
-			assertEquals(this.microsoftStock.getType(), instrument.getType());
+			assertEquals(newList, addedList);
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}

@@ -293,25 +293,10 @@ public class QuotationHibernateDAOTest {
 			
 			for(Quotation databaseQuotation:quotations) {
 				if(databaseQuotation.getId().equals(appleQuotation1.getId())) {
-					assertEquals(this.appleQuotation1.getId(), databaseQuotation.getId());
-					assertEquals(this.appleQuotation1.getDate().getTime(), databaseQuotation.getDate().getTime());
-					assertTrue(this.appleQuotation1.getPrice().compareTo(databaseQuotation.getPrice()) == 0);
-					assertEquals(this.appleQuotation1.getCurrency(), databaseQuotation.getCurrency());
-					assertEquals(this.appleQuotation1.getVolume(), databaseQuotation.getVolume());
-					assertEquals(this.appleQuotation1.getInstrument().getId(), databaseQuotation.getInstrument().getId());
-					
-					assertNull(databaseQuotation.getIndicator());
+					assertEquals(this.appleQuotation1, databaseQuotation);
 				}
 				else if(databaseQuotation.getId().equals(this.appleQuotation2.getId())) {
-					assertEquals(this.appleQuotation2.getId(), databaseQuotation.getId());
-					assertEquals(this.appleQuotation2.getDate().getTime(), databaseQuotation.getDate().getTime());
-					assertTrue(this.appleQuotation2.getPrice().compareTo(databaseQuotation.getPrice()) == 0);
-					assertEquals(this.appleQuotation2.getCurrency(), databaseQuotation.getCurrency());
-					assertEquals(this.appleQuotation2.getVolume(), databaseQuotation.getVolume());
-					assertEquals(this.appleQuotation2.getInstrument().getId(), databaseQuotation.getInstrument().getId());
-					
-					assertNotNull(databaseQuotation.getIndicator());
-					assertEquals(this.appleQuotation2Indicator.getStage(), databaseQuotation.getIndicator().getStage());
+					assertEquals(this.appleQuotation2, databaseQuotation);
 				}
 				else {
 					fail("The method 'getQuotationsOfInstrument' has returned an unrelated quotation.");

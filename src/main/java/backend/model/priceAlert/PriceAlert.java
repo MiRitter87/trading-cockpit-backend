@@ -266,6 +266,7 @@ public class PriceAlert {
 		result = prime * result + ((confirmationTime == null) ? 0 : confirmationTime.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((price == null) ? 0 : price.hashCode());
+		result = prime * result + Float.floatToIntBits(triggerDistancePercent);
 		result = prime * result + ((currency == null) ? 0 : currency.hashCode());
 		result = prime * result + ((instrument == null) ? 0 : instrument.hashCode());
 		result = prime * result + ((triggerTime == null) ? 0 : triggerTime.hashCode());
@@ -341,6 +342,8 @@ public class PriceAlert {
 			if (lastStockQuoteTime.getTime() != other.lastStockQuoteTime.getTime())
 				return false;
 		}
+		if(Float.floatToIntBits(triggerDistancePercent) != Float.floatToIntBits(other.triggerDistancePercent))
+			return false;
 		return true;
 	}
 
