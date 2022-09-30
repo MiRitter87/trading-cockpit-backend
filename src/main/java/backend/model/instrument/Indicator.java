@@ -313,7 +313,7 @@ public class Indicator {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(bollingerBandWidth, distanceTo52WeekHigh, distanceTo52WeekLow, rsNumber, rsPercentSum, 
+		return Objects.hash(bollingerBandWidth, distanceTo52WeekHigh, distanceTo52WeekLow, id, rsNumber, rsPercentSum, 
 				sma150, sma200, sma50, stage, volumeDifferential10Days, baseLengthWeeks, upDownVolumeRatio);
 	}
 
