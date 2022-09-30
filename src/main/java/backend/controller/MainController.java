@@ -18,6 +18,11 @@ import backend.dao.DAOManager;
  */
 public class MainController {
 	/**
+	 * File path to configuration properties
+	 */
+	protected static final String SUBPATH_CONFIGURATION_PROPERTIES = "/conf/tradingCockpitBackend.properties";
+	
+	/**
 	 * Instance of the main controller.
 	 */
 	private static MainController instance;
@@ -100,7 +105,7 @@ public class MainController {
 		String workingDir = System.getProperty("user.dir");
 		
 		try {
-			input = new FileInputStream(workingDir +"/conf/tradingCockpitBackend.properties");
+			input = new FileInputStream(workingDir + SUBPATH_CONFIGURATION_PROPERTIES);
 			properties.load(input);
 			value = properties.getProperty(propertyKey);
 		} catch (FileNotFoundException e) {
