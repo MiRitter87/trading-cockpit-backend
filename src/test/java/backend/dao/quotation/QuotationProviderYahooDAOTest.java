@@ -137,6 +137,23 @@ public class QuotationProviderYahooDAOTest {
 	
 	@Test
 	/**
+	 * Tests the retrieval of the query URL for historical quotations of a stock listed at the CSE.
+	 */
+	public void testGetQueryUrlQuotationHistoryCSE() {
+		final String symbol = "AGN";
+		final StockExchange stockExchange = StockExchange.CSE;
+		final Integer years = 1;
+		final String expectedURL = 
+				"https://query1.finance.yahoo.com/v7/finance/chart/AGN.CN?range=1y&interval=1d&indicators=quote&includeTimestamps=true";
+		String actualURL = "";
+		
+		actualURL = quotationProviderYahooDAO.getQueryUrlQuotationHistory(symbol, stockExchange, years);
+		assertEquals(expectedURL, actualURL);
+	}
+	
+	
+	@Test
+	/**
 	 * Tests the retrieval of the query URL for historical quotations of a stock listed at the NYSE.
 	 */
 	public void testGetQueryUrlQuotationHistoryNYSE() {
