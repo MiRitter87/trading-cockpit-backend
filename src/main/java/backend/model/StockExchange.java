@@ -17,6 +17,11 @@ public enum StockExchange {
 	TSXV,
 	
 	/**
+	 * Canadian Securities Exchange
+	 */
+	CSE,
+	
+	/**
 	 * New York Stock Exchange
 	 */
 	NYSE

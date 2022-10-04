@@ -235,6 +235,21 @@ public class QuotationProviderYahooDAOTest {
 	
 	@Test
 	/**
+	 * Tests the retrieval of the query URL for the current quotation of a stock listed at the CSE.
+	 */
+	public void testGetQueryUrlCurrentQuotationCSE() {
+		final String symbol = "AGN";
+		final StockExchange stockExchange = StockExchange.CSE;
+		final String expectedURL = "https://query1.finance.yahoo.com/v7/finance/quote?symbols=AGN.CN";
+		String actualURL = "";
+		
+		actualURL = quotationProviderYahooDAO.getQueryUrlCurrentQuotation(symbol, stockExchange);
+		assertEquals(expectedURL, actualURL);
+	}
+	
+	
+	@Test
+	/**
 	 * Tests the retrieval of the query URL for the current quotation of a stock listed at the NYSE.
 	 */
 	public void testGetQueryUrlCurrentQuotationNYSE() {
