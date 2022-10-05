@@ -3,11 +3,15 @@ package backend.dao.quotation;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -51,6 +55,11 @@ public class QuotationProviderYahooDAO implements QuotationProviderDAO {
 	 * The HTTP client used for data queries.
 	 */
 	private OkHttpClient httpClient;
+	
+	/**
+	 * Application logging.
+	 */
+	public static final Logger logger = LogManager.getLogger(QuotationProviderYahooDAO.class);
 	
 	
 	/**
@@ -130,6 +139,8 @@ public class QuotationProviderYahooDAO implements QuotationProviderDAO {
 		Quotation quotation;
 		Map<?, ?> map;
 		ObjectMapper mapper = new ObjectMapper();
+		String symbol = "";
+		boolean historyIsIncomplete = false;
 		
 		try {
 			map = mapper.readValue(quotationHistoryAsJSON, Map.class);
@@ -146,6 +157,8 @@ public class QuotationProviderYahooDAO implements QuotationProviderDAO {
 			LinkedHashMap<?, ?> adjCloseAttributes = (LinkedHashMap<?, ?>) adjClose.get(0);
 			ArrayList<?> adjCloseData = (ArrayList<?>) adjCloseAttributes.get("adjclose");
 			
+			symbol = (String) metaAttributes.get("symbol");
+			
 			for(int i = timestampData.size(); i>0; i--) {
 				try {
 					quotation = new Quotation();
@@ -156,6 +169,7 @@ public class QuotationProviderYahooDAO implements QuotationProviderDAO {
 					quotationHistory.add(quotation);
 				}
 				catch(Exception exception) {
+					historyIsIncomplete = true;
 					continue;
 				}
 			}
@@ -165,6 +179,11 @@ public class QuotationProviderYahooDAO implements QuotationProviderDAO {
 		} 
 		catch (JsonProcessingException e) {
 			throw new Exception(e);
+		}
+		
+		if(historyIsIncomplete) {
+			logger.info(MessageFormat.format("The history of symbol {0} is incomplete. {1} quotations could be gathered.", 
+					symbol, quotationHistory.size()));			
 		}
 		
 		return quotationHistory;
