@@ -147,12 +147,17 @@ public class QuotationProviderYahooDAO implements QuotationProviderDAO {
 			ArrayList<?> adjCloseData = (ArrayList<?>) adjCloseAttributes.get("adjclose");
 			
 			for(int i = timestampData.size(); i>0; i--) {
-				quotation = new Quotation();
-				quotation.setDate(this.getDate(timestampData.get(i-1)));
-				quotation.setCurrency(this.getCurrency((String) metaAttributes.get("currency")));
-				quotation.setVolume(this.getVolumeFromQuotationHistoryResponse(volumeData, i-1));
-				quotation.setPrice(this.getAdjustedCloseFromQuotationHistoryResponse(adjCloseData, i-1));
-				quotationHistory.add(quotation);
+				try {
+					quotation = new Quotation();
+					quotation.setDate(this.getDate(timestampData.get(i-1)));
+					quotation.setCurrency(this.getCurrency((String) metaAttributes.get("currency")));
+					quotation.setVolume(this.getVolumeFromQuotationHistoryResponse(volumeData, i-1));
+					quotation.setPrice(this.getAdjustedCloseFromQuotationHistoryResponse(adjCloseData, i-1));					
+					quotationHistory.add(quotation);
+				}
+				catch(Exception exception) {
+					continue;
+				}
 			}
 		}
 		catch (JsonMappingException e) {

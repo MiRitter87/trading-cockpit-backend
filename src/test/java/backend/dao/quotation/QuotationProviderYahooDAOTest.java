@@ -204,18 +204,22 @@ public class QuotationProviderYahooDAOTest {
 	
 	@Test
 	/**
-	 * Tests the retrieval of the quotation history that has incomplete data.
+	 * Tests the retrieval of quotations from a quotation history that has incomplete data.
 	 * Volume and/or price data are missing partially.
+	 * Only quotations should be created for JSON datasets that have both price and volume data on the given day.
 	 */
 	public void testGetQuotationHistoryIncomplete() {
+		final int expectedNumberOfQuotations = 14, actualNumberOfQuotations;
+		List<Quotation> actualQuotations;
+		
 		try {
-			quotationProviderYahooDAO.getQuotationHistory("BNCH", StockExchange.TSXV, 1);
+			actualQuotations = quotationProviderYahooDAO.getQuotationHistory("BNCH", StockExchange.TSXV, 1);
+			actualNumberOfQuotations = actualQuotations.size();
+			
+			assertEquals(expectedNumberOfQuotations, actualNumberOfQuotations);
 		} 
-		catch(NullPointerException nullPointerException) {
-			fail(nullPointerException.getMessage());
-		}
-		catch (Exception expected) {
-			//All is well.
+		catch(Exception exception) {
+			fail(exception.getMessage());
 		}
 	}
 	
