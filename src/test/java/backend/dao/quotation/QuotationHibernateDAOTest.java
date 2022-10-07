@@ -51,6 +51,11 @@ public class QuotationHibernateDAOTest {
 	private Instrument appleStock;
 	
 	/**
+	 * The stock of Microsoft.
+	 */
+	private Instrument microsoftStock;
+	
+	/**
 	 * The first Quotation of the Apple stock.
 	 */
 	private Quotation appleQuotation1;
@@ -59,6 +64,11 @@ public class QuotationHibernateDAOTest {
 	 * The second Quotation of the Apple stock.
 	 */
 	private Quotation appleQuotation2;
+	
+	/**
+	 * The first Quotation of the Microsoft stock.
+	 */
+	private Quotation microsoftQuotation1;
 	
 	/**
 	 * Indicator of the Second Quotation of the Apple stock.
@@ -114,6 +124,7 @@ public class QuotationHibernateDAOTest {
 		Calendar calendar = Calendar.getInstance();
 		List<Quotation> quotations = new ArrayList<>();
 		this.appleStock = new Instrument();
+		this.microsoftStock = new Instrument();
 		
 		try {
 			this.appleStock.setSymbol("AAPL");
@@ -121,6 +132,21 @@ public class QuotationHibernateDAOTest {
 			this.appleStock.setStockExchange(StockExchange.NYSE);
 			this.appleStock.setType(InstrumentType.STOCK);
 			instrumentDAO.insertInstrument(this.appleStock);
+			
+			this.microsoftStock.setSymbol("MSFT");
+			this.microsoftStock.setName("Microsoft");
+			this.microsoftStock.setStockExchange(StockExchange.NYSE);
+			this.microsoftStock.setType(InstrumentType.STOCK);
+			instrumentDAO.insertInstrument(this.microsoftStock);
+			
+			calendar.setTime(new Date());
+			this.microsoftQuotation1 = new Quotation();
+			this.microsoftQuotation1.setDate(calendar.getTime());
+			this.microsoftQuotation1.setPrice(BigDecimal.valueOf(246.79));
+			this.microsoftQuotation1.setCurrency(Currency.USD);
+			this.microsoftQuotation1.setVolume(20200000);
+			this.microsoftQuotation1.setInstrument(this.microsoftStock);
+			quotations.add(this.microsoftQuotation1);
 			
 			calendar.setTime(new Date());
 			this.appleQuotation1 = new Quotation();
@@ -165,8 +191,10 @@ public class QuotationHibernateDAOTest {
 
 			quotations.add(this.appleQuotation1);
 			quotations.add(this.appleQuotation2);
+			quotations.add(this.microsoftQuotation1);
 
 			quotationDAO.deleteQuotations(quotations);
+			instrumentDAO.deleteInstrument(this.microsoftStock);
 			instrumentDAO.deleteInstrument(this.appleStock);
 		} catch (Exception e) {
 			fail(e.getMessage());
