@@ -236,6 +236,13 @@ public class QuotationHibernateDAO implements QuotationDAO {
 		
 		return quotations;
 	}
+
+
+	@Override
+	public List<Quotation> getRecentQuotationsForList(backend.model.list.List list) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 	
 	@SuppressWarnings("unchecked")

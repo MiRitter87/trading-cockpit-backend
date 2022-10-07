@@ -69,6 +69,16 @@ public interface QuotationDAO {
 	
 	
 	/**
+	 * Gets the most recent Quotation for each Instrument of the given List.
+	 * 
+	 * @param list The List containing instruments.
+	 * @return The most recent Quotation of each Instrument of the List.
+	 * @throws Exception Quotation determination failed.
+	 */
+	List<Quotation> getRecentQuotationsForList(final backend.model.list.List list) throws Exception;
+	
+	
+	/**
 	 * Gets the most recent Quotation of each Instrument that matches the given Template.
 	 * Only those quotations are provided that have an Indicator associated with them.
 	 * 
