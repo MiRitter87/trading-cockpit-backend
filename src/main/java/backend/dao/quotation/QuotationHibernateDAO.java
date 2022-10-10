@@ -1,5 +1,7 @@
 package backend.dao.quotation;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.persistence.EntityGraph;
@@ -11,6 +13,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
+import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
 import backend.webservice.ScanTemplate;
 
@@ -238,10 +241,44 @@ public class QuotationHibernateDAO implements QuotationDAO {
 	}
 
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<Quotation> getRecentQuotationsForList(backend.model.list.List list) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		EntityManager entityManager = this.sessionFactory.createEntityManager();
+		List<Quotation> quotations;
+		Query query;
+		List<Object> quotationIdsWithMaxDate;
+		
+		try {
+			entityManager.getTransaction().begin();
+			
+			/*
+			 * The selection is split into two selects because JOINs with sub-queries are only possible in native SQL.
+			 * But the needed JOIN FETCH is not possible in native SQL.
+			 */
+			query = this.getQueryForQuotationIdsWithMaxDateForList(entityManager, list);
+			quotationIdsWithMaxDate = query.getResultList();
+			
+			//Now select final data using JOIN FETCH based on the Quotation IDs selected before.
+			query = entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i "
+					+ "WHERE quotation_id IN :quotationIds");
+			
+			query.setParameter("quotationIds", quotationIdsWithMaxDate);
+			quotations = query.getResultList();
+			
+			entityManager.getTransaction().commit();			
+		}
+		catch(Exception exception) {
+			//If something breaks a rollback is necessary!?
+			if(entityManager.getTransaction().isActive())
+				entityManager.getTransaction().rollback();
+			throw exception;
+		}
+		finally {
+			entityManager.close();			
+		}
+		
+		return quotations;
 	}
 	
 	
@@ -308,6 +345,38 @@ public class QuotationHibernateDAO implements QuotationDAO {
 		return entityManager.createNativeQuery("SELECT quotation_id FROM Quotation q "
 				+ "INNER JOIN (SELECT max(date) AS maxdate, instrument_id FROM Quotation GROUP BY instrument_id) jointable "
 				+ "ON q.instrument_id = jointable.instrument_id AND q.date = jointable.maxdate");
+	}
+	
+	
+	/**
+	 * Provides a native Query that determines the IDs of the quotations with the newest date for each Instrument of the given List.
+	 * 
+	 * @param entityManager The EntityManager used for Query creation.
+	 * @param list The List defining all instruments for which the quotations have to be determined.
+	 * @return The Query.
+	 */
+	private Query getQueryForQuotationIdsWithMaxDateForList(final EntityManager entityManager, final backend.model.list.List list) {
+		List<Object> instrumentIds = new ArrayList<>();
+		Iterator<Instrument> instrumentIterator;
+		Instrument instrument;
+		Query query;
+		
+		instrumentIterator = list.getInstruments().iterator();
+		
+		//Get the IDs of all instruments of the given List.
+		while(instrumentIterator.hasNext()) {
+			instrument = instrumentIterator.next();
+			instrumentIds.add(instrument.getId());
+		}
+		
+		//Prepare Query for most recent Quotation of each Instrument.
+		query = entityManager.createNativeQuery("SELECT quotation_id FROM Quotation q "
+				+ "INNER JOIN (SELECT max(date) AS maxdate, instrument_id FROM Quotation GROUP BY instrument_id) jointable "
+				+ "ON q.instrument_id = jointable.instrument_id AND q.date = jointable.maxdate AND jointable.instrument_id IN :instrumentIds");
+		
+		query.setParameter("instrumentIds", instrumentIds);
+		
+		return query;
 	}
 	
 	

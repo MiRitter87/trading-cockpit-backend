@@ -375,4 +375,40 @@ public class QuotationHibernateDAOTest {
 			}
 		}
 	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of the most recent Quotation for each Instrument of a List.
+	 */
+	public void testGetRecentQuotationsForList() {
+		backend.model.list.List list = new backend.model.list.List();
+		List<Quotation> quotations;
+		
+		list.addInstrument(this.appleStock);
+		list.addInstrument(this.microsoftStock);
+		
+		try {
+			quotations = quotationDAO.getRecentQuotationsForList(list);
+			
+			//Assure one quotation for each Insturment is provided.
+			assertEquals(2, quotations.size());
+			
+			//Assure the correct quotations are provided.
+			for(Quotation databaseQuotation:quotations) {
+				if(databaseQuotation.getId().equals(microsoftQuotation1.getId())) {
+					assertEquals(this.microsoftQuotation1, databaseQuotation);
+				}
+				else if(databaseQuotation.getId().equals(this.appleQuotation2.getId())) {
+					assertEquals(this.appleQuotation2, databaseQuotation);
+				}
+				else {
+					fail("The method 'getRecentQuotationsForList' has returned an unrelated quotation.");
+				}
+			}
+			
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
 }
