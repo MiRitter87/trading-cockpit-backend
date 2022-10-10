@@ -1,8 +1,12 @@
 package backend.controller;
 
+import java.util.List;
+
 import org.apache.poi.ss.usermodel.Workbook;
 
-import backend.model.list.List;
+import backend.model.instrument.Quotation;
+
+
 
 /**
  * Controller for generation of Excel files.
@@ -11,12 +15,13 @@ import backend.model.list.List;
  */
 public class ExcelExportController {
 	/**
-	 * Generates a Workbook that contains the most recent price of each Instrument of the given List.
+	 * Generates a Workbook that contains price data of the given quotations.
+	 * The workbook contains the following data for each quotation: Symbol, Date, Price.
 	 * 
-	 * @param list The List of instruments.
-	 * @return A Workbook containing the most recent price of each Instrument.
+	 * @param quotations A List of quotations.
+	 * @return A Workbook containing price data of the given quotations.
 	 */
-	public Workbook getRecentPricesOfList(final List list) {
+	public Workbook getPriceDataOfQuotations(final List<Quotation> quotations) {
 		return null;
 	}
 }
