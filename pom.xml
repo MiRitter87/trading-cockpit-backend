@@ -27,6 +27,8 @@
 		<jersey.version>2.35</jersey.version>
 		<javax.servlet.version>4.0.1</javax.servlet.version>
 		<okhttp.version>4.10.0</okhttp.version>
+		<apache.poi.version>5.2.3</apache.poi.version>
+		
 	</properties>
 	
 	<dependencies>
@@ -130,6 +132,18 @@
     		<groupId>com.squareup.okhttp3</groupId>
     		<artifactId>okhttp</artifactId>
     		<version>${okhttp.version}</version>
+		</dependency>
+		
+		<!-- Apache POI used for generating Excel files -->
+		<dependency>
+    		<groupId>org.apache.poi</groupId>
+    		<artifactId>poi</artifactId>
+    		<version>${apache.poi.version}</version>
+		</dependency>
+		<dependency>
+    		<groupId>org.apache.poi</groupId>
+    		<artifactId>poi-ooxml</artifactId>
+    		<version>${apache.poi.version}</version>
 		</dependency>
 	</dependencies>
   
