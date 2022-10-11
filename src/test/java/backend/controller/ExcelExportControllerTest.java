@@ -1,13 +1,19 @@
 package backend.controller;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
 
+import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import backend.model.Currency;
 import backend.model.StockExchange;
@@ -22,6 +28,11 @@ import backend.model.instrument.Quotation;
  * @author Michael
  */
 public class ExcelExportControllerTest {
+	/**
+	 * Access to localized application resources.
+	 */
+	private ResourceBundle resources = ResourceBundle.getBundle("backend");	
+	
 	/**
 	 * A List of quotations.
 	 */
@@ -115,5 +126,26 @@ public class ExcelExportControllerTest {
 		this.microsoftQuotation = null;
 		this.microsoftStock = null;
 		this.appleStock = null;
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of an Excel Workbook that contains Symbol, Date and Price information of the given quotations.
+	 */
+	public void testGetPriceDataOfQuotations() {
+		ExcelExportController excelExportController = new ExcelExportController();
+		Map<Integer, List<String>> workbookContent;
+		List<String> tableRowAttributes;
+		
+		//Construct an Excel workbook for the given quotations.
+		Workbook workbook = excelExportController.getPriceDataOfQuotations(this.quotations);
+		
+		//Check if the content of the workbook matches the expectations.
+		workbookContent = excelExportController.readWorkbook(workbook);
+		
+		//The table header
+		tableRowAttributes = workbookContent.get(0);
+		assertEquals(this.resources.getString("instrument.attribute.symbol"), tableRowAttributes.get(0));
 	}
 }
