@@ -1,14 +1,14 @@
 package backend.controller;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -41,8 +41,6 @@ public class ExcelExportController {
 	public Workbook getPriceDataOfQuotations(final List<Quotation> quotations) {
 		Workbook workbook = new XSSFWorkbook();
 		Sheet sheet = workbook.createSheet();
-		CreationHelper createHelper = workbook.getCreationHelper(); 
-		CellStyle cellStyle = workbook.createCellStyle();  
 		Row tableRow;
 		Cell tableCell;
 		int rowNumber;
@@ -66,11 +64,9 @@ public class ExcelExportController {
 			tableCell = tableRow.createCell(0);
 			tableCell.setCellValue(tempQuotation.getInstrument().getSymbol());
 			
-			//Date Cell
-			cellStyle.setDataFormat(createHelper.createDataFormat().getFormat("d/m/yy"));  
+			//Date Cell - Not formatted as Date but as a simple string. It seems the Framework does not support the needed format.
 			tableCell = tableRow.createCell(1);
-			tableCell.setCellValue(tempQuotation.getDate());
-			tableCell.setCellStyle(cellStyle);
+			tableCell.setCellValue(this.getDateAsExcelString(tempQuotation.getDate()));
 			
 			//Price Cell
 			tableCell = tableRow.createCell(2);
@@ -116,5 +112,26 @@ public class ExcelExportController {
 		}
 		
 		return data;
+	}
+	
+	
+	/**
+	 * Converts the given date to a String in the German format dd.mm.yyyy.
+	 * 
+	 * @param date The date.
+	 * @return The String representation of the date.
+	 */
+	public String getDateAsExcelString(final Date date) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		StringBuilder stringBuilder = new StringBuilder();
+		
+		stringBuilder.append(calendar.get(Calendar.DAY_OF_MONTH));
+		stringBuilder.append(".");
+		stringBuilder.append(calendar.get(Calendar.MONTH) + 1);
+		stringBuilder.append(".");
+		stringBuilder.append(calendar.get(Calendar.YEAR));
+		
+		return stringBuilder.toString();
 	}
 }
