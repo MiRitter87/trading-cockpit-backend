@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -39,10 +41,41 @@ public class ExcelExportController {
 	public Workbook getPriceDataOfQuotations(final List<Quotation> quotations) {
 		Workbook workbook = new XSSFWorkbook();
 		Sheet sheet = workbook.createSheet();
-		Row header = sheet.createRow(0);
-		Cell headerCell = header.createCell(0);
+		CreationHelper createHelper = workbook.getCreationHelper(); 
+		CellStyle cellStyle = workbook.createCellStyle();  
+		Row tableRow;
+		Cell tableCell;
+		int rowNumber;
 		
-		headerCell.setCellValue(this.resources.getString("instrument.attribute.symbol"));
+		//Define the table header cells.
+		tableRow = sheet.createRow(0);
+		tableCell = tableRow.createCell(0);
+		tableCell.setCellValue(this.resources.getString("instrument.attribute.symbol"));
+		tableCell = tableRow.createCell(1);
+		tableCell.setCellValue(this.resources.getString("quotation.attribute.date"));
+		tableCell = tableRow.createCell(2);
+		tableCell.setCellValue(this.resources.getString("quotation.attribute.price"));
+		
+		//Define the cells containing the Quotation data.
+		for(Quotation tempQuotation:quotations) {
+			rowNumber = quotations.indexOf(tempQuotation) + 1;
+			
+			tableRow = sheet.createRow(rowNumber);
+			
+			//Symbol Cell
+			tableCell = tableRow.createCell(0);
+			tableCell.setCellValue(tempQuotation.getInstrument().getSymbol());
+			
+			//Date Cell
+			cellStyle.setDataFormat(createHelper.createDataFormat().getFormat("d/m/yy"));  
+			tableCell = tableRow.createCell(1);
+			tableCell.setCellValue(tempQuotation.getDate());
+			tableCell.setCellStyle(cellStyle);
+			
+			//Price Cell
+			tableCell = tableRow.createCell(2);
+			tableCell.setCellValue(tempQuotation.getPrice().doubleValue());
+		}
 		
 		return workbook;
 	}

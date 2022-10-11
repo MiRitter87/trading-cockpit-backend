@@ -147,5 +147,19 @@ public class ExcelExportControllerTest {
 		//The table header
 		tableRowAttributes = workbookContent.get(0);
 		assertEquals(this.resources.getString("instrument.attribute.symbol"), tableRowAttributes.get(0));
+		assertEquals(this.resources.getString("quotation.attribute.date"), tableRowAttributes.get(1));
+		assertEquals(this.resources.getString("quotation.attribute.price"), tableRowAttributes.get(2));
+		
+		//Data of the first Quotation.
+		tableRowAttributes = workbookContent.get(1);
+		assertEquals(this.appleQuotation.getInstrument().getSymbol(), tableRowAttributes.get(0));
+		//assertEquals(this.resources.getString("quotation.attribute.date"), tableRowAttributes.get(1));
+		assertEquals(this.appleQuotation.getPrice().toString(), tableRowAttributes.get(2));
+		
+		//Data of the second Quotation.
+		tableRowAttributes = workbookContent.get(2);
+		assertEquals(this.microsoftQuotation.getInstrument().getSymbol(), tableRowAttributes.get(0));
+		//assertEquals(this.resources.getString("quotation.attribute.date"), tableRowAttributes.get(1));
+		assertEquals(this.microsoftQuotation.getPrice().toString(), tableRowAttributes.get(2));
 	}
 }
