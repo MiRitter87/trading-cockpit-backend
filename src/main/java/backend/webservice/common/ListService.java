@@ -1,17 +1,27 @@
 package backend.webservice.common;
 
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.poi.ss.usermodel.Workbook;
 
+import backend.controller.ExcelExportController;
 import backend.dao.DAOManager;
 import backend.dao.ObjectUnchangedException;
 import backend.dao.instrument.InstrumentDAO;
 import backend.dao.list.ListDAO;
+import backend.dao.quotation.QuotationDAO;
 import backend.model.ObjectInUseException;
 import backend.model.instrument.Instrument;
+import backend.model.instrument.Quotation;
 import backend.model.list.List;
 import backend.model.list.ListArray;
 import backend.model.list.ListWS;
@@ -242,6 +252,38 @@ public class ListService {
 		}
 		
 		return addListResult;
+	}
+	
+	
+	/**
+	 * Determines the most recent Quotation of each Instrument contained in the List with the given id.
+	 * An Excel file is generated that contains Symbol, Date and Price of each Quotation.
+	 * 
+	 * @param id The id of the List.
+	 * @return A Response containing the generated Excel file.
+	 */
+	public Response getRecentPricesOfListAsExcel(final Integer id) {
+		QuotationDAO quotationDAO = DAOManager.getInstance().getQuotationDAO();
+		List list;
+		ExcelExportController excelExportController = new ExcelExportController();
+		Workbook workbook;
+		OutputStream outputStream = new ByteArrayOutputStream();
+		
+		try {
+			//Get the List with the given ID and get the most recent Quotation of each Instrument.
+			list = listDAO.getList(id);
+			java.util.List<Quotation> quotationsOfList = quotationDAO.getRecentQuotationsForList(list);
+			
+			//Generate the Excel workbook with price data.
+			workbook = excelExportController.getPriceDataOfQuotations(quotationsOfList);
+			workbook.write(outputStream);
+			workbook.close();
+		} catch (Exception exception) {
+			logger.error(MessageFormat.format(this.resources.getString("list.getExcelError"), id), exception);
+			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+		}
+		
+		return Response.ok(outputStream, MediaType.APPLICATION_OCTET_STREAM).build();
 	}
 	
 	
