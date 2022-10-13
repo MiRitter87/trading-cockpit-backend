@@ -1,13 +1,15 @@
 package backend.webservice.common;
 
-import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -267,7 +269,7 @@ public class ListService {
 		List list;
 		ExcelExportController excelExportController = new ExcelExportController();
 		Workbook workbook;
-		OutputStream outputStream = new ByteArrayOutputStream();
+		StreamingOutput streamingOutput;
 		
 		try {
 			//Get the List with the given ID and get the most recent Quotation of each Instrument.
@@ -276,14 +278,21 @@ public class ListService {
 			
 			//Generate the Excel workbook with price data.
 			workbook = excelExportController.getPriceDataOfQuotations(quotationsOfList);
-			workbook.write(outputStream);
-			workbook.close();
+			
+			streamingOutput = new StreamingOutput() {
+				@Override
+				public void write(OutputStream output) throws IOException, WebApplicationException {
+					workbook.write(output);
+					output.flush();
+					workbook.close();
+				}
+			};
 		} catch (Exception exception) {
 			logger.error(MessageFormat.format(this.resources.getString("list.getExcelError"), id), exception);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
 		}
 		
-		return Response.ok(outputStream, MediaType.APPLICATION_OCTET_STREAM).build();
+		return Response.ok(streamingOutput, MediaType.APPLICATION_OCTET_STREAM).build();
 	}
 	
 	
