@@ -9,6 +9,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import backend.model.list.ListWS;
 import backend.model.webservice.WebServiceResult;
@@ -46,6 +47,21 @@ public class ListRestService {
 	public WebServiceResult getLists() {
 		ListService listService = new ListService();
 		return listService.getLists();
+	}
+	
+	
+	/**
+	 * Provides an Excel file that contains the most recent price of each Instrument of the List with the given ID.
+	 * 
+	 * @param id The ID of the List.
+	 * @return The Excel file.
+	 */
+	@GET
+	@Path("/{id}/excel")
+	@Produces(MediaType.APPLICATION_OCTET_STREAM)
+	public Response getRecentPricesOfListAsExcel(@PathParam("id") final Integer id) {
+		ListService listService = new ListService();
+		return listService.getRecentPricesOfListAsExcel(id);
 	}
 	
 	
