@@ -9,5 +9,10 @@ public enum InstrumentType {
 	/**
 	 * A stock.
 	 */
-	STOCK
+	STOCK,
+	
+	/**
+	 * An ETF.
+	 */
+	ETF
 }
