@@ -347,6 +347,27 @@ public class IndicatorCalculatorTest {
 	
 	@Test
 	/**
+	 * Tests the calculation of the volume differential if too few quotations exist for calculation of the moving average volume.
+	 */
+	public void testGetVolumeDifferentialWithTooFewQuotations() {
+		List<Quotation> sortedQuotations = this.dmlStock.getQuotationsSortedByDate();
+		List<Quotation> reducedQuotationHistory = new ArrayList<>();
+		float expectedDifferential = 0, actualDifferential;
+		
+		//Reduce the number of quotations below the number needed for moving average volume creation.
+		reducedQuotationHistory.add(sortedQuotations.get(0));
+		reducedQuotationHistory.add(sortedQuotations.get(1));
+		reducedQuotationHistory.add(sortedQuotations.get(2));
+		this.dmlStock.setQuotations(reducedQuotationHistory);
+		
+		actualDifferential = this.indicatorCalculator.getVolumeDifferential(30, 10, reducedQuotationHistory.get(0), reducedQuotationHistory);
+		
+		assertEquals(expectedDifferential, actualDifferential);
+	}
+	
+	
+	@Test
+	/**
 	 * Tests the calculation of the base length in weeks since the last 52 week high.
 	 */
 	public void testGetBaseLengthWeeks() {

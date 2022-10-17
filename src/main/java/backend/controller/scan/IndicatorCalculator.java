@@ -315,6 +315,9 @@ public class IndicatorCalculator {
 		averageVolumePeriod1 = new BigDecimal(this.getSimpleMovingAverageVolume(daysPeriod1, quotation, quotations));
 		averageVolumePeriod2 = new BigDecimal(this.getSimpleMovingAverageVolume(daysPeriod2, quotation, quotations));
 		
+		if(averageVolumePeriod1.equals(new BigDecimal(0)))
+			return 0;
+		
 		volumeDifferential = averageVolumePeriod2.divide(averageVolumePeriod1, 4, RoundingMode.HALF_UP);
 		volumeDifferential = volumeDifferential.subtract(new BigDecimal(1));
 		volumeDifferential = volumeDifferential.multiply(new BigDecimal(100));
