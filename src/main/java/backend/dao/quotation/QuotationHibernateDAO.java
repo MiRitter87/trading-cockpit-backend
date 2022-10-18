@@ -349,7 +349,7 @@ public class QuotationHibernateDAO implements QuotationDAO {
 		List<Object> instrumentIdsOfGivenInstrumentType;
 		Query query;
 		
-		//Get the Instrument IDs of all Instruments of the given type.
+		//Get the IDs of all instruments of the given type.
 		query = entityManager.createQuery("SELECT id FROM Instrument i WHERE i.type = :instrumentType");
 		query.setParameter("instrumentType", instrumentType);
 		instrumentIdsOfGivenInstrumentType = query.getResultList();

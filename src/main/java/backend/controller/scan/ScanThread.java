@@ -249,14 +249,21 @@ public class ScanThread extends Thread {
 	
 	
 	/**
-	 * Updates the RS number of all instruments that have quotations for the most recent date defined.
+	 * Updates the RS number of all instruments that have quotations and an Indicator for the most recent date defined.
+	 * Separate RS numbers are calculated based on the InstrumentType.
 	 */
 	private void updateRSNumbers() {
 		try {
-			java.util.List<Quotation> quotations = this.quotationDAO.getRecentQuotations(InstrumentType.STOCK);
+			java.util.List<Quotation> allQuotations = new ArrayList<>();
+			java.util.List<Quotation> quotationsTypeStock = this.quotationDAO.getRecentQuotations(InstrumentType.STOCK);
+			java.util.List<Quotation> quotationsTypeETF = this.quotationDAO.getRecentQuotations(InstrumentType.ETF);
 
-			this.indicatorCalculator.calculateRsNumbers(quotations);
-			this.quotationDAO.updateQuotations(quotations);
+			this.indicatorCalculator.calculateRsNumbers(quotationsTypeStock);
+			this.indicatorCalculator.calculateRsNumbers(quotationsTypeETF);
+			
+			allQuotations.addAll(quotationsTypeStock);
+			allQuotations.addAll(quotationsTypeETF);
+			this.quotationDAO.updateQuotations(allQuotations);
 		} catch (Exception e) {
 			logger.error("Failed to calculate RS numbers.", e);
 		}
