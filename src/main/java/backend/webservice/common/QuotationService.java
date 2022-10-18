@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 
 import backend.dao.DAOManager;
 import backend.dao.quotation.QuotationDAO;
+import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
 import backend.model.webservice.WebServiceMessage;
@@ -79,7 +80,7 @@ public class QuotationService {
 	 */
 	private List<Quotation> getQuotationsByTemplate(final ScanTemplate scanTemplate) throws Exception {
 		if(scanTemplate == null)
-			return this.quotationDAO.getRecentQuotations();
+			return this.quotationDAO.getRecentQuotations(InstrumentType.STOCK);
 		else
 			return this.quotationDAO.getQuotationsByTemplate(scanTemplate);
 	}

@@ -2,6 +2,7 @@ package backend.dao.quotation;
 
 import java.util.List;
 
+import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 import backend.webservice.ScanTemplate;
 
@@ -59,13 +60,14 @@ public interface QuotationDAO {
 	
 	
 	/**
-	 * Gets the most recent Quotation of each Instrument.
+	 * Gets the most recent Quotation of each Instrument with the given InstrumentType.
 	 * Only those quotations are provided that have an Indicator associated with them.
 	 * 
+	 * @param instrumentType The InstrumentType.
 	 * @return The most recent Quotation of each Instrument.
 	 * @throws Exception Quotation determination failed.
 	 */
-	List<Quotation> getRecentQuotations() throws Exception;
+	List<Quotation> getRecentQuotations(InstrumentType instrumentType) throws Exception;
 	
 	
 	/**

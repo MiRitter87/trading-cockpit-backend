@@ -20,6 +20,7 @@ import backend.dao.quotation.QuotationProviderYahooDAO;
 import backend.dao.scan.ScanDAO;
 import backend.model.instrument.Indicator;
 import backend.model.instrument.Instrument;
+import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 import backend.model.list.List;
 import backend.model.scan.Scan;
@@ -252,7 +253,7 @@ public class ScanThread extends Thread {
 	 */
 	private void updateRSNumbers() {
 		try {
-			java.util.List<Quotation> quotations = this.quotationDAO.getRecentQuotations();
+			java.util.List<Quotation> quotations = this.quotationDAO.getRecentQuotations(InstrumentType.STOCK);
 
 			this.indicatorCalculator.calculateRsNumbers(quotations);
 			this.quotationDAO.updateQuotations(quotations);

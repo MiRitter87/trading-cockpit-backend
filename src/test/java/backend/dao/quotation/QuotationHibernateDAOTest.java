@@ -56,6 +56,11 @@ public class QuotationHibernateDAOTest {
 	private Instrument microsoftStock;
 	
 	/**
+	 * The ETF XLE.
+	 */
+	private Instrument xleETF;
+	
+	/**
 	 * The first Quotation of the Apple stock.
 	 */
 	private Quotation appleQuotation1;
@@ -71,9 +76,19 @@ public class QuotationHibernateDAOTest {
 	private Quotation microsoftQuotation1;
 	
 	/**
+	 * The first Quotation of the XLE ETF.
+	 */
+	private Quotation xleQuotation1;
+	
+	/**
 	 * Indicator of the Second Quotation of the Apple stock.
 	 */
 	private Indicator appleQuotation2Indicator;
+	
+	/**
+	 * Indicator of the first Quotation of the XLE ETF.
+	 */
+	private Indicator xleQuotation1Indicator;
 	
 	
 	@BeforeAll
@@ -125,8 +140,10 @@ public class QuotationHibernateDAOTest {
 		List<Quotation> quotations = new ArrayList<>();
 		this.appleStock = new Instrument();
 		this.microsoftStock = new Instrument();
+		this.xleETF = new Instrument();
 		
 		try {
+			//Initialize instruments and their quotations.
 			this.appleStock.setSymbol("AAPL");
 			this.appleStock.setName("Apple");
 			this.appleStock.setStockExchange(StockExchange.NYSE);
@@ -138,6 +155,12 @@ public class QuotationHibernateDAOTest {
 			this.microsoftStock.setStockExchange(StockExchange.NYSE);
 			this.microsoftStock.setType(InstrumentType.STOCK);
 			instrumentDAO.insertInstrument(this.microsoftStock);
+			
+			this.xleETF.setSymbol("XLE");
+			this.xleETF.setName("Energy Select Sector SPDR Fund");
+			this.xleETF.setStockExchange(StockExchange.NYSE);
+			this.xleETF.setType(InstrumentType.ETF);
+			instrumentDAO.insertInstrument(this.xleETF);
 			
 			calendar.setTime(new Date());
 			this.microsoftQuotation1 = new Quotation();
@@ -166,13 +189,30 @@ public class QuotationHibernateDAOTest {
 			this.appleQuotation2.setInstrument(this.appleStock);
 			quotations.add(this.appleQuotation2);
 			
+			calendar.setTime(new Date());
+			this.xleQuotation1 = new Quotation();
+			this.xleQuotation1.setDate(calendar.getTime());
+			this.xleQuotation1.setPrice(BigDecimal.valueOf(81.28));
+			this.xleQuotation1.setCurrency(Currency.USD);
+			this.xleQuotation1.setVolume(18994000);
+			this.xleQuotation1.setInstrument(this.xleETF);
+			quotations.add(this.xleQuotation1);
+			
 			quotationDAO.insertQuotations(quotations);
+			
+			//Initialize indicators.
+			quotations.clear();
 			
 			this.appleQuotation2Indicator = new Indicator();
 			this.appleQuotation2Indicator.setStage(3);
 			this.appleQuotation2.setIndicator(this.appleQuotation2Indicator);
-			quotations.clear();
 			quotations.add(this.appleQuotation2);
+			
+			this.xleQuotation1Indicator = new Indicator();
+			this.xleQuotation1Indicator.setStage(2);
+			this.xleQuotation1.setIndicator(this.xleQuotation1Indicator);
+			quotations.add(this.xleQuotation1);
+			
 			quotationDAO.updateQuotations(quotations);
 		} catch (DuplicateInstrumentException e) {
 			fail(e.getMessage());
@@ -192,8 +232,10 @@ public class QuotationHibernateDAOTest {
 			quotations.add(this.appleQuotation1);
 			quotations.add(this.appleQuotation2);
 			quotations.add(this.microsoftQuotation1);
+			quotations.add(this.xleQuotation1);
 
 			quotationDAO.deleteQuotations(quotations);
+			instrumentDAO.deleteInstrument(this.xleETF);
 			instrumentDAO.deleteInstrument(this.microsoftStock);
 			instrumentDAO.deleteInstrument(this.appleStock);
 		} catch (Exception e) {
@@ -391,7 +433,7 @@ public class QuotationHibernateDAOTest {
 		try {
 			quotations = quotationDAO.getRecentQuotationsForList(list);
 			
-			//Assure one quotation for each Insturment is provided.
+			//Assure one quotation for each Instrument is provided.
 			assertEquals(2, quotations.size());
 			
 			//Assure the correct quotations are provided.
@@ -407,6 +449,52 @@ public class QuotationHibernateDAOTest {
 				}
 			}
 			
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of the most recent Quotation of each Instrument of type STOCK.
+	 */
+	public void testGetRecentQuotationsTypeStock() {
+		List<Quotation> quotations;
+		Quotation databaseQuotation;
+		
+		try {
+			quotations = quotationDAO.getRecentQuotations(InstrumentType.STOCK);
+			
+			//Assure one Quotation is returned.
+			assertEquals(1, quotations.size());
+			
+			//Assure the correct Quotation is provided.
+			databaseQuotation = quotations.get(0);
+			assertEquals(this.appleQuotation2, databaseQuotation);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of the most recent Quotation of each Instrument of type ETF.
+	 */
+	public void testGetRecentQuotationsTypeEtf() {
+		List<Quotation> quotations;
+		Quotation databaseQuotation;
+		
+		try {
+			quotations = quotationDAO.getRecentQuotations(InstrumentType.ETF);
+			
+			//Assure one Quotation is returned.
+			assertEquals(1, quotations.size());
+			
+			//Assure the correct Quotation is provided.
+			databaseQuotation = quotations.get(0);
+			assertEquals(this.xleQuotation1, databaseQuotation);
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}

@@ -14,6 +14,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 import backend.model.instrument.Instrument;
+import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 import backend.webservice.ScanTemplate;
 
@@ -202,7 +203,7 @@ public class QuotationHibernateDAO implements QuotationDAO {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Quotation> getRecentQuotations() throws Exception {
+	public List<Quotation> getRecentQuotations(final InstrumentType instrumentType) throws Exception {
 		EntityManager entityManager = this.sessionFactory.createEntityManager();
 		List<Quotation> quotations;
 		Query query;
@@ -215,7 +216,7 @@ public class QuotationHibernateDAO implements QuotationDAO {
 			 * The selection is split into two selects because JOINs with sub-queries are only possible in native SQL.
 			 * But the needed JOIN FETCH is not possible in native SQL.
 			 */
-			query = this.getQueryForQuotationIdsWithMaxDate(entityManager);
+			query = this.getQueryForQuotationIdsWithMaxDate(entityManager, instrumentType);
 			quotationIdsWithMaxDate = query.getResultList();
 			
 			//Now select final data using JOIN FETCH based on the Quotation IDs selected before.
@@ -297,7 +298,7 @@ public class QuotationHibernateDAO implements QuotationDAO {
 			 * The selection is split into two selects because JOINs with sub-queries are only possible in native SQL.
 			 * But the needed JOIN FETCH is not possible in native SQL.
 			 */
-			query = this.getQueryForQuotationIdsWithMaxDate(entityManager);
+			query = this.getQueryForQuotationIdsWithMaxDate(entityManager, InstrumentType.STOCK);
 			quotationIdsWithMaxDate = query.getResultList();
 			
 			//Find all quotations that have an Indicator defined and where the Quotation is the most recent one of an Instrument.
@@ -337,14 +338,28 @@ public class QuotationHibernateDAO implements QuotationDAO {
 	
 	/**
 	 * Provides a native Query that determines the IDs of the quotations with the newest date for each Instrument.
+	 * Only those instruments are taken into account that match the given InstrumentType.
 	 * 
 	 * @param entityManager The EntityManager used for Query creation.
+	 * @param instrumentType The InstrumentType.
 	 * @return The Query.
 	 */
-	private Query getQueryForQuotationIdsWithMaxDate(final EntityManager entityManager) {
-		return entityManager.createNativeQuery("SELECT quotation_id FROM Quotation q "
+	@SuppressWarnings("unchecked")
+	private Query getQueryForQuotationIdsWithMaxDate(final EntityManager entityManager, final InstrumentType instrumentType) {
+		List<Object> instrumentIdsOfGivenInstrumentType;
+		Query query;
+		
+		//Get the Instrument IDs of all Instruments of the given type.
+		query = entityManager.createQuery("SELECT id FROM Instrument i WHERE i.type = :instrumentType");
+		query.setParameter("instrumentType", instrumentType);
+		instrumentIdsOfGivenInstrumentType = query.getResultList();
+		
+		query = entityManager.createNativeQuery("SELECT quotation_id FROM Quotation q "
 				+ "INNER JOIN (SELECT max(date) AS maxdate, instrument_id FROM Quotation GROUP BY instrument_id) jointable "
-				+ "ON q.instrument_id = jointable.instrument_id AND q.date = jointable.maxdate");
+				+ "ON q.instrument_id = jointable.instrument_id AND q.date = jointable.maxdate WHERE q.instrument_id IN :instrumentIds");
+		query.setParameter("instrumentIds", instrumentIdsOfGivenInstrumentType);
+		
+		return query;
 	}
 	
 	
