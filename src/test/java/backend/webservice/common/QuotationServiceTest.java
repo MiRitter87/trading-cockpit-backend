@@ -63,6 +63,21 @@ public class QuotationServiceTest {
 	private Instrument fordStock;
 	
 	/**
+	 * ETF: XLE.
+	 */
+	private Instrument xleETF;
+	
+	/**
+	 * ETF: XLB.
+	 */
+	private Instrument xlbETF;
+	
+	/**
+	 * ETF: XLF.
+	 */
+	private Instrument xlfETF;
+	
+	/**
 	 * A Quotation of the Apple stock.
 	 */
 	private Quotation appleQuotation1;
@@ -83,6 +98,26 @@ public class QuotationServiceTest {
 	private Quotation fordQuotation1;
 	
 	/**
+	 * A Quotation of the XLE ETF.
+	 */
+	private Quotation xleQuotation1;
+	
+	/**
+	 * A Quotation of the XLE ETF.
+	 */
+	private Quotation xleQuotation2;
+	
+	/**
+	 * A Quotation of the XLB ETF.
+	 */
+	private Quotation xlbQuotation1;
+	
+	/**
+	 * A Quotation of the XLF ETF.
+	 */
+	private Quotation xlfQuotation1;
+	
+	/**
 	 * The Indicator the Apple stock Quotation 2.
 	 */
 	private Indicator appleQuotation2Indicator;
@@ -91,6 +126,16 @@ public class QuotationServiceTest {
 	 * The Indicator of the Ford stock Quotation 1.
 	 */
 	private Indicator fordQuotation1Indicator;
+	
+	/**
+	 * The Indicator of the XLE ETF Quotation 2.
+	 */
+	private Indicator xleQuotation2Indicator;
+	
+	/**
+	 * The Indicator of the XLB ETF Quotation 1.
+	 */
+	private Indicator xlbQuotation1Indicator;
 	
 	
 	@BeforeAll
@@ -144,11 +189,17 @@ public class QuotationServiceTest {
 		this.appleStock = this.getAppleStock();
 		this.microsoftStock = this.getMicrosoftStock();
 		this.fordStock = this.getFordStock();
+		this.xleETF = this.getXleEtf();
+		this.xlbETF = this.getXlbEtf();
+		this.xlfETF = this.getXlfEtf();
 		
 		try {
 			instrumentDAO.insertInstrument(this.appleStock);
 			instrumentDAO.insertInstrument(this.microsoftStock);
 			instrumentDAO.insertInstrument(this.fordStock);
+			instrumentDAO.insertInstrument(this.xleETF);
+			instrumentDAO.insertInstrument(this.xlbETF);
+			instrumentDAO.insertInstrument(this.xlfETF);
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
@@ -160,6 +211,9 @@ public class QuotationServiceTest {
 	 */
 	private void deleteDummyInstruments() {
 		try {
+			instrumentDAO.deleteInstrument(this.xlfETF);
+			instrumentDAO.deleteInstrument(this.xlbETF);
+			instrumentDAO.deleteInstrument(this.xleETF);
 			instrumentDAO.deleteInstrument(this.fordStock);
 			instrumentDAO.deleteInstrument(this.microsoftStock);
 			instrumentDAO.deleteInstrument(this.appleStock);
@@ -220,6 +274,57 @@ public class QuotationServiceTest {
 	
 	
 	/**
+	 * Gets the Instrument of the XLE ETF.
+	 * 
+	 * @return The Instrument of the XLE ETF.
+	 */
+	private Instrument getXleEtf() {
+		Instrument instrument = new Instrument();
+		
+		instrument.setSymbol("XLE");
+		instrument.setName("Energy Select Sector SPDR Fund");
+		instrument.setStockExchange(StockExchange.NYSE);
+		instrument.setType(InstrumentType.ETF);
+		
+		return instrument;
+	}
+	
+	
+	/**
+	 * Gets the Instrument of the XLB ETF.
+	 * 
+	 * @return The Instrument of the XLB ETF.
+	 */
+	private Instrument getXlbEtf() {
+		Instrument instrument = new Instrument();
+		
+		instrument.setSymbol("XLB");
+		instrument.setName("Materials Select Sector SPDR Fund");
+		instrument.setStockExchange(StockExchange.NYSE);
+		instrument.setType(InstrumentType.ETF);
+		
+		return instrument;
+	}
+	
+	
+	/**
+	 * Gets the Instrument of the XLF ETF.
+	 * 
+	 * @return The Instrument of the XLF ETF.
+	 */
+	private Instrument getXlfEtf() {
+		Instrument instrument = new Instrument();
+		
+		instrument.setSymbol("XLF");
+		instrument.setName("Financial Select Sector SPDR Fund");
+		instrument.setStockExchange(StockExchange.NYSE);
+		instrument.setType(InstrumentType.ETF);
+		
+		return instrument;
+	}
+	
+	
+	/**
 	 * Initializes the database with dummy quotations.
 	 */
 	private void createDummyQuotations() {
@@ -229,11 +334,19 @@ public class QuotationServiceTest {
 		this.appleQuotation2 = this.getAppleQuotation2();
 		this.microsoftQuotation1 = this.getMicrosoftQuotation1();
 		this.fordQuotation1 = this.getFordQuotation1();
+		this.xleQuotation1 = this.getXleQuotation1();
+		this.xleQuotation2 = this.getXleQuotation2();
+		this.xlbQuotation1 = this.getXlbQuotation1();
+		this.xlfQuotation1 = this.getXlfQuotation1();
 		
 		quotations.add(this.appleQuotation1);
 		quotations.add(this.appleQuotation2);
 		quotations.add(this.microsoftQuotation1);
 		quotations.add(this.fordQuotation1);
+		quotations.add(this.xleQuotation1);
+		quotations.add(this.xleQuotation2);
+		quotations.add(this.xlbQuotation1);
+		quotations.add(this.xlfQuotation1);
 		
 		try {
 			quotationDAO.insertQuotations(quotations);
@@ -249,6 +362,10 @@ public class QuotationServiceTest {
 	private void deleteDummyQuotations() {
 		List<Quotation> quotations = new ArrayList<>();
 		
+		quotations.add(this.xlfQuotation1);
+		quotations.add(this.xlbQuotation1);
+		quotations.add(this.xleQuotation2);
+		quotations.add(this.xleQuotation1);
 		quotations.add(this.fordQuotation1);
 		quotations.add(this.microsoftQuotation1);
 		quotations.add(this.appleQuotation2);
@@ -349,6 +466,92 @@ public class QuotationServiceTest {
 	
 	
 	/**
+	 * Gets the Quotation 1 of the XLE ETF.
+	 * 
+	 * @return The Quotation 1 of the XLE ETF.
+	 */
+	private Quotation getXleQuotation1() {
+		Quotation quotation = new Quotation();
+		Calendar calendar = Calendar.getInstance();
+		
+		calendar.setTime(new Date());
+		calendar.add(Calendar.DAY_OF_YEAR, -1);
+		
+		quotation.setDate(calendar.getTime());
+		quotation.setPrice(BigDecimal.valueOf(81.28));
+		quotation.setCurrency(Currency.USD);
+		quotation.setVolume(18994000);
+		quotation.setInstrument(this.xleETF);
+		
+		return quotation;
+	}
+	
+	
+	/**
+	 * Gets the Quotation 2 of the XLE ETF.
+	 * 
+	 * @return The Quotation 2 of the XLE ETF.
+	 */
+	private Quotation getXleQuotation2() {
+		Quotation quotation = new Quotation();
+		Calendar calendar = Calendar.getInstance();
+		
+		calendar.setTime(new Date());
+		calendar.set(Calendar.HOUR_OF_DAY, 15);
+		calendar.set(Calendar.MINUTE, 30);
+		
+		quotation.setDate(calendar.getTime());
+		quotation.setPrice(BigDecimal.valueOf(81.99));
+		quotation.setCurrency(Currency.USD);
+		quotation.setVolume(25187000);
+		quotation.setInstrument(this.xleETF);
+		
+		return quotation;
+	}
+	
+	
+	/**
+	 * Gets the Quotation 1 of the XLB ETF.
+	 * 
+	 * @return The Quotation 1 of the XLB ETF.
+	 */
+	private Quotation getXlbQuotation1() {
+		Quotation quotation = new Quotation();
+		
+		quotation.setDate(new Date());
+		quotation.setPrice(BigDecimal.valueOf(71.25));
+		quotation.setCurrency(Currency.USD);
+		quotation.setVolume(79794000);
+		quotation.setInstrument(this.xlbETF);
+		
+		return quotation;
+	}
+	
+	
+	/**
+	 * Gets the Quotation 1 of the XLF ETF.
+	 * 
+	 * @return The Quotation 1 of the XLF ETF.
+	 */
+	private Quotation getXlfQuotation1() {
+		Quotation quotation = new Quotation();
+		Calendar calendar = Calendar.getInstance();
+		
+		calendar.setTime(new Date());
+		calendar.set(Calendar.HOUR_OF_DAY, 22);
+		calendar.set(Calendar.MINUTE, 0);
+		
+		quotation.setDate(calendar.getTime());
+		quotation.setPrice(BigDecimal.valueOf(32.30));
+		quotation.setCurrency(Currency.USD);
+		quotation.setVolume(48148000);
+		quotation.setInstrument(this.xlfETF);
+		
+		return quotation;
+	}
+	
+	
+	/**
 	 * Initializes the database with dummy indicators.
 	 */
 	private void createDummyIndicators() {
@@ -380,8 +583,36 @@ public class QuotationServiceTest {
 		this.fordQuotation1Indicator.setBaseLengthWeeks(3);
 		this.fordQuotation1.setIndicator(this.fordQuotation1Indicator);
 		
+		this.xleQuotation2Indicator = new Indicator();
+		this.xleQuotation2Indicator.setStage(2);
+		this.xleQuotation2Indicator.setSma200((float) 74.02);
+		this.xleQuotation2Indicator.setSma150((float) 76.84);
+		this.xleQuotation2Indicator.setSma50((float) 78.15);
+		this.xleQuotation2Indicator.setRsNumber(71);
+		this.xleQuotation2Indicator.setDistanceTo52WeekHigh((float) -21.4);
+		this.xleQuotation2Indicator.setDistanceTo52WeekLow((float) 78.81);
+		this.xleQuotation2Indicator.setBollingerBandWidth((float) 8.71);
+		this.xleQuotation2Indicator.setVolumeDifferential10Days((float) 19.34);
+		this.xleQuotation2Indicator.setBaseLengthWeeks(32);
+		this.xleQuotation2.setIndicator(this.xleQuotation2Indicator);
+		
+		this.xlbQuotation1Indicator = new Indicator();
+		this.xlbQuotation1Indicator.setStage(4);
+		this.xlbQuotation1Indicator.setSma200((float) 79.83);
+		this.xlbQuotation1Indicator.setSma150((float) 78.64);
+		this.xlbQuotation1Indicator.setSma50((float) 74.01);
+		this.xlbQuotation1Indicator.setRsNumber(71);
+		this.xlbQuotation1Indicator.setDistanceTo52WeekHigh((float) -9.41);
+		this.xlbQuotation1Indicator.setDistanceTo52WeekLow((float) 48.81);
+		this.xlbQuotation1Indicator.setBollingerBandWidth((float) 4.11);
+		this.xlbQuotation1Indicator.setVolumeDifferential10Days((float) -9.67);
+		this.xlbQuotation1Indicator.setBaseLengthWeeks(3);
+		this.xlbQuotation1.setIndicator(this.xlbQuotation1Indicator);
+		
 		quotations.add(this.appleQuotation2);
 		quotations.add(this.fordQuotation1);
+		quotations.add(this.xleQuotation2);
+		quotations.add(this.xlfQuotation1);
 		
 		try {
 			quotationDAO.updateQuotations(quotations);
