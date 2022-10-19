@@ -395,14 +395,15 @@ public class QuotationServiceTest {
 	/**
 	 * Tests the retrieval of the most recent quotation with its corresponding Indicator and Instrument.
 	 * Only those quotations should be returned that have an Indicator associated with them.
+	 * Only instruments of InstrumentType stock are requested.
 	 */
-	public void testGetRecentQuotations() {
+	public void testGetRecentQuotationsStock() {
 		QuotationArray quotations;
 		WebServiceResult getQuotationsResult;
 		
 		//Get the quotations.
 		QuotationService service = new QuotationService();
-		getQuotationsResult = service.getQuotations(null);
+		getQuotationsResult = service.getQuotations(null, InstrumentType.STOCK);
 		quotations = (QuotationArray) getQuotationsResult.getData();
 		
 		//Assure no error message exists
@@ -430,15 +431,16 @@ public class QuotationServiceTest {
 	/**
 	 * Tests the retrieval of the most recent quotations that match the Minervini Trend Template.
 	 * Only those quotations should be returned that have an Indicator associated with them.
+	 * Only instruments of InstrumentType stock are requested.
 	 */
-	public void testGetQuotationsMinerviniTrendTemplate() {
+	public void testGetQuotationsMinerviniTrendTemplateStock() {
 		QuotationArray quotations;
 		WebServiceResult getQuotationsResult;
 		Quotation quotation;
 		
 		//Get the quotations.
 		QuotationService service = new QuotationService();
-		getQuotationsResult = service.getQuotations(ScanTemplate.MINERVINI_TREND_TEMPLATE);
+		getQuotationsResult = service.getQuotations(ScanTemplate.MINERVINI_TREND_TEMPLATE, InstrumentType.STOCK);
 		quotations = (QuotationArray) getQuotationsResult.getData();
 		
 		//Assure no error message exists
@@ -457,15 +459,16 @@ public class QuotationServiceTest {
 	/**
 	 * Tests the retrieval of the most recent quotations that match the "Volatility Contraction 10 Days" template.
 	 * Only those quotations should be returned that have an Indicator associated with them.
+	 * Only instruments of InstrumentType stock are requested.
 	 */
-	public void testGetQuotationsVolatiltyContraction10Days() {
+	public void testGetQuotationsVolatiltyContraction10DaysStock() {
 		QuotationArray quotations;
 		WebServiceResult getQuotationsResult;
 		Quotation quotation;
 		
 		//Get the quotations.
 		QuotationService service = new QuotationService();
-		getQuotationsResult = service.getQuotations(ScanTemplate.VOLATILITY_CONTRACTION_10_DAYS);
+		getQuotationsResult = service.getQuotations(ScanTemplate.VOLATILITY_CONTRACTION_10_DAYS, InstrumentType.STOCK);
 		quotations = (QuotationArray) getQuotationsResult.getData();
 		
 		//Assure no error message exists
@@ -484,15 +487,16 @@ public class QuotationServiceTest {
 	/**
 	 * Tests the retrieval of the most recent quotations that match the "Breakout Candidates" template.
 	 * Only those quotations should be returned that have an Indicator associated with them.
+	 * Only instruments of InstrumentType stock are requested.
 	 */
-	public void testGetQuotationsBreakoutCandidates() {
+	public void testGetQuotationsBreakoutCandidatesStock() {
 		QuotationArray quotations;
 		WebServiceResult getQuotationsResult;
 		Quotation quotation;
 		
 		//Get the quotations.
 		QuotationService service = new QuotationService();
-		getQuotationsResult = service.getQuotations(ScanTemplate.BREAKOUT_CANDIDATES);
+		getQuotationsResult = service.getQuotations(ScanTemplate.BREAKOUT_CANDIDATES, InstrumentType.STOCK);
 		quotations = (QuotationArray) getQuotationsResult.getData();
 		
 		//Assure no error message exists

@@ -285,7 +285,7 @@ public class QuotationHibernateDAO implements QuotationDAO {
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Quotation> getQuotationsByTemplate(ScanTemplate scanTemplate) throws Exception {
+	public List<Quotation> getQuotationsByTemplate(ScanTemplate scanTemplate, InstrumentType instrumentType) throws Exception {
 		EntityManager entityManager = this.sessionFactory.createEntityManager();
 		List<Quotation> quotations;
 		Query query;
@@ -298,7 +298,7 @@ public class QuotationHibernateDAO implements QuotationDAO {
 			 * The selection is split into two selects because JOINs with sub-queries are only possible in native SQL.
 			 * But the needed JOIN FETCH is not possible in native SQL.
 			 */
-			query = this.getQueryForQuotationIdsWithMaxDate(entityManager, InstrumentType.STOCK);
+			query = this.getQueryForQuotationIdsWithMaxDate(entityManager, instrumentType);
 			quotationIdsWithMaxDate = query.getResultList();
 			
 			//Find all quotations that have an Indicator defined and where the Quotation is the most recent one of an Instrument.

@@ -67,7 +67,7 @@ public interface QuotationDAO {
 	 * @return The most recent Quotation of each Instrument.
 	 * @throws Exception Quotation determination failed.
 	 */
-	List<Quotation> getRecentQuotations(InstrumentType instrumentType) throws Exception;
+	List<Quotation> getRecentQuotations(final InstrumentType instrumentType) throws Exception;
 	
 	
 	/**
@@ -81,12 +81,13 @@ public interface QuotationDAO {
 	
 	
 	/**
-	 * Gets the most recent Quotation of each Instrument that matches the given Template.
+	 * Gets the most recent Quotation of each Instrument that matches the given Template and InstrumentType.
 	 * Only those quotations are provided that have an Indicator associated with them.
 	 * 
 	 * @param scanTemplate The Template for Quotation query.
+	 * @param instrumentType The InstrumentType.
 	 * @return The most recent Quotation of each Instrument that matches the given Template.
 	 * @throws Exception Quotation determination failed.
 	 */
-	List<Quotation> getQuotationsByTemplate(final ScanTemplate scanTemplate) throws Exception;
+	List<Quotation> getQuotationsByTemplate(final ScanTemplate scanTemplate, final InstrumentType instrumentType) throws Exception;
 }
