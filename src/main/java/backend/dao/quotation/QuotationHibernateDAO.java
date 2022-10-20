@@ -354,6 +354,7 @@ public class QuotationHibernateDAO implements QuotationDAO {
 		query.setParameter("instrumentType", instrumentType);
 		instrumentIdsOfGivenInstrumentType = query.getResultList();
 		
+		//Get the IDs of all Quotations with the newest date for each Instrument.
 		query = entityManager.createNativeQuery("SELECT quotation_id FROM Quotation q "
 				+ "INNER JOIN (SELECT max(date) AS maxdate, instrument_id FROM Quotation GROUP BY instrument_id) jointable "
 				+ "ON q.instrument_id = jointable.instrument_id AND q.date = jointable.maxdate WHERE q.instrument_id IN :instrumentIds");

@@ -612,7 +612,7 @@ public class QuotationServiceTest {
 		quotations.add(this.appleQuotation2);
 		quotations.add(this.fordQuotation1);
 		quotations.add(this.xleQuotation2);
-		quotations.add(this.xlfQuotation1);
+		quotations.add(this.xlbQuotation1);
 		
 		try {
 			quotationDAO.updateQuotations(quotations);
@@ -650,6 +650,42 @@ public class QuotationServiceTest {
 			}
 			else if(tempQuotation.getId().equals(this.fordQuotation1.getId())) {
 				assertEquals(this.fordQuotation1, tempQuotation);	
+			}
+			else {
+				fail("An unrelated Quotation has been returned.");
+			}
+		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of the most recent quotation with its corresponding Indicator and Instrument.
+	 * Only those quotations should be returned that have an Indicator associated with them.
+	 * Only instruments of InstrumentType ETF are requested.
+	 */
+	public void testGetRecentQuotationsETF() {
+		QuotationArray quotations;
+		WebServiceResult getQuotationsResult;
+		
+		//Get the quotations.
+		QuotationService service = new QuotationService();
+		getQuotationsResult = service.getQuotations(null, InstrumentType.ETF);
+		quotations = (QuotationArray) getQuotationsResult.getData();
+		
+		//Assure no error message exists
+		assertTrue(WebServiceTools.resultContainsErrorMessage(getQuotationsResult) == false);
+		
+		//Check if two quotations are returned.
+		assertEquals(2, quotations.getQuotations().size());
+		
+		//Check if the correct quotations are returned.
+		for(Quotation tempQuotation: quotations.getQuotations()) {
+			if(tempQuotation.getId().equals(xleQuotation2.getId())) {
+				assertEquals(this.xleQuotation2, tempQuotation);	
+			}
+			else if(tempQuotation.getId().equals(this.xlbQuotation1.getId())) {
+				assertEquals(this.xlbQuotation1, tempQuotation);	
 			}
 			else {
 				fail("An unrelated Quotation has been returned.");
