@@ -11,6 +11,7 @@ import backend.dao.DAOManager;
 import backend.dao.ObjectUnchangedException;
 import backend.dao.list.ListDAO;
 import backend.dao.scan.ScanDAO;
+import backend.dao.scan.ScanInProgressException;
 import backend.model.list.List;
 import backend.model.scan.Scan;
 import backend.model.scan.ScanArray;
@@ -191,6 +192,10 @@ public class ScanService {
 		catch(ObjectUnchangedException objectUnchangedException) {
 			updateScanResult.addMessage(new WebServiceMessage(WebServiceMessageType.I, 
 					MessageFormat.format(this.resources.getString("scan.updateUnchanged"), convertedScan.getId())));
+		}
+		catch(ScanInProgressException scanInProgressException) {
+			updateScanResult.addMessage(new WebServiceMessage(WebServiceMessageType.I, 
+					MessageFormat.format(this.resources.getString("scan.updateScansInProgressExist"), scanInProgressException.getScanId())));
 		}
 		catch (Exception e) {
 			updateScanResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 

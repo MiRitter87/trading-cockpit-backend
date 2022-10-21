@@ -32,6 +32,7 @@ import backend.model.instrument.Quotation;
 import backend.model.list.List;
 import backend.model.scan.Scan;
 import backend.model.scan.ScanArray;
+import backend.model.scan.ScanStatus;
 import backend.model.scan.ScanWS;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
@@ -579,6 +580,41 @@ public class ScanServiceTest {
 		expectedErrorMessage = MessageFormat.format(this.resources.getString("scan.updateUnchanged"), this.singleListScan.getId());
 		actualErrorMessage = updateScanResult.getMessages().get(0).getText();
 		assertEquals(expectedErrorMessage, actualErrorMessage);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests changing a scan to status "IN_PROGRESS" while another scan is already in status "IN_PROGRESS".
+	 * Only one scan at a time can be in status "IN_PROGRESS".
+	 */
+	public void testUpdateScanMultipleInProgress() {
+		WebServiceResult updateScanResult;
+		ScanService service = new ScanService();
+		String actualErrorMessage, expectedErrorMessage;
+		
+		try {
+			//Set one scan to status "IN_PROGRESS".
+			this.singleListScan.setStatus(ScanStatus.IN_PROGRESS);
+			scanDAO.updateScan(this.singleListScan);
+			
+			//Try to set a second scan to status "IN_PROGRESS".
+			this.multiListScan.setStatus(ScanStatus.IN_PROGRESS);
+			updateScanResult = service.updateScan(this.convertToWsScan(multiListScan));
+			
+			//There should be a return message of type E.
+			assertTrue(updateScanResult.getMessages().size() == 1);
+			assertTrue(updateScanResult.getMessages().get(0).getType() == WebServiceMessageType.I);
+			
+			//A proper message should be provided.
+			expectedErrorMessage = MessageFormat.format(this.resources.getString("scan.updateScansInProgressExist"), this.singleListScan.getId());
+			actualErrorMessage = updateScanResult.getMessages().get(0).getText();
+			assertEquals(expectedErrorMessage, actualErrorMessage);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+		
+		//The second scan should not have been set to status "IN_PROGRESS".
 	}
 	
 	

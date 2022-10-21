@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -141,16 +142,18 @@ public class ScanHibernateDAO implements ScanDAO {
 
 	
 	@Override
-	public void updateScan(Scan scan) throws ObjectUnchangedException, Exception {
+	public void updateScan(Scan scan) throws ObjectUnchangedException, ScanInProgressException, Exception {
 		EntityManager entityManager;
 		
 		this.checkScanDataChanged(scan);
 		
-		entityManager = this.sessionFactory.createEntityManager();
+		entityManager = this.sessionFactory.createEntityManager();;
+		this.checkForRunningScans(entityManager, scan);
+		
 		entityManager.getTransaction().begin();
 		entityManager.merge(scan);
-		entityManager.getTransaction().commit();
-		entityManager.close();
+		entityManager.getTransaction().commit();			
+		entityManager.close();			
 	}
 	
 	
@@ -166,5 +169,29 @@ public class ScanHibernateDAO implements ScanDAO {
 		
 		if(databaseScan.equals(scan))
 			throw new ObjectUnchangedException();
+	}
+	
+	
+	/**
+	 * Checks if a scan other than the given scan exists, that currently is in status "IN_PROGRESS".
+	 * 
+	 * @param entityManager The EntityManager used for Query creation.
+	 * @param scan The scan exempt from the checkup.
+	 * @throws ScanInProgressException In case a scan in status "IN_PROGRESS" exists.
+	 * @throws Exception In case an error occurred during determination of the scans stored at the database.
+	 */
+	@SuppressWarnings("unchecked")
+	private void checkForRunningScans(final EntityManager entityManager, final Scan scan) throws ScanInProgressException, Exception {
+		Query query;
+		List<Object> idsOfRunningScans;
+		
+		query = entityManager.createQuery("SELECT id FROM Scan WHERE status = 'IN_PROGRESS' AND id != :scanId");
+		query.setParameter("scanId", scan.getId());
+		
+		idsOfRunningScans = query.getResultList();
+		
+		if(idsOfRunningScans.size() > 0) {
+			throw new ScanInProgressException((Integer) idsOfRunningScans.get(0));
+		}
 	}
 }
