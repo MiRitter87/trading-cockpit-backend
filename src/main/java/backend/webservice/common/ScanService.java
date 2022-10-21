@@ -159,8 +159,6 @@ public class ScanService {
 	public WebServiceResult updateScan(final ScanWS scan) {
 		Scan convertedScan = new Scan();
 		WebServiceResult updateScanResult = new WebServiceResult(null);
-		Scan databaseScan;
-		ScanController scanController;
 		
 		//Convert the WebService data transfer object to the internal data model.
 		try {
@@ -181,28 +179,7 @@ public class ScanService {
 		}
 		
 		//Update scan if validation is successful.
-		try {
-			scanController = new ScanController();
-			databaseScan = this.scanDAO.getScan(scan.getId());
-			this.scanDAO.updateScan(convertedScan);
-			scanController.checkAndExecute(convertedScan, databaseScan);
-			updateScanResult.addMessage(new WebServiceMessage(WebServiceMessageType.S, 
-					MessageFormat.format(this.resources.getString("scan.updateSuccess"), convertedScan.getId())));
-		} 
-		catch(ObjectUnchangedException objectUnchangedException) {
-			updateScanResult.addMessage(new WebServiceMessage(WebServiceMessageType.I, 
-					MessageFormat.format(this.resources.getString("scan.updateUnchanged"), convertedScan.getId())));
-		}
-		catch(ScanInProgressException scanInProgressException) {
-			updateScanResult.addMessage(new WebServiceMessage(WebServiceMessageType.I, 
-					MessageFormat.format(this.resources.getString("scan.updateScansInProgressExist"), scanInProgressException.getScanId())));
-		}
-		catch (Exception e) {
-			updateScanResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
-					MessageFormat.format(this.resources.getString("scan.updateError"), convertedScan.getId())));
-			
-			logger.error(MessageFormat.format(this.resources.getString("scan.updateError"), convertedScan.getId()), e);
-		}
+		updateScanResult = this.update(convertedScan);
 		
 		return updateScanResult;
 	}
@@ -277,5 +254,43 @@ public class ScanService {
 		}
 		
 		return scan;
+	}
+	
+	
+	/**
+	 * Updates the given scan.
+	 * 
+	 * @param scan The scan to be updated.
+	 * @return The result of the update function.
+	 */
+	private WebServiceResult update(final Scan scan) {
+		Scan databaseScan;
+		ScanController scanController;
+		WebServiceResult updateScanResult = new WebServiceResult();
+		
+		try {
+			scanController = new ScanController();
+			databaseScan = this.scanDAO.getScan(scan.getId());
+			this.scanDAO.updateScan(scan);
+			scanController.checkAndExecute(scan, databaseScan);
+			updateScanResult.addMessage(new WebServiceMessage(WebServiceMessageType.S, 
+					MessageFormat.format(this.resources.getString("scan.updateSuccess"), scan.getId())));
+		} 
+		catch(ObjectUnchangedException objectUnchangedException) {
+			updateScanResult.addMessage(new WebServiceMessage(WebServiceMessageType.I, 
+					MessageFormat.format(this.resources.getString("scan.updateUnchanged"), scan.getId())));
+		}
+		catch(ScanInProgressException scanInProgressException) {
+			updateScanResult.addMessage(new WebServiceMessage(WebServiceMessageType.I, 
+					MessageFormat.format(this.resources.getString("scan.updateScansInProgressExist"), scanInProgressException.getScanId())));
+		}
+		catch (Exception e) {
+			updateScanResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
+					MessageFormat.format(this.resources.getString("scan.updateError"), scan.getId())));
+			
+			logger.error(MessageFormat.format(this.resources.getString("scan.updateError"), scan.getId()), e);
+		}
+		
+		return updateScanResult;
 	}
 }

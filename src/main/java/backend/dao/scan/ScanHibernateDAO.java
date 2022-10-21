@@ -15,6 +15,7 @@ import javax.persistence.criteria.Root;
 
 import backend.dao.ObjectUnchangedException;
 import backend.model.scan.Scan;
+import backend.model.scan.ScanStatus;
 
 /**
  * Provides access to scan database persistence using Hibernate.
@@ -184,6 +185,9 @@ public class ScanHibernateDAO implements ScanDAO {
 	private void checkForRunningScans(final EntityManager entityManager, final Scan scan) throws ScanInProgressException, Exception {
 		Query query;
 		List<Object> idsOfRunningScans;
+		
+		if(scan.getStatus() != ScanStatus.IN_PROGRESS)
+			return;
 		
 		query = entityManager.createQuery("SELECT id FROM Scan WHERE status = 'IN_PROGRESS' AND id != :scanId");
 		query.setParameter("scanId", scan.getId());
