@@ -53,6 +53,18 @@ public class QuotationProviderMarketWatchDAO implements QuotationProviderDAO {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	
+	/**
+	 * Converts a CSV string containing the quotation history into a List of Quotation objects.
+	 * 
+	 * @param quotationHistoryAsCSV The quotation history as CSV String.
+	 * @return A List of Quotation objects.
+	 * @throws Exception Quotation conversion failed.
+	 */
+	protected List<Quotation> convertCSVToQuotations(final String quotationHistoryAsCSV) throws Exception {
+		return null;
+	}
 
 	
 	/**
