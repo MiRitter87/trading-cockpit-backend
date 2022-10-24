@@ -67,8 +67,8 @@ public class QuotationProviderMarketWatchDAO implements QuotationProviderDAO {
 		String queryUrl = new String(BASE_URL_QUOTATION_HISTORY);
 		
 		queryUrl = queryUrl.replace(PLACEHOLDER_SYMBOL, symbol);
-		queryUrl = queryUrl.replace(PLACEHOLDER_START_DATE, this.getStartDateForHistory());
-		queryUrl = queryUrl.replace(PLACEHOLDER_END_DATE, this.getEndDateForHistory());
+		queryUrl = queryUrl.replace(PLACEHOLDER_START_DATE, this.getDateForHistory(-1));
+		queryUrl = queryUrl.replace(PLACEHOLDER_END_DATE, this.getDateForHistory(0));
 		queryUrl = queryUrl.replace(PLACEHOLDER_COUNTRY_CODE, this.getCountryCode(stockExchange));
 		
 		return queryUrl;
@@ -76,54 +76,35 @@ public class QuotationProviderMarketWatchDAO implements QuotationProviderDAO {
 	
 	
 	/**
-	 * Determines the start date for the quotation history.
+	 * Determines the date for the quotation history.
 	 * 
-	 * @return The start date in the format mm/dd/yyyy.
+	 * @param The offset allows for definition of the year. An offset of -1 subtracts 1 from the current year.
+	 * @return The date in the format mm/dd/yyyy.
 	 */
-	protected String getStartDateForHistory() {
-		StringBuilder stringBuilder = new StringBuilder();
-		Calendar calendar = Calendar.getInstance();
-		int day, month, year;
-		
-		calendar.setTime(new Date());
-		calendar.add(Calendar.YEAR, -1);
-		
-		day = calendar.get(Calendar.DAY_OF_MONTH);
-		month = calendar.get(Calendar.MONTH) + 1; //Add 1 because the first month of the year is returned as 0.
-		year = calendar.get(Calendar.YEAR);
-		
-		//Add a leading zero if day or month is returned as single-digit number.
-		if(month < 10)
-			stringBuilder.append("0");
-		
-		stringBuilder.append(month);
-		stringBuilder.append("/");
-		
-		if(day < 10)
-			stringBuilder.append("0");
-		
-		stringBuilder.append(day);
-		stringBuilder.append("/");
-		stringBuilder.append(year);
-		
-		return stringBuilder.toString();
-	}
-	
-	
-	/**
-	 * Determines the end date for the quotation history.
-	 * 
-	 * @return The start date in the format mm/dd/yyyy.
-	 */
-	protected String getEndDateForHistory() {
+	protected String getDateForHistory(final int yearOffset) {
 		StringBuilder stringBuilder = new StringBuilder();
 		Calendar calendar = Calendar.getInstance();
 		int day, month, year;
 		
 		calendar.setTime(new Date());
 		
+		/*
+		 * The MarketWatch CSV API only supports the definition of a start and end date.
+		 * A query of a full year of data regardless of the current date is not supported.
+		 * Therefore in order to get the full 252 trading days of a year, the start and end date has to be set to the last Friday,
+		 * if the current day is a Saturday, Sunday or Monday.
+		 */
+		if(calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY)
+			calendar.add(Calendar.DAY_OF_MONTH, -1);
+		else if(calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY)
+			calendar.add(Calendar.DAY_OF_MONTH, -2);
+		else if(calendar.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY)
+			calendar.add(Calendar.DAY_OF_MONTH, -3);
+		
+		calendar.add(Calendar.YEAR, yearOffset);
+		
 		day = calendar.get(Calendar.DAY_OF_MONTH);
-		month = calendar.get(Calendar.MONTH) + 1; //Add 1 because the first month of the year is returned as 0.
+		month = calendar.get(Calendar.MONTH) + 1; //Add 1 because the first month of the year is returned as 0 by the Calendar.
 		year = calendar.get(Calendar.YEAR);
 		
 		//Add a leading zero if day or month is returned as single-digit number.

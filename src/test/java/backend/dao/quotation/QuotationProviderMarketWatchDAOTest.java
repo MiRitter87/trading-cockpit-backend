@@ -53,8 +53,8 @@ public class QuotationProviderMarketWatchDAOTest {
 		String actualUrl = "";
 		
 		//Replace start and end date with the current date.
-		expectedUrl = expectedUrl.replace("{start_date}", quotationProviderMarketWatchDAO.getStartDateForHistory());
-		expectedUrl = expectedUrl.replace("{end_date}", quotationProviderMarketWatchDAO.getEndDateForHistory());
+		expectedUrl = expectedUrl.replace("{start_date}", quotationProviderMarketWatchDAO.getDateForHistory(-1));
+		expectedUrl = expectedUrl.replace("{end_date}", quotationProviderMarketWatchDAO.getDateForHistory(0));
 		
 		actualUrl = quotationProviderMarketWatchDAO.getQueryUrlQuotationHistory(symbol, stockExchange, years);
 		assertEquals(expectedUrl, actualUrl);
