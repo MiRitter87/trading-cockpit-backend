@@ -38,7 +38,7 @@ public class QuotationProviderMarketWatchDAO implements QuotationProviderDAO {
 	 */
 	private static final String BASE_URL_QUOTATION_HISTORY = "https://www.marketwatch.com/investing/stock/" + PLACEHOLDER_SYMBOL + 
 			"/downloaddatapartial?startdate=" + PLACEHOLDER_START_DATE + "%2000:00:00&enddate=" + PLACEHOLDER_END_DATE + 
-			"%2023:59:59&daterange=d30&frequency=p1d&csvdownload=true&downloadpartial=false&newdates=false&countrycode=" + PLACEHOLDER_COUNTRY_CODE;
+			"%2023:59:59&daterange=d30&frequency=p1d&csvdownload=true&downloadpartial=false&newdates=false" + PLACEHOLDER_COUNTRY_CODE;
 	
 
 	@Override
@@ -69,7 +69,7 @@ public class QuotationProviderMarketWatchDAO implements QuotationProviderDAO {
 		queryUrl = queryUrl.replace(PLACEHOLDER_SYMBOL, symbol);
 		queryUrl = queryUrl.replace(PLACEHOLDER_START_DATE, this.getDateForHistory(-1));
 		queryUrl = queryUrl.replace(PLACEHOLDER_END_DATE, this.getDateForHistory(0));
-		queryUrl = queryUrl.replace(PLACEHOLDER_COUNTRY_CODE, this.getCountryCode(stockExchange));
+		queryUrl = queryUrl.replace(PLACEHOLDER_COUNTRY_CODE, this.getCountryCodeParameter(stockExchange));
 		
 		return queryUrl;
 	}
@@ -126,18 +126,19 @@ public class QuotationProviderMarketWatchDAO implements QuotationProviderDAO {
 	
 	
 	/**
-	 * Provides the country code for the given StockExchange.
+	 * Provides the country code URL parameter for the given StockExchange.
 	 * 
 	 * @param stockExchange The StockExchange.
-	 * @return The country code.
+	 * @return The country code URL parameter.
 	 */
-	protected String getCountryCode(final StockExchange stockExchange) {
+	protected String getCountryCodeParameter(final StockExchange stockExchange) {
 		String countryCode = "";
 		
 		switch(stockExchange) {
 			case TSX:
 			case TSXV:
-				countryCode = "CA";
+			case CSE:
+				countryCode = "&countrycode=CA";
 				break;
 		default:
 			break;
