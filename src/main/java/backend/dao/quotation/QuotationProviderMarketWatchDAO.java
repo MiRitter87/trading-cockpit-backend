@@ -1,9 +1,20 @@
 package backend.dao.quotation;
 
+import java.io.StringReader;
+import java.math.BigDecimal;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
+import com.opencsv.CSVReaderHeaderAware;
+
+import backend.model.Currency;
 import backend.model.StockExchange;
 import backend.model.instrument.Quotation;
 
@@ -59,11 +70,27 @@ public class QuotationProviderMarketWatchDAO implements QuotationProviderDAO {
 	 * Converts a CSV string containing the quotation history into a List of Quotation objects.
 	 * 
 	 * @param quotationHistoryAsCSV The quotation history as CSV String.
+	 * @param stockExchange The StockExchange at which the instrument is traded.
 	 * @return A List of Quotation objects.
 	 * @throws Exception Quotation conversion failed.
 	 */
-	protected List<Quotation> convertCSVToQuotations(final String quotationHistoryAsCSV) throws Exception {
-		return null;
+	protected List<Quotation> convertCSVToQuotations(final String quotationHistoryAsCSV, final StockExchange stockExchange) throws Exception {
+		StringReader stringReader = new StringReader(quotationHistoryAsCSV);
+		CSVReaderHeaderAware csvReader = new CSVReaderHeaderAware(stringReader);
+		Iterator<String[]> csvLineIterator = csvReader.iterator();
+		List<Quotation> quotations = new ArrayList<>();
+		Currency currency = this.getCurrencyForStockExchange(stockExchange);
+		Quotation quotation;
+		
+		while(csvLineIterator.hasNext()) {
+			quotation = this.getQuotationFromCsvLine(csvLineIterator.next());
+			quotation.setCurrency(currency);
+			quotations.add(quotation);
+		}
+		
+		csvReader.close();
+		
+		return quotations;
 	}
 
 	
@@ -157,5 +184,50 @@ public class QuotationProviderMarketWatchDAO implements QuotationProviderDAO {
 		}
 		
 		return countryCode;
+	}
+	
+	
+	/**
+	 * Gets the Currency for the given StockExchange.
+	 * 
+	 * @param stockExchange The StockExchange.
+	 * @return
+	 */
+	protected Currency getCurrencyForStockExchange(final StockExchange stockExchange) {
+		switch(stockExchange) {
+			case TSX:
+			case TSXV:
+			case CSE:
+				return Currency.CAD;
+			case NYSE:
+				return Currency.USD;
+			default:
+				break;
+		}
+		
+		return null;
+	}
+	
+	
+	/**
+	 * Returns a Quotation based on the content of the given CSV line string.
+	 * 
+	 * @param lineContent A CSV line containing Quotation data.
+	 * @return The Quotation.
+	 * @throws ParseException Error while trying to parse data.
+	 */
+	protected Quotation getQuotationFromCsvLine(final String[] lineContent) throws ParseException {
+		Quotation quotation = new Quotation();
+		SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+		NumberFormat numberFormat = NumberFormat.getInstance(Locale.US);
+        Number number = 0;
+        		
+		quotation.setDate(dateFormat.parse(lineContent[0]));
+		quotation.setPrice(new BigDecimal(lineContent[4]));
+		
+		number = numberFormat.parse(lineContent[5]);
+		quotation.setVolume(number.longValue());
+		
+		return quotation;
 	}
 }

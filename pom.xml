@@ -28,7 +28,7 @@
 		<javax.servlet.version>4.0.1</javax.servlet.version>
 		<okhttp.version>4.10.0</okhttp.version>
 		<apache.poi.version>5.2.3</apache.poi.version>
-		
+		<opencsv.version>5.7.1</opencsv.version>		
 	</properties>
 	
 	<dependencies>
@@ -144,6 +144,13 @@
     		<groupId>org.apache.poi</groupId>
     		<artifactId>poi-ooxml</artifactId>
     		<version>${apache.poi.version}</version>
+		</dependency>
+		
+		<!-- OpenCSV used to parse CSV data. -->
+		<dependency>
+			<groupId>com.opencsv</groupId>
+			<artifactId>opencsv</artifactId>
+			<version>${opencsv.version}</version>
 		</dependency>
 	</dependencies>
   

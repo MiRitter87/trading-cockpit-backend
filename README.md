@@ -37,6 +37,7 @@ The Trading Cockpit is based on the following technologies and frameworks
  - **JUnit** for test-driven development
  - **okhttp** to access third-party WebServices
  - **Apache POI** to generate Excel Sheets
+ - **OpenCSV** to parse CSV files
  - **Apache Maven** as build system
 
 ## Installation

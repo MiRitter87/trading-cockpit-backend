@@ -25,6 +25,6 @@ public class QuotationProviderMarketWatchDAOStub extends QuotationProviderMarket
 		
 		String quotationHistoryCSV = Files.readString(Paths.get(csvPath));
 		
-		return this.convertCSVToQuotations(quotationHistoryCSV);
+		return this.convertCSVToQuotations(quotationHistoryCSV, stockExchange);
 	}
 }
