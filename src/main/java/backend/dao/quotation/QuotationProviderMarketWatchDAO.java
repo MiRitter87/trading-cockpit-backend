@@ -1,5 +1,6 @@
 package backend.dao.quotation;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
@@ -17,6 +18,9 @@ import com.opencsv.CSVReaderHeaderAware;
 import backend.model.Currency;
 import backend.model.StockExchange;
 import backend.model.instrument.Quotation;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * Provides access to quotation data using the CSV download function of MarketWatch.
@@ -50,19 +54,72 @@ public class QuotationProviderMarketWatchDAO implements QuotationProviderDAO {
 	private static final String BASE_URL_QUOTATION_HISTORY = "https://www.marketwatch.com/investing/stock/" + PLACEHOLDER_SYMBOL + 
 			"/downloaddatapartial?startdate=" + PLACEHOLDER_START_DATE + "%2000:00:00&enddate=" + PLACEHOLDER_END_DATE + 
 			"%2023:59:59&daterange=d30&frequency=p1d&csvdownload=true&downloadpartial=false&newdates=false" + PLACEHOLDER_COUNTRY_CODE;
+
+	/**
+	 * The HTTP client used for data queries.
+	 */
+	private OkHttpClient httpClient;
+	
+	
+	/**
+	 * Default constructor.
+	 */
+	public QuotationProviderMarketWatchDAO() {
+		
+	}
+	
+	
+	/**
+	 * Constructor.
+	 * 
+	 * @param httpClient The HTTP client used for data queries.
+	 */
+	public QuotationProviderMarketWatchDAO(final OkHttpClient  httpClient) {
+		this.httpClient = httpClient;
+	}
 	
 
 	@Override
 	public Quotation getCurrentQuotation(String symbol, StockExchange stockExchange) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		throw new Exception("Method is not supported.");
 	}
 
+	
 	@Override
-	public List<Quotation> getQuotationHistory(String symbol, StockExchange stockExchange, Integer years)
-			throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Quotation> getQuotationHistory(String symbol, StockExchange stockExchange, Integer years) throws Exception {
+		String csvQuotationHistory = this.getQuotationHistoryCSVFromMarketWatch(symbol, stockExchange, years);
+		List<Quotation> quotationHistory = this.convertCSVToQuotations(csvQuotationHistory, stockExchange);
+		
+		return quotationHistory;
+	}
+	
+	
+	/**
+	 * Gets the quotation history data from MarketWatch as CSV String.
+	 * 
+	 * @param symbol The symbol.
+	 * @param stockExchange The stock exchange.
+	 * @param years The number of years to be queried.
+	 * @return The quotation history as CSV string.
+	 * @throws Exception Quotation history determination failed.
+	 */
+	protected String getQuotationHistoryCSVFromMarketWatch(final String symbol, final StockExchange stockExchange, final Integer years) throws Exception {
+		Request request = new Request.Builder()
+				.url(this.getQueryUrlQuotationHistory(symbol, stockExchange, years))
+				.header("Connection", "close")
+				.build();
+		Response response;
+		String csvResult;
+		
+		try {
+			response = this.httpClient.newCall(request).execute();
+			csvResult = response.body().string();
+			response.close();
+		} catch (IOException e) {
+			throw new Exception(e);
+		}
+		
+		return csvResult;
 	}
 	
 	
