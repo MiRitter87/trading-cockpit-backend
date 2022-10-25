@@ -11,12 +11,13 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import backend.controller.DataProvider;
 import backend.dao.DAOManager;
 import backend.dao.ObjectUnchangedException;
 import backend.dao.instrument.InstrumentDAO;
 import backend.dao.quotation.QuotationDAO;
 import backend.dao.quotation.QuotationProviderDAO;
-import backend.dao.quotation.QuotationProviderYahooDAO;
+import backend.dao.quotation.QuotationProviderDAOFactory;
 import backend.dao.scan.ScanDAO;
 import backend.model.instrument.Indicator;
 import backend.model.instrument.Instrument;
@@ -25,7 +26,6 @@ import backend.model.instrument.Quotation;
 import backend.model.list.List;
 import backend.model.scan.Scan;
 import backend.model.scan.ScanStatus;
-import okhttp3.OkHttpClient;
 
 /**
  * Queries historical stock quotes of instruments that are part of a scan.
@@ -80,13 +80,14 @@ public class ScanThread extends Thread {
 	 * Initializes the scan thread.
 	 * 
 	 * @param queryInterval The interval in seconds between each historical quotation query.
+	 * @param dataProvider The DataProvider for historical quotation data.
 	 * @param scan The scan that is executed by the thread.
 	 */
-	public ScanThread(final int queryInterval, final Scan scan) {
+	public ScanThread(final int queryInterval, final DataProvider dataProvider, final Scan scan) {
 		this.queryInterval = queryInterval;
 		this.scan = scan;
 		
-		this.quotationProviderDAO = new QuotationProviderYahooDAO(new OkHttpClient());
+		this.quotationProviderDAO = QuotationProviderDAOFactory.getQuotationProviderDAO(dataProvider);
 		this.quotationDAO = DAOManager.getInstance().getQuotationDAO();
 		this.scanDAO = DAOManager.getInstance().getScanDAO();
 		this.instrumentDAO = DAOManager.getInstance().getInstrumentDAO();

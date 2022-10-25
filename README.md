@@ -58,6 +58,7 @@ The configuration file "tradingCockpitBackend.properties" has multiple propertie
 | startTime.minute 			|  Application starts stock quote queries at this time 				| 30       |
 | endTime.hour 				|  Application ends stock quote queries at this time 				| 22       |
 | endTime.minute 			|  Application ends stock quote queries at this time 				| 0        |
+| dataProvider.scan			|  Data provider for historical quotation data						| YAHOO	   |
 
 ## License
 

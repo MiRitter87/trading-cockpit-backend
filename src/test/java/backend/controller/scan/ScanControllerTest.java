@@ -7,6 +7,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import backend.controller.DataProvider;
+
 /**
  * Tests the functionality of the ScanController
  * 
@@ -50,5 +52,17 @@ public class ScanControllerTest {
 		final int actualQueryInterval = this.scanController.getQueryInterval();
 		
 		assertEquals(expectedQueryInterval, actualQueryInterval);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests getting the data provider for historical data.
+	 */
+	public void testGetDataProviderHistory() {
+		final DataProvider expectedDataProvider = DataProvider.MARKETWATCH;
+		final DataProvider actualDataProvider = this.scanController.getDataProvider();
+		
+		assertEquals(expectedDataProvider, actualDataProvider);
 	}
 }

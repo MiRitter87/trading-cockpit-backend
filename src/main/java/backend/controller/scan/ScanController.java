@@ -1,5 +1,6 @@
 package backend.controller.scan;
 
+import backend.controller.DataProvider;
 import backend.controller.MainController;
 import backend.model.scan.Scan;
 import backend.model.scan.ScanStatus;
@@ -16,9 +17,19 @@ public class ScanController {
 	protected static final String PROPERTY_QUERY_INTERVAL = "queryInterval.scan";
 	
 	/**
+	 * Property Key: Data Provider.
+	 */
+	protected static final String PROPERTY_DATA_PROVIDER = "dataProvider.scan";
+	
+	/**
 	 * The interval in seconds between each query of historical quotations.
 	 */
 	private int queryInterval;
+	
+	/**
+	 * The DataProvider for historical quotation data.
+	 */
+	private DataProvider dataProvider;
 	
 	
 	/**
@@ -28,6 +39,7 @@ public class ScanController {
 	 */
 	public ScanController() throws Exception {
 		this.initializeQueryInterval();
+		this.initializeDataProvider();
 	}
 	
 	
@@ -35,7 +47,15 @@ public class ScanController {
 	 * @return the queryInterval
 	 */
 	public int getQueryInterval() {
-		return queryInterval;
+		return this.queryInterval;
+	}
+	
+	
+	/**
+	 * @return the dataProvider
+	 */
+	public DataProvider getDataProvider() {
+		return this.dataProvider;
 	}
 	
 	
@@ -57,7 +77,7 @@ public class ScanController {
 	 * @param scan The scan to be executed.
 	 */
 	private void execute(final Scan scan) {		
-		Thread scanThread = new ScanThread(this.queryInterval, scan);
+		Thread scanThread = new ScanThread(this.queryInterval, this.dataProvider, scan);
 		scanThread.start();
 	}
 	
@@ -70,5 +90,27 @@ public class ScanController {
 	private void initializeQueryInterval() throws Exception {
 		String queryInterval = MainController.getInstance().getConfigurationProperty(PROPERTY_QUERY_INTERVAL);
 		this.queryInterval = Integer.valueOf(queryInterval);
+	}
+	
+	
+	/**
+	 * Initializes the data provider.
+	 * 
+	 * @throws Exception In case the property could not be read or initialized.
+	 */
+	private void initializeDataProvider() throws Exception {
+		String queryInterval = MainController.getInstance().getConfigurationProperty(PROPERTY_DATA_PROVIDER);
+		
+		switch(queryInterval) {
+			case "YAHOO":
+				this.dataProvider = DataProvider.YAHOO;
+				break;
+			case "MARKETWATCH":
+				this.dataProvider = DataProvider.MARKETWATCH;
+				break;
+			default:
+				this.dataProvider = null;
+				break;
+		}
 	}
 }
