@@ -188,14 +188,15 @@ public class QuotationProviderMarketWatchDAO implements QuotationProviderDAO {
 		 * The MarketWatch CSV API only supports the definition of a start and end date.
 		 * A query of a full year of data regardless of the current date is not supported.
 		 * Therefore in order to get the full 252 trading days of a year, the start and end date has to be set to the last Friday,
-		 * if the current day is a Saturday, Sunday or Monday.
+		 * if the current day is a Sunday or Monday.
+		 * The API only provides data after the close of the trading day. Therefore always take at least the date of the previous day for the query.
 		 */
-		if(calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY)
-			calendar.add(Calendar.DAY_OF_MONTH, -1);
-		else if(calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY)
+		if(calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY)
 			calendar.add(Calendar.DAY_OF_MONTH, -2);
 		else if(calendar.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY)
 			calendar.add(Calendar.DAY_OF_MONTH, -3);
+		else
+			calendar.add(Calendar.DAY_OF_MONTH, -1);
 		
 		calendar.add(Calendar.YEAR, yearOffset);
 		
