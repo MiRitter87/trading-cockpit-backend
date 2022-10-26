@@ -14,5 +14,15 @@ public enum InstrumentType {
 	/**
 	 * An ETF.
 	 */
-	ETF
+	ETF,
+	
+	/**
+	 * A sector.
+	 */
+	SECTOR,
+	
+	/**
+	 * An industry group.
+	 */
+	IND_GROUP
 }
