@@ -16,6 +16,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -82,6 +84,20 @@ public class Instrument {
 	@Column(name="NAME", length = 50)
 	@Size(min = 0, max = 50, message = "{instrument.name.size.message}")
 	private String name;
+	
+	/**
+	 * The sector the Instrument is part of.
+	 */
+	@OneToOne(targetEntity = Instrument.class)
+	@JoinColumn(name="SECTOR_ID")
+	private Instrument sector;
+	
+	/**
+	 * The industry group the Instrument is part of.
+	 */
+	@OneToOne(targetEntity = Instrument.class)
+	@JoinColumn(name="INDUSTRY_GROUP_ID")
+	private Instrument industry_group;
 	
 	/**
 	 * The quotations.
@@ -195,6 +211,38 @@ public class Instrument {
 	
 	
 	/**
+	 * @return the sector
+	 */
+	public Instrument getSector() {
+		return sector;
+	}
+
+
+	/**
+	 * @param sector the sector to set
+	 */
+	public void setSector(Instrument sector) {
+		this.sector = sector;
+	}
+
+
+	/**
+	 * @return the industry_group
+	 */
+	public Instrument getIndustry_group() {
+		return industry_group;
+	}
+
+
+	/**
+	 * @param industry_group the industry_group to set
+	 */
+	public void setIndustry_group(Instrument industry_group) {
+		this.industry_group = industry_group;
+	}
+
+
+	/**
 	 * Adds a quotation to the instrument.
 	 * 
 	 * @param quotation The quotation to be added.
@@ -263,6 +311,8 @@ public class Instrument {
 		result = prime * result + ((stockExchange == null) ? 0 : stockExchange.hashCode());
 		result = prime * result + ((symbol == null) ? 0 : symbol.hashCode());
 		result = prime * result + ((type == null) ? 0 : type.hashCode());
+		result = prime * result + ((sector == null) ? 0 : sector.hashCode());
+		result = prime * result + ((industry_group == null) ? 0 : industry_group.hashCode());
 		return result;
 	}
 
@@ -304,6 +354,20 @@ public class Instrument {
 			return false;
 		}
 		if (type != other.type) {
+			return false;
+		}
+		if (sector == null) {
+			if (other.sector != null) {
+				return false;
+			}
+		} else if (!sector.equals(other.sector)) {
+			return false;
+		}
+		if (industry_group == null) {
+			if (other.industry_group != null) {
+				return false;
+			}
+		} else if (!industry_group.equals(other.industry_group)) {
 			return false;
 		}
 		
