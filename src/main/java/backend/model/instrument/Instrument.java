@@ -407,10 +407,12 @@ public class Instrument {
 	/**
 	 * Validates the instrument.
 	 * 
+	 * @throws InstrumentReferenceException In case the Instrument is associated with another Instrument of the wrong type.
 	 * @throws Exception In case a general validation error occurred.
 	 */
-	public void validate() throws Exception {
+	public void validate() throws InstrumentReferenceException, Exception {
 		this.validateAnnotations();
+		this.validateAdditionalCharacteristics();
 	}
 	
 	
@@ -429,6 +431,41 @@ public class Instrument {
 
 		for(ConstraintViolation<Instrument> violation:violations) {
 			throw new Exception(violation.getMessage());
+		}
+	}
+	
+	
+	/**
+	 * Validates additional characteristics of the Instrument besides annotations.
+	 * 
+	 * @throws InstrumentReferenceException In case the validation failed.
+	 */
+	private void validateAdditionalCharacteristics() throws InstrumentReferenceException {
+		this.validateSectorReference();
+		this.validateIndustryGroupReference();
+	}
+	
+	
+	/**
+	 * Validates the sector reference.
+	 * 
+	 * @throws InstrumentReferenceException In case the sector is associated with an Instrument of the wrong type.
+	 */
+	private void validateSectorReference() throws InstrumentReferenceException {
+		if(this.sector != null && this.sector.getType() != InstrumentType.SECTOR) {
+			throw new InstrumentReferenceException(InstrumentType.SECTOR, this.sector.getType());
+		}
+	}
+	
+	
+	/**
+	 * Validates the industry group reference.
+	 * 
+	 * @throws InstrumentReferenceException In case the industry group is associated with an Instrument of the wrong type.
+	 */
+	private void validateIndustryGroupReference() throws InstrumentReferenceException {
+		if(this.industry_group != null && this.industry_group.getType() != InstrumentType.IND_GROUP) {
+			throw new InstrumentReferenceException(InstrumentType.IND_GROUP, this.industry_group.getType());
 		}
 	}
 }

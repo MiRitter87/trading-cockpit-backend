@@ -43,6 +43,11 @@ public class InstrumentTest {
 	 */
 	private Quotation quotation3;
 	
+	/**
+	 * The Microsoft stock.
+	 */
+	private Instrument microsoftStock;
+	
 	
 	@BeforeEach
 	/**
@@ -82,6 +87,13 @@ public class InstrumentTest {
 		this.instrument.addQuotation(this.quotation1);
 		this.instrument.addQuotation(this.quotation2);
 		this.instrument.addQuotation(this.quotation3);
+		
+		this.microsoftStock = new Instrument();
+		this.microsoftStock.setId(Integer.valueOf(2));
+		this.microsoftStock.setSymbol("MSFT");
+		this.microsoftStock.setType(InstrumentType.STOCK);
+		this.microsoftStock.setStockExchange(StockExchange.NYSE);
+		this.microsoftStock.setName("Microsoft");
 	}
 	
 	
@@ -344,5 +356,43 @@ public class InstrumentTest {
 		
 		olderQuotationOfSameDay = olderQuotationsSameDay.get(0);
 		assertEquals(this.quotation3, olderQuotationOfSameDay);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests referencing the sector of an Instrument with another Instrument of type stock.
+	 */
+	public void testReferenceSectorWithStock() {
+		this.instrument.setSector(this.microsoftStock);
+		
+		try {
+			this.instrument.validate();
+			fail("Validation should have failed because the sector is referenced with an Instrument that is not of type 'SECTOR'.");
+		} catch (InstrumentReferenceException expected) {
+			assertEquals(expected.getExpectedType(), InstrumentType.SECTOR);
+			assertEquals(expected.getActualType(), InstrumentType.STOCK);
+		} catch (Exception e) {
+			fail("No general exception should have occurred. Just the InstrumentReferenceException.");
+		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests referencing the industry group of an Instrument with another Instrument of type stock.
+	 */
+	public void testReferenceIndustryGroupWithStock() {
+		this.instrument.setIndustry_group(this.microsoftStock);
+		
+		try {
+			this.instrument.validate();
+			fail("Validation should have failed because the industry group is referenced with an Instrument that is not of type 'INDUSTRY_GROUP'.");
+		} catch (InstrumentReferenceException expected) {
+			assertEquals(expected.getExpectedType(), InstrumentType.IND_GROUP);
+			assertEquals(expected.getActualType(), InstrumentType.STOCK);
+		} catch (Exception e) {
+			fail("No general exception should have occurred. Just the InstrumentReferenceException.");
+		}
 	}
 }
