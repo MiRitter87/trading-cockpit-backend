@@ -30,6 +30,7 @@ import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentArray;
 import backend.model.instrument.InstrumentType;
+import backend.model.instrument.InstrumentWS;
 import backend.model.instrument.Quotation;
 import backend.model.priceAlert.PriceAlert;
 import backend.model.priceAlert.PriceAlertType;
@@ -581,7 +582,7 @@ public class InstrumentServiceTest {
 		
 		//Update the name.
 		this.appleStock.setName("Apple Inc.");
-		updateInstrumentResult = service.updateInstrument(this.appleStock);
+		updateInstrumentResult = service.updateInstrument(this.convertToWsInstrument(this.appleStock));
 		
 		//Assure no error message exists
 		assertTrue(WebServiceTools.resultContainsErrorMessage(updateInstrumentResult) == false);
@@ -612,7 +613,7 @@ public class InstrumentServiceTest {
 		
 		//Remove the symbol.
 		this.microsoftStock.setSymbol("");
-		updateInstrumentResult = service.updateInstrument(this.microsoftStock);
+		updateInstrumentResult = service.updateInstrument(this.convertToWsInstrument(this.microsoftStock));
 		
 		//There should be a return message of type E.
 		assertTrue(updateInstrumentResult.getMessages().size() == 1);
@@ -635,7 +636,7 @@ public class InstrumentServiceTest {
 		String actualErrorMessage, expectedErrorMessage;
 		
 		//Update instrument without changing any data.
-		updateInstrumentResult = service.updateInstrument(this.microsoftStock);
+		updateInstrumentResult = service.updateInstrument(this.convertToWsInstrument(this.microsoftStock));
 		
 		//There should be a return message of type I
 		assertTrue(updateInstrumentResult.getMessages().size() == 1);
@@ -662,7 +663,7 @@ public class InstrumentServiceTest {
 		this.microsoftStock.setSymbol("AAPL");
 		
 		//Update the instrument at the database via WebService.
-		updateInstrumentResult = service.updateInstrument(this.microsoftStock);
+		updateInstrumentResult = service.updateInstrument(this.convertToWsInstrument(this.microsoftStock));
 		
 		//There should be a return message of type E.
 		assertTrue(updateInstrumentResult.getMessages().size() == 1);
@@ -701,7 +702,7 @@ public class InstrumentServiceTest {
 		newInstrument.setType(InstrumentType.STOCK);
 		
 		//Add the new instrument to the database via WebService
-		addInstrumentResult = service.addInstrument(newInstrument);
+		addInstrumentResult = service.addInstrument(this.convertToWsInstrument(newInstrument));
 		
 		//Assure no error message exists
 		assertTrue(WebServiceTools.resultContainsErrorMessage(addInstrumentResult) == false);
@@ -751,7 +752,7 @@ public class InstrumentServiceTest {
 		newInstrument.setStockExchange(StockExchange.NYSE);
 		
 		//Add a new instrument to the database via WebService
-		addInstrumentResult = service.addInstrument(newInstrument);
+		addInstrumentResult = service.addInstrument(this.convertToWsInstrument(newInstrument));
 		
 		//There should be a return message of type E.
 		assertTrue(addInstrumentResult.getMessages().size() == 1);
@@ -779,7 +780,7 @@ public class InstrumentServiceTest {
 		newInstrument.setType(InstrumentType.STOCK);
 		
 		//Add a new instrument to the database via WebService.
-		addInstrumentResult = service.addInstrument(newInstrument);
+		addInstrumentResult = service.addInstrument(this.convertToWsInstrument(newInstrument));
 		
 		//There should be a return message of type E.
 		assertTrue(addInstrumentResult.getMessages().size() == 1);
@@ -793,5 +794,32 @@ public class InstrumentServiceTest {
 		
 		//The new instrument should not have been persisted.
 		assertNull(newInstrument.getId());
+	}
+	
+	
+	/**
+	 * Converts an Instrument to the lean WebService representation.
+	 * 
+	 * @param instrument The Instrument to be converted.
+	 * @return The lean WebService representation of the Instrument.
+	 */
+	private InstrumentWS convertToWsInstrument(final Instrument instrument) {
+		InstrumentWS instrumentWS = new InstrumentWS();
+		
+		//Simple object attributes.
+		instrumentWS.setId(instrument.getId());
+		instrumentWS.setSymbol(instrument.getSymbol());
+		instrumentWS.setType(instrument.getType());
+		instrumentWS.setStockExchange(instrument.getStockExchange());
+		instrumentWS.setName(instrument.getName());
+		
+		//Object references.
+		if(instrument.getSector() != null)
+			instrumentWS.setSector_id(instrument.getSector().getId());
+		
+		if(instrument.getIndustry_group() != null)
+			instrumentWS.setIndustry_group_id(instrument.getIndustry_group().getId());
+
+		return instrumentWS;
 	}
 }

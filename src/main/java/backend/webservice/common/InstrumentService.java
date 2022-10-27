@@ -16,6 +16,7 @@ import backend.dao.quotation.QuotationDAO;
 import backend.model.ObjectInUseException;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentArray;
+import backend.model.instrument.InstrumentWS;
 import backend.model.instrument.Quotation;
 import backend.model.priceAlert.PriceAlert;
 import backend.model.webservice.WebServiceMessage;
@@ -122,12 +123,23 @@ public class InstrumentService {
 	 * @param instrument The instrument to be added.
 	 * @return The result of the add function.
 	 */
-	public WebServiceResult addInstrument(final Instrument instrument) {
+	public WebServiceResult addInstrument(final InstrumentWS instrument) {
+		Instrument convertedInstrument = new Instrument();
 		WebServiceResult addInstrumentResult = new WebServiceResult();
+		
+		//Convert the WebService data transfer object to the internal data model.
+		try {
+			convertedInstrument = this.convertInstrument(instrument);
+		}
+		catch(Exception exception) {
+			addInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, this.resources.getString("instrument.addError")));	
+			logger.error(this.resources.getString("instrument.addError"), exception);
+			return addInstrumentResult;
+		}
 		
 		//Validate the given instrument.
 		try {
-			instrument.validate();
+			convertedInstrument.validate();
 		} catch (Exception validationException) {
 			addInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, validationException.getMessage()));
 			return addInstrumentResult;
@@ -135,12 +147,12 @@ public class InstrumentService {
 		
 		//Insert instrument if validation is successful.
 		try {
-			this.instrumentDAO.insertInstrument(instrument);
+			this.instrumentDAO.insertInstrument(convertedInstrument);
 			addInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.S, this.resources.getString("instrument.addSuccess")));
-			addInstrumentResult.setData(instrument.getId());
+			addInstrumentResult.setData(convertedInstrument.getId());
 		} catch (DuplicateInstrumentException duplicateInstrumentException) {
 			addInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
-					MessageFormat.format(this.resources.getString("instrument.createDuplicate"), instrument.getSymbol(), instrument.getStockExchange())));
+					MessageFormat.format(this.resources.getString("instrument.createDuplicate"), convertedInstrument.getSymbol(), convertedInstrument.getStockExchange())));
 		} catch (Exception e) {
 			addInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, this.resources.getString("instrument.addError")));
 			logger.error(this.resources.getString("instrument.addError"), e);
@@ -209,12 +221,23 @@ public class InstrumentService {
 	 * @param instrument The instrument to be updated.
 	 * @return The result of the update function.
 	 */
-	public WebServiceResult updateInstrument(final Instrument instrument) {
+	public WebServiceResult updateInstrument(final InstrumentWS instrument) {
+		Instrument convertedInstrument = new Instrument();
 		WebServiceResult updateInstrumentResult = new WebServiceResult(null);
+		
+		//Convert the WebService data transfer object to the internal data model.
+		try {
+			convertedInstrument = this.convertInstrument(instrument);
+		}
+		catch(Exception exception) {
+			updateInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, this.resources.getString("instrument.updateError")));	
+			logger.error(this.resources.getString("instrument.updateError"), exception);
+			return updateInstrumentResult;
+		}
 		
 		//Validation of the given instrument.
 		try {
-			instrument.validate();
+			convertedInstrument.validate();
 		} catch (Exception validationException) {
 			updateInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, validationException.getMessage()));
 			return updateInstrumentResult;
@@ -222,25 +245,54 @@ public class InstrumentService {
 		
 		//Update instrument if validation is successful.
 		try {
-			this.instrumentDAO.updateInstrument(instrument);
+			this.instrumentDAO.updateInstrument(convertedInstrument);
 			updateInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.S, 
-					MessageFormat.format(this.resources.getString("instrument.updateSuccess"), instrument.getId())));
+					MessageFormat.format(this.resources.getString("instrument.updateSuccess"), convertedInstrument.getId())));
 		} 
 		catch(ObjectUnchangedException objectUnchangedException) {
 			updateInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.I, 
-					MessageFormat.format(this.resources.getString("instrument.updateUnchanged"), instrument.getId())));
+					MessageFormat.format(this.resources.getString("instrument.updateUnchanged"), convertedInstrument.getId())));
 		}
 		catch (DuplicateInstrumentException duplicateInstrumentException) {
 			updateInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
-					MessageFormat.format(this.resources.getString("instrument.updateDuplicate"), instrument.getSymbol(), instrument.getStockExchange())));
+					MessageFormat.format(this.resources.getString("instrument.updateDuplicate"), 
+							convertedInstrument.getSymbol(), convertedInstrument.getStockExchange())));
 		}
 		catch (Exception e) {
 			updateInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
-					MessageFormat.format(this.resources.getString("instrument.updateError"), instrument.getId())));
+					MessageFormat.format(this.resources.getString("instrument.updateError"), convertedInstrument.getId())));
 			
-			logger.error(MessageFormat.format(this.resources.getString("instrument.updateError"), instrument.getId()), e);
+			logger.error(MessageFormat.format(this.resources.getString("instrument.updateError"), convertedInstrument.getId()), e);
 		}
 		
 		return updateInstrumentResult;
+	}
+	
+	
+	/**
+	 * Converts the lean Instrument representation that is provided by the WebService to the internal data model for further processing.
+	 * 
+	 * @param instrumentWS The lean Instrument representation provided by the WebService.
+	 * @return The Instrument model that is used by the backend internally.
+	 * @throws Exception In case the conversion fails.
+	 */
+	private Instrument convertInstrument(final InstrumentWS instrumentWS) throws Exception {
+		Instrument instrument = new Instrument();
+		
+		//Simple object attributes.
+		instrument.setId(instrumentWS.getId());
+		instrument.setSymbol(instrumentWS.getSymbol());
+		instrument.setType(instrumentWS.getType());
+		instrument.setStockExchange(instrumentWS.getStockExchange());
+		instrument.setName(instrumentWS.getName());
+		
+		//Object references.
+		if(instrumentWS.getSector_id() != null)
+			instrument.setSector(this.instrumentDAO.getInstrument(instrumentWS.getSector_id()));
+		
+		if(instrumentWS.getIndustry_group_id() != null)
+			instrument.setIndustry_group(this.instrumentDAO.getInstrument(instrumentWS.getIndustry_group_id()));
+		
+		return instrument;
 	}
 }

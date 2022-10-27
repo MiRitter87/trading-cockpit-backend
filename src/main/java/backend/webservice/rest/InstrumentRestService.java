@@ -10,7 +10,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import backend.model.instrument.Instrument;
+import backend.model.instrument.InstrumentWS;
 import backend.model.webservice.WebServiceResult;
 import backend.webservice.common.InstrumentService;
 
@@ -58,7 +58,7 @@ public class InstrumentRestService {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public WebServiceResult addInstrument(final Instrument instrument) {
+	public WebServiceResult addInstrument(final InstrumentWS instrument) {
 		InstrumentService instrumentService = new InstrumentService();
 		return instrumentService.addInstrument(instrument);
 	}
@@ -73,7 +73,7 @@ public class InstrumentRestService {
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public WebServiceResult updateInstrument(final Instrument instrument) {
+	public WebServiceResult updateInstrument(final InstrumentWS instrument) {
 		InstrumentService instrumentService = new InstrumentService();
 		return instrumentService.updateInstrument(instrument);
 	}
