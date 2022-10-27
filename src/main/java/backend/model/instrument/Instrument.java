@@ -97,7 +97,7 @@ public class Instrument {
 	 */
 	@OneToOne(targetEntity = Instrument.class)
 	@JoinColumn(name="INDUSTRY_GROUP_ID")
-	private Instrument industry_group;
+	private Instrument industryGroup;
 	
 	/**
 	 * The quotations.
@@ -227,18 +227,18 @@ public class Instrument {
 
 
 	/**
-	 * @return the industry_group
+	 * @return the industryGroup
 	 */
-	public Instrument getIndustry_group() {
-		return industry_group;
+	public Instrument getIndustryGroup() {
+		return industryGroup;
 	}
 
 
 	/**
-	 * @param industry_group the industry_group to set
+	 * @param industryGroup the industry_group to set
 	 */
-	public void setIndustry_group(Instrument industry_group) {
-		this.industry_group = industry_group;
+	public void setIndustryGroup(Instrument industryGroup) {
+		this.industryGroup = industryGroup;
 	}
 
 
@@ -312,7 +312,7 @@ public class Instrument {
 		result = prime * result + ((symbol == null) ? 0 : symbol.hashCode());
 		result = prime * result + ((type == null) ? 0 : type.hashCode());
 		result = prime * result + ((sector == null) ? 0 : sector.hashCode());
-		result = prime * result + ((industry_group == null) ? 0 : industry_group.hashCode());
+		result = prime * result + ((industryGroup == null) ? 0 : industryGroup.hashCode());
 		return result;
 	}
 
@@ -363,11 +363,11 @@ public class Instrument {
 		} else if (!sector.equals(other.sector)) {
 			return false;
 		}
-		if (industry_group == null) {
-			if (other.industry_group != null) {
+		if (industryGroup == null) {
+			if (other.industryGroup != null) {
 				return false;
 			}
-		} else if (!industry_group.equals(other.industry_group)) {
+		} else if (!industryGroup.equals(other.industryGroup)) {
 			return false;
 		}
 		
@@ -464,8 +464,8 @@ public class Instrument {
 	 * @throws InstrumentReferenceException In case the industry group is associated with an Instrument of the wrong type.
 	 */
 	private void validateIndustryGroupReference() throws InstrumentReferenceException {
-		if(this.industry_group != null && this.industry_group.getType() != InstrumentType.IND_GROUP) {
-			throw new InstrumentReferenceException(InstrumentType.IND_GROUP, this.industry_group.getType());
+		if(this.industryGroup != null && this.industryGroup.getType() != InstrumentType.IND_GROUP) {
+			throw new InstrumentReferenceException(InstrumentType.IND_GROUP, this.industryGroup.getType());
 		}
 	}
 }

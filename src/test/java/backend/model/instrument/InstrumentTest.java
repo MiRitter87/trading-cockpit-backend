@@ -383,7 +383,7 @@ public class InstrumentTest {
 	 * Tests referencing the industry group of an Instrument with another Instrument of type stock.
 	 */
 	public void testReferenceIndustryGroupWithStock() {
-		this.instrument.setIndustry_group(this.microsoftStock);
+		this.instrument.setIndustryGroup(this.microsoftStock);
 		
 		try {
 			this.instrument.validate();

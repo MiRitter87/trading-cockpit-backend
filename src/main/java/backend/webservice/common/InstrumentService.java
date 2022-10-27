@@ -16,12 +16,15 @@ import backend.dao.quotation.QuotationDAO;
 import backend.model.ObjectInUseException;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentArray;
+import backend.model.instrument.InstrumentReferenceException;
+import backend.model.instrument.InstrumentType;
 import backend.model.instrument.InstrumentWS;
 import backend.model.instrument.Quotation;
 import backend.model.priceAlert.PriceAlert;
 import backend.model.webservice.WebServiceMessage;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
+import backend.tools.WebServiceTools;
 
 /**
  * Common implementation of the instrument WebService that can be used by multiple service interfaces like SOAP or REST.
@@ -138,12 +141,9 @@ public class InstrumentService {
 		}
 		
 		//Validate the given instrument.
-		try {
-			convertedInstrument.validate();
-		} catch (Exception validationException) {
-			addInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, validationException.getMessage()));
+		this.validateInstrument(convertedInstrument, addInstrumentResult);
+		if(WebServiceTools.resultContainsErrorMessage(addInstrumentResult))
 			return addInstrumentResult;
-		}
 		
 		//Insert instrument if validation is successful.
 		try {
@@ -236,12 +236,9 @@ public class InstrumentService {
 		}
 		
 		//Validation of the given instrument.
-		try {
-			convertedInstrument.validate();
-		} catch (Exception validationException) {
-			updateInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, validationException.getMessage()));
+		this.validateInstrument(convertedInstrument, updateInstrumentResult);
+		if(WebServiceTools.resultContainsErrorMessage(updateInstrumentResult))
 			return updateInstrumentResult;
-		}
 		
 		//Update instrument if validation is successful.
 		try {
@@ -287,12 +284,39 @@ public class InstrumentService {
 		instrument.setName(instrumentWS.getName());
 		
 		//Object references.
-		if(instrumentWS.getSector_id() != null)
-			instrument.setSector(this.instrumentDAO.getInstrument(instrumentWS.getSector_id()));
+		if(instrumentWS.getSectorId() != null)
+			instrument.setSector(this.instrumentDAO.getInstrument(instrumentWS.getSectorId()));
 		
-		if(instrumentWS.getIndustry_group_id() != null)
-			instrument.setIndustry_group(this.instrumentDAO.getInstrument(instrumentWS.getIndustry_group_id()));
+		if(instrumentWS.getIndustryGroupId() != null)
+			instrument.setIndustryGroup(this.instrumentDAO.getInstrument(instrumentWS.getIndustryGroupId()));
 		
 		return instrument;
+	}
+	
+	
+	/**
+	 * Validates the given Instrument and adds potential error messages to the given WebServiceResult.
+	 * 
+	 * @param instrument The Instrument to be validated.
+	 * @param webServiceResult The WebServiceResult containing potential validation error messages.
+	 */
+	private void validateInstrument(final Instrument instrument, WebServiceResult webServiceResult) {
+		try {
+			instrument.validate();
+		}
+		catch(InstrumentReferenceException instrumentReferenceException) {
+			if(instrumentReferenceException.getExpectedType() == InstrumentType.SECTOR) {
+				webServiceResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
+						this.resources.getString("instrument.wrongSectorReference")));
+			}
+			
+			if(instrumentReferenceException.getExpectedType() == InstrumentType.IND_GROUP) {
+				webServiceResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
+						this.resources.getString("instrument.wrongIndustryGroupReference")));
+			}
+		}
+		catch (Exception validationException) {
+			webServiceResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, validationException.getMessage()));
+		}
 	}
 }

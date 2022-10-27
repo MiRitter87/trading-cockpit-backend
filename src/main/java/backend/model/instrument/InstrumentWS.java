@@ -37,12 +37,12 @@ public class InstrumentWS {
 	/**
 	 * The sector the Instrument is part of.
 	 */
-	private Integer sector_id;
+	private Integer sectorId;
 	
 	/**
 	 * The industry group the Instrument is part of.
 	 */
-	private Integer industry_group_id;
+	private Integer industryGroupId;
 	
 	
 	/**
@@ -134,33 +134,33 @@ public class InstrumentWS {
 
 
 	/**
-	 * @return the sector_id
+	 * @return the sectorId
 	 */
-	public Integer getSector_id() {
-		return sector_id;
+	public Integer getSectorId() {
+		return sectorId;
 	}
 
 
 	/**
-	 * @param sector_id the sector_id to set
+	 * @param sectorId the sectorId to set
 	 */
-	public void setSector_id(Integer sector_id) {
-		this.sector_id = sector_id;
+	public void setSectorId(Integer sectorId) {
+		this.sectorId = sectorId;
 	}
 
 
 	/**
-	 * @return the industry_group_id
+	 * @return the industryGroupId
 	 */
-	public Integer getIndustry_group_id() {
-		return industry_group_id;
+	public Integer getIndustryGroupId() {
+		return industryGroupId;
 	}
 
 
 	/**
-	 * @param industry_group_id the industry_group_id to set
+	 * @param industryGroupId the industryGroupId to set
 	 */
-	public void setIndustry_group_id(Integer industry_group_id) {
-		this.industry_group_id = industry_group_id;
+	public void setIndustryGroupId(Integer industryGroupId) {
+		this.industryGroupId = industryGroupId;
 	}
 }

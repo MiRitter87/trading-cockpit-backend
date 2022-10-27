@@ -687,6 +687,76 @@ public class InstrumentServiceTest {
 	
 	@Test
 	/**
+	 * Tests updating an Instrument with a sector reference. The referenced Instrument is not of type 'SECTOR'.
+	 */
+	public void testUpdateInstrumentWithWrongSector() {
+		Instrument databaseInstrument;
+		WebServiceResult updateInstrumentResult;
+		InstrumentService service = new InstrumentService();
+		String actualErrorMessage, expectedErrorMessage;
+		
+		//Set the sector of the instrument to another instrument of type 'STOCK'.
+		this.microsoftStock.setSector(this.appleStock);
+		
+		//Update the instrument at the database via WebService.
+		updateInstrumentResult = service.updateInstrument(this.convertToWsInstrument(this.microsoftStock));
+		
+		//There should be a return message of type E.
+		assertTrue(updateInstrumentResult.getMessages().size() == 1);
+		assertTrue(updateInstrumentResult.getMessages().get(0).getType() == WebServiceMessageType.E);
+		
+		//A proper message should be provided.
+		expectedErrorMessage = this.resources.getString("instrument.wrongSectorReference");
+		actualErrorMessage = updateInstrumentResult.getMessages().get(0).getText();
+		assertEquals(expectedErrorMessage, actualErrorMessage);
+		
+		//The sector change should not have been persisted.
+		try {
+			databaseInstrument = instrumentDAO.getInstrument(this.microsoftStock.getId());
+			assertNull(databaseInstrument.getSector());
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests updating an Instrument with an industry group reference. The referenced Instrument is not of type 'INDUSTRY_GROUP'.
+	 */
+	public void testUpdateInstrumentWithWrongIndustryGroup() {
+		Instrument databaseInstrument;
+		WebServiceResult updateInstrumentResult;
+		InstrumentService service = new InstrumentService();
+		String actualErrorMessage, expectedErrorMessage;
+		
+		//Set the industry group of the instrument to another instrument of type 'STOCK'.
+		this.microsoftStock.setIndustryGroup(this.appleStock);
+		
+		//Update the instrument at the database via WebService.
+		updateInstrumentResult = service.updateInstrument(this.convertToWsInstrument(this.microsoftStock));
+		
+		//There should be a return message of type E.
+		assertTrue(updateInstrumentResult.getMessages().size() == 1);
+		assertTrue(updateInstrumentResult.getMessages().get(0).getType() == WebServiceMessageType.E);
+		
+		//A proper message should be provided.
+		expectedErrorMessage = this.resources.getString("instrument.wrongIndustryGroupReference");
+		actualErrorMessage = updateInstrumentResult.getMessages().get(0).getText();
+		assertEquals(expectedErrorMessage, actualErrorMessage);
+		
+		//The industry group change should not have been persisted.
+		try {
+			databaseInstrument = instrumentDAO.getInstrument(this.microsoftStock.getId());
+			assertNull(databaseInstrument.getIndustryGroup());
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	@Test
+	/**
 	 * Tests adding of a new instrument.
 	 */
 	public void testAddValidInstrument() {
@@ -815,10 +885,10 @@ public class InstrumentServiceTest {
 		
 		//Object references.
 		if(instrument.getSector() != null)
-			instrumentWS.setSector_id(instrument.getSector().getId());
+			instrumentWS.setSectorId(instrument.getSector().getId());
 		
-		if(instrument.getIndustry_group() != null)
-			instrumentWS.setIndustry_group_id(instrument.getIndustry_group().getId());
+		if(instrument.getIndustryGroup() != null)
+			instrumentWS.setIndustryGroupId(instrument.getIndustryGroup().getId());
 
 		return instrumentWS;
 	}
