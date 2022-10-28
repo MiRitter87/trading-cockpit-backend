@@ -203,6 +203,11 @@ public class InstrumentService {
 				deleteInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
 						MessageFormat.format(this.resources.getString("instrument.deleteUsedInPriceAlert"), id, objectInUseException.getUsedById())));
 			}
+			
+			if(objectInUseException.getUsedByObject() instanceof Instrument) {
+				deleteInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
+						MessageFormat.format(this.resources.getString("instrument.deleteUsedInInstrument"), id, objectInUseException.getUsedById())));
+			}
 		}
 		catch(Exception e) {
 			deleteInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,

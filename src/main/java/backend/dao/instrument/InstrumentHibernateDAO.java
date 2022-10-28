@@ -211,6 +211,7 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 		this.checkQuotationsExist(instrument, entityManager);
 		this.checkInstrumentUsedInList(instrument, entityManager);
 		this.checkInstrumentUsedInPriceAlert(instrument, entityManager);
+		this.checkInstrumentUsedAsSector(instrument, entityManager);
 	}
 	
 	
@@ -239,6 +240,7 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 	 * Checks if the Instrument is referenced by any List.
 	 * 
 	 * @param instrument The Instrument which is checked.
+	 * @param entityManager The EntityManager used to execute queries.
 	 * @throws ObjectInUseException In case the Instrument is in use.
 	 */
 	@SuppressWarnings("unchecked")
@@ -259,6 +261,7 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 	 * Checks if the Instrument is referenced by any PriceAlert.
 	 * 
 	 * @param instrument The Instrument which is checked.
+	 * @param entityManager The EntityManager used to execute queries.
 	 * @throws ObjectInUseException In case the Instrument is in use.
 	 */
 	@SuppressWarnings("unchecked")
@@ -272,6 +275,26 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 		if(priceAlerts.size() > 0) {
 			throw new ObjectInUseException(instrument.getId(), priceAlerts.get(0).getId(), priceAlerts.get(0));
 		}
+	}
+	
+	
+	/**
+	 * Checks if the Instrument is used as sector in another Instrument.
+	 * 
+	 * @param instrument The Instrument which is checked.
+	 * @param entityManager The EntityManager used to execute queries.
+	 * @throws ObjectInUseException In case the Instrument is in use.
+	 */
+	@SuppressWarnings("unchecked")
+	private void checkInstrumentUsedAsSector(final Instrument instrument, final EntityManager entityManager) throws ObjectInUseException {
+		Query query = entityManager.createQuery("Select i FROM Instrument i WHERE sector_id = :instrumentId");
+		List<Instrument> instruments;
+		
+		query.setParameter("instrumentId", instrument.getId());
+		instruments = query.getResultList();
+		
+		if(instruments.size() > 0)
+			throw new ObjectInUseException(instrument.getId(), instruments.get(0).getId(), instruments.get(0));
 	}
 	
 	

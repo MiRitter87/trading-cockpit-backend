@@ -100,6 +100,11 @@ public class InstrumentServiceTest {
 	 */
 	private PriceAlert nvidiaAlert;
 	
+	/**
+	 * The technology sector.
+	 */
+	private Instrument technologySector;
+	
 	
 	@BeforeAll
 	/**
@@ -157,11 +162,13 @@ public class InstrumentServiceTest {
 		this.appleStock = this.getAppleStock();
 		this.microsoftStock = this.getMicrosoftStock();
 		this.nvidiaStock = this.getNvidiaStock();
+		this.technologySector = this.getTechnologySector();
 		
 		try {
 			instrumentDAO.insertInstrument(this.appleStock);
 			instrumentDAO.insertInstrument(this.microsoftStock);
 			instrumentDAO.insertInstrument(this.nvidiaStock);
+			instrumentDAO.insertInstrument(this.technologySector);
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
@@ -173,6 +180,7 @@ public class InstrumentServiceTest {
 	 */
 	private void deleteDummyInstruments() {
 		try {
+			instrumentDAO.deleteInstrument(this.technologySector);
 			instrumentDAO.deleteInstrument(this.nvidiaStock);
 			instrumentDAO.deleteInstrument(this.microsoftStock);
 			instrumentDAO.deleteInstrument(this.appleStock);
@@ -228,6 +236,23 @@ public class InstrumentServiceTest {
 		instrument.setName("NVIDIA");
 		instrument.setStockExchange(StockExchange.NYSE);
 		instrument.setType(InstrumentType.STOCK);
+		
+		return instrument;
+	}
+	
+	
+	/**
+	 * Gets the Instrument of the technology sector.
+	 * 
+	 * @return The Instrument of the technology sector.
+	 */
+	private Instrument getTechnologySector() {
+		Instrument instrument = new Instrument();
+		
+		instrument.setSymbol("XLK");
+		instrument.setName("Technology Select Sector SPDR Fund");
+		instrument.setStockExchange(StockExchange.NYSE);
+		instrument.setType(InstrumentType.SECTOR);
 		
 		return instrument;
 	}
@@ -436,8 +461,8 @@ public class InstrumentServiceTest {
 		//Assure no error message exists
 		assertTrue(WebServiceTools.resultContainsErrorMessage(getInstrumentsResult) == false);
 		
-		//Check if two instruments are returned.
-		assertEquals(3, instruments.getInstruments().size());
+		//Check if four instruments are returned.
+		assertEquals(4, instruments.getInstruments().size());
 		
 		//Check all instruments by each attribute.
 		instrument = instruments.getInstruments().get(0);
@@ -448,6 +473,9 @@ public class InstrumentServiceTest {
 		
 		instrument = instruments.getInstruments().get(2);
 		assertEquals(this.nvidiaStock, instrument);
+		
+		instrument = instruments.getInstruments().get(3);
+		assertEquals(this.technologySector, instrument);
 	}
 	
 	
@@ -568,6 +596,48 @@ public class InstrumentServiceTest {
 				this.nvidiaStock.getId(), this.nvidiaAlert.getId());
 		actualErrorMessage = deleteInstrumentResult.getMessages().get(0).getText();
 		assertEquals(expectedErrorMessage, actualErrorMessage);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests deletion of an Instrument that is used as sector of another Instrument.
+	 */
+	public void testDeleteInstrumentUsedAsSector() {
+		WebServiceResult deleteInstrumentResult;
+		String expectedErrorMessage, actualErrorMessage;
+		InstrumentService service = new InstrumentService();
+		
+		try {
+			//Link a stock to a sector.
+			this.appleStock.setSector(this.technologySector);
+			instrumentDAO.updateInstrument(this.appleStock);
+			
+			//Try to delete the sector.
+			deleteInstrumentResult = service.deleteInstrument(this.technologySector.getId());
+			
+			//There should be a return message of type E.
+			assertTrue(deleteInstrumentResult.getMessages().size() == 1);
+			assertTrue(deleteInstrumentResult.getMessages().get(0).getType() == WebServiceMessageType.E);
+			
+			//Verify the expected error message.
+			expectedErrorMessage = MessageFormat.format(this.resources.getString("instrument.deleteUsedInInstrument"), 
+					this.technologySector.getId(), this.appleStock.getId());
+			actualErrorMessage = deleteInstrumentResult.getMessages().get(0).getText();
+			assertEquals(expectedErrorMessage, actualErrorMessage);
+		} 
+		catch (Exception e) {
+			fail(e.getMessage());
+		}
+		finally {
+			//Remove the sector reference in order to allow deletion in tearDown method.
+			try {
+				this.appleStock.setSector(null);
+				instrumentDAO.updateInstrument(this.appleStock);
+			} catch (Exception e) {
+				fail(e.getMessage());
+			}
+		}
 	}
 	
 	
