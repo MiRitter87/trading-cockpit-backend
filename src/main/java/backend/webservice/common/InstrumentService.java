@@ -304,15 +304,25 @@ public class InstrumentService {
 		try {
 			instrument.validate();
 		}
-		catch(InstrumentReferenceException instrumentReferenceException) {
-			if(instrumentReferenceException.getExpectedType() == InstrumentType.SECTOR) {
+		catch(InstrumentReferenceException refException) {
+			if(refException.getExpectedType() == InstrumentType.SECTOR) {
 				webServiceResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
 						this.resources.getString("instrument.wrongSectorReference")));
 			}
 			
-			if(instrumentReferenceException.getExpectedType() == InstrumentType.IND_GROUP) {
+			if(refException.getExpectedType() == InstrumentType.IND_GROUP) {
 				webServiceResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
 						this.resources.getString("instrument.wrongIndustryGroupReference")));
+			}
+			
+			if(refException.getActualType() == InstrumentType.SECTOR && refException.getExpectedType() == null) {
+				webServiceResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
+						this.resources.getString("instrument.sectorSectorReference")));
+			}
+			
+			if(refException.getActualType() == InstrumentType.IND_GROUP && refException.getExpectedType() == null) {
+				webServiceResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
+						this.resources.getString("instrument.igIgReference")));
 			}
 		}
 		catch (Exception validationException) {

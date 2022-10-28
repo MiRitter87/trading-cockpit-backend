@@ -452,7 +452,13 @@ public class Instrument {
 	 * @throws InstrumentReferenceException In case the sector is associated with an Instrument of the wrong type.
 	 */
 	private void validateSectorReference() throws InstrumentReferenceException {
-		if(this.sector != null && this.sector.getType() != InstrumentType.SECTOR) {
+		if(this.sector == null)
+			return;
+		
+		if(this.type == InstrumentType.SECTOR)
+			throw new InstrumentReferenceException(null, InstrumentType.SECTOR);
+		
+		if(this.sector.getType() != InstrumentType.SECTOR) {
 			throw new InstrumentReferenceException(InstrumentType.SECTOR, this.sector.getType());
 		}
 	}
@@ -464,7 +470,13 @@ public class Instrument {
 	 * @throws InstrumentReferenceException In case the industry group is associated with an Instrument of the wrong type.
 	 */
 	private void validateIndustryGroupReference() throws InstrumentReferenceException {
-		if(this.industryGroup != null && this.industryGroup.getType() != InstrumentType.IND_GROUP) {
+		if(this.industryGroup == null)
+			return;
+		
+		if(this.type == InstrumentType.IND_GROUP)
+			throw new InstrumentReferenceException(null, InstrumentType.IND_GROUP);
+		
+		if(this.industryGroup.getType() != InstrumentType.IND_GROUP) {
 			throw new InstrumentReferenceException(InstrumentType.IND_GROUP, this.industryGroup.getType());
 		}
 	}

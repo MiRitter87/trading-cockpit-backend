@@ -48,6 +48,16 @@ public class InstrumentTest {
 	 */
 	private Instrument microsoftStock;
 	
+	/**
+	 * A sector Instrument.
+	 */
+	private Instrument sector;
+	
+	/**
+	 * An industry group Instrument.
+	 */
+	private Instrument industryGroup;
+	
 	
 	@BeforeEach
 	/**
@@ -94,6 +104,20 @@ public class InstrumentTest {
 		this.microsoftStock.setType(InstrumentType.STOCK);
 		this.microsoftStock.setStockExchange(StockExchange.NYSE);
 		this.microsoftStock.setName("Microsoft");
+		
+		this.sector = new Instrument();
+		this.sector.setId(Integer.valueOf(3));
+		this.sector.setSymbol("XLE");
+		this.sector.setType(InstrumentType.SECTOR);
+		this.sector.setStockExchange(StockExchange.NYSE);
+		this.sector.setName("Energy Select Sector SPDR Fund");
+		
+		this.industryGroup = new Instrument();
+		this.industryGroup.setId(Integer.valueOf(4));
+		this.industryGroup.setSymbol("COPX");
+		this.industryGroup.setType(InstrumentType.IND_GROUP);
+		this.industryGroup.setStockExchange(StockExchange.NYSE);
+		this.industryGroup.setName("Global X Copper Miners ETF");
 	}
 	
 	
@@ -395,4 +419,45 @@ public class InstrumentTest {
 			fail("No general exception should have occurred. Just the InstrumentReferenceException.");
 		}
 	}
+	
+	
+	@Test
+	/**
+	 * Tests referencing an Instrument of type sector with another sector.
+	 */
+	public void testReferenceSectorWithSector() {
+		this.instrument.setType(InstrumentType.SECTOR);
+		this.instrument.setSector(this.sector);
+		
+		try {
+			this.instrument.validate();
+			fail("Validation should have failed because the sector is referenced with an Instrument that is of type 'SECTOR'.");
+		} catch (InstrumentReferenceException expected) {
+			assertEquals(expected.getExpectedType(), null);
+			assertEquals(expected.getActualType(), InstrumentType.SECTOR);
+		} catch (Exception e) {
+			fail("No general exception should have occurred. Just the InstrumentReferenceException.");
+		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests referencing an Instrument of type industry group with another industry group.
+	 */
+	public void testReferenceIgWithIg() {
+		this.instrument.setType(InstrumentType.IND_GROUP);
+		this.instrument.setIndustryGroup(this.industryGroup);
+		
+		try {
+			this.instrument.validate();
+			fail("Validation should have failed because the industry group is referenced with an Instrument that is of type 'IND_GROUP'.");
+		} catch (InstrumentReferenceException expected) {
+			assertEquals(expected.getExpectedType(), null);
+			assertEquals(expected.getActualType(), InstrumentType.IND_GROUP);
+		} catch (Exception e) {
+			fail("No general exception should have occurred. Just the InstrumentReferenceException.");
+		}
+	}
 }
+	
