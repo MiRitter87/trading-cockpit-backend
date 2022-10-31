@@ -211,7 +211,7 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 		this.checkQuotationsExist(instrument, entityManager);
 		this.checkInstrumentUsedInList(instrument, entityManager);
 		this.checkInstrumentUsedInPriceAlert(instrument, entityManager);
-		this.checkInstrumentUsedAsSector(instrument, entityManager);
+		this.checkInstrumentUsedAsSectorOrIg(instrument, entityManager);
 	}
 	
 	
@@ -279,15 +279,15 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 	
 	
 	/**
-	 * Checks if the Instrument is used as sector in another Instrument.
+	 * Checks if the Instrument is used as sector or industry group in another Instrument.
 	 * 
 	 * @param instrument The Instrument which is checked.
 	 * @param entityManager The EntityManager used to execute queries.
 	 * @throws ObjectInUseException In case the Instrument is in use.
 	 */
 	@SuppressWarnings("unchecked")
-	private void checkInstrumentUsedAsSector(final Instrument instrument, final EntityManager entityManager) throws ObjectInUseException {
-		Query query = entityManager.createQuery("Select i FROM Instrument i WHERE sector_id = :instrumentId");
+	private void checkInstrumentUsedAsSectorOrIg(final Instrument instrument, final EntityManager entityManager) throws ObjectInUseException {
+		Query query = entityManager.createQuery("Select i FROM Instrument i WHERE sector_id = :instrumentId OR industry_group_id = :instrumentId");
 		List<Instrument> instruments;
 		
 		query.setParameter("instrumentId", instrument.getId());

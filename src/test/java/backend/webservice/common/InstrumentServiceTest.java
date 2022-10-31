@@ -105,6 +105,11 @@ public class InstrumentServiceTest {
 	 */
 	private Instrument technologySector;
 	
+	/**
+	 * Copper Miners Industry Group.
+	 */
+	private Instrument copperIndustryGroup;
+	
 	
 	@BeforeAll
 	/**
@@ -163,12 +168,14 @@ public class InstrumentServiceTest {
 		this.microsoftStock = this.getMicrosoftStock();
 		this.nvidiaStock = this.getNvidiaStock();
 		this.technologySector = this.getTechnologySector();
+		this.copperIndustryGroup = this.getCopperIndustryGroup();
 		
 		try {
 			instrumentDAO.insertInstrument(this.appleStock);
 			instrumentDAO.insertInstrument(this.microsoftStock);
 			instrumentDAO.insertInstrument(this.nvidiaStock);
 			instrumentDAO.insertInstrument(this.technologySector);
+			instrumentDAO.insertInstrument(this.copperIndustryGroup);
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
@@ -180,6 +187,7 @@ public class InstrumentServiceTest {
 	 */
 	private void deleteDummyInstruments() {
 		try {
+			instrumentDAO.deleteInstrument(this.copperIndustryGroup);
 			instrumentDAO.deleteInstrument(this.technologySector);
 			instrumentDAO.deleteInstrument(this.nvidiaStock);
 			instrumentDAO.deleteInstrument(this.microsoftStock);
@@ -253,6 +261,23 @@ public class InstrumentServiceTest {
 		instrument.setName("Technology Select Sector SPDR Fund");
 		instrument.setStockExchange(StockExchange.NYSE);
 		instrument.setType(InstrumentType.SECTOR);
+		
+		return instrument;
+	}
+	
+	
+	/**
+	 * Gets the Instrument of the Copper Industry Group.
+	 * 
+	 * @return The Instrument of the Copper Industry Group.
+	 */
+	private Instrument getCopperIndustryGroup() {
+		Instrument instrument = new Instrument();
+		
+		instrument.setSymbol("COPX");
+		instrument.setName("Global X Copper Miners ETF");
+		instrument.setStockExchange(StockExchange.NYSE);
+		instrument.setType(InstrumentType.IND_GROUP);
 		
 		return instrument;
 	}
@@ -461,8 +486,8 @@ public class InstrumentServiceTest {
 		//Assure no error message exists
 		assertTrue(WebServiceTools.resultContainsErrorMessage(getInstrumentsResult) == false);
 		
-		//Check if four instruments are returned.
-		assertEquals(4, instruments.getInstruments().size());
+		//Check if five instruments are returned.
+		assertEquals(5, instruments.getInstruments().size());
 		
 		//Check all instruments by each attribute.
 		instrument = instruments.getInstruments().get(0);
@@ -476,6 +501,9 @@ public class InstrumentServiceTest {
 		
 		instrument = instruments.getInstruments().get(3);
 		assertEquals(this.technologySector, instrument);
+		
+		instrument = instruments.getInstruments().get(4);
+		assertEquals(this.copperIndustryGroup, instrument);
 	}
 	
 	
@@ -633,6 +661,48 @@ public class InstrumentServiceTest {
 			//Remove the sector reference in order to allow deletion in tearDown method.
 			try {
 				this.appleStock.setSector(null);
+				instrumentDAO.updateInstrument(this.appleStock);
+			} catch (Exception e) {
+				fail(e.getMessage());
+			}
+		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests deletion of an Instrument that is used as industry group of another Instrument.
+	 */
+	public void testDeleteInstrumentUsedAsIndustryGroup() {
+		WebServiceResult deleteInstrumentResult;
+		String expectedErrorMessage, actualErrorMessage;
+		InstrumentService service = new InstrumentService();
+		
+		try {
+			//Link a stock to an industry group.
+			this.appleStock.setIndustryGroup(this.copperIndustryGroup);
+			instrumentDAO.updateInstrument(this.appleStock);
+			
+			//Try to delete the industry group.
+			deleteInstrumentResult = service.deleteInstrument(this.copperIndustryGroup.getId());
+			
+			//There should be a return message of type E.
+			assertTrue(deleteInstrumentResult.getMessages().size() == 1);
+			assertTrue(deleteInstrumentResult.getMessages().get(0).getType() == WebServiceMessageType.E);
+			
+			//Verify the expected error message.
+			expectedErrorMessage = MessageFormat.format(this.resources.getString("instrument.deleteUsedInInstrument"), 
+					this.copperIndustryGroup.getId(), this.appleStock.getId());
+			actualErrorMessage = deleteInstrumentResult.getMessages().get(0).getText();
+			assertEquals(expectedErrorMessage, actualErrorMessage);
+		} 
+		catch (Exception e) {
+			fail(e.getMessage());
+		}
+		finally {
+			//Remove the sector reference in order to allow deletion in tearDown method.
+			try {
+				this.appleStock.setIndustryGroup(null);
 				instrumentDAO.updateInstrument(this.appleStock);
 			} catch (Exception e) {
 				fail(e.getMessage());
