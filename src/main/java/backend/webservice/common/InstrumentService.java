@@ -99,15 +99,15 @@ public class InstrumentService {
 	/**
 	 * Provides a list of all instruments.
 	 * 
-	 * @param instrumentQuotationQuery Defines what kind of quotations are requested.
-	 * @return A list of all instruments.
+	 * @param instrumentType The type of the instruments requested.
+	 * @return A list of all instruments of the given type.
 	 */
-	public WebServiceResult getInstruments() {
+	public WebServiceResult getInstruments(final InstrumentType instrumentType) {
 		InstrumentArray instruments = new InstrumentArray();
 		WebServiceResult getInstrumentsResult = new WebServiceResult(null);
 		
 		try {
-			instruments.setInstruments(this.instrumentDAO.getInstruments());
+			instruments.setInstruments(this.instrumentDAO.getInstruments(instrumentType));
 			getInstrumentsResult.setData(instruments);
 		} catch (Exception e) {
 			getInstrumentsResult.addMessage(new WebServiceMessage(

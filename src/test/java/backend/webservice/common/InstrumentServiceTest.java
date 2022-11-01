@@ -480,7 +480,7 @@ public class InstrumentServiceTest {
 		
 		//Get the instruments.
 		InstrumentService service = new InstrumentService();
-		getInstrumentsResult = service.getInstruments();
+		getInstrumentsResult = service.getInstruments(null);
 		instruments = (InstrumentArray) getInstrumentsResult.getData();
 		
 		//Assure no error message exists
@@ -503,6 +503,32 @@ public class InstrumentServiceTest {
 		assertEquals(this.technologySector, instrument);
 		
 		instrument = instruments.getInstruments().get(4);
+		assertEquals(this.copperIndustryGroup, instrument);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of all instruments of type industry group.
+	 */
+	public void testGetInstrumentsTypeIndustryGroup() {
+		WebServiceResult getInstrumentsResult;
+		InstrumentArray instruments;
+		Instrument instrument;
+		
+		//Get the instruments.
+		InstrumentService service = new InstrumentService();
+		getInstrumentsResult = service.getInstruments(InstrumentType.IND_GROUP);
+		instruments = (InstrumentArray) getInstrumentsResult.getData();
+		
+		//Assure no error message exists
+		assertTrue(WebServiceTools.resultContainsErrorMessage(getInstrumentsResult) == false);
+		
+		//Check if one Instrument is returned.
+		assertEquals(1, instruments.getInstruments().size());
+		
+		//Check the Instrument by each attribute.
+		instrument = instruments.getInstruments().get(0);
 		assertEquals(this.copperIndustryGroup, instrument);
 	}
 	

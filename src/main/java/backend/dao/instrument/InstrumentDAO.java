@@ -5,6 +5,7 @@ import java.util.List;
 import backend.dao.ObjectUnchangedException;
 import backend.model.ObjectInUseException;
 import backend.model.instrument.Instrument;
+import backend.model.instrument.InstrumentType;
 
 /**
  * Interface for instrument persistence.
@@ -33,12 +34,13 @@ public interface InstrumentDAO {
 	
 	
 	/**
-	 * Gets all instruments.
+	 * Gets all instruments of the given InstrumentType.
 	 * 
+	 * @param instrumentType The type of the instruments requested.
 	 * @return All instruments.
 	 * @throws Exception Instrument retrieval failed.
 	 */
-	List<Instrument> getInstruments() throws Exception;
+	List<Instrument> getInstruments(final InstrumentType instrumentType) throws Exception;
 	
 	
 	/**

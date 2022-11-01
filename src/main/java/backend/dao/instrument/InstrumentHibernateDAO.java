@@ -16,6 +16,7 @@ import backend.dao.ObjectUnchangedException;
 import backend.model.ObjectInUseException;
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
+import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 import backend.model.priceAlert.PriceAlert;
 
@@ -95,17 +96,25 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 
 	
 	@Override
-	public List<Instrument> getInstruments() throws Exception {
+	public List<Instrument> getInstruments(InstrumentType instrumentType) throws Exception {
 		List<Instrument> instruments = null;
 		EntityManager entityManager = this.sessionFactory.createEntityManager();
 		
 		entityManager.getTransaction().begin();
 		
 		try {
+			Predicate predicate;
+			List<Predicate> predicates = new ArrayList<Predicate>();
 			CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 			CriteriaQuery<Instrument> criteriaQuery = criteriaBuilder.createQuery(Instrument.class);
 			Root<Instrument> criteria = criteriaQuery.from(Instrument.class);
 			criteriaQuery.select(criteria);
+			
+			predicate = this.applyInstrumentTypeParameter(instrumentType, criteriaBuilder, criteria);
+			if(predicate != null)
+				predicates.add(predicate);
+			
+			criteriaQuery.where(predicates.toArray(new Predicate[predicates.size()]));
 			criteriaQuery.orderBy(criteriaBuilder.asc(criteria.get("id")));	//Order by id ascending
 			TypedQuery<Instrument> typedQuery = entityManager.createQuery(criteriaQuery);
 			
@@ -341,5 +350,23 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 			return null;
 		else
 			return instruments.get(0);
+	}
+	
+	
+	/**
+	 * Applies the InstrumentType parameter to the query.
+	 * 
+	 * @param instrumentType The parameter for InstrumentType.
+	 * @param criteriaBuilder The builder of criterias.
+	 * @param criteria The root entity of the Instrument that is being queried.
+	 * @return A predicate for the InstrumentType.
+	 */
+	private Predicate applyInstrumentTypeParameter(final InstrumentType instrumentType, final CriteriaBuilder criteriaBuilder, 
+			final Root<Instrument> criteria) {
+		
+		if(instrumentType != null)
+			return criteriaBuilder.equal(criteria.get("type"), instrumentType);
+		
+		return null;
 	}
 }
