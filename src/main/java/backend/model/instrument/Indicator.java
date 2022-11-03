@@ -6,6 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * Indicator data that are calculated based on quotations.
@@ -81,6 +82,18 @@ public class Indicator {
 	 */
 	@Column(name="RS_NUMBER")
 	private int rsNumber;
+	
+	/**
+	 * The RS number of the corresponding sector.
+	 */
+	@Transient
+	private int rsNumberSector;
+	
+	/**
+	 * The RS number of the corresponding industry group.
+	 */
+	@Transient
+	private int rsNumberIndustryGroup;	
 	
 	/**
 	 * The length of the most recent consolidation in weeks, beginning at the most recent 52-week high.
@@ -276,6 +289,38 @@ public class Indicator {
 	 */
 	public void setRsNumber(int rsNumber) {
 		this.rsNumber = rsNumber;
+	}
+
+
+	/**
+	 * @return the rsNumberSector
+	 */
+	public int getRsNumberSector() {
+		return rsNumberSector;
+	}
+
+
+	/**
+	 * @param rsNumberSector the rsNumberSector to set
+	 */
+	public void setRsNumberSector(int rsNumberSector) {
+		this.rsNumberSector = rsNumberSector;
+	}
+
+
+	/**
+	 * @return the rsNumberIndustryGroup
+	 */
+	public int getRsNumberIndustryGroup() {
+		return rsNumberIndustryGroup;
+	}
+
+
+	/**
+	 * @param rsNumberIndustryGroup the rsNumberIndustryGroup to set
+	 */
+	public void setRsNumberIndustryGroup(int rsNumberIndustryGroup) {
+		this.rsNumberIndustryGroup = rsNumberIndustryGroup;
 	}
 
 
