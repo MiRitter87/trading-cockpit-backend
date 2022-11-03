@@ -61,6 +61,16 @@ public class QuotationHibernateDAOTest {
 	private Instrument xleETF;
 	
 	/**
+	 * The Industrials sector.
+	 */
+	private Instrument xliSector;
+	
+	/**
+	 * The copper industry group.
+	 */
+	private Instrument copperIndustryGroup;
+	
+	/**
 	 * The first Quotation of the Apple stock.
 	 */
 	private Quotation appleQuotation1;
@@ -81,6 +91,16 @@ public class QuotationHibernateDAOTest {
 	private Quotation xleQuotation1;
 	
 	/**
+	 * The first Quotation of the XLI sector.
+	 */
+	private Quotation xliSectorQuotation1;
+	
+	/**
+	 * The first Quotation of the copper industry group.
+	 */
+	private Quotation copperIndustryGroupQuotation1;
+	
+	/**
 	 * Indicator of the Second Quotation of the Apple stock.
 	 */
 	private Indicator appleQuotation2Indicator;
@@ -89,6 +109,16 @@ public class QuotationHibernateDAOTest {
 	 * Indicator of the first Quotation of the XLE ETF.
 	 */
 	private Indicator xleQuotation1Indicator;
+	
+	/**
+	 * Indicator of the first Quotation of the XLI sector.
+	 */
+	private Indicator xliSectorQuotation1Indicator;
+	
+	/**
+	 * Indicator of the first Quotation of the copper industry group.
+	 */
+	private Indicator copperIndustryGroupQuotation1Indicator;
 	
 	
 	@BeforeAll
@@ -141,13 +171,30 @@ public class QuotationHibernateDAOTest {
 		this.appleStock = new Instrument();
 		this.microsoftStock = new Instrument();
 		this.xleETF = new Instrument();
+		this.xliSector = new Instrument();
+		this.copperIndustryGroup = new Instrument();
 		
 		try {
 			//Initialize instruments and their quotations.
+			
+			this.xliSector.setSymbol("XLI");
+			this.xliSector.setName("Industrial Select Sector SPDR Fund");
+			this.xliSector.setStockExchange(StockExchange.NYSE);
+			this.xliSector.setType(InstrumentType.SECTOR);
+			instrumentDAO.insertInstrument(this.xliSector);
+			
+			this.copperIndustryGroup.setSymbol("COPX");
+			this.copperIndustryGroup.setName("Global X Copper Miners ETF");
+			this.copperIndustryGroup.setStockExchange(StockExchange.NYSE);
+			this.copperIndustryGroup.setType(InstrumentType.IND_GROUP);
+			instrumentDAO.insertInstrument(this.copperIndustryGroup);
+			
 			this.appleStock.setSymbol("AAPL");
 			this.appleStock.setName("Apple");
 			this.appleStock.setStockExchange(StockExchange.NYSE);
 			this.appleStock.setType(InstrumentType.STOCK);
+			this.appleStock.setSector(this.xliSector);
+			this.appleStock.setIndustryGroup(this.copperIndustryGroup);
 			instrumentDAO.insertInstrument(this.appleStock);
 			
 			this.microsoftStock.setSymbol("MSFT");
@@ -198,6 +245,24 @@ public class QuotationHibernateDAOTest {
 			this.xleQuotation1.setInstrument(this.xleETF);
 			quotations.add(this.xleQuotation1);
 			
+			calendar.setTime(new Date());
+			this.xliSectorQuotation1 = new Quotation();
+			this.xliSectorQuotation1.setDate(calendar.getTime());
+			this.xliSectorQuotation1.setPrice(BigDecimal.valueOf(92.60));
+			this.xliSectorQuotation1.setCurrency(Currency.USD);
+			this.xliSectorQuotation1.setVolume(13884800);
+			this.xliSectorQuotation1.setInstrument(this.xliSector);
+			quotations.add(this.xliSectorQuotation1);
+			
+			calendar.setTime(new Date());
+			this.copperIndustryGroupQuotation1 = new Quotation();
+			this.copperIndustryGroupQuotation1.setDate(calendar.getTime());
+			this.copperIndustryGroupQuotation1.setPrice(BigDecimal.valueOf(29.04));
+			this.copperIndustryGroupQuotation1.setCurrency(Currency.USD);
+			this.copperIndustryGroupQuotation1.setVolume(401200);
+			this.copperIndustryGroupQuotation1.setInstrument(this.copperIndustryGroup);
+			quotations.add(this.copperIndustryGroupQuotation1);
+			
 			quotationDAO.insertQuotations(quotations);
 			
 			//Initialize indicators.
@@ -212,6 +277,18 @@ public class QuotationHibernateDAOTest {
 			this.xleQuotation1Indicator.setStage(2);
 			this.xleQuotation1.setIndicator(this.xleQuotation1Indicator);
 			quotations.add(this.xleQuotation1);
+			
+			this.xliSectorQuotation1Indicator = new Indicator();
+			this.xliSectorQuotation1Indicator.setStage(1);
+			this.xliSectorQuotation1Indicator.setRsNumber(46);
+			this.xliSectorQuotation1.setIndicator(this.xliSectorQuotation1Indicator);
+			quotations.add(this.xliSectorQuotation1);
+			
+			this.copperIndustryGroupQuotation1Indicator = new Indicator();
+			this.copperIndustryGroupQuotation1Indicator.setStage(4);
+			this.copperIndustryGroupQuotation1Indicator.setRsNumber(12);
+			this.copperIndustryGroupQuotation1.setIndicator(this.copperIndustryGroupQuotation1Indicator);
+			quotations.add(this.copperIndustryGroupQuotation1);
 			
 			quotationDAO.updateQuotations(quotations);
 		} catch (DuplicateInstrumentException e) {
@@ -233,11 +310,15 @@ public class QuotationHibernateDAOTest {
 			quotations.add(this.appleQuotation2);
 			quotations.add(this.microsoftQuotation1);
 			quotations.add(this.xleQuotation1);
+			quotations.add(this.xliSectorQuotation1);
+			quotations.add(this.copperIndustryGroupQuotation1);
 
 			quotationDAO.deleteQuotations(quotations);
 			instrumentDAO.deleteInstrument(this.xleETF);
 			instrumentDAO.deleteInstrument(this.microsoftStock);
 			instrumentDAO.deleteInstrument(this.appleStock);
+			instrumentDAO.deleteInstrument(this.copperIndustryGroup);
+			instrumentDAO.deleteInstrument(this.xliSector);
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
