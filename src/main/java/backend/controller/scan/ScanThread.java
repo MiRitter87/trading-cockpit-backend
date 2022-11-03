@@ -258,12 +258,18 @@ public class ScanThread extends Thread {
 			java.util.List<Quotation> allQuotations = new ArrayList<>();
 			java.util.List<Quotation> quotationsTypeStock = this.quotationDAO.getRecentQuotations(InstrumentType.STOCK);
 			java.util.List<Quotation> quotationsTypeETF = this.quotationDAO.getRecentQuotations(InstrumentType.ETF);
+			java.util.List<Quotation> quotationsTypeSector = this.quotationDAO.getRecentQuotations(InstrumentType.SECTOR);
+			java.util.List<Quotation> quotationsTypeIndustryGroup = this.quotationDAO.getRecentQuotations(InstrumentType.IND_GROUP);
 
 			this.indicatorCalculator.calculateRsNumbers(quotationsTypeStock);
 			this.indicatorCalculator.calculateRsNumbers(quotationsTypeETF);
+			this.indicatorCalculator.calculateRsNumbers(quotationsTypeSector);
+			this.indicatorCalculator.calculateRsNumbers(quotationsTypeIndustryGroup);
 			
 			allQuotations.addAll(quotationsTypeStock);
 			allQuotations.addAll(quotationsTypeETF);
+			allQuotations.addAll(quotationsTypeSector);
+			allQuotations.addAll(quotationsTypeIndustryGroup);
 			this.quotationDAO.updateQuotations(allQuotations);
 		} catch (Exception e) {
 			logger.error("Failed to calculate RS numbers.", e);
