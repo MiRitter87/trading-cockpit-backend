@@ -220,10 +220,7 @@ public class QuotationHibernateDAO implements QuotationDAO {
 			quotationIdsWithMaxDate = query.getResultList();
 			
 			//Now select final data using JOIN FETCH based on the Quotation IDs selected before.
-			query = entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i "
-					+ "WHERE quotation_id IN :quotationIds AND q.indicator IS NOT NULL");
-			
-			query.setParameter("quotationIds", quotationIdsWithMaxDate);
+			query = this.getQueryForQuotationsWithInstrument(entityManager, quotationIdsWithMaxDate, true);
 			quotations = query.getResultList();
 			
 			entityManager.getTransaction().commit();			
@@ -261,10 +258,7 @@ public class QuotationHibernateDAO implements QuotationDAO {
 			quotationIdsWithMaxDate = query.getResultList();
 			
 			//Now select final data using JOIN FETCH based on the Quotation IDs selected before.
-			query = entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i "
-					+ "WHERE quotation_id IN :quotationIds");
-			
-			query.setParameter("quotationIds", quotationIdsWithMaxDate);
+			query = this.getQueryForQuotationsWithInstrument(entityManager, quotationIdsWithMaxDate, false);
 			quotations = query.getResultList();
 			
 			entityManager.getTransaction().commit();			
@@ -391,6 +385,33 @@ public class QuotationHibernateDAO implements QuotationDAO {
 				+ "ON q.instrument_id = jointable.instrument_id AND q.date = jointable.maxdate AND jointable.instrument_id IN :instrumentIds");
 		
 		query.setParameter("instrumentIds", instrumentIds);
+		
+		return query;
+	}
+	
+	
+	/**
+	 * Provides a Query that determines all quotations with their referenced Instrument (and Indicator) based on the given Quotation IDs.
+	 * 
+	 * @param entityManager The EntityManager used for Query creation.
+	 * @param quotationIdsWithMaxDate A List of Quotation IDs that are queried.
+	 * @param withIndicatorNotNull Only those quotations are fetched that have Indicator data referenced, if set to true.
+	 * @return The Query.
+	 */
+	private Query getQueryForQuotationsWithInstrument(final EntityManager entityManager, final List<Object> quotationIdsWithMaxDate,
+			final boolean withIndicatorNotNull) {
+		Query query;
+		
+		if(withIndicatorNotNull) {
+			query = entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i "
+					+ "WHERE quotation_id IN :quotationIds AND q.indicator IS NOT NULL");
+		}
+		else {
+			query = entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i "
+					+ "WHERE quotation_id IN :quotationIds");
+		}
+		
+		query.setParameter("quotationIds", quotationIdsWithMaxDate);
 		
 		return query;
 	}
