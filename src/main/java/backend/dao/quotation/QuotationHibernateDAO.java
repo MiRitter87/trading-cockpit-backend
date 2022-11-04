@@ -16,6 +16,7 @@ import javax.persistence.criteria.Root;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
+import backend.model.instrument.QuotationArray;
 import backend.webservice.ScanTemplate;
 
 /**
@@ -223,6 +224,8 @@ public class QuotationHibernateDAO implements QuotationDAO {
 			query = this.getQueryForQuotationsWithInstrument(entityManager, quotationIdsWithMaxDate, true);
 			quotations = query.getResultList();
 			
+			this.fillTransientAttributes(instrumentType, quotations);
+			
 			entityManager.getTransaction().commit();			
 		}
 		catch(Exception exception) {
@@ -327,6 +330,46 @@ public class QuotationHibernateDAO implements QuotationDAO {
 		}
 		
 		return quotations;
+	}
+	
+	
+	/**
+	 * Fills transient attributes of the given quotations.
+	 * 
+	 * @param instrumentType The InstrumentType of the given quotations.
+	 * @param quotations The quotations with their referenced data whose transient attributes are to be filled.
+	 * @throws Exception In case an error occurred during data determination.
+	 */
+	private void fillTransientAttributes(final InstrumentType instrumentType, List<Quotation> quotations) throws Exception {
+		QuotationArray sectorQuotations = new QuotationArray();
+		QuotationArray industryGroupQuotations = new QuotationArray();
+		List<Quotation> quotationsOfInstrument;
+		
+		if(quotations.size() == 0 || instrumentType != InstrumentType.STOCK)
+			return;
+		
+		sectorQuotations.setQuotations(this.getRecentQuotations(InstrumentType.SECTOR));
+		industryGroupQuotations.setQuotations(this.getRecentQuotations(InstrumentType.IND_GROUP));
+
+		//Determine and set the sector and industry group RS number for each quotation.
+		//TODO Only use sector and industry group data of the same day as the given quotation.
+		for(Quotation quotation : quotations) {
+			if(quotation.getInstrument().getSector() != null) {
+				quotationsOfInstrument = sectorQuotations.getQuotationsByInstrumentId(quotation.getInstrument().getSector().getId());
+				
+				if(quotationsOfInstrument.size() == 1) {
+					quotation.getIndicator().setRsNumberSector(quotationsOfInstrument.get(0).getIndicator().getRsNumber());
+				}
+			}
+			
+			if(quotation.getInstrument().getIndustryGroup() != null) {
+				quotationsOfInstrument = industryGroupQuotations.getQuotationsByInstrumentId(quotation.getInstrument().getIndustryGroup().getId());
+				
+				if(quotationsOfInstrument.size() == 1) {
+					quotation.getIndicator().setRsNumberIndustryGroup(quotationsOfInstrument.get(0).getIndicator().getRsNumber());
+				}
+			}
+		}
 	}
 	
 	

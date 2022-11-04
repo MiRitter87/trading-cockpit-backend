@@ -554,8 +554,9 @@ public class QuotationHibernateDAOTest {
 			databaseQuotation = quotations.get(0);
 			assertEquals(this.appleQuotation2, databaseQuotation);
 			
-			//TODO Assure the RS number of the sector and industry group is provided.
-			//assertEquals(this.xliSectorQuotation1Indicator.getRsNumber(), this.appleQuotation2.getIndicator().getRsNumberSector());
+			//Assure the RS number of the sector and industry group is provided.
+			assertEquals(this.xliSectorQuotation1Indicator.getRsNumber(), databaseQuotation.getIndicator().getRsNumberSector());
+			assertEquals(this.copperIndustryGroupQuotation1Indicator.getRsNumber(), databaseQuotation.getIndicator().getRsNumberIndustryGroup());
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}

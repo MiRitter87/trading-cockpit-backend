@@ -1,5 +1,6 @@
 package backend.model.instrument;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -32,5 +33,23 @@ public class QuotationArray {
 	 */
 	public void setQuotations(List<Quotation> quotations) {
 		this.quotations = quotations;
+	}
+	
+	
+	/**
+	 * Returns all quotations of the Instrument with the given Id.
+	 * 
+	 * @param instrumentId The instrument ID.
+	 * @return All quotations of the Instrument with the given ID.
+	 */
+	public List<Quotation> getQuotationsByInstrumentId(final Integer instrumentId) {
+		List<Quotation> quotationsOfInstrument = new ArrayList<>();
+		
+		for(Quotation quotation : this.quotations) {
+			if(quotation.getInstrument() != null && quotation.getInstrument().getId().equals(instrumentId))
+				quotationsOfInstrument.add(quotation);
+		}
+		
+		return quotationsOfInstrument;
 	}
 }
