@@ -1,6 +1,7 @@
 package backend.dao.quotation;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 
@@ -344,6 +345,7 @@ public class QuotationHibernateDAO implements QuotationDAO {
 		QuotationArray sectorQuotations = new QuotationArray();
 		QuotationArray industryGroupQuotations = new QuotationArray();
 		List<Quotation> quotationsOfInstrument;
+		Quotation sectorQuotation, industryGroupQuotation;
 		
 		if(quotations.size() == 0 || instrumentType != InstrumentType.STOCK)
 			return;
@@ -352,22 +354,29 @@ public class QuotationHibernateDAO implements QuotationDAO {
 		industryGroupQuotations.setQuotations(this.getRecentQuotations(InstrumentType.IND_GROUP));
 
 		//Determine and set the sector and industry group RS number for each quotation.
-		//TODO Only use sector and industry group data of the same day as the given quotation.
 		for(Quotation quotation : quotations) {
 			if(quotation.getInstrument().getSector() != null) {
 				quotationsOfInstrument = sectorQuotations.getQuotationsByInstrumentId(quotation.getInstrument().getSector().getId());
 				
-				if(quotationsOfInstrument.size() == 1) {
-					quotation.getIndicator().setRsNumberSector(quotationsOfInstrument.get(0).getIndicator().getRsNumber());
-				}
+				if(quotationsOfInstrument.size() == 1)
+					sectorQuotation = quotationsOfInstrument.get(0);
+				else
+					sectorQuotation = null;
+				
+				if(sectorQuotation != null && this.areQuotationsOfSameDay(quotation, sectorQuotation))
+					quotation.getIndicator().setRsNumberSector(sectorQuotation.getIndicator().getRsNumber());
 			}
 			
 			if(quotation.getInstrument().getIndustryGroup() != null) {
 				quotationsOfInstrument = industryGroupQuotations.getQuotationsByInstrumentId(quotation.getInstrument().getIndustryGroup().getId());
 				
-				if(quotationsOfInstrument.size() == 1) {
-					quotation.getIndicator().setRsNumberIndustryGroup(quotationsOfInstrument.get(0).getIndicator().getRsNumber());
-				}
+				if(quotationsOfInstrument.size() == 1)
+					industryGroupQuotation = quotationsOfInstrument.get(0);
+				else
+					industryGroupQuotation = null;
+				
+				if(industryGroupQuotation != null && this.areQuotationsOfSameDay(quotation, industryGroupQuotation))
+					quotation.getIndicator().setRsNumberIndustryGroup(industryGroupQuotation.getIndicator().getRsNumber());
 			}
 		}
 	}
@@ -508,5 +517,31 @@ public class QuotationHibernateDAO implements QuotationDAO {
 				+ "AND r.bollingerBandWidth < 10"
 				+ "AND r.baseLengthWeeks >= 3"
 				+ "AND r.distanceTo52WeekHigh >= -10");
+	}
+	
+	
+	/**
+	 * Checks if both quotations are of the same day.
+	 * 
+	 * @param quotation1 The first Quotation.
+	 * @param quotation2 The second Quotation.
+	 * @return true, if both quotations are of the same day.
+	 */
+	private boolean areQuotationsOfSameDay(final Quotation quotation1, final Quotation quotation2) {
+		Calendar date1 = Calendar.getInstance();
+		Calendar date2 = Calendar.getInstance();
+		
+		date1.setTimeInMillis(quotation1.getDate().getTime());
+		date2.setTimeInMillis(quotation2.getDate().getTime());
+		
+		if(	date1.get(Calendar.YEAR) == date2.get(Calendar.YEAR) &&
+			date1.get(Calendar.MONTH) == date2.get(Calendar.MONTH) &&
+			date1.get(Calendar.DAY_OF_MONTH) == date2.get(Calendar.DAY_OF_MONTH)) {
+			
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 }

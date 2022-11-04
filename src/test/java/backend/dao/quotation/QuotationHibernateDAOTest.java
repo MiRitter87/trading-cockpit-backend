@@ -219,6 +219,7 @@ public class QuotationHibernateDAOTest {
 			quotations.add(this.microsoftQuotation1);
 			
 			calendar.setTime(new Date());
+			calendar.add(Calendar.DAY_OF_YEAR, -1);
 			this.appleQuotation1 = new Quotation();
 			this.appleQuotation1.setDate(calendar.getTime());
 			this.appleQuotation1.setPrice(BigDecimal.valueOf(78.54));
@@ -227,7 +228,7 @@ public class QuotationHibernateDAOTest {
 			this.appleQuotation1.setInstrument(this.appleStock);
 			quotations.add(this.appleQuotation1);
 			
-			calendar.add(Calendar.DAY_OF_YEAR, 1);
+			calendar.setTime(new Date());
 			this.appleQuotation2 = new Quotation();
 			this.appleQuotation2.setDate(calendar.getTime());
 			this.appleQuotation2.setPrice(BigDecimal.valueOf(79.14));
