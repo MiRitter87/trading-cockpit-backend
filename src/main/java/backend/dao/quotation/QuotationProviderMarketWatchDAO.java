@@ -3,6 +3,7 @@ package backend.dao.quotation;
 import java.io.IOException;
 import java.io.StringReader;
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -88,6 +89,10 @@ public class QuotationProviderMarketWatchDAO implements QuotationProviderDAO {
 	@Override
 	public List<Quotation> getQuotationHistory(String symbol, StockExchange stockExchange, Integer years) throws Exception {
 		String csvQuotationHistory = this.getQuotationHistoryCSVFromMarketWatch(symbol, stockExchange, years);
+		
+		if("".equals(csvQuotationHistory))
+			throw new Exception(MessageFormat.format("The server returned empty CSV data for symbol {0}.", symbol));
+		
 		List<Quotation> quotationHistory = this.convertCSVToQuotations(csvQuotationHistory, stockExchange);
 		
 		return quotationHistory;
