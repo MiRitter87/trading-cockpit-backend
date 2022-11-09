@@ -5,6 +5,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import backend.model.StockExchange;
+import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 
 /**
@@ -16,7 +17,9 @@ import backend.model.instrument.Quotation;
  */
 public class QuotationProviderYahooDAOStub extends QuotationProviderYahooDAO {
 	@Override
-	public List<Quotation> getQuotationHistory(String symbol, StockExchange stockExchange, Integer years) throws Exception {
+	public List<Quotation> getQuotationHistory(String symbol, StockExchange stockExchange, InstrumentType instrumentType, 
+			Integer years) throws Exception {
+		
 		String jsonPath = "";
 		
 		if(symbol.equals("DML") && stockExchange.equals(StockExchange.TSX))

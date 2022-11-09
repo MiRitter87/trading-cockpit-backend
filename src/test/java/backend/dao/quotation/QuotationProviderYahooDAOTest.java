@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 
 import backend.model.Currency;
 import backend.model.StockExchange;
+import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 
 /**
@@ -178,7 +179,7 @@ public class QuotationProviderYahooDAOTest {
 		Quotation actualQuotation, expectedQuotation;
 		
 		try {
-			actualQuotationHistory = quotationProviderYahooDAO.getQuotationHistory("DML", StockExchange.TSX, 1);
+			actualQuotationHistory = quotationProviderYahooDAO.getQuotationHistory("DML", StockExchange.TSX, InstrumentType.STOCK, 1);
 			expectedQuotationHistory = this.getDenisonMinesQuotationHistory();
 			
 			//252 Trading days of a full year.
@@ -213,7 +214,7 @@ public class QuotationProviderYahooDAOTest {
 		List<Quotation> actualQuotations;
 		
 		try {
-			actualQuotations = quotationProviderYahooDAO.getQuotationHistory("BNCH", StockExchange.TSXV, 1);
+			actualQuotations = quotationProviderYahooDAO.getQuotationHistory("BNCH", StockExchange.TSXV, InstrumentType.STOCK, 1);
 			actualNumberOfQuotations = actualQuotations.size();
 			
 			assertEquals(expectedNumberOfQuotations, actualNumberOfQuotations);

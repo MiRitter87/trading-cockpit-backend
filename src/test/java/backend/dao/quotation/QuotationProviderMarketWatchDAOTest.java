@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 
 import backend.model.Currency;
 import backend.model.StockExchange;
+import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 
 
@@ -184,7 +185,7 @@ public class QuotationProviderMarketWatchDAOTest {
 		Quotation actualQuotation, expectedQuotation;
 		
 		try {
-			actualQuotationHistory = quotationProviderMarketWatchDAO.getQuotationHistory("DML", StockExchange.TSX, 1);
+			actualQuotationHistory = quotationProviderMarketWatchDAO.getQuotationHistory("DML", StockExchange.TSX, InstrumentType.STOCK, 1);
 			expectedQuotationHistory = this.getDenisonMinesQuotationHistory();
 			
 			//252 Trading days of a full year.

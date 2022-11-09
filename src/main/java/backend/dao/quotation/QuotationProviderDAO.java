@@ -3,6 +3,7 @@ package backend.dao.quotation;
 import java.util.List;
 
 import backend.model.StockExchange;
+import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 
 /**
@@ -27,9 +28,11 @@ public interface QuotationProviderDAO {
 	 * 
 	 * @param symbol The symbol.
 	 * @param stockExchange The stock exchange.
+	 * @param instrumentType The InstrumentType.
 	 * @param years The number of years for which quotations are provided.
 	 * @return A list of historical quotations.
 	 * @throws Exception In case the quotation retrieval failed.
 	 */
-	List<Quotation> getQuotationHistory(final String symbol, final StockExchange stockExchange, final Integer years) throws Exception;
+	List<Quotation> getQuotationHistory(final String symbol, final StockExchange stockExchange, final InstrumentType instrumentType, 
+			Integer years) throws Exception;
 }

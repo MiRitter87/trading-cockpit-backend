@@ -18,6 +18,7 @@ import com.opencsv.CSVReaderHeaderAware;
 
 import backend.model.Currency;
 import backend.model.StockExchange;
+import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -87,7 +88,9 @@ public class QuotationProviderMarketWatchDAO implements QuotationProviderDAO {
 
 	
 	@Override
-	public List<Quotation> getQuotationHistory(String symbol, StockExchange stockExchange, Integer years) throws Exception {
+	public List<Quotation> getQuotationHistory(String symbol, StockExchange stockExchange, InstrumentType instrumentType, 
+			Integer years) throws Exception {
+		
 		String csvQuotationHistory = this.getQuotationHistoryCSVFromMarketWatch(symbol, stockExchange, years);
 		
 		if("".equals(csvQuotationHistory))

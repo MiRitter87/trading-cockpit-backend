@@ -177,7 +177,7 @@ public class ScanThread extends Thread {
 			databaseQuotations.addAll(this.quotationDAO.getQuotationsOfInstrument(instrument.getId()));
 			instrument.setQuotations(databaseQuotations);
 			java.util.List<Quotation> wsQuotations = 
-					this.quotationProviderDAO.getQuotationHistory(instrument.getSymbol(), instrument.getStockExchange(), 1);
+					this.quotationProviderDAO.getQuotationHistory(instrument.getSymbol(), instrument.getStockExchange(), instrument.getType(), 1);
 			
 			for(Quotation wsQuotation:wsQuotations) {
 				obsoleteQuotations.addAll(instrument.getOlderQuotationsOfSameDay(wsQuotation.getDate()));

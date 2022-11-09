@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import backend.model.Currency;
 import backend.model.StockExchange;
+import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -90,7 +91,9 @@ public class QuotationProviderYahooDAO implements QuotationProviderDAO {
 
 	
 	@Override
-	public List<Quotation> getQuotationHistory(String symbol, StockExchange stockExchange, Integer years) throws Exception {
+	public List<Quotation> getQuotationHistory(String symbol, StockExchange stockExchange, InstrumentType instrumentType, 
+			Integer years) throws Exception {
+		
 		String jsonQuotationHistory = this.getQuotationHistoryJSONFromYahoo(symbol, stockExchange, years);
 		List<Quotation> quotationHistory = this.convertJSONToQuotations(jsonQuotationHistory);
 		
