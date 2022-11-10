@@ -36,6 +36,11 @@ public class QuotationProviderMarketWatchDAO implements QuotationProviderDAO {
 	private static final String PLACEHOLDER_SYMBOL = "{symbol}";	
 	
 	/**
+	 * Placeholder for the type used in a query URL.
+	 */
+	private static final String PLACEHOLDER_TYPE = "{type}";
+	
+	/**
 	 * Placeholder for the start date used in a query URL. The date format is mm/dd/yyyy.
 	 */
 	private static final String PLACEHOLDER_START_DATE = "{start_date}";
@@ -53,7 +58,7 @@ public class QuotationProviderMarketWatchDAO implements QuotationProviderDAO {
 	/**
 	 * URL to CSV API of MarketWatch: Historical quotations.
 	 */
-	private static final String BASE_URL_QUOTATION_HISTORY = "https://www.marketwatch.com/investing/stock/" + PLACEHOLDER_SYMBOL + 
+	private static final String BASE_URL_QUOTATION_HISTORY = "https://www.marketwatch.com/investing/" + PLACEHOLDER_TYPE + "/" + PLACEHOLDER_SYMBOL + 
 			"/downloaddatapartial?startdate=" + PLACEHOLDER_START_DATE + "%2000:00:00&enddate=" + PLACEHOLDER_END_DATE + 
 			"%2023:59:59&daterange=d30&frequency=p1d&csvdownload=true&downloadpartial=false&newdates=false" + PLACEHOLDER_COUNTRY_CODE;
 
@@ -91,7 +96,7 @@ public class QuotationProviderMarketWatchDAO implements QuotationProviderDAO {
 	public List<Quotation> getQuotationHistory(String symbol, StockExchange stockExchange, InstrumentType instrumentType, 
 			Integer years) throws Exception {
 		
-		String csvQuotationHistory = this.getQuotationHistoryCSVFromMarketWatch(symbol, stockExchange, years);
+		String csvQuotationHistory = this.getQuotationHistoryCSVFromMarketWatch(symbol, stockExchange, instrumentType, years);
 		
 		if("".equals(csvQuotationHistory))
 			throw new Exception(MessageFormat.format("The server returned empty CSV data for symbol {0}.", symbol));
@@ -107,13 +112,16 @@ public class QuotationProviderMarketWatchDAO implements QuotationProviderDAO {
 	 * 
 	 * @param symbol The symbol.
 	 * @param stockExchange The stock exchange.
+	 * @param instrumentType The InstrumentType.
 	 * @param years The number of years to be queried.
 	 * @return The quotation history as CSV string.
 	 * @throws Exception Quotation history determination failed.
 	 */
-	protected String getQuotationHistoryCSVFromMarketWatch(final String symbol, final StockExchange stockExchange, final Integer years) throws Exception {
+	protected String getQuotationHistoryCSVFromMarketWatch(final String symbol, final StockExchange stockExchange, 
+			final InstrumentType instrumentType, final Integer years) throws Exception {
+		
 		Request request = new Request.Builder()
-				.url(this.getQueryUrlQuotationHistory(symbol, stockExchange, years))
+				.url(this.getQueryUrlQuotationHistory(symbol, stockExchange, instrumentType, years))
 				.header("Connection", "close")
 				.build();
 		Response response;
@@ -164,13 +172,17 @@ public class QuotationProviderMarketWatchDAO implements QuotationProviderDAO {
 	 * 
 	 * @param symbol The symbol to be queried.
 	 * @param stockExchange The stock exchange where the symbol is listed.
+	 * @param instrumentType The InstrumentType.
 	 * @param years The number of years to be queried.
 	 * @return The query URL.
 	 */
-	protected String getQueryUrlQuotationHistory(final String symbol, final StockExchange stockExchange, final Integer years) {
+	protected String getQueryUrlQuotationHistory(final String symbol, final StockExchange stockExchange, 
+			final InstrumentType instrumentType, final Integer years) {
+		
 		String queryUrl = new String(BASE_URL_QUOTATION_HISTORY);
 		
 		queryUrl = queryUrl.replace(PLACEHOLDER_SYMBOL, symbol);
+		queryUrl = queryUrl.replace(PLACEHOLDER_TYPE, this.getTypeParameter(instrumentType));
 		queryUrl = queryUrl.replace(PLACEHOLDER_START_DATE, this.getDateForHistory(-1));
 		queryUrl = queryUrl.replace(PLACEHOLDER_END_DATE, this.getDateForHistory(0));
 		queryUrl = queryUrl.replace(PLACEHOLDER_COUNTRY_CODE, this.getCountryCodeParameter(stockExchange));
@@ -250,6 +262,29 @@ public class QuotationProviderMarketWatchDAO implements QuotationProviderDAO {
 		}
 		
 		return countryCode;
+	}
+	
+	
+	/**
+	 * Provides the type URL parameter for the given InstrumentType.
+	 * 
+	 * @param instrumentType The InstrumentType
+	 * @return The type URL parameter.
+	 */
+	protected String getTypeParameter(final InstrumentType instrumentType) {
+		String type = "";
+		
+		switch(instrumentType) {
+			case STOCK:
+				type=InstrumentTypeMarketWatch.STOCK.toString();
+				break;
+			case ETF:
+			case SECTOR:
+			case IND_GROUP:
+				type=InstrumentTypeMarketWatch.FUND.toString();
+		}
+		
+		return type;
 	}
 	
 	

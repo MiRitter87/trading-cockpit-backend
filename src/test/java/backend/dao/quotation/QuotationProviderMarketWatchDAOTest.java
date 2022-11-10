@@ -96,7 +96,7 @@ public class QuotationProviderMarketWatchDAOTest {
 		final String symbol = "DML";
 		final StockExchange stockExchange = StockExchange.TSX;
 		final Integer years = 1;
-		String expectedUrl = 	"https://www.marketwatch.com/investing/stock/DML/downloaddatapartial?"
+		String expectedUrl = 	"https://www.marketwatch.com/investing/STOCK/DML/downloaddatapartial?"
 				+ "startdate={start_date}%2000:00:00&enddate={end_date}%2023:59:59&daterange=d30&frequency=p1d&csvdownload=true&"
 				+ "downloadpartial=false&newdates=false&countrycode=CA";
 		String actualUrl = "";
@@ -105,7 +105,7 @@ public class QuotationProviderMarketWatchDAOTest {
 		expectedUrl = expectedUrl.replace("{start_date}", quotationProviderMarketWatchDAO.getDateForHistory(-1));
 		expectedUrl = expectedUrl.replace("{end_date}", quotationProviderMarketWatchDAO.getDateForHistory(0));
 		
-		actualUrl = quotationProviderMarketWatchDAO.getQueryUrlQuotationHistory(symbol, stockExchange, years);
+		actualUrl = quotationProviderMarketWatchDAO.getQueryUrlQuotationHistory(symbol, stockExchange, InstrumentType.STOCK, years);
 		assertEquals(expectedUrl, actualUrl);
 	}
 	
@@ -118,7 +118,7 @@ public class QuotationProviderMarketWatchDAOTest {
 		final String symbol = "RCK";
 		final StockExchange stockExchange = StockExchange.TSXV;
 		final Integer years = 1;
-		String expectedUrl = 	"https://www.marketwatch.com/investing/stock/RCK/downloaddatapartial?"
+		String expectedUrl = 	"https://www.marketwatch.com/investing/STOCK/RCK/downloaddatapartial?"
 				+ "startdate={start_date}%2000:00:00&enddate={end_date}%2023:59:59&daterange=d30&frequency=p1d&csvdownload=true&"
 				+ "downloadpartial=false&newdates=false&countrycode=CA";
 		String actualUrl = "";
@@ -127,7 +127,7 @@ public class QuotationProviderMarketWatchDAOTest {
 		expectedUrl = expectedUrl.replace("{start_date}", quotationProviderMarketWatchDAO.getDateForHistory(-1));
 		expectedUrl = expectedUrl.replace("{end_date}", quotationProviderMarketWatchDAO.getDateForHistory(0));
 		
-		actualUrl = quotationProviderMarketWatchDAO.getQueryUrlQuotationHistory(symbol, stockExchange, years);
+		actualUrl = quotationProviderMarketWatchDAO.getQueryUrlQuotationHistory(symbol, stockExchange, InstrumentType.STOCK, years);
 		assertEquals(expectedUrl, actualUrl);
 	}
 	
@@ -140,7 +140,7 @@ public class QuotationProviderMarketWatchDAOTest {
 		final String symbol = "AGN";
 		final StockExchange stockExchange = StockExchange.CSE;
 		final Integer years = 1;
-		String expectedUrl = 	"https://www.marketwatch.com/investing/stock/AGN/downloaddatapartial?"
+		String expectedUrl = 	"https://www.marketwatch.com/investing/STOCK/AGN/downloaddatapartial?"
 				+ "startdate={start_date}%2000:00:00&enddate={end_date}%2023:59:59&daterange=d30&frequency=p1d&csvdownload=true&"
 				+ "downloadpartial=false&newdates=false&countrycode=CA";
 		String actualUrl = "";
@@ -149,7 +149,7 @@ public class QuotationProviderMarketWatchDAOTest {
 		expectedUrl = expectedUrl.replace("{start_date}", quotationProviderMarketWatchDAO.getDateForHistory(-1));
 		expectedUrl = expectedUrl.replace("{end_date}", quotationProviderMarketWatchDAO.getDateForHistory(0));
 		
-		actualUrl = quotationProviderMarketWatchDAO.getQueryUrlQuotationHistory(symbol, stockExchange, years);
+		actualUrl = quotationProviderMarketWatchDAO.getQueryUrlQuotationHistory(symbol, stockExchange, InstrumentType.STOCK, years);
 		assertEquals(expectedUrl, actualUrl);
 	}
 	
@@ -162,7 +162,7 @@ public class QuotationProviderMarketWatchDAOTest {
 		final String symbol = "F";
 		final StockExchange stockExchange = StockExchange.NYSE;
 		final Integer years = 1;
-		String expectedUrl = 	"https://www.marketwatch.com/investing/stock/F/downloaddatapartial?"
+		String expectedUrl = 	"https://www.marketwatch.com/investing/STOCK/F/downloaddatapartial?"
 				+ "startdate={start_date}%2000:00:00&enddate={end_date}%2023:59:59&daterange=d30&frequency=p1d&csvdownload=true&"
 				+ "downloadpartial=false&newdates=false";
 		String actualUrl = "";
@@ -171,7 +171,73 @@ public class QuotationProviderMarketWatchDAOTest {
 		expectedUrl = expectedUrl.replace("{start_date}", quotationProviderMarketWatchDAO.getDateForHistory(-1));
 		expectedUrl = expectedUrl.replace("{end_date}", quotationProviderMarketWatchDAO.getDateForHistory(0));
 		
-		actualUrl = quotationProviderMarketWatchDAO.getQueryUrlQuotationHistory(symbol, stockExchange, years);
+		actualUrl = quotationProviderMarketWatchDAO.getQueryUrlQuotationHistory(symbol, stockExchange, InstrumentType.STOCK, years);
+		assertEquals(expectedUrl, actualUrl);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of the query URL for historical quotations of an ETF listed at the NYSE.
+	 */
+	public void testGetQueryUrlQuotationHistoryETF() {
+		final String symbol = "FFTY";
+		final StockExchange stockExchange = StockExchange.NYSE;
+		final Integer years = 1;
+		String expectedUrl = 	"https://www.marketwatch.com/investing/FUND/FFTY/downloaddatapartial?"
+				+ "startdate={start_date}%2000:00:00&enddate={end_date}%2023:59:59&daterange=d30&frequency=p1d&csvdownload=true&"
+				+ "downloadpartial=false&newdates=false";
+		String actualUrl = "";
+		
+		//Replace start and end date with the current date.
+		expectedUrl = expectedUrl.replace("{start_date}", quotationProviderMarketWatchDAO.getDateForHistory(-1));
+		expectedUrl = expectedUrl.replace("{end_date}", quotationProviderMarketWatchDAO.getDateForHistory(0));
+		
+		actualUrl = quotationProviderMarketWatchDAO.getQueryUrlQuotationHistory(symbol, stockExchange, InstrumentType.ETF, years);
+		assertEquals(expectedUrl, actualUrl);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of the query URL for historical quotations of a sector listed at the NYSE.
+	 */
+	public void testGetQueryUrlQuotationHistorySector() {
+		final String symbol = "XLE";
+		final StockExchange stockExchange = StockExchange.NYSE;
+		final Integer years = 1;
+		String expectedUrl = 	"https://www.marketwatch.com/investing/FUND/XLE/downloaddatapartial?"
+				+ "startdate={start_date}%2000:00:00&enddate={end_date}%2023:59:59&daterange=d30&frequency=p1d&csvdownload=true&"
+				+ "downloadpartial=false&newdates=false";
+		String actualUrl = "";
+		
+		//Replace start and end date with the current date.
+		expectedUrl = expectedUrl.replace("{start_date}", quotationProviderMarketWatchDAO.getDateForHistory(-1));
+		expectedUrl = expectedUrl.replace("{end_date}", quotationProviderMarketWatchDAO.getDateForHistory(0));
+		
+		actualUrl = quotationProviderMarketWatchDAO.getQueryUrlQuotationHistory(symbol, stockExchange, InstrumentType.SECTOR, years);
+		assertEquals(expectedUrl, actualUrl);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of the query URL for historical quotations of an industry group listed at the NYSE.
+	 */
+	public void testGetQueryUrlQuotationHistoryIndustryGroup() {
+		final String symbol = "COPX";
+		final StockExchange stockExchange = StockExchange.NYSE;
+		final Integer years = 1;
+		String expectedUrl = 	"https://www.marketwatch.com/investing/FUND/COPX/downloaddatapartial?"
+				+ "startdate={start_date}%2000:00:00&enddate={end_date}%2023:59:59&daterange=d30&frequency=p1d&csvdownload=true&"
+				+ "downloadpartial=false&newdates=false";
+		String actualUrl = "";
+		
+		//Replace start and end date with the current date.
+		expectedUrl = expectedUrl.replace("{start_date}", quotationProviderMarketWatchDAO.getDateForHistory(-1));
+		expectedUrl = expectedUrl.replace("{end_date}", quotationProviderMarketWatchDAO.getDateForHistory(0));
+		
+		actualUrl = quotationProviderMarketWatchDAO.getQueryUrlQuotationHistory(symbol, stockExchange, InstrumentType.IND_GROUP, years);
 		assertEquals(expectedUrl, actualUrl);
 	}
 	
