@@ -66,6 +66,12 @@ public class Indicator {
 	private float sma200;
 	
 	/**
+	 * The difference in percent between the average volume of the last 5 days compared to the SMA(30) of the volume.
+	 */
+	@Column(name="VOLUME_DIFFERENTIAL_5_DAYS")
+	private float volumeDifferential5Days;
+	
+	/**
 	 * The difference in percent between the average volume of the last 10 days compared to the SMA(30) of the volume.
 	 */
 	@Column(name="VOLUME_DIFFERENTIAL_10_DAYS")
@@ -106,6 +112,12 @@ public class Indicator {
 	 */
 	@Column(name="UD_VOL_RATIO")
 	private float upDownVolumeRatio;
+	
+	/**
+	 * The percentage price gain during the last 5 trading days.
+	 */
+	@Column(name="PERFORMANCE_5_DAYS")
+	private float performance5Days;
 	
 	
 	/**
@@ -242,6 +254,22 @@ public class Indicator {
 	public void setSma200(float sma200) {
 		this.sma200 = sma200;
 	}
+	
+	
+	/**
+	 * @return the volumeDifferential5days
+	 */
+	public float getVolumeDifferential5Days() {
+		return volumeDifferential5Days;
+	}
+
+
+	/**
+	 * @param volumeDifferential5days the volumeDifferential5days to set
+	 */
+	public void setVolumeDifferential5Days(float volumeDifferential5Days) {
+		this.volumeDifferential5Days = volumeDifferential5Days;
+	}
 
 
 	/**
@@ -356,10 +384,26 @@ public class Indicator {
 	}
 
 
+	/**
+	 * @return the performance5Days
+	 */
+	public float getPerformance5Days() {
+		return performance5Days;
+	}
+
+
+	/**
+	 * @param performance5Days the performance5Days to set
+	 */
+	public void setPerformance5Days(float performance5Days) {
+		this.performance5Days = performance5Days;
+	}
+
+
 	@Override
 	public int hashCode() {
-		return Objects.hash(bollingerBandWidth, distanceTo52WeekHigh, distanceTo52WeekLow, id, rsNumber, rsPercentSum, 
-				sma150, sma200, sma50, stage, volumeDifferential10Days, baseLengthWeeks, upDownVolumeRatio);
+		return Objects.hash(bollingerBandWidth, distanceTo52WeekHigh, distanceTo52WeekLow, id, rsNumber, rsPercentSum, sma150, sma200, sma50, 
+				stage, volumeDifferential5Days, volumeDifferential10Days, baseLengthWeeks, upDownVolumeRatio, performance5Days);
 	}
 
 
@@ -379,9 +423,10 @@ public class Indicator {
 				&& Float.floatToIntBits(rsPercentSum) == Float.floatToIntBits(other.rsPercentSum)
 				&& Float.floatToIntBits(sma150) == Float.floatToIntBits(other.sma150)
 				&& Float.floatToIntBits(sma200) == Float.floatToIntBits(other.sma200)
-				&& Float.floatToIntBits(sma50) == Float.floatToIntBits(other.sma50) 
+				&& Float.floatToIntBits(sma50) == Float.floatToIntBits(other.sma50)
+				&& Float.floatToIntBits(volumeDifferential5Days) == Float.floatToIntBits(other.volumeDifferential5Days)
 				&& Float.floatToIntBits(volumeDifferential10Days) == Float.floatToIntBits(other.volumeDifferential10Days)
 				&& stage == other.stage && baseLengthWeeks == other.baseLengthWeeks
-				&& upDownVolumeRatio == other.upDownVolumeRatio;
+				&& upDownVolumeRatio == other.upDownVolumeRatio && performance5Days == other.performance5Days;
 	}
 }
