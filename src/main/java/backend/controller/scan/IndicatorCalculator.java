@@ -33,11 +33,11 @@ public class IndicatorCalculator {
 		int indexOfQuotation = sortedQuotations.indexOf(quotation);
 		BigDecimal rsPercentSum = BigDecimal.valueOf(0);
 		
-		rsPercentSum = rsPercentSum.add(this.getPerformanceOfInterval(sortedQuotations, indexOfQuotation, 3));
-		rsPercentSum = rsPercentSum.add(this.getPerformanceOfInterval(sortedQuotations, indexOfQuotation, 3));
-		rsPercentSum = rsPercentSum.add(this.getPerformanceOfInterval(sortedQuotations, indexOfQuotation, 6));
-		rsPercentSum = rsPercentSum.add(this.getPerformanceOfInterval(sortedQuotations, indexOfQuotation, 9));
-		rsPercentSum = rsPercentSum.add(this.getPerformanceOfInterval(sortedQuotations, indexOfQuotation, 12));
+		rsPercentSum = rsPercentSum.add(this.getPerformanceOfIntervalForRS(sortedQuotations, indexOfQuotation, 3));
+		rsPercentSum = rsPercentSum.add(this.getPerformanceOfIntervalForRS(sortedQuotations, indexOfQuotation, 3));
+		rsPercentSum = rsPercentSum.add(this.getPerformanceOfIntervalForRS(sortedQuotations, indexOfQuotation, 6));
+		rsPercentSum = rsPercentSum.add(this.getPerformanceOfIntervalForRS(sortedQuotations, indexOfQuotation, 9));
+		rsPercentSum = rsPercentSum.add(this.getPerformanceOfIntervalForRS(sortedQuotations, indexOfQuotation, 12));
 		
 		rsPercentSum.setScale(2);
 		
@@ -414,15 +414,51 @@ public class IndicatorCalculator {
 	
 	
 	/**
-	 * Provides the performance of a given interval.
+	 * Provides the price performance for the given number of days.
+	 * 
+	 * @param quotation The Quotation for which the price performance is calculated.
+	 * @param quotations A list of quotations that build the trading history used for price performance calculation.
+	 * @param days The number of days for performance calculation.
+	 * @return The performance of the given interval in percent.
+	 */
+	public float getPricePerformanceForDays(final Quotation quotation, final List<Quotation> quotations, final int days) {
+		Instrument instrument = new Instrument();
+		List<Quotation> sortedQuotations;
+		BigDecimal divisionResult = BigDecimal.valueOf(0);
+		int indexOfQuotation = 0;
+		
+		//Sort the quotations by date for calculation of price performance based on last x days.
+		instrument.setQuotations(quotations);
+		sortedQuotations = instrument.getQuotationsSortedByDate();
+		
+		//Get the starting point of price performance calculation.
+		indexOfQuotation = sortedQuotations.indexOf(quotation);
+		
+		//Check if enough quotations exist for price performance calculation.
+		if((sortedQuotations.size() - days - indexOfQuotation - 1) < 0)
+			return 0;
+		
+		divisionResult = sortedQuotations.get(indexOfQuotation).getPrice().divide
+				(sortedQuotations.get(indexOfQuotation + days).getPrice(), 4, RoundingMode.HALF_UP);
+		divisionResult = divisionResult.subtract(BigDecimal.valueOf(1));
+		divisionResult = divisionResult.multiply(BigDecimal.valueOf(100));
+		
+		return divisionResult.floatValue();
+	}
+	
+	
+	/**
+	 * Provides the performance of a given interval for relative strength calculation.
 	 * 
 	 * @param sortedQuotations The quotations containing date and price information for performance calculation.
 	 * @param indexOfQuotation The starting point from which the performance is calculated.
 	 * @param months The number of months for performance calculation.
 	 * @return The performance of the given interval in percent.
 	 */
-	private BigDecimal getPerformanceOfInterval(final List<Quotation> sortedQuotations, final int indexOfQuotation, final int months) {
+	private BigDecimal getPerformanceOfIntervalForRS(final List<Quotation> sortedQuotations, final int indexOfQuotation, final int months) {
 		BigDecimal divisionResult = BigDecimal.valueOf(0);
+		//The offset -1 is used because most APIs only provide 252 data sets for a whole trading year.
+		//Without the offset, 253 data sets would be needed to calculate the one year performance.
 		int indexOfQuotationForInterval = indexOfQuotation + (TRADING_DAYS_PER_MONTH * months) -1;
 		
 		if(indexOfQuotationForInterval >= sortedQuotations.size())

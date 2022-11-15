@@ -392,4 +392,18 @@ public class IndicatorCalculatorTest {
 		
 		assertEquals(expectedUdVolRatio, actualUdVolRatio);
 	}
+	
+	
+	@Test
+	/**
+	 * Tests the calculation of the price performance of the given daily interval.
+	 */
+	public void testGetPricePerformanceForDays() {
+		List<Quotation> sortedQuotations = this.dmlStock.getQuotationsSortedByDate();
+		float expectedPerformance = (float) 6.25, actualPerformance;
+		
+		actualPerformance = this.indicatorCalculator.getPricePerformanceForDays(sortedQuotations.get(0), sortedQuotations, 20);
+		
+		assertEquals(expectedPerformance, actualPerformance);
+	}
 }
