@@ -311,7 +311,12 @@ public class QuotationHibernateDAO implements QuotationDAO {
 				case VOLATILITY_CONTRACTION_10_DAYS:
 					query = this.getQueryForVolatilityContractionTemplate(entityManager);
 					break;
+				case UP_ON_VOLUME:
+					query = this.getQueryForUpOnVolumeTemplate(entityManager);
+					break;
 				default:
+					entityManager.getTransaction().commit();
+					entityManager.close();
 					return null;
 			}
 			
@@ -517,6 +522,21 @@ public class QuotationHibernateDAO implements QuotationDAO {
 				+ "AND r.bollingerBandWidth < 10"
 				+ "AND r.baseLengthWeeks >= 3"
 				+ "AND r.distanceTo52WeekHigh >= -10");
+	}
+	
+	
+	/**
+	 * Provides the Query for the Up on Volume Template.
+	 * 
+	 * @param entityManager The EntityManager used for Query creation.
+	 * @return The Query.
+	 */
+	private Query getQueryForUpOnVolumeTemplate(final EntityManager entityManager) {
+		return entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i JOIN q.indicator r WHERE "
+				+ "quotation_id IN :quotationIds "
+				+ "AND q.indicator IS NOT NULL "
+				+ "AND r.volumeDifferential5Days >= 25"
+				+ "AND r.performance5Days >= 10");
 	}
 	
 	

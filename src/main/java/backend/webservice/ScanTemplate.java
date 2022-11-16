@@ -19,5 +19,10 @@ public enum ScanTemplate {
 	/**
 	 * Instruments consolidating in Buyable Bases near the 52 week high.
 	 */
-	BREAKOUT_CANDIDATES
+	BREAKOUT_CANDIDATES,
+	
+	/**
+	 * Instruments making a big price advance on increased volume.
+	 */
+	UP_ON_VOLUME
 }

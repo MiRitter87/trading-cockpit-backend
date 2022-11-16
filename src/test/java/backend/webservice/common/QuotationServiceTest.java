@@ -563,9 +563,11 @@ public class QuotationServiceTest {
 		this.appleQuotation2Indicator.setSma150((float) 63.45);
 		this.appleQuotation2Indicator.setSma50((float) 69.24);
 		this.appleQuotation2Indicator.setRsNumber(71);
+		this.appleQuotation2Indicator.setPerformance5Days((float) 12.44);
 		this.appleQuotation2Indicator.setDistanceTo52WeekHigh((float) -21.4);
 		this.appleQuotation2Indicator.setDistanceTo52WeekLow((float) 78.81);
 		this.appleQuotation2Indicator.setBollingerBandWidth((float) 8.71);
+		this.appleQuotation2Indicator.setVolumeDifferential5Days((float) 47.18);
 		this.appleQuotation2Indicator.setVolumeDifferential10Days((float) 19.34);
 		this.appleQuotation2Indicator.setBaseLengthWeeks(32);
 		this.appleQuotation2.setIndicator(this.appleQuotation2Indicator);
@@ -576,9 +578,11 @@ public class QuotationServiceTest {
 		this.fordQuotation1Indicator.setSma150((float) 15.08);
 		this.fordQuotation1Indicator.setSma50((float) 13.07);
 		this.fordQuotation1Indicator.setRsNumber(45);
+		this.fordQuotation1Indicator.setPerformance5Days((float) -9.21);
 		this.fordQuotation1Indicator.setDistanceTo52WeekHigh((float) -9.41);
 		this.fordQuotation1Indicator.setDistanceTo52WeekLow((float) 48.81);
 		this.fordQuotation1Indicator.setBollingerBandWidth((float) 4.11);
+		this.fordQuotation1Indicator.setVolumeDifferential5Days((float) 21.55);
 		this.fordQuotation1Indicator.setVolumeDifferential10Days((float) -9.67);
 		this.fordQuotation1Indicator.setBaseLengthWeeks(3);
 		this.fordQuotation1.setIndicator(this.fordQuotation1Indicator);
@@ -589,9 +593,11 @@ public class QuotationServiceTest {
 		this.xleQuotation2Indicator.setSma150((float) 76.84);
 		this.xleQuotation2Indicator.setSma50((float) 78.15);
 		this.xleQuotation2Indicator.setRsNumber(71);
+		this.xleQuotation2Indicator.setPerformance5Days((float) 3.17);
 		this.xleQuotation2Indicator.setDistanceTo52WeekHigh((float) -21.4);
 		this.xleQuotation2Indicator.setDistanceTo52WeekLow((float) 78.81);
 		this.xleQuotation2Indicator.setBollingerBandWidth((float) 8.71);
+		this.xleQuotation2Indicator.setVolumeDifferential5Days((float) 12.12);
 		this.xleQuotation2Indicator.setVolumeDifferential10Days((float) 19.34);
 		this.xleQuotation2Indicator.setBaseLengthWeeks(32);
 		this.xleQuotation2.setIndicator(this.xleQuotation2Indicator);
@@ -602,9 +608,11 @@ public class QuotationServiceTest {
 		this.xlbQuotation1Indicator.setSma150((float) 78.64);
 		this.xlbQuotation1Indicator.setSma50((float) 74.01);
 		this.xlbQuotation1Indicator.setRsNumber(71);
+		this.xlbQuotation1Indicator.setPerformance5Days((float) -6.70);
 		this.xlbQuotation1Indicator.setDistanceTo52WeekHigh((float) -9.41);
 		this.xlbQuotation1Indicator.setDistanceTo52WeekLow((float) 48.81);
 		this.xlbQuotation1Indicator.setBollingerBandWidth((float) 4.11);
+		this.xlbQuotation1Indicator.setVolumeDifferential5Days((float) 21.89);
 		this.xlbQuotation1Indicator.setVolumeDifferential10Days((float) -9.67);
 		this.xlbQuotation1Indicator.setBaseLengthWeeks(3);
 		this.xlbQuotation1.setIndicator(this.xlbQuotation1Indicator);
@@ -775,5 +783,33 @@ public class QuotationServiceTest {
 		//Check if the correct Quotation is returned.
 		quotation = quotations.getQuotations().get(0);
 		assertEquals(this.fordQuotation1, quotation);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of the most recent quotations that match the "Up on Volume" template.
+	 * Only those quotations should be returned that have an Indicator associated with them.
+	 * Only instruments of InstrumentType stock are requested.
+	 */
+	public void testGetQuotationsUpOnVolumeStock() {
+		QuotationArray quotations;
+		WebServiceResult getQuotationsResult;
+		Quotation quotation;
+		
+		//Get the quotations.
+		QuotationService service = new QuotationService();
+		getQuotationsResult = service.getQuotations(ScanTemplate.UP_ON_VOLUME, InstrumentType.STOCK);
+		quotations = (QuotationArray) getQuotationsResult.getData();
+		
+		//Assure no error message exists
+		assertTrue(WebServiceTools.resultContainsErrorMessage(getQuotationsResult) == false);
+		
+		//Check if one Quotation is returned.
+		assertEquals(1, quotations.getQuotations().size());
+		
+		//Check if the correct Quotation is returned.
+		quotation = quotations.getQuotations().get(0);
+		assertEquals(this.appleQuotation2, quotation);
 	}
 }
