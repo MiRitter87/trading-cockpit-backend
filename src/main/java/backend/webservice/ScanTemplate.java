@@ -24,5 +24,10 @@ public enum ScanTemplate {
 	/**
 	 * Instruments making a big price advance on increased volume.
 	 */
-	UP_ON_VOLUME
+	UP_ON_VOLUME,
+	
+	/**
+	 * Instruments making a big price decline on increased volume.
+	 */
+	DOWN_ON_VOLUME
 }

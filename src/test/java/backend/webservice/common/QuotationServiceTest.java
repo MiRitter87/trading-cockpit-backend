@@ -578,11 +578,11 @@ public class QuotationServiceTest {
 		this.fordQuotation1Indicator.setSma150((float) 15.08);
 		this.fordQuotation1Indicator.setSma50((float) 13.07);
 		this.fordQuotation1Indicator.setRsNumber(45);
-		this.fordQuotation1Indicator.setPerformance5Days((float) -9.21);
+		this.fordQuotation1Indicator.setPerformance5Days((float) -10.21);
 		this.fordQuotation1Indicator.setDistanceTo52WeekHigh((float) -9.41);
 		this.fordQuotation1Indicator.setDistanceTo52WeekLow((float) 48.81);
 		this.fordQuotation1Indicator.setBollingerBandWidth((float) 4.11);
-		this.fordQuotation1Indicator.setVolumeDifferential5Days((float) 21.55);
+		this.fordQuotation1Indicator.setVolumeDifferential5Days((float) 25.55);
 		this.fordQuotation1Indicator.setVolumeDifferential10Days((float) -9.67);
 		this.fordQuotation1Indicator.setBaseLengthWeeks(3);
 		this.fordQuotation1.setIndicator(this.fordQuotation1Indicator);
@@ -811,5 +811,33 @@ public class QuotationServiceTest {
 		//Check if the correct Quotation is returned.
 		quotation = quotations.getQuotations().get(0);
 		assertEquals(this.appleQuotation2, quotation);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of the most recent quotations that match the "Down on Volume" template.
+	 * Only those quotations should be returned that have an Indicator associated with them.
+	 * Only instruments of InstrumentType stock are requested.
+	 */
+	public void testGetQuotationsDownOnVolumeStock() {
+		QuotationArray quotations;
+		WebServiceResult getQuotationsResult;
+		Quotation quotation;
+		
+		//Get the quotations.
+		QuotationService service = new QuotationService();
+		getQuotationsResult = service.getQuotations(ScanTemplate.DOWN_ON_VOLUME, InstrumentType.STOCK);
+		quotations = (QuotationArray) getQuotationsResult.getData();
+		
+		//Assure no error message exists
+		assertTrue(WebServiceTools.resultContainsErrorMessage(getQuotationsResult) == false);
+		
+		//Check if one Quotation is returned.
+		assertEquals(1, quotations.getQuotations().size());
+		
+		//Check if the correct Quotation is returned.
+		quotation = quotations.getQuotations().get(0);
+		assertEquals(this.fordQuotation1, quotation);
 	}
 }

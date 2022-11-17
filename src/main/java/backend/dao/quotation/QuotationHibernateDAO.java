@@ -314,6 +314,9 @@ public class QuotationHibernateDAO implements QuotationDAO {
 				case UP_ON_VOLUME:
 					query = this.getQueryForUpOnVolumeTemplate(entityManager);
 					break;
+				case DOWN_ON_VOLUME:
+					query = this.getQueryForDownOnVolumeTemplate(entityManager);
+					break;
 				default:
 					entityManager.getTransaction().commit();
 					entityManager.close();
@@ -537,6 +540,21 @@ public class QuotationHibernateDAO implements QuotationDAO {
 				+ "AND q.indicator IS NOT NULL "
 				+ "AND r.volumeDifferential5Days >= 25"
 				+ "AND r.performance5Days >= 10");
+	}
+	
+	
+	/**
+	 * Provides the Query for the Down on Volume Template.
+	 * 
+	 * @param entityManager The EntityManager used for Query creation.
+	 * @return The Query.
+	 */
+	private Query getQueryForDownOnVolumeTemplate(final EntityManager entityManager) {
+		return entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i JOIN q.indicator r WHERE "
+				+ "quotation_id IN :quotationIds "
+				+ "AND q.indicator IS NOT NULL "
+				+ "AND r.volumeDifferential5Days >= 25"
+				+ "AND r.performance5Days <= -10");
 	}
 	
 	
