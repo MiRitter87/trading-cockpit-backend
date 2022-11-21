@@ -16,6 +16,8 @@ import backend.dao.quotation.QuotationDAO;
 import backend.dao.quotation.QuotationHibernateDAO;
 import backend.dao.scan.ScanDAO;
 import backend.dao.scan.ScanHibernateDAO;
+import backend.dao.statistic.StatisticDAO;
+import backend.dao.statistic.StatisticHibernateDAO;
 
 /**
  * Manages a central database connection and provides DAOs for database access.
@@ -57,6 +59,11 @@ public class DAOManager implements Closeable {
 	 * DAO to access scans.
 	 */
 	private ScanDAO scanDAO;
+	
+	/**
+	 * DAO to access statistics.
+	 */
+	private StatisticDAO statisticDAO;
 	
 	
 	/**
@@ -153,6 +160,19 @@ public class DAOManager implements Closeable {
 			this.scanDAO = new ScanHibernateDAO(this.sessionFactory);
 		
 		return this.scanDAO;
+	}
+	
+	
+	/**
+	 * Returns a DAO to access Statistic data.
+	 * 
+	 * @return The StatisticDAO.
+	 */
+	public StatisticDAO getStatisticDAO() {
+		if(this.statisticDAO == null)
+			this.statisticDAO = new StatisticHibernateDAO(this.sessionFactory);
+		
+		return this.statisticDAO;
 	}
 
 	
