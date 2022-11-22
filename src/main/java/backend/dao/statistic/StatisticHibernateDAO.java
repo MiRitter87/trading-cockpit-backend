@@ -103,7 +103,12 @@ public class StatisticHibernateDAO implements StatisticDAO {
 	
 	@Override
 	public void updateStatistic(Statistic statistic) throws ObjectUnchangedException, Exception {
-		// TODO Auto-generated method stub
-
+		EntityManager entityManager;
+		
+		entityManager = this.sessionFactory.createEntityManager();
+		entityManager.getTransaction().begin();
+		entityManager.merge(statistic);
+		entityManager.getTransaction().commit();
+		entityManager.close();
 	}
 }

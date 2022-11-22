@@ -15,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import backend.dao.DAOManager;
+import backend.dao.ObjectUnchangedException;
 import backend.model.instrument.InstrumentType;
 import backend.model.statistic.Statistic;
 
@@ -254,9 +255,34 @@ public class StatisticHibernateDAOTest {
 	}
 	
 	
+	@Test
+	/**
+	 * Tests updating of a Statistic.
+	 */
+	public void testUpdateStatistic() {
+		Statistic databaseStatistic;
+				
+		try {
+			//Change Statistic.
+			statisticToday.setInstrumentType(InstrumentType.ETF);
+			statisticDAO.updateStatistic(this.statisticToday);
+			
+			//Get the Statistic that should have been changed.
+			databaseStatistic = statisticDAO.getStatistic(this.statisticToday.getId());
+			
+			//Check if the changes have been persisted.
+			assertEquals(this.statisticToday, databaseStatistic);
+		} catch (ObjectUnchangedException e) {
+			fail(e.getMessage());
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
 	/*
 	 * TODO Implement tests
-	 * 
+	 *  testUpdateUnchangedStatistic
 	 *  testCreateDuplicateStatistic (same date, same InstrumentType)
 	 */
 }
