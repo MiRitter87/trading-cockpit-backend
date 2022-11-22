@@ -105,10 +105,27 @@ public class StatisticHibernateDAO implements StatisticDAO {
 	public void updateStatistic(Statistic statistic) throws ObjectUnchangedException, Exception {
 		EntityManager entityManager;
 		
+		this.checkStatisticDataChanged(statistic);
+		
 		entityManager = this.sessionFactory.createEntityManager();
 		entityManager.getTransaction().begin();
 		entityManager.merge(statistic);
 		entityManager.getTransaction().commit();
 		entityManager.close();
+	}
+	
+	
+	/**
+	 * Checks if the data of the given Statistic differ from the Statistic that is persisted at database level.
+	 * 
+	 * @param statistic The Statistic to be checked.
+	 * @throws ObjectUnchangedException In case the Statistic has not been changed.
+	 * @throws Exception In case an error occurred during determination of the Statistic stored at the database.
+	 */
+	private void checkStatisticDataChanged(final Statistic statistic) throws ObjectUnchangedException, Exception {
+		Statistic databaseStatistic = this.getStatistic(statistic.getId());
+		
+		if(databaseStatistic.equals(statistic))
+			throw new ObjectUnchangedException();
 	}
 }

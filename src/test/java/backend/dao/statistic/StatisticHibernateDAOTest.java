@@ -277,9 +277,25 @@ public class StatisticHibernateDAOTest {
 	}
 	
 	
+	@Test
+	/**
+	 * Tests updating of a Statistic without changing any data.
+	 */
+	public void testUpdateUnchangedStatistic() {
+		try {
+			statisticDAO.updateStatistic(this.statisticToday);
+			fail("The 'updateStatistic' method should have thrown an ObjectUnchangedException.");
+		} catch (ObjectUnchangedException expected) {
+			//All is well.
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
 	/*
 	 * TODO Implement tests
-	 *  testUpdateUnchangedStatistic
+	 * 
 	 *  testCreateDuplicateStatistic (same date, same InstrumentType)
 	 */
 }

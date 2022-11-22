@@ -179,7 +179,16 @@ public class Statistic {
 		if (getClass() != obj.getClass())
 			return false;
 		Statistic other = (Statistic) obj;
-		return advanceDeclineNumber == other.advanceDeclineNumber && Objects.equals(date, other.date)
+		if (date == null && other.date != null)
+			return false;
+		if (date != null && other.date == null)
+			return false;
+		if(date != null && other.date != null) {
+			if (date.getTime() != other.date.getTime())
+				return false;
+		}
+		
+		return advanceDeclineNumber == other.advanceDeclineNumber
 				&& Objects.equals(id, other.id) && instrumentType == other.instrumentType
 				&& numberAdvance == other.numberAdvance && numberDecline == other.numberDecline;
 	}
