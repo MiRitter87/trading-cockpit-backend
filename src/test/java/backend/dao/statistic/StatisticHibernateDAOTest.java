@@ -131,7 +131,6 @@ public class StatisticHibernateDAOTest {
 		statistic.setDate(calendar.getTime());
 		statistic.setNumberAdvance(34);
 		statistic.setNumberDecline(134);
-		statistic.setAdvanceDeclineSum(-100);
 		
 		return statistic;
 	}
@@ -158,7 +157,6 @@ public class StatisticHibernateDAOTest {
 		statistic.setDate(calendar.getTime());
 		statistic.setNumberAdvance(101);
 		statistic.setNumberDecline(67);
-		statistic.setAdvanceDeclineSum(34);
 		
 		return statistic;
 	}
@@ -201,8 +199,7 @@ public class StatisticHibernateDAOTest {
 		newStatistic.setInstrumentType(InstrumentType.STOCK);
 		newStatistic.setDate(calendar.getTime());
 		newStatistic.setNumberAdvance(10);
-		newStatistic.setNumberDecline(-15);
-		newStatistic.setAdvanceDeclineSum(-5);
+		newStatistic.setNumberDecline(15);
 		
 		try {
 			statisticDAO.insertStatistic(newStatistic);

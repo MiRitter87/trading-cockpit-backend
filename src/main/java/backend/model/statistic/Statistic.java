@@ -58,10 +58,10 @@ public class Statistic {
 	private int numberDecline;
 	
 	/**
-	 * The sum of advancing and declining instruments since the last data point.
+	 * The number of advancing minus declining instruments since the last data point.
 	 */
-	@Column(name="ADVANCE_DECLINE_SUM")
-	private int advanceDeclineSum;
+	@Column(name="ADVANCE_DECLINE_NUMBER")
+	private int advanceDeclineNumber;
 	
 	
 	/**
@@ -133,6 +133,8 @@ public class Statistic {
 	 */
 	public void setNumberAdvance(int numberAdvance) {
 		this.numberAdvance = numberAdvance;
+		
+		this.advanceDeclineNumber = this.numberAdvance - this.numberDecline;
 	}
 
 
@@ -149,28 +151,22 @@ public class Statistic {
 	 */
 	public void setNumberDecline(int numberDecline) {
 		this.numberDecline = numberDecline;
+		
+		this.advanceDeclineNumber = this.numberAdvance - this.numberDecline;
 	}
 
 
 	/**
-	 * @return the advanceDeclineSum
+	 * @return the advanceDeclineNumber
 	 */
-	public int getAdvanceDeclineSum() {
-		return advanceDeclineSum;
-	}
-
-
-	/**
-	 * @param advanceDeclineSum the advanceDeclineSum to set
-	 */
-	public void setAdvanceDeclineSum(int advanceDeclineSum) {
-		this.advanceDeclineSum = advanceDeclineSum;
+	public int getAdvanceDeclineNumber() {
+		return advanceDeclineNumber;
 	}
 
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(advanceDeclineSum, date, id, instrumentType, numberAdvance, numberDecline);
+		return Objects.hash(advanceDeclineNumber, date, id, instrumentType, numberAdvance, numberDecline);
 	}
 
 
@@ -183,7 +179,7 @@ public class Statistic {
 		if (getClass() != obj.getClass())
 			return false;
 		Statistic other = (Statistic) obj;
-		return advanceDeclineSum == other.advanceDeclineSum && Objects.equals(date, other.date)
+		return advanceDeclineNumber == other.advanceDeclineNumber && Objects.equals(date, other.date)
 				&& Objects.equals(id, other.id) && instrumentType == other.instrumentType
 				&& numberAdvance == other.numberAdvance && numberDecline == other.numberDecline;
 	}
