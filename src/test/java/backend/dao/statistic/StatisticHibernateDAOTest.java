@@ -1,5 +1,7 @@
 package backend.dao.statistic;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
@@ -82,29 +84,10 @@ public class StatisticHibernateDAOTest {
 	 * Initializes the database with the statistics.
 	 */
 	private void createTestData() {
-		Calendar calendar = Calendar.getInstance();
-		
-		calendar.setTime(new Date());
-		calendar.set(Calendar.HOUR_OF_DAY, 0);
-		calendar.set(Calendar.MINUTE, 0);
-		calendar.set(Calendar.SECOND, 0);
-		calendar.set(Calendar.MILLISECOND, 0);
 		
 		try {
-			this.statisticToday = new Statistic();
-			this.statisticToday.setInstrumentType(InstrumentType.STOCK);
-			this.statisticToday.setDate(calendar.getTime());
-			this.statisticToday.setNumberAdvance(34);
-			this.statisticToday.setNumberDecline(134);
-			this.statisticToday.setAdvanceDeclineSum(-100);
-			
-			calendar.add(Calendar.DAY_OF_MONTH, -1);
-			this.statisticYesterday = new Statistic();
-			this.statisticYesterday.setInstrumentType(InstrumentType.STOCK);
-			this.statisticYesterday.setDate(calendar.getTime());
-			this.statisticYesterday.setNumberAdvance(101);
-			this.statisticYesterday.setNumberDecline(67);
-			this.statisticYesterday.setAdvanceDeclineSum(34);
+			this.statisticToday = this.getStatisticToday();
+			this.statisticYesterday = this.getStatisticYesterday();		
 			
 			statisticDAO.insertStatistic(this.statisticToday);
 			statisticDAO.insertStatistic(this.statisticYesterday);		
@@ -125,7 +108,150 @@ public class StatisticHibernateDAOTest {
 			fail(e.getMessage());
 		}
 	}
+	
+	
+	/**
+	 * Gets the Statistic 'Today'.
+	 * 
+	 * @return The Statistic 'Today'.
+	 */
+	public Statistic getStatisticToday() {
+		Statistic statistic;
+		Calendar calendar = Calendar.getInstance();
+		
+		calendar.setTime(new Date());
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		
+		statistic = new Statistic();
+		statistic.setInstrumentType(InstrumentType.STOCK);
+		statistic.setDate(calendar.getTime());
+		statistic.setNumberAdvance(34);
+		statistic.setNumberDecline(134);
+		statistic.setAdvanceDeclineSum(-100);
+		
+		return statistic;
+	}
+	
+	
+	/**
+	 * Gets the Statistic 'Yesterday'.
+	 * 
+	 * @return The Statistic 'Yesterday'.
+	 */
+	public Statistic getStatisticYesterday() {
+		Statistic statistic;
+		Calendar calendar = Calendar.getInstance();
+		
+		calendar.setTime(new Date());
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		calendar.add(Calendar.DAY_OF_MONTH, -1);
+		
+		statistic = new Statistic();
+		statistic.setInstrumentType(InstrumentType.STOCK);
+		statistic.setDate(calendar.getTime());
+		statistic.setNumberAdvance(101);
+		statistic.setNumberDecline(67);
+		statistic.setAdvanceDeclineSum(34);
+		
+		return statistic;
+	}
 
+	
+	@Test
+	/**
+	 * Tests the retrieval of a Statistic with a given ID.
+	 */
+	public void testGetStatistic() {
+		Statistic databaseStatistic;
+		
+		try {
+			databaseStatistic = statisticDAO.getStatistic(this.statisticToday.getId());
+			
+			//Check the attributes of the database Statistic.
+			assertEquals(this.statisticToday, databaseStatistic);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests insertion of a Statistic.
+	 */
+	public void testInsertStatistic() {
+		Calendar calendar = Calendar.getInstance();
+		Statistic newStatistic = new Statistic();
+		Statistic databaseStatistic;
+		
+		calendar.setTime(new Date());
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		calendar.add(Calendar.DAY_OF_MONTH, -2);
+		
+		newStatistic.setInstrumentType(InstrumentType.STOCK);
+		newStatistic.setDate(calendar.getTime());
+		newStatistic.setNumberAdvance(10);
+		newStatistic.setNumberDecline(-15);
+		newStatistic.setAdvanceDeclineSum(-5);
+		
+		try {
+			statisticDAO.insertStatistic(newStatistic);
+			
+			//Check if the Statistic has been correctly persisted.
+			databaseStatistic = statisticDAO.getStatistic(newStatistic.getId());
+			assertEquals(newStatistic, databaseStatistic);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+		finally {
+			//Remove the Statistic to revert to the original database state.
+			try {
+				statisticDAO.deleteStatistic(newStatistic);
+			} catch (Exception e) {
+				fail(e.getMessage());
+			}
+		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests deletion of a Statistic.
+	 */
+	public void testDeleteStatistic() {
+		Statistic deletedStatistic;
+		
+		try {
+			//Delete Statistic.
+			statisticDAO.deleteStatistic(this.statisticToday);
+			
+			//Try to get the previously deleted Statistic.
+			deletedStatistic = statisticDAO.getStatistic(this.statisticToday.getId());
+			
+			//Assure the Quotation does not exist anymore.
+			assertNull(deletedStatistic);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+		finally {
+			//Add the previously deleted Statistic to revert to the original database state.
+			try {
+				this.statisticToday.setId(null);
+				statisticDAO.insertStatistic(this.statisticToday);
+			} catch (Exception e) {
+				fail(e.getMessage());
+			}
+		}
+	}
 	
 	
 	/*

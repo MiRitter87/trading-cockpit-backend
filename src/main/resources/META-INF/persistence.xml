@@ -10,6 +10,7 @@
         <class>backend.model.instrument.Indicator</class>
         <class>backend.model.list.List</class>
         <class>backend.model.scan.Scan</class>
+        <class>backend.model.statistic.Statistic</class>
         
         <!-- Several configuration properties -->
         <properties>

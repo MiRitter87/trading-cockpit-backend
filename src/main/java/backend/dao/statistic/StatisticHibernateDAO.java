@@ -2,6 +2,7 @@ package backend.dao.statistic;
 
 import java.util.List;
 
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
 import backend.dao.ObjectUnchangedException;
@@ -32,15 +33,50 @@ public class StatisticHibernateDAO implements StatisticDAO {
 	
 	@Override
 	public void insertStatistic(Statistic statistic) throws Exception {
-		// TODO Auto-generated method stub
-
+		EntityManager entityManager = this.sessionFactory.createEntityManager();
+		
+		entityManager.getTransaction().begin();
+		
+		try {
+			entityManager.persist(statistic);
+			entityManager.flush();	//Assures, that the generated ID is available.
+			entityManager.getTransaction().commit();
+		}
+		catch(Exception exception) {
+			//If something breaks a rollback is necessary!?
+			if(entityManager.getTransaction().isActive())
+				entityManager.getTransaction().rollback();
+			throw exception;
+		}
+		finally {
+			entityManager.close();			
+		}
 	}
 
 	
 	@Override
 	public void deleteStatistic(Statistic statistic) throws Exception {
-		// TODO Auto-generated method stub
-
+		EntityManager entityManager = this.sessionFactory.createEntityManager();
+		
+		//In order to successfully delete an entity, it first has to be fetched from the database.
+		Statistic deleteStatistic = entityManager.find(Statistic.class, statistic.getId());
+		
+		entityManager.getTransaction().begin();
+		
+		try {
+			//Remove Instrument.
+			entityManager.remove(deleteStatistic);
+			entityManager.getTransaction().commit();			
+		}
+		catch(Exception exception) {
+			//If something breaks a rollback is necessary.
+			if(entityManager.getTransaction().isActive())
+				entityManager.getTransaction().rollback();
+			throw exception;
+		}
+		finally {
+			entityManager.close();			
+		}
 	}
 
 	
@@ -53,8 +89,15 @@ public class StatisticHibernateDAO implements StatisticDAO {
 	
 	@Override
 	public Statistic getStatistic(Integer id) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		EntityManager entityManager = this.sessionFactory.createEntityManager();
+		Statistic statistic;
+		
+		entityManager.getTransaction().begin();
+		statistic = entityManager.find(Statistic.class, id);
+		entityManager.getTransaction().commit();
+		entityManager.close();
+		
+		return statistic;
 	}
 
 	
