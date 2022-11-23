@@ -71,6 +71,11 @@ public class ScanThread extends Thread {
 	IndicatorCalculator indicatorCalculator;
 	
 	/**
+	 * Controller for statistical data.
+	 */
+	StatisticController statisticController;
+	
+	/**
 	 * Application logging.
 	 */
 	public static final Logger logger = LogManager.getLogger(ScanThread.class);
@@ -93,6 +98,7 @@ public class ScanThread extends Thread {
 		this.instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
 		
 		this.indicatorCalculator = new IndicatorCalculator();
+		this.statisticController = new StatisticController();
 	}
 	
 	
