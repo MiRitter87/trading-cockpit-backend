@@ -16,9 +16,10 @@ public interface StatisticDAO {
 	 * Inserts a Statistic.
 	 * 
 	 * @param statistic The Statistic to be inserted.
+	 * @throws DuplicateStatisticException In case the Statistic already exists.
 	 * @throws Exception Insertion failed.
 	 */
-	void insertStatistic(final Statistic statistic) throws Exception;
+	void insertStatistic(final Statistic statistic) throws DuplicateStatisticException, Exception;
 	
 	
 	/**

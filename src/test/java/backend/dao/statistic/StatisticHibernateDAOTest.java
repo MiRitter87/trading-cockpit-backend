@@ -223,6 +223,38 @@ public class StatisticHibernateDAOTest {
 	
 	@Test
 	/**
+	 * Tries to insert a Statistic of a certain type and date for which a Statistic already exists.
+	 */
+	public void testInsertDuplicateStatistic() {
+		Calendar calendar = Calendar.getInstance();
+		Statistic newStatistic = new Statistic();
+		
+		calendar.setTime(new Date());
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		
+		newStatistic.setInstrumentType(InstrumentType.STOCK);
+		newStatistic.setDate(calendar.getTime());
+		newStatistic.setNumberAdvance(10);
+		newStatistic.setNumberDecline(5);
+		
+		try {
+			statisticDAO.insertStatistic(newStatistic);
+			fail("The 'insertStatistic' method should have thrown a DuplicateStatisticException.");
+		} 
+		catch(DuplicateStatisticException expected) {
+			//All is welll.
+		}
+		catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	@Test
+	/**
 	 * Tests deletion of a Statistic.
 	 */
 	public void testDeleteStatistic() {
@@ -291,11 +323,4 @@ public class StatisticHibernateDAOTest {
 			fail(e.getMessage());
 		}
 	}
-	
-	
-	/*
-	 * TODO Implement tests
-	 * 
-	 *  testCreateDuplicateStatistic (same date, same InstrumentType)
-	 */
 }
