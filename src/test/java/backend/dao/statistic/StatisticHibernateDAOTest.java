@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -31,14 +32,19 @@ public class StatisticHibernateDAOTest {
 	private static StatisticDAO statisticDAO;
 	
 	/**
-	 * Statistic of today.
+	 * Statistic of today for stocks.
 	 */
-	private Statistic statisticToday;
+	private Statistic statisticTodayStock;
 	
 	/**
-	 * Statistic of yesterday.
+	 * Statistic of yesterday for stocks.
 	 */
-	private Statistic statisticYesterday;
+	private Statistic statisticYesterdayStock;
+	
+	/**
+	 * Statistic of today for ETFs.
+	 */
+	private Statistic statisticTodayETF;
 	
 	
 	@BeforeAll
@@ -87,11 +93,13 @@ public class StatisticHibernateDAOTest {
 	private void createTestData() {
 		
 		try {
-			this.statisticToday = this.getStatisticToday();
-			this.statisticYesterday = this.getStatisticYesterday();		
+			this.statisticTodayStock = this.getStatisticTodayStock();
+			this.statisticYesterdayStock = this.getStatisticYesterdayStock();	
+			this.statisticTodayETF = this.getStatisticTodayETF();
 			
-			statisticDAO.insertStatistic(this.statisticToday);
-			statisticDAO.insertStatistic(this.statisticYesterday);		
+			statisticDAO.insertStatistic(this.statisticTodayStock);
+			statisticDAO.insertStatistic(this.statisticYesterdayStock);		
+			statisticDAO.insertStatistic(this.statisticTodayETF);
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}	
@@ -103,8 +111,9 @@ public class StatisticHibernateDAOTest {
 	 */
 	private void deleteTestData() {
 		try {
-			statisticDAO.deleteStatistic(this.statisticToday);
-			statisticDAO.deleteStatistic(this.statisticYesterday);
+			statisticDAO.deleteStatistic(this.statisticTodayETF);
+			statisticDAO.deleteStatistic(this.statisticYesterdayStock);
+			statisticDAO.deleteStatistic(this.statisticTodayStock);
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
@@ -112,11 +121,11 @@ public class StatisticHibernateDAOTest {
 	
 	
 	/**
-	 * Gets the Statistic 'Today'.
+	 * Gets the Statistic 'Today' for stocks.
 	 * 
 	 * @return The Statistic 'Today'.
 	 */
-	public Statistic getStatisticToday() {
+	public Statistic getStatisticTodayStock() {
 		Statistic statistic;
 		Calendar calendar = Calendar.getInstance();
 		
@@ -137,11 +146,11 @@ public class StatisticHibernateDAOTest {
 	
 	
 	/**
-	 * Gets the Statistic 'Yesterday'.
+	 * Gets the Statistic 'Yesterday' for stocks.
 	 * 
 	 * @return The Statistic 'Yesterday'.
 	 */
-	public Statistic getStatisticYesterday() {
+	public Statistic getStatisticYesterdayStock() {
 		Statistic statistic;
 		Calendar calendar = Calendar.getInstance();
 		
@@ -160,6 +169,31 @@ public class StatisticHibernateDAOTest {
 		
 		return statistic;
 	}
+	
+	
+	/**
+	 * Gets the Statistic 'Today' for ETFs.
+	 * 
+	 * @return The Statistic 'Today'.
+	 */
+	public Statistic getStatisticTodayETF() {
+		Statistic statistic;
+		Calendar calendar = Calendar.getInstance();
+		
+		calendar.setTime(new Date());
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		
+		statistic = new Statistic();
+		statistic.setInstrumentType(InstrumentType.ETF);
+		statistic.setDate(calendar.getTime());
+		statistic.setNumberAdvance(3);
+		statistic.setNumberDecline(2);
+		
+		return statistic;
+	}
 
 	
 	@Test
@@ -170,10 +204,10 @@ public class StatisticHibernateDAOTest {
 		Statistic databaseStatistic;
 		
 		try {
-			databaseStatistic = statisticDAO.getStatistic(this.statisticToday.getId());
+			databaseStatistic = statisticDAO.getStatistic(this.statisticTodayStock.getId());
 			
 			//Check the attributes of the database Statistic.
-			assertEquals(this.statisticToday, databaseStatistic);
+			assertEquals(this.statisticTodayStock, databaseStatistic);
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
@@ -223,6 +257,28 @@ public class StatisticHibernateDAOTest {
 	
 	@Test
 	/**
+	 * Tests the retrieval of all statistics of type STOCK.
+	 */
+	public void testGetStatisticsTypeStock() {
+		List<Statistic> statistics;
+		
+		try {
+			statistics = statisticDAO.getStatistics(InstrumentType.STOCK);
+			
+			//Assure two statistics are returned.
+			assertEquals(2, statistics.size());
+			
+			//Assure that the correct statistics are returned in the correct order (newest Statistic first).
+			assertEquals(this.statisticTodayStock, statistics.get(0));
+			assertEquals(this.statisticYesterdayStock, statistics.get(1));
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	@Test
+	/**
 	 * Tries to insert a Statistic of a certain type and date for which a Statistic already exists.
 	 */
 	public void testInsertDuplicateStatistic() {
@@ -262,10 +318,10 @@ public class StatisticHibernateDAOTest {
 		
 		try {
 			//Delete Statistic.
-			statisticDAO.deleteStatistic(this.statisticToday);
+			statisticDAO.deleteStatistic(this.statisticTodayStock);
 			
 			//Try to get the previously deleted Statistic.
-			deletedStatistic = statisticDAO.getStatistic(this.statisticToday.getId());
+			deletedStatistic = statisticDAO.getStatistic(this.statisticTodayStock.getId());
 			
 			//Assure the Quotation does not exist anymore.
 			assertNull(deletedStatistic);
@@ -275,8 +331,8 @@ public class StatisticHibernateDAOTest {
 		finally {
 			//Add the previously deleted Statistic to revert to the original database state.
 			try {
-				this.statisticToday.setId(null);
-				statisticDAO.insertStatistic(this.statisticToday);
+				this.statisticTodayStock.setId(null);
+				statisticDAO.insertStatistic(this.statisticTodayStock);
 			} catch (Exception e) {
 				fail(e.getMessage());
 			}
@@ -293,14 +349,14 @@ public class StatisticHibernateDAOTest {
 				
 		try {
 			//Change Statistic.
-			statisticToday.setInstrumentType(InstrumentType.ETF);
-			statisticDAO.updateStatistic(this.statisticToday);
+			statisticTodayStock.setInstrumentType(InstrumentType.ETF);
+			statisticDAO.updateStatistic(this.statisticTodayStock);
 			
 			//Get the Statistic that should have been changed.
-			databaseStatistic = statisticDAO.getStatistic(this.statisticToday.getId());
+			databaseStatistic = statisticDAO.getStatistic(this.statisticTodayStock.getId());
 			
 			//Check if the changes have been persisted.
-			assertEquals(this.statisticToday, databaseStatistic);
+			assertEquals(this.statisticTodayStock, databaseStatistic);
 		} catch (ObjectUnchangedException e) {
 			fail(e.getMessage());
 		} catch (Exception e) {
@@ -315,7 +371,7 @@ public class StatisticHibernateDAOTest {
 	 */
 	public void testUpdateUnchangedStatistic() {
 		try {
-			statisticDAO.updateStatistic(this.statisticToday);
+			statisticDAO.updateStatistic(this.statisticTodayStock);
 			fail("The 'updateStatistic' method should have thrown an ObjectUnchangedException.");
 		} catch (ObjectUnchangedException expected) {
 			//All is well.

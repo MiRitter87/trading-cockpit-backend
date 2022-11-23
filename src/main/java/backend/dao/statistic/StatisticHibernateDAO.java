@@ -91,8 +91,37 @@ public class StatisticHibernateDAO implements StatisticDAO {
 	
 	@Override
 	public List<Statistic> getStatistics(InstrumentType instrumentType) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		List<Statistic> statistics = null;
+		EntityManager entityManager = this.sessionFactory.createEntityManager();
+		entityManager.getTransaction().begin();
+		
+		try {
+			List<Predicate> predicates = new ArrayList<Predicate>();
+			CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+			CriteriaQuery<Statistic> criteriaQuery = criteriaBuilder.createQuery(Statistic.class);
+			Root<Statistic> criteria = criteriaQuery.from(Statistic.class);
+			criteriaQuery.select(criteria);
+			criteriaQuery.orderBy(criteriaBuilder.desc(criteria.get("date")));
+			
+			predicates.add(criteriaBuilder.equal(criteria.get("instrumentType"), instrumentType));
+			criteriaQuery.where(predicates.toArray(new Predicate[predicates.size()]));
+			
+			TypedQuery<Statistic> typedQuery = entityManager.createQuery(criteriaQuery);
+			statistics = typedQuery.getResultList();
+			
+			entityManager.getTransaction().commit();			
+		}
+		catch(Exception exception) {
+			//If something breaks a rollback is necessary.
+			if(entityManager.getTransaction().isActive())
+				entityManager.getTransaction().rollback();
+			throw exception;
+		}
+		finally {
+			entityManager.close();			
+		}
+		
+		return statistics;
 	}
 
 	
