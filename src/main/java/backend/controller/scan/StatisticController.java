@@ -91,7 +91,7 @@ public class StatisticController {
 				
 				if(statistic == null) {
 					statistic = new Statistic();
-					statistic.setDate(currentQuotation.getDate());
+					statistic.setDate(statistics.getDateWithoutIntradayAttributes(currentQuotation.getDate()));
 					statistics.addStatistic(statistic);
 				}
 				

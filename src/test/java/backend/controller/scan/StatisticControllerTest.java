@@ -279,12 +279,16 @@ public class StatisticControllerTest {
 			
 			//Check correct statistic of first day.
 			statistic = calculatedStatistics.getStatistics().get(0);
+			assertEquals(calculatedStatistics.getDateWithoutIntradayAttributes(this.appleQuotation1.getDate()).getTime(), 
+					statistic.getDate().getTime());
 			assertEquals(1, statistic.getNumberAdvance());
 			assertEquals(1, statistic.getNumberDecline());
 			assertEquals(0, statistic.getAdvanceDeclineNumber());
 			
 			//Check correct statistic of second day.
 			statistic = calculatedStatistics.getStatistics().get(1);
+			assertEquals(calculatedStatistics.getDateWithoutIntradayAttributes(this.appleQuotation2.getDate()).getTime(), 
+					statistic.getDate().getTime());
 			assertEquals(0, statistic.getNumberAdvance());
 			assertEquals(2, statistic.getNumberDecline());
 			assertEquals(-2, statistic.getAdvanceDeclineNumber());
