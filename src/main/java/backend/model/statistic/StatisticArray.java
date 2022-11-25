@@ -52,6 +52,16 @@ public class StatisticArray {
 	
 	
 	/**
+	 * Adds the given Statistic to the array.
+	 * 
+	 * @param statistic The statistic to be added.
+	 */
+	public void addStatistic(final Statistic statistic) {
+		this.statistics.add(statistic);
+	}
+	
+	
+	/**
 	 * Determines the statistic with the given date.
 	 * Only day, month and year are taken into account for date lookup.
 	 * 

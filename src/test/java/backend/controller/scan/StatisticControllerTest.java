@@ -1,7 +1,9 @@
 package backend.controller.scan;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -12,6 +14,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import backend.dao.DAOManager;
 import backend.dao.instrument.DuplicateInstrumentException;
@@ -22,6 +25,7 @@ import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
+import backend.model.statistic.Statistic;
 
 /**
  * Tests the StatisticController.
@@ -99,8 +103,11 @@ public class StatisticControllerTest {
 	 * Tasks to be performed once at the end of the test class.
 	 */
 	public static void tearDownClass() {
-		instrumentDAO = null;
-		quotationDAO = null;
+		try {
+			DAOManager.getInstance().close();
+		} catch (IOException e) {
+			fail(e.getMessage());
+		}
 	}
 	
 	
@@ -249,5 +256,26 @@ public class StatisticControllerTest {
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the calculation of statistics.
+	 */
+	public void testCalculateStatistics() {
+		List<Statistic> calculatedStatistics;
+		StatisticController statisticController = new StatisticController();
+		List<Instrument> instruments;
+		
+		try {
+			instruments = instrumentDAO.getInstruments(InstrumentType.STOCK);
+			calculatedStatistics = statisticController.calculateStatistics(instruments);
+			
+			assertEquals(2, calculatedStatistics.size());
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+		
 	}
 }

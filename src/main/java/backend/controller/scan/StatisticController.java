@@ -2,8 +2,12 @@ package backend.controller.scan;
 
 import java.util.List;
 
+import backend.dao.DAOManager;
+import backend.dao.quotation.QuotationDAO;
 import backend.model.instrument.Instrument;
+import backend.model.instrument.Quotation;
 import backend.model.statistic.Statistic;
+import backend.model.statistic.StatisticArray;
 
 /**
  * Controls the creation and update of statistical data.
@@ -12,23 +16,32 @@ import backend.model.statistic.Statistic;
  */
 public class StatisticController {
 	/**
-	 * Updates the statistic.
+	 * DAO to access Quotation data.
 	 */
-	public void updateStatistic() {
+	QuotationDAO quotationDAO;
+	
+	
+	/**
+	 * Default constructor.
+	 */
+	public StatisticController() {
+		this.quotationDAO = DAOManager.getInstance().getQuotationDAO();
+	}
+	
+	
+	/**
+	 * Updates the statistic.
+	 * @throws Exception Statistic calculation or database access failed.
+	 */
+	public void updateStatistic() throws Exception {
+		List<Statistic> statisticNew;
 		//new Array for Statistic: statisticNew (This Array contains the overall statistic determined during runtime)
 		//new Arrays: statisticInsert, statisticUpdate, statisticDelete, statisticDatabase
 		
 		
 		//1. Step: Calculate statistic for all instruments of type stock.
 		//Get all instruments of type stock.
-		//loop through all instruments. For each instrument do the following:
-		//-Get all quotations of instrument
-		//-Order quotations by date
-		
-		//-Loop through all Quotations of the Instrument. For each Quotation do the following:
-		//--Check if Statistic object exists for the current Quotations date in statisticNew. If so, use it. If not, create Statistic object.
-		//--Determine the 1 day performance
-		//--Add advance or decline based on performance
+		statisticNew = this.calculateStatistics(null);
 		
 		
 		//2. Step: Persist new and updates statistic to database:
@@ -53,9 +66,39 @@ public class StatisticController {
 	 * 
 	 * @param instruments The instruments for which the statistics are to be calculated.
 	 * @return The statistics.
+	 * @throws Exception Statistic calculation failed.
 	 */
-	public List<Statistic> calculateStatistics(final List<Instrument> instruments) {
-		return null;
+	public List<Statistic> calculateStatistics(final List<Instrument> instruments) throws Exception {
+		StatisticArray statistics = new StatisticArray();
+		Statistic statistic;
+		List<Quotation> quotationsSortedByDate;
+		
+		//loop through all instruments. For each instrument do the following:
+		for(Instrument instrument: instruments) {
+			//-Get all quotations of instrument
+			//-Order quotations by date
+			instrument.setQuotations(quotationDAO.getQuotationsOfInstrument(instrument.getId()));
+			quotationsSortedByDate = instrument.getQuotationsSortedByDate();
+			
+			//-Loop through all Quotations of the Instrument. For each Quotation do the following:
+			//--Check if Statistic object exists for the current Quotations date in statisticNew. If so, use it. If not, create Statistic object.
+			//--Determine the 1 day performance
+			//--Add advance or decline based on performance
+			for(Quotation quotation: quotationsSortedByDate) {
+				if(quotationsSortedByDate.indexOf(quotation) == (quotationsSortedByDate.size() - 1))
+					break;
+				
+				statistic = statistics.getStatisticOfDate(quotation.getDate());
+				
+				if(statistic == null) {
+					statistic = new Statistic();
+					statistic.setDate(quotation.getDate());
+					statistics.addStatistic(statistic);
+				}				
+			}
+		}
+		
+		return statistics.getStatistics();
 	}
 	
 	
