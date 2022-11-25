@@ -26,6 +26,7 @@ import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 import backend.model.statistic.Statistic;
+import backend.model.statistic.StatisticArray;
 
 /**
  * Tests the StatisticController.
@@ -264,15 +265,29 @@ public class StatisticControllerTest {
 	 * Tests the calculation of statistics.
 	 */
 	public void testCalculateStatistics() {
-		List<Statistic> calculatedStatistics;
+		StatisticArray calculatedStatistics = new StatisticArray();
 		StatisticController statisticController = new StatisticController();
 		List<Instrument> instruments;
+		Statistic statistic;
 		
 		try {
 			instruments = instrumentDAO.getInstruments(InstrumentType.STOCK);
-			calculatedStatistics = statisticController.calculateStatistics(instruments);
+			calculatedStatistics.setStatistics(statisticController.calculateStatistics(instruments));
 			
-			assertEquals(2, calculatedStatistics.size());
+			//Two statistics should exist.
+			assertEquals(2, calculatedStatistics.getStatistics().size());
+			
+			//Check correct statistic of first day.
+			statistic = calculatedStatistics.getStatistics().get(0);
+			assertEquals(1, statistic.getNumberAdvance());
+			assertEquals(1, statistic.getNumberDecline());
+			assertEquals(0, statistic.getAdvanceDeclineNumber());
+			
+			//Check correct statistic of second day.
+			statistic = calculatedStatistics.getStatistics().get(1);
+			assertEquals(0, statistic.getNumberAdvance());
+			assertEquals(2, statistic.getNumberDecline());
+			assertEquals(-2, statistic.getAdvanceDeclineNumber());
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}

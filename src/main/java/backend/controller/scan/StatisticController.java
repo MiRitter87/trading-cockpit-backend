@@ -72,33 +72,66 @@ public class StatisticController {
 		StatisticArray statistics = new StatisticArray();
 		Statistic statistic;
 		List<Quotation> quotationsSortedByDate;
+		Quotation previousQuotation;
+		int currentQuotationIndex;
 		
-		//loop through all instruments. For each instrument do the following:
 		for(Instrument instrument: instruments) {
-			//-Get all quotations of instrument
-			//-Order quotations by date
 			instrument.setQuotations(quotationDAO.getQuotationsOfInstrument(instrument.getId()));
 			quotationsSortedByDate = instrument.getQuotationsSortedByDate();
 			
-			//-Loop through all Quotations of the Instrument. For each Quotation do the following:
-			//--Check if Statistic object exists for the current Quotations date in statisticNew. If so, use it. If not, create Statistic object.
-			//--Determine the 1 day performance
-			//--Add advance or decline based on performance
-			for(Quotation quotation: quotationsSortedByDate) {
-				if(quotationsSortedByDate.indexOf(quotation) == (quotationsSortedByDate.size() - 1))
+			for(Quotation currentQuotation: quotationsSortedByDate) {
+				currentQuotationIndex = quotationsSortedByDate.indexOf(currentQuotation);
+				
+				//Stop Statistic calculation for the current Instrument if no previous Quotation exists.
+				if(currentQuotationIndex == (quotationsSortedByDate.size() - 1))
 					break;
 				
-				statistic = statistics.getStatisticOfDate(quotation.getDate());
+				previousQuotation = quotationsSortedByDate.get(currentQuotationIndex + 1);
+				statistic = statistics.getStatisticOfDate(currentQuotation.getDate());
 				
 				if(statistic == null) {
 					statistic = new Statistic();
-					statistic.setDate(quotation.getDate());
+					statistic.setDate(currentQuotation.getDate());
 					statistics.addStatistic(statistic);
-				}				
+				}
+				
+				//Calculate statistical values.
+				statistic.setNumberAdvance(statistic.getNumberAdvance() + this.getNumberAdvance(currentQuotation, previousQuotation));
+				statistic.setNumberDecline(statistic.getNumberDecline() + this.getNumberDecline(currentQuotation, previousQuotation));
 			}
 		}
 		
 		return statistics.getStatistics();
+	}
+	
+	
+	/**
+	 * Compares the price of the current and previous Quotation.
+	 * 
+	 * @param currentQuotation The current Quotation.
+	 * @param previousQuotation The previous Quotation.
+	 * @return 1, if price of current Quotation is bigger than price of previous Quotation. 0 if not.
+	 */
+	private int getNumberAdvance(final Quotation currentQuotation, final Quotation previousQuotation) {
+		if(currentQuotation.getPrice().compareTo(previousQuotation.getPrice()) == 1)
+			return 1;
+		else
+			return 0;
+	}
+	
+	
+	/**
+	 * Compares the price of the current and previous Quotation.
+	 * 
+	 * @param currentQuotation The current Quotation.
+	 * @param previousQuotation The previous Quotation.
+	 * @return 1, if price of current Quotation is smaller than price of previous Quotation. 0 if not.
+	 */
+	private int getNumberDecline(final Quotation currentQuotation, final Quotation previousQuotation) {
+		if(currentQuotation.getPrice().compareTo(previousQuotation.getPrice()) == -1)
+			return 1;
+		else
+			return 0;
 	}
 	
 	
