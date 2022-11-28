@@ -5,6 +5,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+
 /**
  * An array of statistics.
  * 
@@ -38,6 +41,8 @@ public class StatisticArray {
 	/**
 	 * @return the statistics
 	 */
+	@XmlElementWrapper(name="statistics")
+    @XmlElement(name="statistic")
 	public List<Statistic> getStatistics() {
 		return statistics;
 	}
