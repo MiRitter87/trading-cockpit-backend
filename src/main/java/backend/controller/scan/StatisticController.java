@@ -90,6 +90,7 @@ public class StatisticController {
 				
 				if(statistic == null) {
 					statistic = new Statistic();
+					statistic.setInstrumentType(instrument.getType());
 					statistic.setDate(statistics.getDateWithoutIntradayAttributes(currentQuotation.getDate()));
 					statistics.addStatistic(statistic);
 				}
