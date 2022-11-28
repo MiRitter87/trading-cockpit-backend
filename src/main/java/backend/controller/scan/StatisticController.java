@@ -1,10 +1,14 @@
 package backend.controller.scan;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import backend.dao.DAOManager;
+import backend.dao.instrument.InstrumentDAO;
 import backend.dao.quotation.QuotationDAO;
+import backend.dao.statistic.StatisticDAO;
 import backend.model.instrument.Instrument;
+import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 import backend.model.statistic.Statistic;
 import backend.model.statistic.StatisticArray;
@@ -16,48 +20,43 @@ import backend.model.statistic.StatisticArray;
  */
 public class StatisticController {
 	/**
+	 * DAO to access Instrument data.
+	 */
+	InstrumentDAO instrumentDAO;
+	
+	/**
 	 * DAO to access Quotation data.
 	 */
 	QuotationDAO quotationDAO;
+	
+	/**
+	 * DAO to access Statistic data.
+	 */
+	StatisticDAO statisticDAO;
 	
 	
 	/**
 	 * Default constructor.
 	 */
 	public StatisticController() {
+		this.instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
 		this.quotationDAO = DAOManager.getInstance().getQuotationDAO();
+		this.statisticDAO = DAOManager.getInstance().getStatisticDAO();
 	}
 	
 	
 	/**
 	 * Updates the statistic.
+	 * 
 	 * @throws Exception Statistic calculation or database access failed.
 	 */
 	public void updateStatistic() throws Exception {
+		List<Instrument> stocks;
 		List<Statistic> statisticNew;
-		//new Array for Statistic: statisticNew (This Array contains the overall statistic determined during runtime)
-		//new Arrays: statisticInsert, statisticUpdate, statisticDelete, statisticDatabase
-		
-		
-		//1. Step: Calculate statistic for all instruments of type stock.
-		//Get all instruments of type stock.
-		statisticNew = this.calculateStatistics(null);
-		
-		
-		//2. Step: Persist new and updates statistic to database:
-		//Get the whole existing statistic for instruments typed STOCK into statisticDatabase
-		//Loop through statisticNew
-		//-check if statisticDatabase has entry with same date and type
-		//-if yes, update advance and decline numbers and add Statistic to statisticUpdate (exists at database and needs to be updated)
-		//-if no, add Statistic to statisticInsert (does not exist yet at database)
-		//perform DAOs methods update and insert
-		
-		
-		//3. Step: Remove obsolete statistics from database:
-		//Loop through statisticDatabase
-		//-Check if statisticNew contains object with same date and type
-		//-if no, add Statistic to statisticDelete (this Statistic is old and not relevant anymore)
-		//perform DAOs method delete
+
+		stocks = instrumentDAO.getInstruments(InstrumentType.STOCK);
+		statisticNew = this.calculateStatistics(stocks);
+		this.persistStatistics(statisticNew);
 	}
 	
 	
@@ -106,7 +105,7 @@ public class StatisticController {
 	
 	
 	/**
-	 * Compares the price of the current and previous Quotation.
+	 * Compares the price of the current and previous Quotation and checks if the Instrument has advanced.
 	 * 
 	 * @param currentQuotation The current Quotation.
 	 * @param previousQuotation The previous Quotation.
@@ -121,7 +120,7 @@ public class StatisticController {
 	
 	
 	/**
-	 * Compares the price of the current and previous Quotation.
+	 * Compares the price of the current and previous Quotation and checks if the Instrument has declined.
 	 * 
 	 * @param currentQuotation The current Quotation.
 	 * @param previousQuotation The previous Quotation.
@@ -141,21 +140,47 @@ public class StatisticController {
 	 * @param newStatistics The new statistics that have been calculated during runtime based on the current database state of quotation data.
 	 * @throws Exception In case persisting failed.
 	 */
-	private void persistStatistics(final List <Statistic> newStatistics) throws Exception {
+	private void persistStatistics(final List<Statistic> newStatistics) throws Exception {
+		List<Statistic> statisticsDatabase, statisticsForInsertion, statisticsForUpdate, statisticsForDeletion;
 		
+		statisticsDatabase = statisticDAO.getStatistics(InstrumentType.STOCK);
+		
+		statisticsForInsertion = this.getStatisticsForInsertion(newStatistics, statisticsDatabase);
+		statisticsForDeletion = this.getStatisticsForDeletion(newStatistics, statisticsDatabase);
+		statisticsForUpdate = this.getStatisticsForUpdate(newStatistics, statisticsDatabase);
+		
+		for(Statistic insertStatistic: statisticsForInsertion)
+			statisticDAO.insertStatistic(insertStatistic);
+		
+		for(Statistic deleteStatistic: statisticsForDeletion)
+			statisticDAO.deleteStatistic(deleteStatistic);
+		
+		for(Statistic updateStatistic: statisticsForUpdate)
+			statisticDAO.updateStatistic(updateStatistic);
 	}
 	
 	
 	/**
 	 * Compares the database state of the statistics and the newly calculated statistics.
-	 * New statistics are returned, that have yet to be persisted at database level.
+	 * New statistics are returned, that have yet to be persisted to the database.
 	 * 
 	 * @param newStatistics The new statistics that have been calculated during runtime based on the current database state of quotation data.
 	 * @param databaseStatistics The database state of the statistics before the new statistic calculation has been executed.
 	 * @return Statistics that have to be inserted into the database.
 	 */
 	private List<Statistic> getStatisticsForInsertion(final List <Statistic> newStatistics, final List <Statistic> databaseStatistics) {
-		return null;
+		List<Statistic> statisticInsert = new ArrayList<>();
+		StatisticArray databaseStatisticArray = new StatisticArray(databaseStatistics);
+		Statistic databaseStatistic;
+		
+		for(Statistic newStatistic: newStatistics) {
+			databaseStatistic = databaseStatisticArray.getStatisticOfDate(newStatistic.getDate());
+			
+			if(databaseStatistic == null)
+				statisticInsert.add(newStatistic);
+		}
+		
+		return statisticInsert;
 	}
 	
 	
@@ -168,7 +193,18 @@ public class StatisticController {
 	 * @return Statistics that have to be deleted from the database.
 	 */
 	private List<Statistic> getStatisticsForDeletion(final List <Statistic> newStatistics, final List <Statistic> databaseStatistics) {
-		return null;
+		List<Statistic> statisticDelete = new ArrayList<>();
+		StatisticArray newStatisticsArray = new StatisticArray(newStatistics);
+		Statistic newStatistic;
+		
+		for(Statistic databaseStatistic: databaseStatistics) {
+			newStatistic = newStatisticsArray.getStatisticOfDate(databaseStatistic.getDate());
+			
+			if(newStatistic == null)
+				statisticDelete.add(databaseStatistic);
+		}
+		
+		return statisticDelete;
 	}
 	
 	
@@ -181,6 +217,20 @@ public class StatisticController {
 	 * @return Statistics that already exist but need to be updated.
 	 */
 	private List<Statistic> getStatisticsForUpdate(final List <Statistic> newStatistics, final List <Statistic> databaseStatistics) {
-		return null;
+		List<Statistic> statisticUpdate = new ArrayList<>();
+		StatisticArray databaseStatisticArray = new StatisticArray(databaseStatistics);
+		Statistic databaseStatistic;
+		
+		for(Statistic newStatistic: newStatistics) {
+			databaseStatistic = databaseStatisticArray.getStatisticOfDate(newStatistic.getDate());
+			
+			if(databaseStatistic != null) {
+				databaseStatistic.setNumberAdvance(newStatistic.getNumberAdvance());
+				databaseStatistic.setNumberDecline(newStatistic.getNumberDecline());
+				statisticUpdate.add(databaseStatistic);
+			}
+		}
+		
+		return statisticUpdate;
 	}
 }

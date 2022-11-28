@@ -131,6 +131,7 @@ public class ScanThread extends Thread {
 		}
 		
 		this.updateRSNumbers();
+		this.updateStatistics();
 		this.setScanToFinished();
 		logger.info("Finished execution of scan with ID: " +this.scan.getId());
 	}
@@ -329,6 +330,18 @@ public class ScanThread extends Thread {
 			logger.error("The scan was executed although being already in status 'FINISHED'.", e);
 		} catch (Exception e) {
 			logger.error("Failed to update scan status at the end of the scan process.", e);
+		}
+	}
+	
+	
+	/**
+	 * Updates the statistics.
+	 */
+	private void updateStatistics() {
+		try {
+			this.statisticController.updateStatistic();
+		} catch (Exception e) {
+			logger.error("Failed to update the statistics.", e);
 		}
 	}
 }
