@@ -73,7 +73,7 @@ public class ScanThread extends Thread {
 	/**
 	 * Controller for statistical data.
 	 */
-	StatisticController statisticController;
+	StatisticCalculationController statisticCalculationController;
 	
 	/**
 	 * Application logging.
@@ -98,7 +98,7 @@ public class ScanThread extends Thread {
 		this.instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
 		
 		this.indicatorCalculator = new IndicatorCalculator();
-		this.statisticController = new StatisticController();
+		this.statisticCalculationController = new StatisticCalculationController();
 	}
 	
 	
@@ -339,7 +339,7 @@ public class ScanThread extends Thread {
 	 */
 	private void updateStatistics() {
 		try {
-			this.statisticController.updateStatistic();
+			this.statisticCalculationController.updateStatistic();
 		} catch (Exception e) {
 			logger.error("Failed to update the statistics.", e);
 		}

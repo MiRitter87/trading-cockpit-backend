@@ -18,7 +18,7 @@ import backend.model.statistic.StatisticArray;
  * 
  * @author Michael
  */
-public class StatisticController {
+public class StatisticCalculationController {
 	/**
 	 * DAO to access Instrument data.
 	 */
@@ -38,7 +38,7 @@ public class StatisticController {
 	/**
 	 * Default constructor.
 	 */
-	public StatisticController() {
+	public StatisticCalculationController() {
 		this.instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
 		this.quotationDAO = DAOManager.getInstance().getQuotationDAO();
 		this.statisticDAO = DAOManager.getInstance().getStatisticDAO();

@@ -33,7 +33,7 @@ import backend.model.statistic.StatisticArray;
  * 
  * @author Michael
  */
-public class StatisticControllerTest {
+public class StatisticCalculationControllerTest {
 	/**
 	 * DAO to access Instrument data.
 	 */
@@ -266,7 +266,7 @@ public class StatisticControllerTest {
 	 */
 	public void testCalculateStatistics() {
 		StatisticArray calculatedStatistics = new StatisticArray();
-		StatisticController statisticController = new StatisticController();
+		StatisticCalculationController statisticController = new StatisticCalculationController();
 		List<Instrument> instruments;
 		Statistic statistic;
 		
