@@ -2,6 +2,8 @@ package backend.webservice.common;
 
 import java.util.ResourceBundle;
 
+import javax.ws.rs.core.Response;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -12,6 +14,7 @@ import backend.model.statistic.StatisticArray;
 import backend.model.webservice.WebServiceMessage;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
+import backend.webservice.ChartType;
 
 /**
  * Common implementation of the Statistic WebService that can be used by multiple service interfaces like SOAP or REST.
@@ -62,5 +65,16 @@ public class StatisticService {
 		}
 		
 		return getStatisticsResult;
+	}
+	
+	
+	/**
+	 * Provides a chart of the requested statistical data.
+	 * 
+	 * @param chartType The type of the requested chart.
+	 * @return The chart.
+	 */
+	public Response getStatisticsChart(final ChartType chartType) {
+		return null;
 	}
 }
