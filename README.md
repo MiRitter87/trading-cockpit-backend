@@ -38,6 +38,7 @@ The Trading Cockpit is based on the following technologies and frameworks
  - **okhttp** to access third-party WebServices
  - **Apache POI** to generate Excel Sheets
  - **OpenCSV** to parse CSV files
+ - **JFreeChart** to generate charts
  - **Apache Maven** as build system
 
 ## Installation

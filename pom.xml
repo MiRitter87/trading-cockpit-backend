@@ -28,7 +28,8 @@
 		<javax.servlet.version>4.0.1</javax.servlet.version>
 		<okhttp.version>4.10.0</okhttp.version>
 		<apache.poi.version>5.2.3</apache.poi.version>
-		<opencsv.version>5.7.1</opencsv.version>		
+		<opencsv.version>5.7.1</opencsv.version>
+		<jfreechart.version>1.5.3</jfreechart.version>	
 	</properties>
 	
 	<dependencies>
@@ -151,6 +152,13 @@
 			<groupId>com.opencsv</groupId>
 			<artifactId>opencsv</artifactId>
 			<version>${opencsv.version}</version>
+		</dependency>
+		
+		<!-- JFreeChart is used to generate charts. -->
+		<dependency>
+			<groupId>org.jfree</groupId>
+			<artifactId>jfreechart</artifactId>
+			<version>${jfreechart.version}</version>
 		</dependency>
 	</dependencies>
   
