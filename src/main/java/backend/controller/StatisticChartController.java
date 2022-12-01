@@ -2,6 +2,7 @@ package backend.controller;
 
 import java.util.List;
 import java.util.ListIterator;
+import java.util.ResourceBundle;
 import java.util.TimeZone;
 
 import org.jfree.chart.ChartFactory;
@@ -28,6 +29,11 @@ public class StatisticChartController {
 	 */
 	StatisticDAO statisticDAO;
 	
+	/**
+	 * Access to localized application resources.
+	 */
+	private ResourceBundle resources = ResourceBundle.getBundle("backend");
+	
 	
 	/**
 	 * Initializes the StatisticChartController.
@@ -48,12 +54,8 @@ public class StatisticChartController {
 		XYDataset dataset = this.getAdvanceDeclineNumberDataset(instrumentType);
 		
 		JFreeChart chart = ChartFactory.createTimeSeriesChart(
-			"!Advance/Decline Number (Cumulative)",
-			"!Datum", "!Advance/Decline Number (Cumulative)",
-			dataset,
-			true,
-			true,
-			false
+			this.resources.getString("statistic.chartADNumber.titleName"),
+			null, null,	dataset, true, true, false
 		);
 		
 		return chart;
@@ -70,7 +72,7 @@ public class StatisticChartController {
 	private XYDataset getAdvanceDeclineNumberDataset(final InstrumentType instrumentType) throws Exception {
 		List<Statistic> statistics;
 		Statistic statistic;
-		TimeSeries timeSeries = new TimeSeries("!Advance Decline Number (Cumulative)");
+		TimeSeries timeSeries = new TimeSeries(this.resources.getString("statistic.chartADNumber.timeSeriesName"));
 		TimeZone timeZone = TimeZone.getDefault();
 		TimeSeriesCollection timeSeriesColleciton = new TimeSeriesCollection(timeZone);
 		ListIterator<Statistic> iterator;

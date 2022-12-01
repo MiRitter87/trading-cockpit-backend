@@ -6,6 +6,7 @@ import java.util.ResourceBundle;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.logging.log4j.LogManager;
@@ -79,9 +80,28 @@ public class StatisticService {
 	 * Provides a chart of the requested statistical data.
 	 * 
 	 * @param chartType The type of the requested chart.
-	 * @return The chart.
+	 * @return A Response containing the generated chart.
 	 */
 	public Response getStatisticsChart(final ChartType chartType) {
+		if(chartType == null)
+			return Response.status(404).build();
+		
+		switch(chartType) {
+			case ADVANCE_DECLINE_NUMBER:
+				return this.getAdvanceDeclineNumberChart();
+			default:
+				return Response.status(404).build();				
+		}
+		
+	}
+	
+	
+	/**
+	 * Provides a chart with the cumulative Advance Decline Number.
+	 * 
+	 * @return A Response containing the generated chart.
+	 */
+	private Response getAdvanceDeclineNumberChart() {
 		StatisticChartController statisticChartController = new StatisticChartController();
 		JFreeChart chart;
 		StreamingOutput streamingOutput = null;
@@ -95,9 +115,9 @@ public class StatisticService {
 					ChartUtils.writeChartAsPNG(output, chart, 800, 600);
 				}
 			};
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (Exception exception) {
+			logger.error(this.resources.getString("statistic.chartADNumber.getError"), exception);
+			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
 		}
 		
 		return Response.ok(streamingOutput).build();
