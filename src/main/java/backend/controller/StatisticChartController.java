@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.TimeZone;
 
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.JFreeChart;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.TimePeriodAnchor;
 import org.jfree.data.time.TimeSeries;
@@ -36,13 +38,36 @@ public class StatisticChartController {
 	
 	
 	/**
+	 * Gets a chart of the cumulative Advance/Decline Number.
+	 * 
+	 * @param instrumentType The InstrumentType for which the chart is created.
+	 * @return The chart.
+	 * @throws Exception Chart generation failed.
+	 */
+	public JFreeChart getAdvanceDeclineNumberChart(final InstrumentType instrumentType) throws Exception {
+		XYDataset dataset = this.getAdvanceDeclineNumberDataset(instrumentType);
+		
+		JFreeChart chart = ChartFactory.createTimeSeriesChart(
+			"!Advance/Decline Number (Cumulative)",
+			"!Datum", "!Advance/Decline Number (Cumulative)",
+			dataset,
+			true,
+			true,
+			false
+		);
+		
+		return chart;
+	}
+	
+	
+	/**
 	 * Constructs a XYDataset for the cumulative Advance/Decline number chart.
 	 * 
 	 * @param instrumentType The InstrumentType for which the XYDataset is created.
 	 * @return The XYDataset.
 	 * @throws Exception XYDataset creation failed.
 	 */
-	private XYDataset getAdvanceDeclineNumberDataset(InstrumentType instrumentType) throws Exception {
+	private XYDataset getAdvanceDeclineNumberDataset(final InstrumentType instrumentType) throws Exception {
 		List<Statistic> statistics;
 		Statistic statistic;
 		TimeSeries timeSeries = new TimeSeries("!Advance Decline Number (Cumulative)");

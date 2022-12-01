@@ -1,12 +1,19 @@
 package backend.webservice.common;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ResourceBundle;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jfree.chart.ChartUtils;
+import org.jfree.chart.JFreeChart;
 
+import backend.controller.StatisticChartController;
 import backend.dao.DAOManager;
 import backend.dao.statistic.StatisticDAO;
 import backend.model.instrument.InstrumentType;
@@ -75,6 +82,24 @@ public class StatisticService {
 	 * @return The chart.
 	 */
 	public Response getStatisticsChart(final ChartType chartType) {
-		return null;
+		StatisticChartController statisticChartController = new StatisticChartController();
+		JFreeChart chart;
+		StreamingOutput streamingOutput = null;
+		
+		try {
+			chart = statisticChartController.getAdvanceDeclineNumberChart(InstrumentType.STOCK);
+			
+			streamingOutput = new StreamingOutput() {
+				@Override
+				public void write(OutputStream output) throws IOException, WebApplicationException {
+					ChartUtils.writeChartAsPNG(output, chart, 800, 600);
+				}
+			};
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return Response.ok(streamingOutput).build();
 	}
 }

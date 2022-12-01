@@ -40,7 +40,7 @@ public class StatisticRestService {
 	 * @return The chart.
 	 */
     @GET
-    @Path("statistics/chart")
+    @Path("/chart")
     @Produces("image/png")
 	public Response getStatisticsChart(@QueryParam("chartType") final ChartType chartType) {
     	StatisticService statisticService = new StatisticService();
