@@ -80,15 +80,16 @@ public class StatisticService {
 	 * Provides a chart of the requested statistical data.
 	 * 
 	 * @param chartType The type of the requested chart.
+	 * @param listId The ID of the list defining the instruments used for Statistic chart creation.
 	 * @return A Response containing the generated chart.
 	 */
-	public Response getStatisticsChart(final ChartType chartType) {
+	public Response getStatisticsChart(final ChartType chartType, final Integer listId) {
 		if(chartType == null)
 			return Response.status(404).build();
 		
 		switch(chartType) {
 			case ADVANCE_DECLINE_NUMBER:
-				return this.getAdvanceDeclineNumberChart();
+				return this.getAdvanceDeclineNumberChart(listId);
 			default:
 				return Response.status(404).build();				
 		}
@@ -99,15 +100,16 @@ public class StatisticService {
 	/**
 	 * Provides a chart with the cumulative Advance Decline Number.
 	 * 
+	 * @param listId The ID of the list defining the instruments used for Statistic chart creation.
 	 * @return A Response containing the generated chart.
 	 */
-	private Response getAdvanceDeclineNumberChart() {
+	private Response getAdvanceDeclineNumberChart(final Integer listId) {
 		StatisticChartController statisticChartController = new StatisticChartController();
 		JFreeChart chart;
 		StreamingOutput streamingOutput = null;
 		
 		try {
-			chart = statisticChartController.getAdvanceDeclineNumberChart(InstrumentType.STOCK);
+			chart = statisticChartController.getAdvanceDeclineNumberChart(InstrumentType.STOCK, listId);
 			
 			streamingOutput = new StreamingOutput() {
 				@Override
