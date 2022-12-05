@@ -16,7 +16,9 @@ import org.jfree.data.xy.XYDataset;
 
 import backend.controller.scan.StatisticCalculationController;
 import backend.dao.DAOManager;
+import backend.dao.list.ListDAO;
 import backend.dao.statistic.StatisticDAO;
+import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.statistic.Statistic;
 
@@ -75,13 +77,20 @@ public class StatisticChartController {
 	 * @throws Exception Determination of statistics failed.
 	 */
 	private List<Statistic> getStatistics(final InstrumentType instrumentType, final Integer listId) throws Exception {
+		ListDAO listDAO = DAOManager.getInstance().getListDAO();
+		backend.model.list.List list;
+		List<Instrument> instruments = new ArrayList<>();
 		List<Statistic> statistics = new ArrayList<>();
 		StatisticCalculationController statisticCalculationController = new StatisticCalculationController();
 		
-		if(listId == null)
+		if(listId != null) {
+			list = listDAO.getList(listId);
+			instruments.addAll(list.getInstruments());
+			statistics = statisticCalculationController.calculateStatistics(instruments);
+		}
+		else {			
 			statistics = statisticDAO.getStatistics(instrumentType);
-		//else
-			//TODO Get instruments of list. Calculate statistic based on given instruments.
+		}
 		
 		return statistics;
 	}
