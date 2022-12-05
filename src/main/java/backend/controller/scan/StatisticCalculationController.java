@@ -101,7 +101,7 @@ public class StatisticCalculationController {
 			}
 		}
 		
-		return statistics.getStatistics();
+		return statistics.getStatisticsSortedByDate();
 	}
 	
 	

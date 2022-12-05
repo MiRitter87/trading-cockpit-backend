@@ -2,6 +2,7 @@ package backend.model.statistic;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -53,6 +54,18 @@ public class StatisticArray {
 	 */
 	public void setStatistics(List<Statistic> statistics) {
 		this.statistics = statistics;
+	}
+	
+	
+	/**
+	 * Gets all statistics sorted by date.
+	 * 
+	 * @return All statistics sorted by date.
+	 */
+	public List<Statistic> getStatisticsSortedByDate() {
+		Collections.sort(this.statistics, new StatisticDateComparator());
+		
+		return this.statistics;
 	}
 	
 	
