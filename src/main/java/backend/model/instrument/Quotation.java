@@ -279,9 +279,37 @@ public class Quotation {
 		if (getClass() != obj.getClass())
 			return false;
 		Quotation other = (Quotation) obj;
+		
+		if(open == null && other.open != null)
+			return false;
+		if(open != null && other.open == null)
+			return false;
+		if(open != null && other.open != null && open.compareTo(other.open) != 0)
+			return false;
+		
+		if(high == null && other.high != null)
+			return false;
+		if(high != null && other.high == null)
+			return false;
+		if(high != null && other.high != null && high.compareTo(other.high) != 0)
+			return false;
+		
+		if(low == null && other.low != null)
+			return false;
+		if(low != null && other.low == null)
+			return false;
+		if(low != null && other.low != null && low.compareTo(other.low) != 0)
+			return false;
+		
+		if(close == null && other.close != null)
+			return false;
+		if(close != null && other.close == null)
+			return false;
+		if(close != null && other.close != null && close.compareTo(other.close) != 0)
+			return false;
+		
 		return currency == other.currency && Objects.equals(date, other.date) && Objects.equals(id, other.id)
 				&& Objects.equals(indicator, other.indicator) && Objects.equals(instrument, other.instrument)
-				&& Objects.equals(open, other.open) && Objects.equals(high, other.high) && Objects.equals(low, other.low)
-				&& Objects.equals(close, other.close) && volume == other.volume;
+				&& volume == other.volume;
 	}
 }

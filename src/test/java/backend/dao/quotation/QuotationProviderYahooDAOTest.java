@@ -62,6 +62,9 @@ public class QuotationProviderYahooDAOTest {
 		
 		secondsSince1970 = 1658496600;
 		quotation.setDate(new Date(secondsSince1970 * 1000));
+		quotation.setOpen(BigDecimal.valueOf(1.45));
+		quotation.setHigh(BigDecimal.valueOf(1.48));
+		quotation.setLow(BigDecimal.valueOf(1.35));
 		quotation.setClose(BigDecimal.valueOf(1.36));
 		quotation.setCurrency(Currency.CAD);
 		quotation.setVolume(1793300);
@@ -70,6 +73,9 @@ public class QuotationProviderYahooDAOTest {
 		quotation = new Quotation();
 		secondsSince1970 = 1658410200;
 		quotation.setDate(new Date(secondsSince1970  * 1000));
+		quotation.setOpen(BigDecimal.valueOf(1.50));
+		quotation.setHigh(BigDecimal.valueOf(1.52));
+		quotation.setLow(BigDecimal.valueOf(1.44));
 		quotation.setClose(BigDecimal.valueOf(1.46));
 		quotation.setCurrency(Currency.CAD);
 		quotation.setVolume(1450900);
@@ -78,6 +84,9 @@ public class QuotationProviderYahooDAOTest {
 		quotation = new Quotation();
 		secondsSince1970 = 1658323800;
 		quotation.setDate(new Date(secondsSince1970  * 1000));
+		quotation.setOpen(BigDecimal.valueOf(1.49));
+		quotation.setHigh(BigDecimal.valueOf(1.54));
+		quotation.setLow(BigDecimal.valueOf(1.46));
 		quotation.setClose(BigDecimal.valueOf(1.53));
 		quotation.setCurrency(Currency.CAD);
 		quotation.setVolume(1534800);

@@ -156,6 +156,9 @@ public class QuotationProviderYahooDAO implements QuotationProviderDAO {
 			ArrayList<?> quote = (ArrayList<?>) indicators.get("quote");
 			LinkedHashMap<?, ?> quoteAttributes = (LinkedHashMap<?, ?>) quote.get(0);
 			ArrayList<?> volumeData = (ArrayList<?>) quoteAttributes.get("volume");
+			ArrayList<?> openData = (ArrayList<?>) quoteAttributes.get("open");
+			ArrayList<?> highData = (ArrayList<?>) quoteAttributes.get("high");
+			ArrayList<?> lowData = (ArrayList<?>) quoteAttributes.get("low");
 			ArrayList<?> adjClose = (ArrayList<?>) indicators.get("adjclose");
 			LinkedHashMap<?, ?> adjCloseAttributes = (LinkedHashMap<?, ?>) adjClose.get(0);
 			ArrayList<?> adjCloseData = (ArrayList<?>) adjCloseAttributes.get("adjclose");
@@ -168,7 +171,10 @@ public class QuotationProviderYahooDAO implements QuotationProviderDAO {
 					quotation.setDate(this.getDate(timestampData.get(i-1)));
 					quotation.setCurrency(this.getCurrency((String) metaAttributes.get("currency")));
 					quotation.setVolume(this.getVolumeFromQuotationHistoryResponse(volumeData, i-1));
-					quotation.setClose(this.getAdjustedCloseFromQuotationHistoryResponse(adjCloseData, i-1));					
+					quotation.setOpen(this.getPriceFromQuotationHistoryResponse(openData, i-1));
+					quotation.setHigh(this.getPriceFromQuotationHistoryResponse(highData, i-1));
+					quotation.setLow(this.getPriceFromQuotationHistoryResponse(lowData, i-1));
+					quotation.setClose(this.getPriceFromQuotationHistoryResponse(adjCloseData, i-1));	
 					quotationHistory.add(quotation);
 				}
 				catch(Exception exception) {
@@ -382,25 +388,25 @@ public class QuotationProviderYahooDAO implements QuotationProviderDAO {
 	
 	
 	/**
-	 * Gets the adjusted closing price from the Yahoo finance API.
+	 * Gets a price from the Yahoo finance API.
 	 * 
-	 * @param adjustedClose A list of historical adjusted closing prices.
-	 * @param index The index at which the adjusted closing price is to be extracted.
-	 * @return The adjusted closing price.
+	 * @param prices A list of historical prices.
+	 * @param index The index at which the price is to be extracted.
+	 * @return The price.
 	 * @throws Exception Failed to read price data.
 	 */
-	protected BigDecimal getAdjustedCloseFromQuotationHistoryResponse(final ArrayList<?> adjustedClose, final int index) throws Exception {
-		double adjustedCloseRaw;
-		BigDecimal adjustedClosingPrice;
+	protected BigDecimal getPriceFromQuotationHistoryResponse(final ArrayList<?> prices, final int index) throws Exception {
+		double priceRaw;
+		BigDecimal price;
 		
-		if(adjustedClose.get(index) == null)
+		if(prices.get(index) == null)
 			throw new Exception("Price data contains null values.");
 		
-		adjustedCloseRaw = (double) adjustedClose.get(index);
-		adjustedClosingPrice = BigDecimal.valueOf(adjustedCloseRaw);
-		adjustedClosingPrice = adjustedClosingPrice.setScale(2, RoundingMode.HALF_UP);
+		priceRaw = (double) prices.get(index);
+		price = BigDecimal.valueOf(priceRaw);
+		price = price.setScale(2, RoundingMode.HALF_UP);
 		
 		
-		return adjustedClosingPrice;
+		return price;
 	}
 }
