@@ -45,6 +45,24 @@ public class Quotation {
 	private Date date;
 	
 	/**
+	 * The opening price.
+	 */
+	@Column(name="OPEN")
+	private BigDecimal open;
+	
+	/**
+	 * The high price.
+	 */
+	@Column(name="HIGH")
+	private BigDecimal high;
+	
+	/**
+	 * The low price.
+	 */
+	@Column(name="LOW")
+	private BigDecimal low;
+	
+	/**
 	 * The closing price.
 	 */
 	@Column(name="CLOSE")
@@ -112,6 +130,54 @@ public class Quotation {
 	 */
 	public void setDate(Date date) {
 		this.date = date;
+	}
+
+
+	/**
+	 * @return the open
+	 */
+	public BigDecimal getOpen() {
+		return open;
+	}
+
+
+	/**
+	 * @param open the open to set
+	 */
+	public void setOpen(BigDecimal open) {
+		this.open = open;
+	}
+
+
+	/**
+	 * @return the high
+	 */
+	public BigDecimal getHigh() {
+		return high;
+	}
+
+
+	/**
+	 * @param high the high to set
+	 */
+	public void setHigh(BigDecimal high) {
+		this.high = high;
+	}
+
+
+	/**
+	 * @return the low
+	 */
+	public BigDecimal getLow() {
+		return low;
+	}
+
+
+	/**
+	 * @param low the low to set
+	 */
+	public void setLow(BigDecimal low) {
+		this.low = low;
 	}
 
 
@@ -200,7 +266,7 @@ public class Quotation {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(currency, date, id, indicator, instrument, close, volume);
+		return Objects.hash(currency, date, id, indicator, instrument, open, high, low, close, volume);
 	}
 
 
@@ -215,6 +281,7 @@ public class Quotation {
 		Quotation other = (Quotation) obj;
 		return currency == other.currency && Objects.equals(date, other.date) && Objects.equals(id, other.id)
 				&& Objects.equals(indicator, other.indicator) && Objects.equals(instrument, other.instrument)
+				&& Objects.equals(open, other.open) && Objects.equals(high, other.high) && Objects.equals(low, other.low)
 				&& Objects.equals(close, other.close) && volume == other.volume;
 	}
 }
