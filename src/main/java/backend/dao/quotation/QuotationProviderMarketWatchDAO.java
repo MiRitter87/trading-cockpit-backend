@@ -324,7 +324,7 @@ public class QuotationProviderMarketWatchDAO implements QuotationProviderDAO {
         Number number = 0;
         		
 		quotation.setDate(dateFormat.parse(lineContent[0]));
-		quotation.setPrice(new BigDecimal(lineContent[4]));
+		quotation.setClose(new BigDecimal(lineContent[4]));
 		
 		number = numberFormat.parse(lineContent[5]);
 		quotation.setVolume(number.longValue());

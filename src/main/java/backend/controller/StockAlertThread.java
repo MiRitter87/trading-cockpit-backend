@@ -166,9 +166,9 @@ public class StockAlertThread extends Thread {
 	 */
 	private void checkAndUpdatePriceAlert(PriceAlert priceAlert, final Quotation quotation) throws Exception {
 		//If the trigger price has been reached, set the trigger time of the price alert.
-		if(priceAlert.getAlertType() == PriceAlertType.GREATER_OR_EQUAL && quotation.getPrice().compareTo(priceAlert.getPrice()) >= 0)
+		if(priceAlert.getAlertType() == PriceAlertType.GREATER_OR_EQUAL && quotation.getClose().compareTo(priceAlert.getPrice()) >= 0)
 			priceAlert.setTriggerTime(new Date());
-		else if(priceAlert.getAlertType() == PriceAlertType.LESS_OR_EQUAL && quotation.getPrice().compareTo(priceAlert.getPrice()) <= 0)
+		else if(priceAlert.getAlertType() == PriceAlertType.LESS_OR_EQUAL && quotation.getClose().compareTo(priceAlert.getPrice()) <= 0)
 			priceAlert.setTriggerTime(new Date());
 		
 		priceAlert.setLastStockQuoteTime(new Date());
@@ -188,7 +188,7 @@ public class StockAlertThread extends Thread {
 	private float getTriggerDistancePercent(final PriceAlert priceAlert, final Quotation quotation) {
 		BigDecimal percentDistance = new BigDecimal(0);
 		
-		percentDistance = quotation.getPrice().divide(priceAlert.getPrice(), 4, RoundingMode.HALF_UP);
+		percentDistance = quotation.getClose().divide(priceAlert.getPrice(), 4, RoundingMode.HALF_UP);
 		percentDistance = percentDistance.subtract(BigDecimal.valueOf(1));
 		percentDistance = percentDistance.multiply(BigDecimal.valueOf(100));
 		

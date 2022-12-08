@@ -62,7 +62,7 @@ public class QuotationProviderYahooDAOTest {
 		
 		secondsSince1970 = 1658496600;
 		quotation.setDate(new Date(secondsSince1970 * 1000));
-		quotation.setPrice(BigDecimal.valueOf(1.36));
+		quotation.setClose(BigDecimal.valueOf(1.36));
 		quotation.setCurrency(Currency.CAD);
 		quotation.setVolume(1793300);
 		historicalQuotations.add(quotation);
@@ -70,7 +70,7 @@ public class QuotationProviderYahooDAOTest {
 		quotation = new Quotation();
 		secondsSince1970 = 1658410200;
 		quotation.setDate(new Date(secondsSince1970  * 1000));
-		quotation.setPrice(BigDecimal.valueOf(1.46));
+		quotation.setClose(BigDecimal.valueOf(1.46));
 		quotation.setCurrency(Currency.CAD);
 		quotation.setVolume(1450900);
 		historicalQuotations.add(quotation);
@@ -78,7 +78,7 @@ public class QuotationProviderYahooDAOTest {
 		quotation = new Quotation();
 		secondsSince1970 = 1658323800;
 		quotation.setDate(new Date(secondsSince1970  * 1000));
-		quotation.setPrice(BigDecimal.valueOf(1.53));
+		quotation.setClose(BigDecimal.valueOf(1.53));
 		quotation.setCurrency(Currency.CAD);
 		quotation.setVolume(1534800);
 		historicalQuotations.add(quotation);
@@ -95,7 +95,7 @@ public class QuotationProviderYahooDAOTest {
 	private Quotation getDenisonMinesQuotation() {
 		Quotation quotation = new Quotation();
 		
-		quotation.setPrice(BigDecimal.valueOf(1.88));
+		quotation.setClose(BigDecimal.valueOf(1.88));
 		quotation.setCurrency(Currency.CAD);
 		
 		return quotation;
@@ -296,7 +296,7 @@ public class QuotationProviderYahooDAOTest {
 			actualQuotation = quotationProviderYahooDAO.getCurrentQuotation("DML", StockExchange.TSX);
 			expectedQuotation = this.getDenisonMinesQuotation();
 			
-			assertTrue(expectedQuotation.getPrice().compareTo(actualQuotation.getPrice()) == 0);
+			assertTrue(expectedQuotation.getClose().compareTo(actualQuotation.getClose()) == 0);
 			assertEquals(expectedQuotation.getCurrency(), actualQuotation.getCurrency());
 		} catch (Exception e) {
 			fail(e.getMessage());

@@ -487,7 +487,7 @@ public class QuotationHibernateDAO implements QuotationDAO {
 		return entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i JOIN q.indicator r WHERE "
 				+ "quotation_id IN :quotationIds "
 				+ "AND q.indicator IS NOT NULL "
-				+ "AND q.price > r.sma50 "
+				+ "AND q.close > r.sma50 "
 				+ "AND r.sma50 > r.sma150 "
 				+ "AND r.sma150 > r.sma200 "
 				+ "AND r.distanceTo52WeekLow >= 30 "

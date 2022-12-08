@@ -70,7 +70,7 @@ public class ExcelExportController {
 			
 			//Price Cell
 			tableCell = tableRow.createCell(2);
-			tableCell.setCellValue(tempQuotation.getPrice().doubleValue());
+			tableCell.setCellValue(tempQuotation.getClose().doubleValue());
 		}
 		
 		return workbook;

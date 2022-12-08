@@ -72,7 +72,7 @@ public class IndicatorCalculator {
 		
 		//Calculate the sum of the prices of the last x days.
 		for(int i = indexOfQuotation; i<days; i++) {
-			sum = sum.add(sortedQuotations.get(i).getPrice());
+			sum = sum.add(sortedQuotations.get(i).getClose());
 		}
 		
 		//Build the average.
@@ -108,12 +108,12 @@ public class IndicatorCalculator {
 		for(int i = indexOfQuotation; i < (252 + indexOfQuotation) && i < sortedQuotations.size(); i++) {
 			tempQuotation = sortedQuotations.get(i);
 			
-			if(tempQuotation.getPrice().compareTo(highPrice52Weeks) == 1)
-				highPrice52Weeks = tempQuotation.getPrice();
+			if(tempQuotation.getClose().compareTo(highPrice52Weeks) == 1)
+				highPrice52Weeks = tempQuotation.getClose();
 		}
 		
 		//Calculate the percent distance based on the quotation price and the 52 week high.
-		percentDistance = quotation.getPrice().divide(highPrice52Weeks, 4, RoundingMode.HALF_UP);
+		percentDistance = quotation.getClose().divide(highPrice52Weeks, 4, RoundingMode.HALF_UP);
 		percentDistance = percentDistance.subtract(BigDecimal.valueOf(1));
 		percentDistance = percentDistance.multiply(BigDecimal.valueOf(100));
 		
@@ -133,7 +133,7 @@ public class IndicatorCalculator {
 		Quotation tempQuotation;
 		List<Quotation> sortedQuotations;
 		int indexOfQuotation = 0;
-		BigDecimal lowPrice52Weeks = quotation.getPrice(), percentDistance = new BigDecimal(0);
+		BigDecimal lowPrice52Weeks = quotation.getClose(), percentDistance = new BigDecimal(0);
 		
 		//Sort the quotations by date for determination of last 252 quotes.
 		instrument.setQuotations(quotations);
@@ -147,12 +147,12 @@ public class IndicatorCalculator {
 		for(int i = indexOfQuotation; i < (252 + indexOfQuotation) && i < sortedQuotations.size(); i++) {
 			tempQuotation = sortedQuotations.get(i);
 			
-			if(tempQuotation.getPrice().compareTo(lowPrice52Weeks) == -1)
-				lowPrice52Weeks = tempQuotation.getPrice();
+			if(tempQuotation.getClose().compareTo(lowPrice52Weeks) == -1)
+				lowPrice52Weeks = tempQuotation.getClose();
 		}
 		
 		//Calculate the percent distance based on the quotation price and the 52 week low.
-		percentDistance = quotation.getPrice().divide(lowPrice52Weeks, 4, RoundingMode.HALF_UP);
+		percentDistance = quotation.getClose().divide(lowPrice52Weeks, 4, RoundingMode.HALF_UP);
 		percentDistance = percentDistance.subtract(BigDecimal.valueOf(1));
 		percentDistance = percentDistance.multiply(BigDecimal.valueOf(100));
 		
@@ -352,9 +352,9 @@ public class IndicatorCalculator {
 		for(int i = indexOfQuotation; i < (252 + indexOfQuotation) && i < sortedQuotations.size(); i++) {
 			tempQuotation = sortedQuotations.get(i);
 			
-			if(tempQuotation.getPrice().compareTo(highPrice52Weeks) == 1) {
+			if(tempQuotation.getClose().compareTo(highPrice52Weeks) == 1) {
 				indexOf52WeekHigh = i;
-				highPrice52Weeks = tempQuotation.getPrice();
+				highPrice52Weeks = tempQuotation.getClose();
 			}
 		}
 		
@@ -400,9 +400,9 @@ public class IndicatorCalculator {
 			currentDayQuotation = sortedQuotations.get(i);
 			previousDayQuotation = sortedQuotations.get(i+1);
 			
-			if(currentDayQuotation.getPrice().compareTo(previousDayQuotation.getPrice()) == 1)
+			if(currentDayQuotation.getClose().compareTo(previousDayQuotation.getClose()) == 1)
 				upVolumeSum = upVolumeSum + currentDayQuotation.getVolume();
-			else if(currentDayQuotation.getPrice().compareTo(previousDayQuotation.getPrice()) == -1)
+			else if(currentDayQuotation.getClose().compareTo(previousDayQuotation.getClose()) == -1)
 				downVolumeSum = downVolumeSum + currentDayQuotation.getVolume();
 		}
 		
@@ -438,8 +438,8 @@ public class IndicatorCalculator {
 		if((sortedQuotations.size() - days - indexOfQuotation - 1) < 0)
 			return 0;
 		
-		divisionResult = sortedQuotations.get(indexOfQuotation).getPrice().divide
-				(sortedQuotations.get(indexOfQuotation + days).getPrice(), 4, RoundingMode.HALF_UP);
+		divisionResult = sortedQuotations.get(indexOfQuotation).getClose().divide
+				(sortedQuotations.get(indexOfQuotation + days).getClose(), 4, RoundingMode.HALF_UP);
 		divisionResult = divisionResult.subtract(BigDecimal.valueOf(1));
 		divisionResult = divisionResult.multiply(BigDecimal.valueOf(100));
 		
@@ -464,8 +464,8 @@ public class IndicatorCalculator {
 		if(indexOfQuotationForInterval >= sortedQuotations.size())
 			return divisionResult;
 		
-		divisionResult = sortedQuotations.get(indexOfQuotation).getPrice().divide
-				(sortedQuotations.get(indexOfQuotationForInterval).getPrice(), 4, RoundingMode.HALF_UP);
+		divisionResult = sortedQuotations.get(indexOfQuotation).getClose().divide
+				(sortedQuotations.get(indexOfQuotationForInterval).getClose(), 4, RoundingMode.HALF_UP);
 		divisionResult = divisionResult.subtract(BigDecimal.valueOf(1));
 		divisionResult = divisionResult.multiply(BigDecimal.valueOf(100));
 		
@@ -500,7 +500,7 @@ public class IndicatorCalculator {
 		
 		//Get the prices of the last x days.
 		for(int i = indexOfQuotation; i<days; i++) {
-			prices[j] = sortedQuotations.get(i).getPrice().floatValue();
+			prices[j] = sortedQuotations.get(i).getClose().floatValue();
 			j++;
 		}
 		

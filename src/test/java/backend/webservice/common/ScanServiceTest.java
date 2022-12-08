@@ -273,7 +273,7 @@ public class ScanServiceTest {
 		calendar.setTime(new Date());
 		this.amazonQuotation1 = new Quotation();
 		this.amazonQuotation1.setDate(calendar.getTime());
-		this.amazonQuotation1.setPrice(BigDecimal.valueOf(78.54));
+		this.amazonQuotation1.setClose(BigDecimal.valueOf(78.54));
 		this.amazonQuotation1.setCurrency(Currency.USD);
 		this.amazonQuotation1.setVolume(6784544);
 		instrument.addQuotation(this.amazonQuotation1);
@@ -281,7 +281,7 @@ public class ScanServiceTest {
 		calendar.add(Calendar.DAY_OF_YEAR, 1);
 		this.amazonQuotation2 = new Quotation();
 		this.amazonQuotation2.setDate(calendar.getTime());
-		this.amazonQuotation2.setPrice(BigDecimal.valueOf(79.14));
+		this.amazonQuotation2.setClose(BigDecimal.valueOf(79.14));
 		this.amazonQuotation2.setCurrency(Currency.USD);
 		this.amazonQuotation2.setVolume(4584544);
 		instrument.addQuotation(this.amazonQuotation2);

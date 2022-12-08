@@ -212,7 +212,7 @@ public class QuotationHibernateDAOTest {
 			calendar.setTime(new Date());
 			this.microsoftQuotation1 = new Quotation();
 			this.microsoftQuotation1.setDate(calendar.getTime());
-			this.microsoftQuotation1.setPrice(BigDecimal.valueOf(246.79));
+			this.microsoftQuotation1.setClose(BigDecimal.valueOf(246.79));
 			this.microsoftQuotation1.setCurrency(Currency.USD);
 			this.microsoftQuotation1.setVolume(20200000);
 			this.microsoftQuotation1.setInstrument(this.microsoftStock);
@@ -222,7 +222,7 @@ public class QuotationHibernateDAOTest {
 			calendar.add(Calendar.DAY_OF_YEAR, -1);
 			this.appleQuotation1 = new Quotation();
 			this.appleQuotation1.setDate(calendar.getTime());
-			this.appleQuotation1.setPrice(BigDecimal.valueOf(78.54));
+			this.appleQuotation1.setClose(BigDecimal.valueOf(78.54));
 			this.appleQuotation1.setCurrency(Currency.USD);
 			this.appleQuotation1.setVolume(6784544);
 			this.appleQuotation1.setInstrument(this.appleStock);
@@ -231,7 +231,7 @@ public class QuotationHibernateDAOTest {
 			calendar.setTime(new Date());
 			this.appleQuotation2 = new Quotation();
 			this.appleQuotation2.setDate(calendar.getTime());
-			this.appleQuotation2.setPrice(BigDecimal.valueOf(79.14));
+			this.appleQuotation2.setClose(BigDecimal.valueOf(79.14));
 			this.appleQuotation2.setCurrency(Currency.USD);
 			this.appleQuotation2.setVolume(4584544);
 			this.appleQuotation2.setInstrument(this.appleStock);
@@ -240,7 +240,7 @@ public class QuotationHibernateDAOTest {
 			calendar.setTime(new Date());
 			this.xleQuotation1 = new Quotation();
 			this.xleQuotation1.setDate(calendar.getTime());
-			this.xleQuotation1.setPrice(BigDecimal.valueOf(81.28));
+			this.xleQuotation1.setClose(BigDecimal.valueOf(81.28));
 			this.xleQuotation1.setCurrency(Currency.USD);
 			this.xleQuotation1.setVolume(18994000);
 			this.xleQuotation1.setInstrument(this.xleETF);
@@ -249,7 +249,7 @@ public class QuotationHibernateDAOTest {
 			calendar.setTime(new Date());
 			this.xliSectorQuotation1 = new Quotation();
 			this.xliSectorQuotation1.setDate(calendar.getTime());
-			this.xliSectorQuotation1.setPrice(BigDecimal.valueOf(92.60));
+			this.xliSectorQuotation1.setClose(BigDecimal.valueOf(92.60));
 			this.xliSectorQuotation1.setCurrency(Currency.USD);
 			this.xliSectorQuotation1.setVolume(13884800);
 			this.xliSectorQuotation1.setInstrument(this.xliSector);
@@ -258,7 +258,7 @@ public class QuotationHibernateDAOTest {
 			calendar.setTime(new Date());
 			this.copperIndustryGroupQuotation1 = new Quotation();
 			this.copperIndustryGroupQuotation1.setDate(calendar.getTime());
-			this.copperIndustryGroupQuotation1.setPrice(BigDecimal.valueOf(29.04));
+			this.copperIndustryGroupQuotation1.setClose(BigDecimal.valueOf(29.04));
 			this.copperIndustryGroupQuotation1.setCurrency(Currency.USD);
 			this.copperIndustryGroupQuotation1.setVolume(401200);
 			this.copperIndustryGroupQuotation1.setInstrument(this.copperIndustryGroup);
@@ -339,7 +339,7 @@ public class QuotationHibernateDAOTest {
 		calendar.add(Calendar.DAY_OF_YEAR, 2);
 		newQuotation = new Quotation();
 		newQuotation.setDate(calendar.getTime());
-		newQuotation.setPrice(BigDecimal.valueOf(78.19));
+		newQuotation.setClose(BigDecimal.valueOf(78.19));
 		newQuotation.setCurrency(Currency.USD);
 		newQuotation.setVolume(1184234);
 		newQuotation.setInstrument(this.appleStock);
@@ -353,7 +353,7 @@ public class QuotationHibernateDAOTest {
 			databaseQuotation = quotationDAO.getQuotation(newQuotation.getId());
 			assertEquals(newQuotation.getId(), databaseQuotation.getId());
 			assertEquals(newQuotation.getDate().getTime(), databaseQuotation.getDate().getTime());
-			assertTrue(newQuotation.getPrice().compareTo(databaseQuotation.getPrice()) == 0);
+			assertTrue(newQuotation.getClose().compareTo(databaseQuotation.getClose()) == 0);
 			assertEquals(newQuotation.getCurrency(), databaseQuotation.getCurrency());
 			assertEquals(newQuotation.getVolume(), databaseQuotation.getVolume());
 			assertEquals(newQuotation.getInstrument().getId(), databaseQuotation.getInstrument().getId());
@@ -420,7 +420,7 @@ public class QuotationHibernateDAOTest {
 			//Check the attributes of the database Quotation.
 			assertEquals(databaseQuotation.getId(), this.appleQuotation2.getId());
 			assertEquals(databaseQuotation.getDate().getTime(), this.appleQuotation2.getDate().getTime());
-			assertTrue(databaseQuotation.getPrice().compareTo(this.appleQuotation2.getPrice()) == 0);
+			assertTrue(databaseQuotation.getClose().compareTo(this.appleQuotation2.getClose()) == 0);
 			assertEquals(databaseQuotation.getCurrency(), this.appleQuotation2.getCurrency());
 			assertEquals(databaseQuotation.getVolume(), this.appleQuotation2.getVolume());
 			assertEquals(databaseQuotation.getInstrument().getId(), this.appleQuotation2.getInstrument().getId());

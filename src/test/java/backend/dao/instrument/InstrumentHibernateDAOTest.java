@@ -115,7 +115,7 @@ public class InstrumentHibernateDAOTest {
 			calendar.setTime(new Date());
 			this.appleQuotation1 = new Quotation();
 			this.appleQuotation1.setDate(calendar.getTime());
-			this.appleQuotation1.setPrice(BigDecimal.valueOf(78.54));
+			this.appleQuotation1.setClose(BigDecimal.valueOf(78.54));
 			this.appleQuotation1.setCurrency(Currency.USD);
 			this.appleQuotation1.setVolume(6784544);
 			this.appleQuotation1.setInstrument(this.appleStock);
@@ -124,7 +124,7 @@ public class InstrumentHibernateDAOTest {
 			calendar.add(Calendar.DAY_OF_YEAR, 1);
 			this.appleQuotation2 = new Quotation();
 			this.appleQuotation2.setDate(calendar.getTime());
-			this.appleQuotation2.setPrice(BigDecimal.valueOf(79.14));
+			this.appleQuotation2.setClose(BigDecimal.valueOf(79.14));
 			this.appleQuotation2.setCurrency(Currency.USD);
 			this.appleQuotation2.setVolume(4584544);
 			this.appleQuotation2.setInstrument(this.appleStock);

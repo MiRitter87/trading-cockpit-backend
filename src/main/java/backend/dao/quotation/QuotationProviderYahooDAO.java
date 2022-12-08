@@ -168,7 +168,7 @@ public class QuotationProviderYahooDAO implements QuotationProviderDAO {
 					quotation.setDate(this.getDate(timestampData.get(i-1)));
 					quotation.setCurrency(this.getCurrency((String) metaAttributes.get("currency")));
 					quotation.setVolume(this.getVolumeFromQuotationHistoryResponse(volumeData, i-1));
-					quotation.setPrice(this.getAdjustedCloseFromQuotationHistoryResponse(adjCloseData, i-1));					
+					quotation.setClose(this.getAdjustedCloseFromQuotationHistoryResponse(adjCloseData, i-1));					
 					quotationHistory.add(quotation);
 				}
 				catch(Exception exception) {
@@ -242,7 +242,7 @@ public class QuotationProviderYahooDAO implements QuotationProviderDAO {
 			result = (ArrayList<?>) quoteResponse.get("result");
 			resultAttributes = (LinkedHashMap<?, ?>) result.get(0);
 			
-			quotation.setPrice(this.getPrice((double) resultAttributes.get("regularMarketPrice")));
+			quotation.setClose(this.getPrice((double) resultAttributes.get("regularMarketPrice")));
 			quotation.setCurrency(this.getCurrency((String) resultAttributes.get("financialCurrency")));
 		} catch (JsonMappingException e) {
 			throw new Exception(e);

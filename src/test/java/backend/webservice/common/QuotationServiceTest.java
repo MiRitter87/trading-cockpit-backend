@@ -392,7 +392,7 @@ public class QuotationServiceTest {
 		calendar.add(Calendar.DAY_OF_YEAR, -1);
 		
 		quotation.setDate(calendar.getTime());
-		quotation.setPrice(BigDecimal.valueOf(78.54));
+		quotation.setClose(BigDecimal.valueOf(78.54));
 		quotation.setCurrency(Currency.USD);
 		quotation.setVolume(28973654);
 		quotation.setInstrument(this.appleStock);
@@ -415,7 +415,7 @@ public class QuotationServiceTest {
 		calendar.set(Calendar.MINUTE, 30);
 		
 		quotation.setDate(calendar.getTime());
-		quotation.setPrice(BigDecimal.valueOf(77.52));
+		quotation.setClose(BigDecimal.valueOf(77.52));
 		quotation.setCurrency(Currency.USD);
 		quotation.setVolume(12373654);
 		quotation.setInstrument(this.appleStock);
@@ -433,7 +433,7 @@ public class QuotationServiceTest {
 		Quotation quotation = new Quotation();
 		
 		quotation.setDate(new Date());
-		quotation.setPrice(BigDecimal.valueOf(124.07));
+		quotation.setClose(BigDecimal.valueOf(124.07));
 		quotation.setCurrency(Currency.USD);
 		quotation.setVolume(13973124);
 		quotation.setInstrument(this.microsoftStock);
@@ -456,7 +456,7 @@ public class QuotationServiceTest {
 		calendar.set(Calendar.MINUTE, 0);
 		
 		quotation.setDate(calendar.getTime());
-		quotation.setPrice(BigDecimal.valueOf(15.88));
+		quotation.setClose(BigDecimal.valueOf(15.88));
 		quotation.setCurrency(Currency.USD);
 		quotation.setVolume(48600000);
 		quotation.setInstrument(this.fordStock);
@@ -478,7 +478,7 @@ public class QuotationServiceTest {
 		calendar.add(Calendar.DAY_OF_YEAR, -1);
 		
 		quotation.setDate(calendar.getTime());
-		quotation.setPrice(BigDecimal.valueOf(81.28));
+		quotation.setClose(BigDecimal.valueOf(81.28));
 		quotation.setCurrency(Currency.USD);
 		quotation.setVolume(18994000);
 		quotation.setInstrument(this.xleETF);
@@ -501,7 +501,7 @@ public class QuotationServiceTest {
 		calendar.set(Calendar.MINUTE, 30);
 		
 		quotation.setDate(calendar.getTime());
-		quotation.setPrice(BigDecimal.valueOf(81.99));
+		quotation.setClose(BigDecimal.valueOf(81.99));
 		quotation.setCurrency(Currency.USD);
 		quotation.setVolume(25187000);
 		quotation.setInstrument(this.xleETF);
@@ -519,7 +519,7 @@ public class QuotationServiceTest {
 		Quotation quotation = new Quotation();
 		
 		quotation.setDate(new Date());
-		quotation.setPrice(BigDecimal.valueOf(71.25));
+		quotation.setClose(BigDecimal.valueOf(71.25));
 		quotation.setCurrency(Currency.USD);
 		quotation.setVolume(79794000);
 		quotation.setInstrument(this.xlbETF);
@@ -542,7 +542,7 @@ public class QuotationServiceTest {
 		calendar.set(Calendar.MINUTE, 0);
 		
 		quotation.setDate(calendar.getTime());
-		quotation.setPrice(BigDecimal.valueOf(32.30));
+		quotation.setClose(BigDecimal.valueOf(32.30));
 		quotation.setCurrency(Currency.USD);
 		quotation.setVolume(48148000);
 		quotation.setInstrument(this.xlfETF);

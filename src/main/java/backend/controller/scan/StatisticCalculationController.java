@@ -113,7 +113,7 @@ public class StatisticCalculationController {
 	 * @return 1, if price of current Quotation is bigger than price of previous Quotation. 0 if not.
 	 */
 	private int getNumberAdvance(final Quotation currentQuotation, final Quotation previousQuotation) {
-		if(currentQuotation.getPrice().compareTo(previousQuotation.getPrice()) == 1)
+		if(currentQuotation.getClose().compareTo(previousQuotation.getClose()) == 1)
 			return 1;
 		else
 			return 0;
@@ -128,7 +128,7 @@ public class StatisticCalculationController {
 	 * @return 1, if price of current Quotation is smaller than price of previous Quotation. 0 if not.
 	 */
 	private int getNumberDecline(final Quotation currentQuotation, final Quotation previousQuotation) {
-		if(currentQuotation.getPrice().compareTo(previousQuotation.getPrice()) == -1)
+		if(currentQuotation.getClose().compareTo(previousQuotation.getClose()) == -1)
 			return 1;
 		else
 			return 0;

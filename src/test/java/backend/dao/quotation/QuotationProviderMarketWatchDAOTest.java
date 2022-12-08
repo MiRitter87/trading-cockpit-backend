@@ -62,21 +62,21 @@ public class QuotationProviderMarketWatchDAOTest {
 		
 		try {
 			quotation.setDate(dateFormat.parse("10/21/2022"));
-			quotation.setPrice(BigDecimal.valueOf(1.67));
+			quotation.setClose(BigDecimal.valueOf(1.67));
 			quotation.setCurrency(Currency.CAD);
 			quotation.setVolume(1129780);
 			historicalQuotations.add(quotation);
 			
 			quotation = new Quotation();
 			quotation.setDate(dateFormat.parse("10/20/2022"));
-			quotation.setPrice(BigDecimal.valueOf(1.63));
+			quotation.setClose(BigDecimal.valueOf(1.63));
 			quotation.setCurrency(Currency.CAD);
 			quotation.setVolume(1126381);
 			historicalQuotations.add(quotation);
 			
 			quotation = new Quotation();
 			quotation.setDate(dateFormat.parse("10/19/2022"));
-			quotation.setPrice(BigDecimal.valueOf(1.63));
+			quotation.setClose(BigDecimal.valueOf(1.63));
 			quotation.setCurrency(Currency.CAD);
 			quotation.setVolume(793508);
 			historicalQuotations.add(quotation);

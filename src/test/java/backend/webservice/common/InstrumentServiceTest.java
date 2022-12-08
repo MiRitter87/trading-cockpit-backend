@@ -323,7 +323,7 @@ public class InstrumentServiceTest {
 		Quotation quotation = new Quotation();
 		
 		quotation.setDate(new Date());
-		quotation.setPrice(BigDecimal.valueOf(78.54));
+		quotation.setClose(BigDecimal.valueOf(78.54));
 		quotation.setCurrency(Currency.USD);
 		quotation.setVolume(28973654);
 		quotation.setInstrument(this.appleStock);

@@ -177,7 +177,7 @@ public class StatisticCalculationControllerTest {
 			calendar.setTime(new Date());
 			this.appleQuotation1 = new Quotation();
 			this.appleQuotation1.setDate(calendar.getTime());
-			this.appleQuotation1.setPrice(BigDecimal.valueOf(78.54));
+			this.appleQuotation1.setClose(BigDecimal.valueOf(78.54));
 			this.appleQuotation1.setCurrency(Currency.USD);
 			this.appleQuotation1.setVolume(6784544);
 			this.appleQuotation1.setInstrument(this.appleStock);
@@ -186,7 +186,7 @@ public class StatisticCalculationControllerTest {
 			calendar.add(Calendar.DAY_OF_YEAR, -1);
 			this.appleQuotation2 = new Quotation();
 			this.appleQuotation2.setDate(calendar.getTime());
-			this.appleQuotation2.setPrice(BigDecimal.valueOf(79.14));
+			this.appleQuotation2.setClose(BigDecimal.valueOf(79.14));
 			this.appleQuotation2.setCurrency(Currency.USD);
 			this.appleQuotation2.setVolume(4584544);
 			this.appleQuotation2.setInstrument(this.appleStock);
@@ -195,7 +195,7 @@ public class StatisticCalculationControllerTest {
 			calendar.add(Calendar.DAY_OF_YEAR, -2);
 			this.appleQuotation3 = new Quotation();
 			this.appleQuotation3.setDate(calendar.getTime());
-			this.appleQuotation3.setPrice(BigDecimal.valueOf(81.23));
+			this.appleQuotation3.setClose(BigDecimal.valueOf(81.23));
 			this.appleQuotation3.setCurrency(Currency.USD);
 			this.appleQuotation3.setVolume(3184544);
 			this.appleQuotation3.setInstrument(this.appleStock);
@@ -204,7 +204,7 @@ public class StatisticCalculationControllerTest {
 			calendar.setTime(new Date());
 			this.microsoftQuotation1 = new Quotation();
 			this.microsoftQuotation1.setDate(calendar.getTime());
-			this.microsoftQuotation1.setPrice(BigDecimal.valueOf(247.58));
+			this.microsoftQuotation1.setClose(BigDecimal.valueOf(247.58));
 			this.microsoftQuotation1.setCurrency(Currency.USD);
 			this.microsoftQuotation1.setVolume(1234544);
 			this.microsoftQuotation1.setInstrument(this.microsoftStock);
@@ -213,7 +213,7 @@ public class StatisticCalculationControllerTest {
 			calendar.add(Calendar.DAY_OF_YEAR, -1);
 			this.microsoftQuotation2 = new Quotation();
 			this.microsoftQuotation2.setDate(calendar.getTime());
-			this.microsoftQuotation2.setPrice(BigDecimal.valueOf(246.11));
+			this.microsoftQuotation2.setClose(BigDecimal.valueOf(246.11));
 			this.microsoftQuotation2.setCurrency(Currency.USD);
 			this.microsoftQuotation2.setVolume(6664544);
 			this.microsoftQuotation2.setInstrument(this.microsoftStock);
@@ -222,7 +222,7 @@ public class StatisticCalculationControllerTest {
 			calendar.add(Calendar.DAY_OF_YEAR, -2);
 			this.microsoftQuotation3 = new Quotation();
 			this.microsoftQuotation3.setDate(calendar.getTime());
-			this.microsoftQuotation3.setPrice(BigDecimal.valueOf(246.88));
+			this.microsoftQuotation3.setClose(BigDecimal.valueOf(246.88));
 			this.microsoftQuotation3.setCurrency(Currency.USD);
 			this.microsoftQuotation3.setVolume(8764544);
 			this.microsoftQuotation3.setInstrument(this.microsoftStock);

@@ -98,7 +98,7 @@ public class ExcelExportControllerTest {
 		calendar.setTime(new Date());
 		this.microsoftQuotation = new Quotation();
 		this.microsoftQuotation.setDate(calendar.getTime());
-		this.microsoftQuotation.setPrice(BigDecimal.valueOf(246.79));
+		this.microsoftQuotation.setClose(BigDecimal.valueOf(246.79));
 		this.microsoftQuotation.setCurrency(Currency.USD);
 		this.microsoftQuotation.setVolume(20200000);
 		this.microsoftQuotation.setInstrument(this.microsoftStock);
@@ -106,7 +106,7 @@ public class ExcelExportControllerTest {
 		calendar.setTime(new Date());
 		this.appleQuotation = new Quotation();
 		this.appleQuotation.setDate(calendar.getTime());
-		this.appleQuotation.setPrice(BigDecimal.valueOf(78.54));
+		this.appleQuotation.setClose(BigDecimal.valueOf(78.54));
 		this.appleQuotation.setCurrency(Currency.USD);
 		this.appleQuotation.setVolume(6784544);
 		this.appleQuotation.setInstrument(this.appleStock);
@@ -154,12 +154,12 @@ public class ExcelExportControllerTest {
 		tableRowAttributes = workbookContent.get(1);
 		assertEquals(this.appleQuotation.getInstrument().getSymbol(), tableRowAttributes.get(0));
 		assertEquals(excelExportController.getDateAsExcelString(this.appleQuotation.getDate()), tableRowAttributes.get(1));
-		assertEquals(this.appleQuotation.getPrice().toString(), tableRowAttributes.get(2));
+		assertEquals(this.appleQuotation.getClose().toString(), tableRowAttributes.get(2));
 		
 		//Data of the second Quotation.
 		tableRowAttributes = workbookContent.get(2);
 		assertEquals(this.microsoftQuotation.getInstrument().getSymbol(), tableRowAttributes.get(0));
 		assertEquals(excelExportController.getDateAsExcelString(this.microsoftQuotation.getDate()), tableRowAttributes.get(1));;
-		assertEquals(this.microsoftQuotation.getPrice().toString(), tableRowAttributes.get(2));
+		assertEquals(this.microsoftQuotation.getClose().toString(), tableRowAttributes.get(2));
 	}
 }

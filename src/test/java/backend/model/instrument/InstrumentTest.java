@@ -70,21 +70,21 @@ public class InstrumentTest {
 		this.quotation1 = new Quotation();
 		calendar.set(2022, 07, 26, 15, 30, 0);
 		this.quotation1.setDate(calendar.getTime());
-		this.quotation1.setPrice(BigDecimal.valueOf(1.11));
+		this.quotation1.setClose(BigDecimal.valueOf(1.11));
 		this.quotation1.setCurrency(Currency.USD);
 		this.quotation1.setVolume(10000);
 		
 		this.quotation2 = new Quotation();
 		calendar.set(2022, 07, 27, 15, 30, 0);
 		this.quotation2.setDate(calendar.getTime());
-		this.quotation2.setPrice(BigDecimal.valueOf(1.12));
+		this.quotation2.setClose(BigDecimal.valueOf(1.12));
 		this.quotation2.setCurrency(Currency.USD);
 		this.quotation2.setVolume(13400);
 		
 		this.quotation3 = new Quotation();
 		calendar.set(2022, 07, 27, 14, 30, 0);
 		this.quotation3.setDate(calendar.getTime());
-		this.quotation3.setPrice(BigDecimal.valueOf(1.11));
+		this.quotation3.setClose(BigDecimal.valueOf(1.11));
 		this.quotation3.setCurrency(Currency.USD);
 		this.quotation3.setVolume(10110);
 		

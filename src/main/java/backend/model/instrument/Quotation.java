@@ -45,10 +45,10 @@ public class Quotation {
 	private Date date;
 	
 	/**
-	 * The price.
+	 * The closing price.
 	 */
-	@Column(name="PRICE")
-	private BigDecimal price;
+	@Column(name="CLOSE")
+	private BigDecimal close;
 	
 	/**
 	 * The currency.
@@ -116,18 +116,18 @@ public class Quotation {
 
 
 	/**
-	 * @return the price
+	 * @return the closing price
 	 */
-	public BigDecimal getPrice() {
-		return price;
+	public BigDecimal getClose() {
+		return close;
 	}
 
 
 	/**
-	 * @param price the price to set
+	 * @param close the closing price to set
 	 */
-	public void setPrice(BigDecimal price) {
-		this.price = price;
+	public void setClose(BigDecimal close) {
+		this.close = close;
 	}
 
 
@@ -200,7 +200,7 @@ public class Quotation {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(currency, date, id, indicator, instrument, price, volume);
+		return Objects.hash(currency, date, id, indicator, instrument, close, volume);
 	}
 
 
@@ -215,6 +215,6 @@ public class Quotation {
 		Quotation other = (Quotation) obj;
 		return currency == other.currency && Objects.equals(date, other.date) && Objects.equals(id, other.id)
 				&& Objects.equals(indicator, other.indicator) && Objects.equals(instrument, other.instrument)
-				&& Objects.equals(price, other.price) && volume == other.volume;
+				&& Objects.equals(close, other.close) && volume == other.volume;
 	}
 }
