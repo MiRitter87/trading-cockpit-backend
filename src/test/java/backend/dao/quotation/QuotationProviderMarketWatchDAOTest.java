@@ -62,6 +62,9 @@ public class QuotationProviderMarketWatchDAOTest {
 		
 		try {
 			quotation.setDate(dateFormat.parse("10/21/2022"));
+			quotation.setOpen(BigDecimal.valueOf(1.61));
+			quotation.setHigh(BigDecimal.valueOf(1.69));
+			quotation.setLow(BigDecimal.valueOf(1.60));
 			quotation.setClose(BigDecimal.valueOf(1.67));
 			quotation.setCurrency(Currency.CAD);
 			quotation.setVolume(1129780);
@@ -69,6 +72,9 @@ public class QuotationProviderMarketWatchDAOTest {
 			
 			quotation = new Quotation();
 			quotation.setDate(dateFormat.parse("10/20/2022"));
+			quotation.setOpen(BigDecimal.valueOf(1.66));
+			quotation.setHigh(BigDecimal.valueOf(1.70));
+			quotation.setLow(BigDecimal.valueOf(1.61));
 			quotation.setClose(BigDecimal.valueOf(1.63));
 			quotation.setCurrency(Currency.CAD);
 			quotation.setVolume(1126381);
@@ -76,6 +82,9 @@ public class QuotationProviderMarketWatchDAOTest {
 			
 			quotation = new Quotation();
 			quotation.setDate(dateFormat.parse("10/19/2022"));
+			quotation.setOpen(BigDecimal.valueOf(1.65));
+			quotation.setHigh(BigDecimal.valueOf(1.66));
+			quotation.setLow(BigDecimal.valueOf(1.62));
 			quotation.setClose(BigDecimal.valueOf(1.63));
 			quotation.setCurrency(Currency.CAD);
 			quotation.setVolume(793508);
