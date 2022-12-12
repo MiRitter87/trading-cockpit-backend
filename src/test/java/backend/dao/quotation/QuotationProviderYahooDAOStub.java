@@ -37,7 +37,16 @@ public class QuotationProviderYahooDAOStub extends QuotationProviderYahooDAO {
 	
 	@Override
 	public Quotation getCurrentQuotation(final String symbol, final StockExchange stockExchange) throws Exception {
-		String currentQuotationJSON = Files.readString(Paths.get("src/test/resources/yahooTSEQuoteDML.json"));
+		String jsonPath = "";
+		
+		if(symbol.equals("DML") && stockExchange.equals(StockExchange.TSX))
+			jsonPath = "src/test/resources/yahooTSEQuoteDML.json";
+		else if(symbol.equals("RIO") && stockExchange.equals(StockExchange.LSE))
+			jsonPath = "src/test/resources/yahooLSEQuoteRIO.json";
+		else
+			return null;
+		
+		String currentQuotationJSON = Files.readString(Paths.get(jsonPath));
 		
 		return this.convertJSONToQuotation(currentQuotationJSON);
 	}

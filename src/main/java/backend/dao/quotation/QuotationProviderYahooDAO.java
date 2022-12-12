@@ -248,8 +248,8 @@ public class QuotationProviderYahooDAO implements QuotationProviderDAO {
 			result = (ArrayList<?>) quoteResponse.get("result");
 			resultAttributes = (LinkedHashMap<?, ?>) result.get(0);
 			
-			quotation.setClose(this.getPrice((double) resultAttributes.get("regularMarketPrice")));
-			quotation.setCurrency(this.getCurrency((String) resultAttributes.get("financialCurrency")));
+			quotation.setCurrency(this.getCurrency((String) resultAttributes.get("currency")));
+			quotation.setClose(this.getPrice((double) resultAttributes.get("regularMarketPrice"), quotation.getCurrency()));
 		} catch (JsonMappingException e) {
 			throw new Exception(e);
 		} catch (JsonProcessingException e) {
@@ -370,10 +370,17 @@ public class QuotationProviderYahooDAO implements QuotationProviderDAO {
 	 * Gets the price from the Yahoo finance API.
 	 * 
 	 * @param apiPrice The price as provided by Yahoo finance.
+	 * @param currency The Currency of the price.
 	 * @return The price as used by the backend
 	 */
-	protected BigDecimal getPrice(double apiPrice) {
-		return BigDecimal.valueOf(apiPrice);
+	protected BigDecimal getPrice(double apiPrice, final Currency currency) {
+		BigDecimal price = BigDecimal.valueOf(apiPrice);
+		
+		//Yahoo provides prices in pence. To get prices in pounds, divide price in pence by 100.
+		if(currency == Currency.GBP)
+			price = price.divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+		
+		return price;
 	}
 	
 	
@@ -411,7 +418,6 @@ public class QuotationProviderYahooDAO implements QuotationProviderDAO {
 		priceRaw = (double) prices.get(index);
 		price = BigDecimal.valueOf(priceRaw);
 		price = price.setScale(2, RoundingMode.HALF_UP);
-		
 		
 		return price;
 	}

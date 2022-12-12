@@ -111,6 +111,21 @@ public class QuotationProviderYahooDAOTest {
 	}
 	
 	
+	/**
+	 * Gets a Quotation as expected from the Yahoo service.
+	 * 
+	 * @return A Quotation.
+	 */
+	private Quotation getRioTintoQuotation() {
+		Quotation quotation = new Quotation();
+		
+		quotation.setClose(BigDecimal.valueOf(57.43));
+		quotation.setCurrency(Currency.GBP);
+		
+		return quotation;
+	}
+	
+	
 	@Test
 	/**
 	 * Tests the retrieval of the query URL for historical quotations of a stock listed at the TSX.
@@ -336,6 +351,25 @@ public class QuotationProviderYahooDAOTest {
 		try {
 			actualQuotation = quotationProviderYahooDAO.getCurrentQuotation("DML", StockExchange.TSX);
 			expectedQuotation = this.getDenisonMinesQuotation();
+			
+			assertTrue(expectedQuotation.getClose().compareTo(actualQuotation.getClose()) == 0);
+			assertEquals(expectedQuotation.getCurrency(), actualQuotation.getCurrency());
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests getting current Quotation data from a stock listed at the LSE.
+	 */
+	public void testGetCurrentQuotationLSE() {
+		Quotation actualQuotation, expectedQuotation;
+		
+		try {
+			actualQuotation = quotationProviderYahooDAO.getCurrentQuotation("RIO", StockExchange.LSE);
+			expectedQuotation = this.getRioTintoQuotation();
 			
 			assertTrue(expectedQuotation.getClose().compareTo(actualQuotation.getClose()) == 0);
 			assertEquals(expectedQuotation.getCurrency(), actualQuotation.getCurrency());
