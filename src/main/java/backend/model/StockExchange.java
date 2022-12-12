@@ -24,5 +24,10 @@ public enum StockExchange {
 	/**
 	 * New York Stock Exchange
 	 */
-	NYSE
+	NYSE,
+	
+	/**
+	 * London Stock Exchange.
+	 */
+	LSE
 }

@@ -321,6 +321,10 @@ public class QuotationProviderYahooDAO implements QuotationProviderDAO {
 				stockExchangeBuilder.append(".");
 				stockExchangeBuilder.append("CN");
 				return stockExchangeBuilder.toString();
+			case LSE:
+				stockExchangeBuilder.append(".");
+				stockExchangeBuilder.append("L");
+				return stockExchangeBuilder.toString();
 			case NYSE:
 			default:
 				return stockExchangeBuilder.toString();
