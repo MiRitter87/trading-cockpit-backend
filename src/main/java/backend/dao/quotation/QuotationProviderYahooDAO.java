@@ -358,6 +358,8 @@ public class QuotationProviderYahooDAO implements QuotationProviderDAO {
 				return Currency.USD;
 			case "CAD":
 				return Currency.CAD;
+			case "GBp":
+				return Currency.GBP;
 			default:
 				return null;
 		}

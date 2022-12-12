@@ -305,6 +305,8 @@ public class QuotationProviderMarketWatchDAO implements QuotationProviderDAO {
 				return Currency.CAD;
 			case NYSE:
 				return Currency.USD;
+			case LSE:
+				return Currency.GBP;
 			default:
 				break;
 		}

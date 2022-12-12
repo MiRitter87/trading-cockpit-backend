@@ -14,5 +14,10 @@ public enum Currency {
 	/**
 	 * US Dollar.
 	 */
-	USD
+	USD,
+	
+	/**
+	 * British pound.
+	 */
+	GBP
 }
