@@ -257,6 +257,9 @@ public class QuotationProviderMarketWatchDAO implements QuotationProviderDAO {
 			case CSE:
 				countryCode = "&countrycode=CA";
 				break;
+			case LSE:
+				countryCode = "&countrycode=UK";
+				break;
 		default:
 			break;
 		}

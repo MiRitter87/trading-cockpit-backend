@@ -187,6 +187,28 @@ public class QuotationProviderMarketWatchDAOTest {
 	
 	@Test
 	/**
+	 * Tests the retrieval of the query URL for historical quotations of a stock listed at the LSE.
+	 */
+	public void testGetQueryUrlQuotationHistoryLSE() {
+		final String symbol = "RIO";
+		final StockExchange stockExchange = StockExchange.LSE;
+		final Integer years = 1;
+		String expectedUrl = 	"https://www.marketwatch.com/investing/STOCK/RIO/downloaddatapartial?"
+				+ "startdate={start_date}%2000:00:00&enddate={end_date}%2023:59:59&daterange=d30&frequency=p1d&csvdownload=true&"
+				+ "downloadpartial=false&newdates=false&countrycode=UK";
+		String actualUrl = "";
+		
+		//Replace start and end date with the current date.
+		expectedUrl = expectedUrl.replace("{start_date}", quotationProviderMarketWatchDAO.getDateForHistory(-1));
+		expectedUrl = expectedUrl.replace("{end_date}", quotationProviderMarketWatchDAO.getDateForHistory(0));
+		
+		actualUrl = quotationProviderMarketWatchDAO.getQueryUrlQuotationHistory(symbol, stockExchange, InstrumentType.STOCK, years);
+		assertEquals(expectedUrl, actualUrl);
+	}
+	
+	
+	@Test
+	/**
 	 * Tests the retrieval of the query URL for historical quotations of an ETF listed at the NYSE.
 	 */
 	public void testGetQueryUrlQuotationHistoryETF() {
