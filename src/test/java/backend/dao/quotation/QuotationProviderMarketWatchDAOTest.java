@@ -97,6 +97,54 @@ public class QuotationProviderMarketWatchDAOTest {
 	}
 	
 	
+	/**
+	 * Gets historical quotations of Rio Tinto stock.
+	 * The quotations of the three most recent trading days are provided.
+	 * 
+	 * @return Historical quotations of Rio Tinto stock
+	 */
+	private List<Quotation> getRioTintoQuotationHistory() {
+		List<Quotation> historicalQuotations = new ArrayList<>();
+		Quotation quotation = new Quotation();
+		SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+		
+		try {
+			quotation.setDate(dateFormat.parse("12/12/2022"));
+			quotation.setOpen(BigDecimal.valueOf(57.92));
+			quotation.setHigh(BigDecimal.valueOf(58.05));
+			quotation.setLow(BigDecimal.valueOf(56.66));
+			quotation.setClose(BigDecimal.valueOf(56.79));
+			quotation.setCurrency(Currency.GBP);
+			quotation.setVolume(3462068);
+			historicalQuotations.add(quotation);
+			
+			quotation = new Quotation();
+			quotation.setDate(dateFormat.parse("12/09/2022"));
+			quotation.setOpen(BigDecimal.valueOf(58.00));
+			quotation.setHigh(BigDecimal.valueOf(58.95));
+			quotation.setLow(BigDecimal.valueOf(57.68));
+			quotation.setClose(BigDecimal.valueOf(58.35));
+			quotation.setCurrency(Currency.GBP);
+			quotation.setVolume(3269297);
+			historicalQuotations.add(quotation);
+			
+			quotation = new Quotation();
+			quotation.setDate(dateFormat.parse("12/08/2022"));
+			quotation.setOpen(BigDecimal.valueOf(56.27));
+			quotation.setHigh(BigDecimal.valueOf(58.04));
+			quotation.setLow(BigDecimal.valueOf(56.08));
+			quotation.setClose(BigDecimal.valueOf(57.80));
+			quotation.setCurrency(Currency.GBP);
+			quotation.setVolume(3441729);
+			historicalQuotations.add(quotation);
+		} catch (ParseException e) {
+			fail(e.getMessage());
+		}
+		
+		return historicalQuotations;
+	}
+	
+	
 	@Test
 	/**
 	 * Tests the retrieval of the query URL for historical quotations of a stock listed at the TSX.
@@ -287,6 +335,39 @@ public class QuotationProviderMarketWatchDAOTest {
 			
 			//252 Trading days of a full year.
 			assertEquals(252, actualQuotationHistory.size());
+			
+			//Check the three most recent quotations.
+			actualQuotation = actualQuotationHistory.get(0);
+			expectedQuotation = expectedQuotationHistory.get(0);
+			assertEquals(expectedQuotation, actualQuotation);
+			
+			actualQuotation = actualQuotationHistory.get(1);
+			expectedQuotation = expectedQuotationHistory.get(1);
+			assertEquals(expectedQuotation, actualQuotation);
+			
+			actualQuotation = actualQuotationHistory.get(2);
+			expectedQuotation = expectedQuotationHistory.get(2);
+			assertEquals(expectedQuotation, actualQuotation);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of the quotation history of a stock traded at the LSE.
+	 */
+	public void testGetQuotationHistoryLSE() {
+		List<Quotation> actualQuotationHistory, expectedQuotationHistory;
+		Quotation actualQuotation, expectedQuotation;
+		
+		try {
+			actualQuotationHistory = quotationProviderMarketWatchDAO.getQuotationHistory("RIO", StockExchange.LSE, InstrumentType.STOCK, 1);
+			expectedQuotationHistory = this.getRioTintoQuotationHistory();
+			
+			//251 Trading days of a full year.
+			assertEquals(251, actualQuotationHistory.size());
 			
 			//Check the three most recent quotations.
 			actualQuotation = actualQuotationHistory.get(0);

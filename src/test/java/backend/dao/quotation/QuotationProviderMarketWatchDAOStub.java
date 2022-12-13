@@ -23,6 +23,8 @@ public class QuotationProviderMarketWatchDAOStub extends QuotationProviderMarket
 		
 		if(symbol.equals("DML") && stockExchange.equals(StockExchange.TSX))
 			csvPath = "src/test/resources/MarketWatchTSEQuotationHistoryDML.csv";
+		else if(symbol.equals("RIO") && stockExchange.equals(StockExchange.LSE))
+			csvPath = "src/test/resources/MarketWatchLSEQuotationHistoryRIO.csv";
 		else
 			return null;
 		
