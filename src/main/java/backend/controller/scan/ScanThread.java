@@ -2,6 +2,10 @@ package backend.controller.scan;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -201,6 +205,8 @@ public class ScanThread extends Thread {
 			
 			if(obsoleteQuotations.size() > 0)
 				this.quotationDAO.deleteQuotations(new ArrayList<>(obsoleteQuotations));
+			
+			//TODO Check if newest Quotation provided by WebService is older than 5 days
 		} catch (Exception e) {
 			logger.error("Failed to update quotations of instrument with ID " +instrument.getId(), e);
 		}
@@ -343,5 +349,35 @@ public class ScanThread extends Thread {
 		} catch (Exception e) {
 			logger.error("Failed to update the statistics.", e);
 		}
+	}
+	
+	
+	/**
+	 * Checks the age of the newest Quotation.
+	 * Logs a message if the newest Quotation is older than dayThreshold days.
+	 * 
+	 * @param quotations The quotations whose dates are checked.
+	 * @param dayThreshold The threshold in days used to log.
+	 */
+	private void checkAgeOfNewestQuotation(final java.util.List<Quotation> quotations, final int dayThreshold) {
+		Instrument instrument = new Instrument();
+		java.util.List<Quotation> quotationsSortedByDate;
+		Quotation newestQuotation;
+		Date currentDate = new Date();
+		LocalDate currentDateLocal = LocalDate.ofInstant(currentDate.toInstant(), ZoneId.systemDefault());
+		LocalDate newestQuotationDateLocal;
+		long days;
+		
+		if(quotations == null || quotations.size() == 0)
+			return;
+		
+		instrument.setQuotations(quotations);
+		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
+		newestQuotation = quotationsSortedByDate.get(0);
+		newestQuotationDateLocal = LocalDate.ofInstant(newestQuotation.getDate().toInstant(), ZoneId.systemDefault());
+		
+		days = ChronoUnit.DAYS.between(newestQuotationDateLocal, currentDateLocal);
+		
+		//TODO Log warning if newest Quotation is 5 days old or older.
 	}
 }
