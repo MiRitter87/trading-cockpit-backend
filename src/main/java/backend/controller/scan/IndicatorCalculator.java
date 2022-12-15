@@ -448,6 +448,27 @@ public class IndicatorCalculator {
 	
 	
 	/**
+	 * Provides the average trading liquidity for the given number of days.
+	 * 
+	 * @param quotation The Quotation for which the liquidity is calculated.
+	 * @param quotations A list of quotations that build the trading history used for liquidity calculation.
+	 * @param days The number of days for liquidity calculation.
+	 * @return The liquidity of the given interval.
+	 */
+	public float getLiquidityForDays(final Quotation quotation, final List<Quotation> quotations, final int days) {
+		float averagePrice, liquidity;
+		long averageVolume;
+		
+		averagePrice = this.getSimpleMovingAverage(days, quotation, quotations);
+		averageVolume = this.getSimpleMovingAverageVolume(days, quotation, quotations);
+		
+		liquidity = averagePrice * averageVolume;
+		
+		return liquidity;
+	}
+	
+	
+	/**
 	 * Provides the performance of a given interval for relative strength calculation.
 	 * 
 	 * @param sortedQuotations The quotations containing date and price information for performance calculation.

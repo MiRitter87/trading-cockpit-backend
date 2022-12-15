@@ -251,6 +251,7 @@ public class ScanThread extends Thread {
 			indicator.setBaseLengthWeeks(this.indicatorCalculator.getBaseLengthWeeks(mostRecentQuotation, sortedQuotations));
 			indicator.setUpDownVolumeRatio(this.indicatorCalculator.getUpDownVolumeRatio(50, mostRecentQuotation, sortedQuotations));
 			indicator.setPerformance5Days(this.indicatorCalculator.getPricePerformanceForDays(mostRecentQuotation, sortedQuotations, 5));
+			indicator.setLiquidity20Days(this.indicatorCalculator.getLiquidityForDays(mostRecentQuotation, sortedQuotations, 20));
 			mostRecentQuotation.setIndicator(indicator);
 			
 			modifiedQuotations.add(mostRecentQuotation);

@@ -406,4 +406,18 @@ public class IndicatorCalculatorTest {
 		
 		assertEquals(expectedPerformance, actualPerformance);
 	}
+	
+	
+	@Test
+	/**
+	 * Tests the calculation of the trading liquidity for the given daily interval.
+	 */
+	public void testGetLiquidityForDays() {
+		List<Quotation> sortedQuotations = this.dmlStock.getQuotationsSortedByDate();
+		float expectedLiquidity = (float) 2036934, actualLiquidity;
+		
+		actualLiquidity = this.indicatorCalculator.getLiquidityForDays(sortedQuotations.get(0), sortedQuotations, 20);
+		
+		assertEquals(expectedLiquidity, actualLiquidity);
+	}
 }
