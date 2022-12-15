@@ -119,6 +119,15 @@ public class Indicator {
 	@Column(name="PERFORMANCE_5_DAYS")
 	private float performance5Days;
 	
+	/**
+	 * The average liquidity during the last 20 trading days.
+	 * That is average volume multiplied by average price.
+	 */
+	@Column(name="LIQUIDITY_20_DAYS")
+	private float liquidity20Days;
+	
+	
+	
 	
 	/**
 	 * Default constructor.
@@ -400,10 +409,26 @@ public class Indicator {
 	}
 
 
+	/**
+	 * @return the liquidity20Days
+	 */
+	public float getLiquidity20Days() {
+		return liquidity20Days;
+	}
+
+
+	/**
+	 * @param liquidity20Days the liquidity20Days to set
+	 */
+	public void setLiquidity20Days(float liquidity20Days) {
+		this.liquidity20Days = liquidity20Days;
+	}
+
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(bollingerBandWidth, distanceTo52WeekHigh, distanceTo52WeekLow, id, rsNumber, rsPercentSum, sma150, sma200, sma50, 
-				stage, volumeDifferential5Days, volumeDifferential10Days, baseLengthWeeks, upDownVolumeRatio, performance5Days);
+				stage, volumeDifferential5Days, volumeDifferential10Days, baseLengthWeeks, upDownVolumeRatio, performance5Days, liquidity20Days);
 	}
 
 
@@ -427,6 +452,7 @@ public class Indicator {
 				&& Float.floatToIntBits(volumeDifferential5Days) == Float.floatToIntBits(other.volumeDifferential5Days)
 				&& Float.floatToIntBits(volumeDifferential10Days) == Float.floatToIntBits(other.volumeDifferential10Days)
 				&& stage == other.stage && baseLengthWeeks == other.baseLengthWeeks
-				&& upDownVolumeRatio == other.upDownVolumeRatio && performance5Days == other.performance5Days;
+				&& upDownVolumeRatio == other.upDownVolumeRatio && performance5Days == other.performance5Days
+				&& liquidity20Days == other.liquidity20Days;
 	}
 }
