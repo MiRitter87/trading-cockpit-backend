@@ -9,21 +9,27 @@ The backend provides WebServices to create, read, update and delete the followin
 - Lists
 - Scans
 
-Furthermore it uses third-party WebServices.
+Furthermore it uses the following third-party WebServices and Interfaces.
 
-- Yahoo finance for retrieval of current and historical stock data.
+- Yahoo finance for retrieval of current and historical instrument prices
+- MarketWatch for retrieval of historical instrument prices
 
 ### Price Alerts
 A price alert notifies you if the price of an instrument reaches a certain threshold. There are two types of alerts. One alert informs you if a price is equal or higher than your defined price. The other type informs you if the price is equal of lower your defined price. The backend queries stock quotes cyclically to check if the defined threshold has been triggered.
 
 ### Instruments
-Instruments are tradable assets that come in different forms like stocks or ETFs. Currently only instruments of type 'stock' can be managed.
+Instruments are tradable assets that come in different forms like stocks or ETFs. Currently instruments of type 'stock', 'etf', 'sector' and 'industry group' can be managed.
 
 ### Lists
 Lists allow you to organize sets of instruments. The list feature allows you for example to reproduce ETFs or stock indexes. Lists are used by the scan functionality to scan and screen all instruments of multiple lists.
 
 ### Scans
 A Scan consists of multiple lists that have instruments defined in them. The scan process queries historical price and volume data of the instruments. Indicators are then calculated and the instruments are ranked according to their performance of the past year.
+
+### Dashboard
+The Dashboard aims to provide a meta overview of the current state of the market.
+
+At the end of the scan process, statistical data of the instruments are calculated. Those statistical are exposed either as tabular data or as charts using WebServices.
 
 ## Technology
 
