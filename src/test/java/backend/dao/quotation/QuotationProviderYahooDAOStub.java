@@ -26,6 +26,8 @@ public class QuotationProviderYahooDAOStub extends QuotationProviderYahooDAO {
 			jsonPath = "src/test/resources/yahooTSEQuotationHistoryDML.json";
 		else if(symbol.equals("BNCH") && stockExchange.equals(StockExchange.TSXV))
 			jsonPath = "src/test/resources/yahooTSXVQuotationHistoryBNCH.json";
+		else if(symbol.equals("RIO") && stockExchange.equals(StockExchange.LSE))
+			jsonPath = "src/test/resources/yahooLSEQuotationHistoryRIO.json";
 		else
 			return null;
 		

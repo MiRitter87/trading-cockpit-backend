@@ -171,10 +171,10 @@ public class QuotationProviderYahooDAO implements QuotationProviderDAO {
 					quotation.setDate(this.getDate(timestampData.get(i-1)));
 					quotation.setCurrency(this.getCurrency((String) metaAttributes.get("currency")));
 					quotation.setVolume(this.getVolumeFromQuotationHistoryResponse(volumeData, i-1));
-					quotation.setOpen(this.getPriceFromQuotationHistoryResponse(openData, i-1));
-					quotation.setHigh(this.getPriceFromQuotationHistoryResponse(highData, i-1));
-					quotation.setLow(this.getPriceFromQuotationHistoryResponse(lowData, i-1));
-					quotation.setClose(this.getPriceFromQuotationHistoryResponse(adjCloseData, i-1));	
+					quotation.setOpen(this.getPriceFromQuotationHistoryResponse(openData, i-1, quotation.getCurrency()));
+					quotation.setHigh(this.getPriceFromQuotationHistoryResponse(highData, i-1, quotation.getCurrency()));
+					quotation.setLow(this.getPriceFromQuotationHistoryResponse(lowData, i-1, quotation.getCurrency()));
+					quotation.setClose(this.getPriceFromQuotationHistoryResponse(adjCloseData, i-1, quotation.getCurrency()));	
 					quotationHistory.add(quotation);
 				}
 				catch(Exception exception) {
@@ -405,10 +405,11 @@ public class QuotationProviderYahooDAO implements QuotationProviderDAO {
 	 * 
 	 * @param prices A list of historical prices.
 	 * @param index The index at which the price is to be extracted.
+	 * @param currency The Currency of the price.
 	 * @return The price.
 	 * @throws Exception Failed to read price data.
 	 */
-	protected BigDecimal getPriceFromQuotationHistoryResponse(final ArrayList<?> prices, final int index) throws Exception {
+	protected BigDecimal getPriceFromQuotationHistoryResponse(final ArrayList<?> prices, final int index, final Currency currency) throws Exception {
 		double priceRaw;
 		BigDecimal price;
 		
@@ -418,6 +419,10 @@ public class QuotationProviderYahooDAO implements QuotationProviderDAO {
 		priceRaw = (double) prices.get(index);
 		price = BigDecimal.valueOf(priceRaw);
 		price = price.setScale(2, RoundingMode.HALF_UP);
+		
+		//Yahoo provides prices in pence. To get prices in pounds, divide price in pence by 100.
+		if(currency == Currency.GBP)
+			price = price.divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
 		
 		return price;
 	}

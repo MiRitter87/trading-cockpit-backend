@@ -97,6 +97,53 @@ public class QuotationProviderYahooDAOTest {
 	
 	
 	/**
+	 * Gets historical quotations of Rio Tinto stock.
+	 * The quotations of the three most recent trading days are provided.
+	 * 
+	 * @return Historical quotations of Rio Tinto stock
+	 */
+	private List<Quotation> getRioTintoQuotationHistory() {
+		List<Quotation> historicalQuotations = new ArrayList<>();
+		Quotation quotation = new Quotation();
+		long secondsSince1970;
+		
+		secondsSince1970 = 1672823859;
+		quotation.setDate(new Date(secondsSince1970 * 1000));
+		quotation.setOpen(BigDecimal.valueOf(59.10));
+		quotation.setHigh(BigDecimal.valueOf(59.41));
+		quotation.setLow(BigDecimal.valueOf(58.34));
+		quotation.setClose(BigDecimal.valueOf(58.35));
+		quotation.setCurrency(Currency.GBP);
+		quotation.setVolume(243671);
+		historicalQuotations.add(quotation);
+		
+		quotation = new Quotation();
+		secondsSince1970 = 1672732800;
+		quotation.setDate(new Date(secondsSince1970  * 1000));
+		quotation.setOpen(BigDecimal.valueOf(58.18));
+		quotation.setHigh(BigDecimal.valueOf(59.05));
+		quotation.setLow(BigDecimal.valueOf(58.10));
+		quotation.setClose(BigDecimal.valueOf(58.39));
+		quotation.setCurrency(Currency.GBP);
+		quotation.setVolume(2112533);
+		historicalQuotations.add(quotation);
+		
+		quotation = new Quotation();
+		secondsSince1970 = 1672387200;
+		quotation.setDate(new Date(secondsSince1970  * 1000));
+		quotation.setOpen(BigDecimal.valueOf(58.03));
+		quotation.setHigh(BigDecimal.valueOf(58.46));
+		quotation.setLow(BigDecimal.valueOf(57.87));
+		quotation.setClose(BigDecimal.valueOf(57.98));
+		quotation.setCurrency(Currency.GBP);
+		quotation.setVolume(588428);
+		historicalQuotations.add(quotation);
+		
+		return historicalQuotations;
+	}
+	
+	
+	/**
 	 * Gets a Quotation as expected from the Yahoo service.
 	 * 
 	 * @return A Quotation.
@@ -225,6 +272,39 @@ public class QuotationProviderYahooDAOTest {
 			
 			//252 Trading days of a full year.
 			assertEquals(252, actualQuotationHistory.size());
+			
+			//Check the three most recent quotations.
+			actualQuotation = actualQuotationHistory.get(0);
+			expectedQuotation = expectedQuotationHistory.get(0);
+			assertEquals(expectedQuotation, actualQuotation);
+			
+			actualQuotation = actualQuotationHistory.get(1);
+			expectedQuotation = expectedQuotationHistory.get(1);
+			assertEquals(expectedQuotation, actualQuotation);
+			
+			actualQuotation = actualQuotationHistory.get(2);
+			expectedQuotation = expectedQuotationHistory.get(2);
+			assertEquals(expectedQuotation, actualQuotation);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of the quotation history of a stock traded at the LSE.
+	 */
+	public void testGetQuotationHistoryLSE() {
+		List<Quotation> actualQuotationHistory, expectedQuotationHistory;
+		Quotation actualQuotation, expectedQuotation;
+		
+		try {
+			actualQuotationHistory = quotationProviderYahooDAO.getQuotationHistory("RIO", StockExchange.LSE, InstrumentType.STOCK, 1);
+			expectedQuotationHistory = this.getRioTintoQuotationHistory();
+			
+			//251 Trading days of a full year. Volume data are missing for a single day which is excluded. Therefore 251 days instead of 252.
+			assertEquals(251, actualQuotationHistory.size());
 			
 			//Check the three most recent quotations.
 			actualQuotation = actualQuotationHistory.get(0);
