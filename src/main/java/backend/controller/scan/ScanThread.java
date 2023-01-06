@@ -220,7 +220,6 @@ public class ScanThread extends Thread {
 		java.util.List<Quotation> sortedQuotations;
 		java.util.List<Quotation> modifiedQuotations = new ArrayList<>();
 		java.util.List<Quotation> databaseQuotations = new ArrayList<>();
-		Indicator indicator;
 		Quotation mostRecentQuotation;
 		
 		try {
@@ -233,26 +232,7 @@ public class ScanThread extends Thread {
 				return;
 			
 			mostRecentQuotation = sortedQuotations.get(0);
-			
-			if(mostRecentQuotation.getIndicator() == null)
-				indicator = new Indicator();
-			else
-				indicator = mostRecentQuotation.getIndicator();
-			
-			indicator.setRsPercentSum(this.indicatorCalculator.getRSPercentSum(instrument, mostRecentQuotation));
-			indicator.setSma50(this.indicatorCalculator.getSimpleMovingAverage(50, mostRecentQuotation, sortedQuotations));
-			indicator.setSma150(this.indicatorCalculator.getSimpleMovingAverage(150, mostRecentQuotation, sortedQuotations));
-			indicator.setSma200(this.indicatorCalculator.getSimpleMovingAverage(200, mostRecentQuotation, sortedQuotations));
-			indicator.setDistanceTo52WeekHigh(this.indicatorCalculator.getDistanceTo52WeekHigh(mostRecentQuotation, sortedQuotations));
-			indicator.setDistanceTo52WeekLow(this.indicatorCalculator.getDistanceTo52WeekLow(mostRecentQuotation, sortedQuotations));
-			indicator.setBollingerBandWidth(this.indicatorCalculator.getBollingerBandWidth(10, 2, mostRecentQuotation, sortedQuotations));
-			indicator.setVolumeDifferential5Days(this.indicatorCalculator.getVolumeDifferential(30, 5, mostRecentQuotation, sortedQuotations));
-			indicator.setVolumeDifferential10Days(this.indicatorCalculator.getVolumeDifferential(30, 10, mostRecentQuotation, sortedQuotations));
-			indicator.setBaseLengthWeeks(this.indicatorCalculator.getBaseLengthWeeks(mostRecentQuotation, sortedQuotations));
-			indicator.setUpDownVolumeRatio(this.indicatorCalculator.getUpDownVolumeRatio(50, mostRecentQuotation, sortedQuotations));
-			indicator.setPerformance5Days(this.indicatorCalculator.getPricePerformanceForDays(mostRecentQuotation, sortedQuotations, 5));
-			indicator.setLiquidity20Days(this.indicatorCalculator.getLiquidityForDays(mostRecentQuotation, sortedQuotations, 20));
-			mostRecentQuotation.setIndicator(indicator);
+			mostRecentQuotation = this.calculateIndicators(instrument, mostRecentQuotation, true);
 			
 			modifiedQuotations.add(mostRecentQuotation);
 			this.quotationDAO.updateQuotations(modifiedQuotations);
@@ -260,6 +240,44 @@ public class ScanThread extends Thread {
 		catch(Exception exception) {
 			logger.error("Failed to retrieve or update indicators of instrument with ID " +instrument.getId(), exception);
 		}
+	}
+	
+	
+	/**
+	 * Calculates indicators for the given Quotation.
+	 * 
+	 * @param instrument The Instrument to which the Quotation belongs to.
+	 * @param quotation The Quotation for which indicators are calculated.
+	 * @param mostRecent Calculates all indicators if true (the most recent Quotation). Calculates only indicators relevant for history if false.
+	 * @return The Quotation with the calculated indicators.
+	 */
+	private Quotation calculateIndicators(final Instrument instrument, final Quotation quotation, boolean mostRecent) {
+		java.util.List<Quotation> sortedQuotations = instrument.getQuotationsSortedByDate();
+		Indicator indicator;
+		
+		if(quotation.getIndicator() == null)
+			indicator = new Indicator();
+		else
+			indicator = quotation.getIndicator();
+		
+		if(mostRecent) {
+			indicator.setRsPercentSum(this.indicatorCalculator.getRSPercentSum(instrument, quotation));
+			indicator.setSma50(this.indicatorCalculator.getSimpleMovingAverage(50, quotation, sortedQuotations));
+			indicator.setSma150(this.indicatorCalculator.getSimpleMovingAverage(150, quotation, sortedQuotations));
+			indicator.setSma200(this.indicatorCalculator.getSimpleMovingAverage(200, quotation, sortedQuotations));
+			indicator.setDistanceTo52WeekHigh(this.indicatorCalculator.getDistanceTo52WeekHigh(quotation, sortedQuotations));
+			indicator.setDistanceTo52WeekLow(this.indicatorCalculator.getDistanceTo52WeekLow(quotation, sortedQuotations));
+			indicator.setBollingerBandWidth(this.indicatorCalculator.getBollingerBandWidth(10, 2, quotation, sortedQuotations));
+			indicator.setVolumeDifferential5Days(this.indicatorCalculator.getVolumeDifferential(30, 5, quotation, sortedQuotations));
+			indicator.setVolumeDifferential10Days(this.indicatorCalculator.getVolumeDifferential(30, 10, quotation, sortedQuotations));
+			indicator.setBaseLengthWeeks(this.indicatorCalculator.getBaseLengthWeeks(quotation, sortedQuotations));
+			indicator.setUpDownVolumeRatio(this.indicatorCalculator.getUpDownVolumeRatio(50, quotation, sortedQuotations));
+			indicator.setPerformance5Days(this.indicatorCalculator.getPricePerformanceForDays(quotation, sortedQuotations, 5));
+			indicator.setLiquidity20Days(this.indicatorCalculator.getLiquidityForDays(quotation, sortedQuotations, 20));
+			quotation.setIndicator(indicator);
+		}
+		
+		return quotation;
 	}
 	
 	
