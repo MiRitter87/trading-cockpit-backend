@@ -71,7 +71,7 @@ public class IndicatorCalculator {
 			return 0;
 		
 		//Calculate the sum of the prices of the last x days.
-		for(int i = indexOfQuotation; i<days; i++) {
+		for(int i = indexOfQuotation; i < (days + indexOfQuotation); i++) {
 			sum = sum.add(sortedQuotations.get(i).getClose());
 		}
 		

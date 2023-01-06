@@ -220,13 +220,27 @@ public class IndicatorCalculatorTest {
 	
 	@Test
 	/**
-	 * Tests the calculation of the 50-day Simple Moving Average.
+	 * Tests the calculation of the 50-day Simple Moving Average for the most recent Quotation.
 	 */
 	public void testGetSimpleMovingAverage50Days() {
 		List<Quotation> sortedQuotations = this.dmlStock.getQuotationsSortedByDate();
 		float actualSma50, expectedSma50 = (float) 1.42;
 		
 		actualSma50 = this.indicatorCalculator.getSimpleMovingAverage(50, sortedQuotations.get(0), sortedQuotations);
+		
+		assertEquals(expectedSma50, actualSma50);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the calculation of the 50-day Simple Moving Average for a historical Quotation.
+	 */
+	public void testGetSimpleMovingAverage50DaysHistorical() {
+		List<Quotation> sortedQuotations = this.dmlStock.getQuotationsSortedByDate();
+		float actualSma50, expectedSma50 = (float) 1.41;
+		
+		actualSma50 = this.indicatorCalculator.getSimpleMovingAverage(50, sortedQuotations.get(2), sortedQuotations);
 		
 		assertEquals(expectedSma50, actualSma50);
 	}
