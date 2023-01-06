@@ -220,7 +220,7 @@ public class ScanThread extends Thread {
 		java.util.List<Quotation> sortedQuotations;
 		java.util.List<Quotation> modifiedQuotations = new ArrayList<>();
 		java.util.List<Quotation> databaseQuotations = new ArrayList<>();
-		Quotation mostRecentQuotation;
+		Quotation quotation;
 		
 		try {
 			//Read quotations of Instrument from database to get quotations with IDs needed for setting the Indicator ID.
@@ -231,10 +231,17 @@ public class ScanThread extends Thread {
 			if(sortedQuotations.size() == 0)
 				return;
 			
-			mostRecentQuotation = sortedQuotations.get(0);
-			mostRecentQuotation = this.calculateIndicators(instrument, mostRecentQuotation, true);
+			for(int i = 0; i < sortedQuotations.size(); i++) {
+				quotation = sortedQuotations.get(i);
+				
+				if(i == 0)
+					quotation = this.calculateIndicators(instrument, quotation, true);
+				else
+					quotation = this.calculateIndicators(instrument, quotation, false);
+				
+				modifiedQuotations.add(quotation);
+			}
 			
-			modifiedQuotations.add(mostRecentQuotation);
 			this.quotationDAO.updateQuotations(modifiedQuotations);
 		}
 		catch(Exception exception) {
@@ -261,6 +268,7 @@ public class ScanThread extends Thread {
 			indicator = quotation.getIndicator();
 		
 		if(mostRecent) {
+			//These indicators are calculated only for the most recent Quotation.
 			indicator.setRsPercentSum(this.indicatorCalculator.getRSPercentSum(instrument, quotation));
 			indicator.setSma50(this.indicatorCalculator.getSimpleMovingAverage(50, quotation, sortedQuotations));
 			indicator.setSma150(this.indicatorCalculator.getSimpleMovingAverage(150, quotation, sortedQuotations));
@@ -274,8 +282,13 @@ public class ScanThread extends Thread {
 			indicator.setUpDownVolumeRatio(this.indicatorCalculator.getUpDownVolumeRatio(50, quotation, sortedQuotations));
 			indicator.setPerformance5Days(this.indicatorCalculator.getPricePerformanceForDays(quotation, sortedQuotations, 5));
 			indicator.setLiquidity20Days(this.indicatorCalculator.getLiquidityForDays(quotation, sortedQuotations, 20));
-			quotation.setIndicator(indicator);
 		}
+		else {
+			//These indicators are calculated for historical quotations.
+			indicator.setSma50(this.indicatorCalculator.getSimpleMovingAverage(50, quotation, sortedQuotations));
+		}
+		
+		quotation.setIndicator(indicator);
 		
 		return quotation;
 	}
