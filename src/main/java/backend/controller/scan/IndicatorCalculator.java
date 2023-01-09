@@ -289,7 +289,7 @@ public class IndicatorCalculator {
 			return 0;
 		
 		//Calculate the sum of the volume of the last x days.
-		for(int i = indexOfQuotation; i<days; i++) {
+		for(int i = indexOfQuotation; i < (days + indexOfQuotation); i++) {
 			sum = sum += sortedQuotations.get(i).getVolume();
 		}
 		
@@ -396,7 +396,7 @@ public class IndicatorCalculator {
 			return 0;
 		
 		//Calculate the sum of the prices of the last x days.
-		for(int i = indexOfQuotation; i<days; i++) {
+		for(int i = indexOfQuotation; i < (days + indexOfQuotation); i++) {
 			currentDayQuotation = sortedQuotations.get(i);
 			previousDayQuotation = sortedQuotations.get(i+1);
 			
@@ -520,7 +520,7 @@ public class IndicatorCalculator {
 			return prices;
 		
 		//Get the prices of the last x days.
-		for(int i = indexOfQuotation; i<days; i++) {
+		for(int i = indexOfQuotation; i < (days + indexOfQuotation); i++) {
 			prices[j] = sortedQuotations.get(i).getClose().floatValue();
 			j++;
 		}
