@@ -22,6 +22,7 @@ import backend.dao.instrument.InstrumentDAO;
 import backend.dao.quotation.QuotationDAO;
 import backend.model.Currency;
 import backend.model.StockExchange;
+import backend.model.instrument.Indicator;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
@@ -84,6 +85,36 @@ public class StatisticCalculationControllerTest {
 	 */
 	private Quotation microsoftQuotation3;
 	
+	/**
+	 * The Indicator of the first Quotation of the Apple stock.
+	 */
+	private Indicator appleQuotation1Indicator;
+	
+	/**
+	 * The Indicator of the second Quotation of the Apple stock.
+	 */
+	private Indicator appleQuotation2Indicator;
+	
+	/**
+	 * The Indicator of the third Quotation of the Apple stock.
+	 */
+	private Indicator appleQuotation3Indicator;
+	
+	/**
+	 * The Indicator of the first Quotation of the Microsoft stock.
+	 */
+	private Indicator microsoftQuotation1Indicator;
+	
+	/**
+	 * The Indicator of the second Quotation of the Microsoft stock.
+	 */
+	private Indicator microsoftQuotation2Indicator;
+	
+	/**
+	 * The Indicator of the third Quotation of the Microsoft stock.
+	 */
+	private Indicator microsoftQuotation3Indicator;
+	
 	
 	@BeforeAll
 	/**
@@ -136,6 +167,7 @@ public class StatisticCalculationControllerTest {
 	private void createTestData() {
 		this.createDummyInstruments();
 		this.createDummyQuotations();
+		this.createDummyIndicators();
 	}
 	
 	
@@ -228,7 +260,53 @@ public class StatisticCalculationControllerTest {
 			this.microsoftQuotation3.setInstrument(this.microsoftStock);
 			quotations.add(this.microsoftQuotation3);
 			
-			quotationDAO.insertQuotations(quotations);			
+			quotationDAO.insertQuotations(quotations);
+		} catch (DuplicateInstrumentException e) {
+			fail(e.getMessage());
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}	
+	}
+	
+	
+	/**
+	 * Initializes the database with dummy indicators.
+	 */
+	private void createDummyIndicators() {
+		List<Quotation> quotations = new ArrayList<>();
+		
+		try {		
+			this.appleQuotation1Indicator = new Indicator();
+			this.appleQuotation1Indicator.setSma50((float) 78.54);
+			this.appleQuotation1.setIndicator(this.appleQuotation1Indicator);
+			quotations.add(this.appleQuotation1);
+			
+			this.appleQuotation2Indicator = new Indicator();
+			this.appleQuotation2Indicator.setSma50((float) 80.54);
+			this.appleQuotation2.setIndicator(this.appleQuotation2Indicator);
+			quotations.add(this.appleQuotation2);
+			
+			this.appleQuotation3Indicator = new Indicator();
+			this.appleQuotation3Indicator.setSma50((float) 82.54);
+			this.appleQuotation3.setIndicator(this.appleQuotation3Indicator);
+			quotations.add(this.appleQuotation3);
+			
+			this.microsoftQuotation1Indicator = new Indicator();
+			this.microsoftQuotation1Indicator.setSma50((float) 247.54);
+			this.microsoftQuotation1.setIndicator(this.microsoftQuotation1Indicator);
+			quotations.add(this.microsoftQuotation1);
+			
+			this.microsoftQuotation2Indicator = new Indicator();
+			this.microsoftQuotation2Indicator.setSma50((float) 246.54);
+			this.microsoftQuotation2.setIndicator(this.microsoftQuotation2Indicator);
+			quotations.add(this.microsoftQuotation2);
+			
+			this.microsoftQuotation3Indicator = new Indicator();
+			this.microsoftQuotation3Indicator.setSma50((float) 245.54);
+			this.microsoftQuotation3.setIndicator(this.microsoftQuotation3Indicator);
+			quotations.add(this.microsoftQuotation3);
+			
+			quotationDAO.updateQuotations(quotations);
 		} catch (DuplicateInstrumentException e) {
 			fail(e.getMessage());
 		} catch (Exception e) {
