@@ -63,6 +63,24 @@ public class Statistic {
 	@Column(name="ADVANCE_DECLINE_NUMBER")
 	private int advanceDeclineNumber;
 	
+	/**
+	 * The number of instruments which are trading above the 50-day Simple Moving Average.
+	 */
+	@Column(name="NUMBER_ABOVE_SMA50")
+	private int numberAboveSma50;
+	
+	/**
+	 * The number of instruments which are trading at or below the 50-day Simple Moving Average.
+	 */
+	@Column(name="NUMBER_AT_OR_BELOW_SMA50")
+	private int numberAtOrBelowSma50;
+	
+	/**
+	 * The percentage of instruments which are trading above the 50-day Simple Moving Average.
+	 */
+	@Column(name="PERCENT_ABOVE_SMA50")
+	private float percentAboveSma50;
+	
 	
 	/**
 	 * Default constructor.
@@ -164,9 +182,56 @@ public class Statistic {
 	}
 
 
+	/**
+	 * @return the numberAboveSma50
+	 */
+	public int getNumberAboveSma50() {
+		return numberAboveSma50;
+	}
+
+
+	/**
+	 * @param numberAboveSma50 the numberAboveSma50 to set
+	 */
+	public void setNumberAboveSma50(int numberAboveSma50) {
+		this.numberAboveSma50 = numberAboveSma50;
+		
+		if((this.numberAboveSma50 + this.numberAtOrBelowSma50) != 0)
+			this.percentAboveSma50 = this.percentAboveSma50 / (this.numberAboveSma50 + this.numberAtOrBelowSma50) * 100;
+	}
+
+
+	/**
+	 * @return the numberAtOrBelowSma50
+	 */
+	public int getNumberAtOrBelowSma50() {
+		return numberAtOrBelowSma50;
+	}
+
+
+	/**
+	 * @param numberAtOrBelowSma50 the numberAtOrBelowSma50 to set
+	 */
+	public void setNumberAtOrBelowSma50(int numberAtOrBelowSma50) {
+		this.numberAtOrBelowSma50 = numberAtOrBelowSma50;
+		
+		if((this.numberAboveSma50 + this.numberAtOrBelowSma50) != 0)
+			this.percentAboveSma50 = this.percentAboveSma50 / (this.numberAboveSma50 + this.numberAtOrBelowSma50) * 100;
+	}
+
+
+	/**
+	 * @return the percentAboveSma50
+	 */
+	public float getPercentAboveSma50() {
+		return percentAboveSma50;
+	}
+
+
 	@Override
 	public int hashCode() {
-		return Objects.hash(advanceDeclineNumber, date, id, instrumentType, numberAdvance, numberDecline);
+		return Objects.hash(advanceDeclineNumber, date, id, instrumentType, numberAboveSma50, numberAdvance,
+				numberAtOrBelowSma50, numberDecline, percentAboveSma50);
 	}
 
 
@@ -188,8 +253,10 @@ public class Statistic {
 				return false;
 		}
 		
-		return advanceDeclineNumber == other.advanceDeclineNumber
+		return advanceDeclineNumber == other.advanceDeclineNumber 
 				&& Objects.equals(id, other.id) && instrumentType == other.instrumentType
-				&& numberAdvance == other.numberAdvance && numberDecline == other.numberDecline;
+				&& numberAboveSma50 == other.numberAboveSma50 && numberAdvance == other.numberAdvance
+				&& numberAtOrBelowSma50 == other.numberAtOrBelowSma50 && numberDecline == other.numberDecline
+				&& Float.floatToIntBits(percentAboveSma50) == Float.floatToIntBits(other.percentAboveSma50);
 	}
 }
