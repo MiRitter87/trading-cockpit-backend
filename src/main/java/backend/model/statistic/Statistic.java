@@ -216,7 +216,7 @@ public class Statistic {
 		this.numberAtOrBelowSma50 = numberAtOrBelowSma50;
 		
 		if((this.numberAboveSma50 + this.numberAtOrBelowSma50) != 0)
-			this.percentAboveSma50 = this.percentAboveSma50 / (this.numberAboveSma50 + this.numberAtOrBelowSma50) * 100;
+			this.percentAboveSma50 = (float)this.numberAboveSma50 / ((float)this.numberAboveSma50 + (float)this.numberAtOrBelowSma50) * 100;
 	}
 
 

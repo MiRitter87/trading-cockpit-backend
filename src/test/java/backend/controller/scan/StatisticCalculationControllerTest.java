@@ -362,6 +362,9 @@ public class StatisticCalculationControllerTest {
 			assertEquals(1, statistic.getNumberAdvance());
 			assertEquals(1, statistic.getNumberDecline());
 			assertEquals(0, statistic.getAdvanceDeclineNumber());
+			assertEquals(1, statistic.getNumberAboveSma50());
+			assertEquals(1, statistic.getNumberAtOrBelowSma50());
+			assertEquals(50, statistic.getPercentAboveSma50());
 			
 			//Check correct statistic of second day.
 			statistic = calculatedStatistics.getStatistics().get(1);
@@ -370,6 +373,9 @@ public class StatisticCalculationControllerTest {
 			assertEquals(0, statistic.getNumberAdvance());
 			assertEquals(2, statistic.getNumberDecline());
 			assertEquals(-2, statistic.getAdvanceDeclineNumber());
+			assertEquals(0, statistic.getNumberAboveSma50());
+			assertEquals(2, statistic.getNumberAtOrBelowSma50());
+			assertEquals(0, statistic.getPercentAboveSma50());
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}

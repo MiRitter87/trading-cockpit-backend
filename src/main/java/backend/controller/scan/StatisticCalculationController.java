@@ -1,5 +1,6 @@
 package backend.controller.scan;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -98,6 +99,8 @@ public class StatisticCalculationController {
 				//Calculate statistical values.
 				statistic.setNumberAdvance(statistic.getNumberAdvance() + this.getNumberAdvance(currentQuotation, previousQuotation));
 				statistic.setNumberDecline(statistic.getNumberDecline() + this.getNumberDecline(currentQuotation, previousQuotation));
+				statistic.setNumberAboveSma50(statistic.getNumberAboveSma50() + this.getNumberAboveSma50(currentQuotation));
+				statistic.setNumberAtOrBelowSma50(statistic.getNumberAtOrBelowSma50() + this.getNumberAtOrBelowSma50(currentQuotation));
 			}
 		}
 		
@@ -129,6 +132,48 @@ public class StatisticCalculationController {
 	 */
 	private int getNumberDecline(final Quotation currentQuotation, final Quotation previousQuotation) {
 		if(currentQuotation.getClose().compareTo(previousQuotation.getClose()) == -1)
+			return 1;
+		else
+			return 0;
+	}
+	
+	
+	/**
+	 * Compares the price of the current Quotation with its SMA(50) and checks if the price is above its SMA(50).
+	 * 
+	 * @param currentQuotation The current Quotation.
+	 * @return 1, if the price of the current Quotation is bigger than its SMA(50). 0, if it is less or equal.
+	 */
+	private int getNumberAboveSma50(final Quotation currentQuotation) {
+		BigDecimal sma50;
+		
+		if(currentQuotation.getIndicator() == null || currentQuotation.getIndicator().getSma50() == 0)
+			return 0;
+		
+		sma50 = BigDecimal.valueOf(currentQuotation.getIndicator().getSma50());
+		
+		if(currentQuotation.getClose().compareTo(sma50) == 1)
+			return 1;
+		else
+			return 0;
+	}
+	
+	
+	/**
+	 * Compares the price of the current Quotation with its SMA(50) and checks if the price is below its SMA(50).
+	 * 
+	 * @param currentQuotation The current Quotation.
+	 * @return 1, if the price of the current Quotation is at or below its SMA(50). 0, if it is bigger.
+	 */
+	private int getNumberAtOrBelowSma50(final Quotation currentQuotation) {
+		BigDecimal sma50;
+		
+		if(currentQuotation.getIndicator() == null || currentQuotation.getIndicator().getSma50() == 0)
+			return 0;
+		
+		sma50 = BigDecimal.valueOf(currentQuotation.getIndicator().getSma50());
+		
+		if(currentQuotation.getClose().compareTo(sma50) == -1)
 			return 1;
 		else
 			return 0;
