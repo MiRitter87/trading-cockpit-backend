@@ -1,5 +1,7 @@
 package backend.model.statistic;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.util.Objects;
 
@@ -195,9 +197,7 @@ public class Statistic {
 	 */
 	public void setNumberAboveSma50(int numberAboveSma50) {
 		this.numberAboveSma50 = numberAboveSma50;
-		
-		if((this.numberAboveSma50 + this.numberAtOrBelowSma50) != 0)
-			this.percentAboveSma50 = this.percentAboveSma50 / (this.numberAboveSma50 + this.numberAtOrBelowSma50) * 100;
+		this.updatePercentAboveSma50();
 	}
 
 
@@ -214,9 +214,7 @@ public class Statistic {
 	 */
 	public void setNumberAtOrBelowSma50(int numberAtOrBelowSma50) {
 		this.numberAtOrBelowSma50 = numberAtOrBelowSma50;
-		
-		if((this.numberAboveSma50 + this.numberAtOrBelowSma50) != 0)
-			this.percentAboveSma50 = (float)this.numberAboveSma50 / ((float)this.numberAboveSma50 + (float)this.numberAtOrBelowSma50) * 100;
+		this.updatePercentAboveSma50();		
 	}
 
 
@@ -225,6 +223,22 @@ public class Statistic {
 	 */
 	public float getPercentAboveSma50() {
 		return percentAboveSma50;
+	}
+	
+	
+	/**
+	 * Updates the percentage above SMA(50).
+	 */
+	private void updatePercentAboveSma50() {
+		BigDecimal percentAboveSma50, totalNumber, numberAboveSma50;
+		
+		if((this.numberAboveSma50 + this.numberAtOrBelowSma50) != 0) {
+			numberAboveSma50 = new BigDecimal(this.numberAboveSma50);
+			totalNumber = new BigDecimal(this.numberAboveSma50 + this.numberAtOrBelowSma50);
+			
+			percentAboveSma50 = numberAboveSma50.multiply(new BigDecimal(100)).divide(totalNumber, 0, RoundingMode.HALF_UP);
+			this.percentAboveSma50 = percentAboveSma50.floatValue();
+		}
 	}
 
 
