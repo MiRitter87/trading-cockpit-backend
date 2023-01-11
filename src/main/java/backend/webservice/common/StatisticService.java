@@ -90,6 +90,8 @@ public class StatisticService {
 		switch(chartType) {
 			case ADVANCE_DECLINE_NUMBER:
 				return this.getAdvanceDeclineNumberChart(listId);
+			case INSTRUMENTS_ABOVE_SMA50:
+				return this.getInstrumentsAboveSma50Chart(listId);
 			default:
 				return Response.status(404).build();				
 		}
@@ -119,6 +121,35 @@ public class StatisticService {
 			};
 		} catch (Exception exception) {
 			logger.error(this.resources.getString("statistic.chartADNumber.getError"), exception);
+			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+		}
+		
+		return Response.ok(streamingOutput).build();
+	}
+	
+	
+	/**
+	 * Provides a chart with the percentage of instruments trading above their SMA(50).
+	 * 
+	 * @param listId The ID of the list defining the instruments used for Statistic chart creation.
+	 * @return A Response containing the generated chart.
+	 */
+	private Response getInstrumentsAboveSma50Chart(final Integer listId) {
+		StatisticChartController statisticChartController = new StatisticChartController();
+		JFreeChart chart;
+		StreamingOutput streamingOutput = null;
+		
+		try {
+			chart = statisticChartController.getInstrumentsAboveSma50Chart(InstrumentType.STOCK, listId);
+			
+			streamingOutput = new StreamingOutput() {
+				@Override
+				public void write(OutputStream output) throws IOException, WebApplicationException {
+					ChartUtils.writeChartAsPNG(output, chart, 800, 600);
+				}
+			};
+		} catch (Exception exception) {
+			logger.error(this.resources.getString("statistic.chartAboveSma50.getError"), exception);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
 		}
 		
