@@ -81,9 +81,10 @@ public class StatisticService {
 	 * 
 	 * @param chartType The type of the requested chart.
 	 * @param listId The ID of the list defining the instruments used for Statistic chart creation.
+	 * @param instrumentId The ID of the Instrument used for Statistic chart creation.
 	 * @return A Response containing the generated chart.
 	 */
-	public Response getStatisticsChart(final ChartType chartType, final Integer listId) {
+	public Response getStatisticsChart(final ChartType chartType, final Integer listId, final Integer instrumentId) {
 		if(chartType == null)
 			return Response.status(404).build();
 		
@@ -92,6 +93,8 @@ public class StatisticService {
 				return this.getAdvanceDeclineNumberChart(listId);
 			case INSTRUMENTS_ABOVE_SMA50:
 				return this.getInstrumentsAboveSma50Chart(listId);
+			case DISTRIBUTION_DAYS:
+				return this.getDistributionDaysChart(instrumentId);
 			default:
 				return Response.status(404).build();				
 		}
@@ -154,5 +157,16 @@ public class StatisticService {
 		}
 		
 		return Response.ok(streamingOutput).build();
+	}
+	
+	
+	/**
+	 * Provides a chart of an Instrument marked with Distribution Days.
+	 * 
+	 * @param instrumentId The ID of the Instrument used for Statistic chart creation.
+	 * @return A Response containing the generated chart.
+	 */
+	private Response getDistributionDaysChart(final Integer instrumentId) {
+		return Response.ok().build();
 	}
 }

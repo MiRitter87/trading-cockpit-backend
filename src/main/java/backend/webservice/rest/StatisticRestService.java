@@ -38,13 +38,16 @@ public class StatisticRestService {
 	 * 
 	 * @param chartType The type of the requested chart.
 	 * @param listId The ID of the list defining the instruments used for Statistic chart creation.
+	 * @param instrumentId The ID of the Instrument used for Statistic chart creation.
 	 * @return The chart.
 	 */
     @GET
     @Path("/chart")
     @Produces("image/png")
-	public Response getStatisticsChart(@QueryParam("chartType") final ChartType chartType, @QueryParam("listId") final Integer listId) {
+	public Response getStatisticsChart(@QueryParam("chartType") final ChartType chartType, @QueryParam("listId") final Integer listId,
+			@QueryParam("instrumentId") final Integer instrumentId) {
+    	
     	StatisticService statisticService = new StatisticService();
-    	return statisticService.getStatisticsChart(chartType, listId);
+    	return statisticService.getStatisticsChart(chartType, listId, instrumentId);
 	}
 }

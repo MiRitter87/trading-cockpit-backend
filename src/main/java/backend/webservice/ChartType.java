@@ -14,5 +14,10 @@ public enum ChartType {
 	/**
 	 * A chart of the percentage of instruments trading above their SMA(50).
 	 */
-	INSTRUMENTS_ABOVE_SMA50
+	INSTRUMENTS_ABOVE_SMA50,
+	
+	/**
+	 * A chart of an Instrument marked with Distribution Days.
+	 */
+	DISTRIBUTION_DAYS
 }
