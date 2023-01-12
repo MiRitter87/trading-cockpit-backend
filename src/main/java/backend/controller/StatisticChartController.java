@@ -1,6 +1,7 @@
 package backend.controller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.ResourceBundle;
@@ -12,14 +13,19 @@ import org.jfree.data.time.Day;
 import org.jfree.data.time.TimePeriodAnchor;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
+import org.jfree.data.xy.DefaultHighLowDataset;
+import org.jfree.data.xy.OHLCDataset;
 import org.jfree.data.xy.XYDataset;
 
 import backend.controller.scan.StatisticCalculationController;
 import backend.dao.DAOManager;
+import backend.dao.instrument.InstrumentDAO;
 import backend.dao.list.ListDAO;
+import backend.dao.quotation.QuotationDAO;
 import backend.dao.statistic.StatisticDAO;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
+import backend.model.instrument.Quotation;
 import backend.model.statistic.Statistic;
 
 /**
@@ -34,6 +40,16 @@ public class StatisticChartController {
 	StatisticDAO statisticDAO;
 	
 	/**
+	 * DAO to access Instrument data.
+	 */
+	InstrumentDAO instrumentDAO;
+	
+	/**
+	 * DAO to access Quotation data.
+	 */
+	QuotationDAO quotationDAO;
+	
+	/**
 	 * Access to localized application resources.
 	 */
 	private ResourceBundle resources = ResourceBundle.getBundle("backend");
@@ -44,6 +60,8 @@ public class StatisticChartController {
 	 */
 	public StatisticChartController() {
 		this.statisticDAO = DAOManager.getInstance().getStatisticDAO();
+		this.instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
+		this.quotationDAO = DAOManager.getInstance().getQuotationDAO();
 	}
 	
 	
@@ -86,6 +104,24 @@ public class StatisticChartController {
 		);
 		
 		return chart;
+	}
+	
+	
+	/**
+	 * Gets a chart of an Instrument marked with Distribution Days.
+	 * 
+	 * @param instrumentId The ID of the Instrument used for Statistic chart creation.
+	 * @return The chart.
+	 * @throws Exception Chart generation failed.
+	 */
+	public JFreeChart getDistributionDaysChart(final Integer instrumentId) throws Exception {
+		OHLCDataset instrumentPriceData = this.getInstrumentOHLCDataset(instrumentId);
+		
+		//TODO Build Candlestick Plot based on OHLC Dataset
+		
+		//TODO Add Candlestick Plot to main Plot
+		
+		return null;
 	}
 	
 	
@@ -172,5 +208,44 @@ public class StatisticChartController {
         timeSeriesColleciton.setXPosition(TimePeriodAnchor.MIDDLE);
         
         return timeSeriesColleciton;
+	}
+	
+	
+	/**
+	 * Gets a dataset of OHLC prices for the Instrument with the given ID.
+	 * 
+	 * @param instrumentId The ID of the Instrument.
+	 * @return A dataset of OHLC prices.
+	 * @throws Exception dataset creation failed
+	 */
+	private OHLCDataset getInstrumentOHLCDataset(final Integer instrumentId) throws Exception {
+		Instrument instrument = this.instrumentDAO.getInstrument(instrumentId);
+		List<Quotation> quotationsSortedByDate;
+		
+		instrument.setQuotations(this.quotationDAO.getQuotationsOfInstrument(instrumentId));
+		int numberOfQuotations = instrument.getQuotations().size();
+		int quotationIndex;
+		
+		Date[] date = new Date[numberOfQuotations];
+		double[] open = new double[numberOfQuotations];
+        double[] high = new double[numberOfQuotations];
+        double[] low = new double[numberOfQuotations];
+        double[] close = new double[numberOfQuotations];
+        double[] volume = new double[numberOfQuotations];
+
+        quotationsSortedByDate = instrument.getQuotationsSortedByDate();
+        
+		for(Quotation tempQuotation : quotationsSortedByDate) {
+			quotationIndex = quotationsSortedByDate.indexOf(tempQuotation);
+			
+			date[quotationIndex] = tempQuotation.getDate();
+			open[quotationIndex] = tempQuotation.getOpen().doubleValue();
+			high[quotationIndex] = tempQuotation.getHigh().doubleValue();
+			low[quotationIndex] = tempQuotation.getLow().doubleValue();
+			close[quotationIndex] = tempQuotation.getClose().doubleValue();
+			volume[quotationIndex] = tempQuotation.getVolume();
+		}
+        
+		return new DefaultHighLowDataset("!Series 1", date, high, low, open, close, volume);
 	}
 }

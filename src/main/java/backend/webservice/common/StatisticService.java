@@ -167,6 +167,24 @@ public class StatisticService {
 	 * @return A Response containing the generated chart.
 	 */
 	private Response getDistributionDaysChart(final Integer instrumentId) {
-		return Response.ok().build();
+		StatisticChartController statisticChartController = new StatisticChartController();
+		JFreeChart chart;
+		StreamingOutput streamingOutput = null;
+		
+		try {
+			chart = statisticChartController.getDistributionDaysChart(instrumentId);
+			
+			streamingOutput = new StreamingOutput() {
+				@Override
+				public void write(OutputStream output) throws IOException, WebApplicationException {
+					ChartUtils.writeChartAsPNG(output, chart, 800, 600);
+				}
+			};
+		} catch (Exception exception) {
+			logger.error(this.resources.getString("statistic.chartDistributionDays.getError"), exception);
+			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+		}
+		
+		return Response.ok(streamingOutput).build();
 	}
 }
