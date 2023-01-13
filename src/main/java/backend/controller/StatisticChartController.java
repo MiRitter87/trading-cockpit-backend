@@ -128,6 +128,9 @@ public class StatisticChartController {
         NumberAxis valueAxisCandlestick = new NumberAxis("Value");
         ChartTheme currentTheme = new StandardChartTheme("JFree");
 		
+        //Do not begin y-Axis at zero. Use lowest value of provided Dataset instead.
+        valueAxisCandlestick.setAutoRangeIncludesZero(false);
+        
 		//Build Candlestick Plot based on OHLC Dataset.
 		XYPlot candleStickSubplot = new XYPlot(instrumentPriceData, timeAxisCandlestick, valueAxisCandlestick, null);
 		candleStickSubplot.setRenderer(new CandlestickRenderer());
