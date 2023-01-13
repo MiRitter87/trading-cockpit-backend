@@ -8,7 +8,14 @@ import java.util.ResourceBundle;
 import java.util.TimeZone;
 
 import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartTheme;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.StandardChartTheme;
+import org.jfree.chart.axis.DateAxis;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.CandlestickRenderer;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.TimePeriodAnchor;
 import org.jfree.data.time.TimeSeries;
@@ -116,12 +123,26 @@ public class StatisticChartController {
 	 */
 	public JFreeChart getDistributionDaysChart(final Integer instrumentId) throws Exception {
 		OHLCDataset instrumentPriceData = this.getInstrumentOHLCDataset(instrumentId);
+		JFreeChart chart;
+		ValueAxis timeAxisCandlestick = new DateAxis("Time");
+        NumberAxis valueAxisCandlestick = new NumberAxis("Value");
+        ChartTheme currentTheme = new StandardChartTheme("JFree");
 		
-		//TODO Build Candlestick Plot based on OHLC Dataset
+		//Build Candlestick Plot based on OHLC Dataset.
+		XYPlot candleStickSubplot = new XYPlot(instrumentPriceData, timeAxisCandlestick, valueAxisCandlestick, null);
+		candleStickSubplot.setRenderer(new CandlestickRenderer());
 		
 		//TODO Add Candlestick Plot to main Plot
+//		CombinedDomainXYPlot combinedPlot = new CombinedDomainXYPlot();
+//		combinedPlot.add(candleStickSubplot);
 		
-		return null;
+		//TODO Build chart based on combined Plot.
+		chart = new JFreeChart("CombinedDomainXYPlot Demo",
+				JFreeChart.DEFAULT_TITLE_FONT, candleStickSubplot, true);
+		
+		currentTheme.apply(chart);
+		
+		return chart;
 	}
 	
 	
