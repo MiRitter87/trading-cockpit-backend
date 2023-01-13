@@ -14,6 +14,7 @@ import org.jfree.chart.StandardChartTheme;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.plot.CombinedDomainXYPlot;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.CandlestickRenderer;
 import org.jfree.data.time.Day;
@@ -135,13 +136,14 @@ public class StatisticChartController {
 		XYPlot candleStickSubplot = new XYPlot(instrumentPriceData, timeAxisCandlestick, valueAxisCandlestick, null);
 		candleStickSubplot.setRenderer(new CandlestickRenderer());
 		
-		//TODO Add Candlestick Plot to main Plot
-//		CombinedDomainXYPlot combinedPlot = new CombinedDomainXYPlot();
-//		combinedPlot.add(candleStickSubplot);
+		//Add Candlestick Subplot to combined Plot
+		CombinedDomainXYPlot combinedPlot = new CombinedDomainXYPlot();
+		combinedPlot.add(candleStickSubplot);
+		combinedPlot.setDomainAxis(timeAxisCandlestick);
 		
-		//TODO Build chart based on combined Plot.
+		//Build chart based on combined Plot.
 		chart = new JFreeChart("CombinedDomainXYPlot Demo",
-				JFreeChart.DEFAULT_TITLE_FONT, candleStickSubplot, true);
+				JFreeChart.DEFAULT_TITLE_FONT, combinedPlot, true);
 		
 		currentTheme.apply(chart);
 		
