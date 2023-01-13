@@ -159,9 +159,7 @@ public class QuotationProviderYahooDAO implements QuotationProviderDAO {
 			ArrayList<?> openData = (ArrayList<?>) quoteAttributes.get("open");
 			ArrayList<?> highData = (ArrayList<?>) quoteAttributes.get("high");
 			ArrayList<?> lowData = (ArrayList<?>) quoteAttributes.get("low");
-			ArrayList<?> adjClose = (ArrayList<?>) indicators.get("adjclose");
-			LinkedHashMap<?, ?> adjCloseAttributes = (LinkedHashMap<?, ?>) adjClose.get(0);
-			ArrayList<?> adjCloseData = (ArrayList<?>) adjCloseAttributes.get("adjclose");
+			ArrayList<?> closeData = (ArrayList<?>) quoteAttributes.get("close");
 			
 			symbol = (String) metaAttributes.get("symbol");
 			
@@ -174,7 +172,7 @@ public class QuotationProviderYahooDAO implements QuotationProviderDAO {
 					quotation.setOpen(this.getPriceFromQuotationHistoryResponse(openData, i-1, quotation.getCurrency()));
 					quotation.setHigh(this.getPriceFromQuotationHistoryResponse(highData, i-1, quotation.getCurrency()));
 					quotation.setLow(this.getPriceFromQuotationHistoryResponse(lowData, i-1, quotation.getCurrency()));
-					quotation.setClose(this.getPriceFromQuotationHistoryResponse(adjCloseData, i-1, quotation.getCurrency()));	
+					quotation.setClose(this.getPriceFromQuotationHistoryResponse(closeData, i-1, quotation.getCurrency()));	
 					quotationHistory.add(quotation);
 				}
 				catch(Exception exception) {
