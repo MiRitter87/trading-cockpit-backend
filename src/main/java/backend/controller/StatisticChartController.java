@@ -129,15 +129,17 @@ public class StatisticChartController {
 		IntervalXYDataset volumeData = this.getInstrumentVolumeDataset(instrumentId);
 		JFreeChart chart;
 		ValueAxis timeAxisCandlestick = new DateAxis("Time");
-        NumberAxis valueAxisCandlestick = new NumberAxis("Value");
+        NumberAxis valueAxisCandlestick = new NumberAxis("!Preis");
         ChartTheme currentTheme = new StandardChartTheme("JFree");
+        CandlestickRenderer candlestickRenderer = new CandlestickRenderer();
 		
         //Do not begin y-Axis at zero. Use lowest value of provided Dataset instead.
         valueAxisCandlestick.setAutoRangeIncludesZero(false);
         
 		//Build Candlestick Plot based on OHLC Dataset.
 		XYPlot candleStickSubplot = new XYPlot(instrumentPriceData, timeAxisCandlestick, valueAxisCandlestick, null);
-		candleStickSubplot.setRenderer(new CandlestickRenderer());
+		candlestickRenderer.setDrawVolume(false);
+		candleStickSubplot.setRenderer(candlestickRenderer);
 		
 		//Build Volume Plot.
 		XYBarRenderer volumeRenderer = new XYBarRenderer();
@@ -145,8 +147,8 @@ public class StatisticChartController {
 		
 		//Add Candlestick Subplot to combined Plot
 		CombinedDomainXYPlot combinedPlot = new CombinedDomainXYPlot();
-		combinedPlot.add(candleStickSubplot);
-		combinedPlot.add(volumeSubplot);
+		combinedPlot.add(candleStickSubplot, 3);	//Price Plot takes 3 vertical size units.
+		combinedPlot.add(volumeSubplot, 1);			//Volume Plot takes 1 vertical size unit.
 		combinedPlot.setDomainAxis(timeAxisCandlestick);
 		
 		//Build chart based on combined Plot.
