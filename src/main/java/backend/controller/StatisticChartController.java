@@ -132,6 +132,8 @@ public class StatisticChartController {
 		JFreeChart chart;
 		ValueAxis timeAxisCandlestick = new DateAxis("Time");
         NumberAxis valueAxisCandlestick = new NumberAxis("!Preis");
+        NumberAxis volumeAxis = new NumberAxis("!Volumen");
+        NumberAxis distributionDaySumAxis = new NumberAxis("!# Distribution Days");
         ChartTheme currentTheme = new StandardChartTheme("JFree");
         CandlestickRenderer candlestickRenderer = new CandlestickRenderer();
 		
@@ -145,12 +147,17 @@ public class StatisticChartController {
 		
 		//Build Volume Plot.
 		XYBarRenderer volumeRenderer = new XYBarRenderer();
-		XYPlot volumeSubplot = new XYPlot(volumeData, timeAxisCandlestick, new NumberAxis("!Volumen"), volumeRenderer);
+		XYPlot volumeSubplot = new XYPlot(volumeData, timeAxisCandlestick, volumeAxis, volumeRenderer);
 		
-		//Add Candlestick Subplot to combined Plot
+		//Build the Plot for the rolling 21-day sum of distribution days.
+		XYBarRenderer distributionDaySumRenderer = new XYBarRenderer();
+		XYPlot distributionDaySumSubplot = new XYPlot(distributionDaySumData, timeAxisCandlestick, distributionDaySumAxis, distributionDaySumRenderer);
+		
+		//Build combined plot based on subplots.
 		CombinedDomainXYPlot combinedPlot = new CombinedDomainXYPlot();
-		combinedPlot.add(candleStickSubplot, 3);	//Price Plot takes 3 vertical size units.
-		combinedPlot.add(volumeSubplot, 1);			//Volume Plot takes 1 vertical size unit.
+		combinedPlot.add(distributionDaySumSubplot, 1);		//Distribution Day Sum Plot takes 1 vertical size unit.
+		combinedPlot.add(candleStickSubplot, 4);			//Price Plot takes 4 vertical size units.
+		combinedPlot.add(volumeSubplot, 1);					//Volume Plot takes 1 vertical size unit.
 		combinedPlot.setDomainAxis(timeAxisCandlestick);
 		
 		//Build chart based on combined Plot.
