@@ -1,5 +1,6 @@
 package backend.controller;
 
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -127,6 +128,7 @@ public class StatisticChartController {
 	public JFreeChart getDistributionDaysChart(final Integer instrumentId) throws Exception {
 		OHLCDataset instrumentPriceData = this.getInstrumentOHLCDataset(instrumentId);
 		IntervalXYDataset volumeData = this.getInstrumentVolumeDataset(instrumentId);
+		IntervalXYDataset distributionDaySumData = this.getDistributionDaySumDataset(instrumentId);
 		JFreeChart chart;
 		ValueAxis timeAxisCandlestick = new DateAxis("Time");
         NumberAxis valueAxisCandlestick = new NumberAxis("!Preis");
@@ -252,7 +254,7 @@ public class StatisticChartController {
 	 * 
 	 * @param instrumentId The ID of the Instrument.
 	 * @return A dataset of OHLC prices.
-	 * @throws Exception dataset creation failed
+	 * @throws Exception Dataset creation failed
 	 */
 	private OHLCDataset getInstrumentOHLCDataset(final Integer instrumentId) throws Exception {
 		Instrument instrument = this.instrumentDAO.getInstrument(instrumentId);
@@ -291,7 +293,7 @@ public class StatisticChartController {
 	 * 
 	 * @param instrumentId The ID of the Instrument.
 	 * @return A dataset of volume information.
-	 * @throws Exception dataset creation failed
+	 * @throws Exception Dataset creation failed
 	 */
 	private IntervalXYDataset getInstrumentVolumeDataset(final Integer instrumentId) throws Exception {
 		Instrument instrument = this.instrumentDAO.getInstrument(instrumentId);
@@ -310,5 +312,50 @@ public class StatisticChartController {
 		
         return dataset;
 
+	}
+	
+	
+	/**
+	 * Gets a dataset containing the rolling 21-day sum of distribution days of the Instrument with the given ID.
+	 * 
+	 * @param instrumentId The ID of the Instrument.
+	 * @return A dataset with the rolling 21-day sum of distribution days.
+	 * @throws Exception Dataset creation failed.
+	 */
+	private IntervalXYDataset getDistributionDaySumDataset(final Integer instrumentId) throws Exception {
+		List<Integer> indexOfDistributionDays = new ArrayList<>();
+		Instrument instrument = this.instrumentDAO.getInstrument(instrumentId);
+		List<Quotation> quotationsSortedByDate;
+		
+		instrument.setQuotations(this.quotationDAO.getQuotationsOfInstrument(instrumentId));
+		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
+        indexOfDistributionDays = this.getIndexOfDistributionDays(quotationsSortedByDate);
+		
+		return null;
+	}
+	
+	
+	/**
+	 * Determines a List of index numbers of quotations that constitute a Distribution Day.
+	 * 
+	 * @param quotationsSortedByDate A List of Quotations sorted by Date.
+	 * @return A List of index numbers of the given List that constitute a Distribution Day.
+	 */
+	private List<Integer> getIndexOfDistributionDays(final List<Quotation> quotationsSortedByDate) {
+		List<Integer> indexOfDistributionDays = new ArrayList<>();
+		Quotation currentQuotation, previousQuotation;
+		float performance;
+		
+		for(int i = 0; i < quotationsSortedByDate.size() - 1; i++) {
+			currentQuotation = quotationsSortedByDate.get(i);
+			previousQuotation = quotationsSortedByDate.get(i+1);
+			performance = currentQuotation.getClose().divide(previousQuotation.getClose(), 4, RoundingMode.HALF_UP).floatValue() - 1;
+			performance = performance * 100;	//Get performance in percent.
+			
+			if(performance < -0.2 && (currentQuotation.getVolume() > previousQuotation.getVolume()))
+				indexOfDistributionDays.add(i);
+		}
+		
+		return indexOfDistributionDays;
 	}
 }
