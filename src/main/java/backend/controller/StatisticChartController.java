@@ -17,11 +17,13 @@ import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.CombinedDomainXYPlot;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.CandlestickRenderer;
+import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.TimePeriodAnchor;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.DefaultHighLowDataset;
+import org.jfree.data.xy.IntervalXYDataset;
 import org.jfree.data.xy.OHLCDataset;
 import org.jfree.data.xy.XYDataset;
 
@@ -124,6 +126,7 @@ public class StatisticChartController {
 	 */
 	public JFreeChart getDistributionDaysChart(final Integer instrumentId) throws Exception {
 		OHLCDataset instrumentPriceData = this.getInstrumentOHLCDataset(instrumentId);
+		IntervalXYDataset volumeData = this.getInstrumentVolumeDataset(instrumentId);
 		JFreeChart chart;
 		ValueAxis timeAxisCandlestick = new DateAxis("Time");
         NumberAxis valueAxisCandlestick = new NumberAxis("Value");
@@ -136,9 +139,14 @@ public class StatisticChartController {
 		XYPlot candleStickSubplot = new XYPlot(instrumentPriceData, timeAxisCandlestick, valueAxisCandlestick, null);
 		candleStickSubplot.setRenderer(new CandlestickRenderer());
 		
+		//Build Volume Plot.
+		XYBarRenderer volumeRenderer = new XYBarRenderer();
+		XYPlot volumeSubplot = new XYPlot(volumeData, timeAxisCandlestick, new NumberAxis("!Volumen"), volumeRenderer);
+		
 		//Add Candlestick Subplot to combined Plot
 		CombinedDomainXYPlot combinedPlot = new CombinedDomainXYPlot();
 		combinedPlot.add(candleStickSubplot);
+		combinedPlot.add(volumeSubplot);
 		combinedPlot.setDomainAxis(timeAxisCandlestick);
 		
 		//Build chart based on combined Plot.
@@ -273,5 +281,32 @@ public class StatisticChartController {
 		}
         
 		return new DefaultHighLowDataset("!Series 1", date, high, low, open, close, volume);
+	}
+	
+	
+	/**
+	 * Gets a dataset of volume information for the Instrument with the given ID.
+	 * 
+	 * @param instrumentId The ID of the Instrument.
+	 * @return A dataset of volume information.
+	 * @throws Exception dataset creation failed
+	 */
+	private IntervalXYDataset getInstrumentVolumeDataset(final Integer instrumentId) throws Exception {
+		Instrument instrument = this.instrumentDAO.getInstrument(instrumentId);
+		List<Quotation> quotationsSortedByDate;
+		TimeSeriesCollection dataset = new TimeSeriesCollection();
+		TimeSeries volumeTimeSeries = new TimeSeries("!Volume");
+		
+		instrument.setQuotations(this.quotationDAO.getQuotationsOfInstrument(instrumentId));
+		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
+        
+		for(Quotation tempQuotation : quotationsSortedByDate) {
+			volumeTimeSeries.add(new Day(tempQuotation.getDate()), tempQuotation.getVolume());
+		}
+		
+		dataset.addSeries(volumeTimeSeries);
+		
+        return dataset;
+
 	}
 }
