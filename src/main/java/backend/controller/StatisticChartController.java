@@ -326,12 +326,36 @@ public class StatisticChartController {
 		List<Integer> indexOfDistributionDays = new ArrayList<>();
 		Instrument instrument = this.instrumentDAO.getInstrument(instrumentId);
 		List<Quotation> quotationsSortedByDate;
+		int indexStart, indexEnd, numberOfDistributionDays;
+		TimeSeriesCollection dataset = new TimeSeriesCollection();
+		TimeSeries distributionDaysTimeSeries = new TimeSeries("!#Distribution Days");
 		
 		instrument.setQuotations(this.quotationDAO.getQuotationsOfInstrument(instrumentId));
 		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
         indexOfDistributionDays = this.getIndexOfDistributionDays(quotationsSortedByDate);
+        
+        //Determine the rolling 21-day sum of distribution days.
+        for(Quotation tempQuotation: quotationsSortedByDate) {
+        	indexStart = quotationsSortedByDate.indexOf(tempQuotation);
+        	
+        	if((indexStart + 20) <= quotationsSortedByDate.size())
+        		indexEnd = indexStart + 20;
+        	else
+        		indexEnd = quotationsSortedByDate.size();
+        		
+        	//Count the number of distribution days from indexStart to indexEnd
+        	numberOfDistributionDays = 0;
+        	for(int distributionDayIndex: indexOfDistributionDays) {
+        		if(distributionDayIndex >= indexStart && distributionDayIndex <= indexEnd)
+        			numberOfDistributionDays++;
+        	}
+        	
+        	distributionDaysTimeSeries.add(new Day(tempQuotation.getDate()), numberOfDistributionDays);
+        }
+        
+        dataset.addSeries(distributionDaysTimeSeries);
 		
-		return null;
+		return dataset;
 	}
 	
 	
