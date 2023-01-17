@@ -127,9 +127,11 @@ public class StatisticChartController {
 	 * @throws Exception Chart generation failed.
 	 */
 	public JFreeChart getDistributionDaysChart(final Integer instrumentId) throws Exception {
-		OHLCDataset instrumentPriceData = this.getInstrumentOHLCDataset(instrumentId);
-		IntervalXYDataset volumeData = this.getInstrumentVolumeDataset(instrumentId);
-		IntervalXYDataset distributionDaySumData = this.getDistributionDaySumDataset(instrumentId);
+		Instrument instrument = this.instrumentDAO.getInstrument(instrumentId);
+		instrument.setQuotations(this.quotationDAO.getQuotationsOfInstrument(instrumentId));
+		OHLCDataset instrumentPriceData = this.getInstrumentOHLCDataset(instrument);
+		IntervalXYDataset volumeData = this.getInstrumentVolumeDataset(instrument);
+		IntervalXYDataset distributionDaySumData = this.getDistributionDaySumDataset(instrument);
 		JFreeChart chart;
 		ValueAxis timeAxisCandlestick = new DateAxis();
         NumberAxis valueAxisCandlestick = new NumberAxis();
@@ -145,7 +147,7 @@ public class StatisticChartController {
 		XYPlot candleStickSubplot = new XYPlot(instrumentPriceData, timeAxisCandlestick, valueAxisCandlestick, null);
 		candlestickRenderer.setDrawVolume(false);
 		candleStickSubplot.setRenderer(candlestickRenderer);
-		this.addAnnotationsToCandlestickPlot(candleStickSubplot, instrumentPriceData, instrumentId);
+		this.addAnnotationsToCandlestickPlot(candleStickSubplot, instrumentPriceData, instrument);
 		
 		//Build Volume Plot.
 		XYBarRenderer volumeRenderer = new XYBarRenderer();
@@ -163,9 +165,7 @@ public class StatisticChartController {
 		combinedPlot.setDomainAxis(timeAxisCandlestick);
 		
 		//Build chart based on combined Plot.
-		chart = new JFreeChart("CombinedDomainXYPlot Demo",
-				JFreeChart.DEFAULT_TITLE_FONT, combinedPlot, true);
-		
+		chart = new JFreeChart(instrument.getName(), JFreeChart.DEFAULT_TITLE_FONT, combinedPlot, true);
 		currentTheme.apply(chart);
 		
 		return chart;
@@ -259,17 +259,15 @@ public class StatisticChartController {
 	
 	
 	/**
-	 * Gets a dataset of OHLC prices for the Instrument with the given ID.
+	 * Gets a dataset of OHLC prices for the given Instrument.
 	 * 
-	 * @param instrumentId The ID of the Instrument.
+	 * @param instrument The Instrument.
 	 * @return A dataset of OHLC prices.
 	 * @throws Exception Dataset creation failed
 	 */
-	private OHLCDataset getInstrumentOHLCDataset(final Integer instrumentId) throws Exception {
-		Instrument instrument = this.instrumentDAO.getInstrument(instrumentId);
-		List<Quotation> quotationsSortedByDate;
+	private OHLCDataset getInstrumentOHLCDataset(final Instrument instrument) throws Exception {
+		List<Quotation> quotationsSortedByDate = instrument.getQuotationsSortedByDate();
 		
-		instrument.setQuotations(this.quotationDAO.getQuotationsOfInstrument(instrumentId));
 		int numberOfQuotations = instrument.getQuotations().size();
 		int quotationIndex;
 		
@@ -279,8 +277,6 @@ public class StatisticChartController {
         double[] low = new double[numberOfQuotations];
         double[] close = new double[numberOfQuotations];
         double[] volume = new double[numberOfQuotations];
-
-        quotationsSortedByDate = instrument.getQuotationsSortedByDate();
         
 		for(Quotation tempQuotation : quotationsSortedByDate) {
 			quotationIndex = quotationsSortedByDate.indexOf(tempQuotation);
@@ -299,21 +295,17 @@ public class StatisticChartController {
 	
 	
 	/**
-	 * Gets a dataset of volume information for the Instrument with the given ID.
+	 * Gets a dataset of volume information for the given Instrument.
 	 * 
-	 * @param instrumentId The ID of the Instrument.
+	 * @param instrument The Instrument.
 	 * @return A dataset of volume information.
 	 * @throws Exception Dataset creation failed
 	 */
-	private IntervalXYDataset getInstrumentVolumeDataset(final Integer instrumentId) throws Exception {
-		Instrument instrument = this.instrumentDAO.getInstrument(instrumentId);
-		List<Quotation> quotationsSortedByDate;
+	private IntervalXYDataset getInstrumentVolumeDataset(final Instrument instrument) throws Exception {
+		List<Quotation> quotationsSortedByDate = instrument.getQuotationsSortedByDate();
 		TimeSeriesCollection dataset = new TimeSeriesCollection();
 		TimeSeries volumeTimeSeries = new TimeSeries(this.resources.getString("statistic.chartDistributionDays.timeSeriesVolumeName"));
 		
-		instrument.setQuotations(this.quotationDAO.getQuotationsOfInstrument(instrumentId));
-		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
-        
 		for(Quotation tempQuotation : quotationsSortedByDate) {
 			volumeTimeSeries.add(new Day(tempQuotation.getDate()), tempQuotation.getVolume());
 		}
@@ -326,22 +318,19 @@ public class StatisticChartController {
 	
 	
 	/**
-	 * Gets a dataset containing the rolling 21-day sum of distribution days of the Instrument with the given ID.
+	 * Gets a dataset containing the rolling 21-day sum of distribution days of the given Instrument.
 	 * 
-	 * @param instrumentId The ID of the Instrument.
+	 * @param instrument The Instrument.
 	 * @return A dataset with the rolling 21-day sum of distribution days.
 	 * @throws Exception Dataset creation failed.
 	 */
-	private IntervalXYDataset getDistributionDaySumDataset(final Integer instrumentId) throws Exception {
+	private IntervalXYDataset getDistributionDaySumDataset(final Instrument instrument) throws Exception {
+		List<Quotation> quotationsSortedByDate = instrument.getQuotationsSortedByDate();
 		List<Integer> indexOfDistributionDays = new ArrayList<>();
-		Instrument instrument = this.instrumentDAO.getInstrument(instrumentId);
-		List<Quotation> quotationsSortedByDate;
 		int indexStart, indexEnd, numberOfDistributionDays;
 		TimeSeriesCollection dataset = new TimeSeriesCollection();
 		TimeSeries distributionDaysTimeSeries = new TimeSeries(this.resources.getString("statistic.chartDistributionDays.timeSeriesDDSumName"));
 		
-		instrument.setQuotations(this.quotationDAO.getQuotationsOfInstrument(instrumentId));
-		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
         indexOfDistributionDays = this.getIndexOfDistributionDays(quotationsSortedByDate);
         
         //Determine the rolling 21-day sum of distribution days.
@@ -399,19 +388,16 @@ public class StatisticChartController {
 	 * 
 	 * @param candlestickPlot The Plot to which annotations are added.
 	 * @param instrumentPriceData Price data displayed in the plot.
-	 * @param instrumentId The ID of the Instrument whose price data are displayed.
+	 * @param instrument The Instrument whose price data are displayed.
 	 * @throws Exception Annotation creation failed.
 	 */
-	private void addAnnotationsToCandlestickPlot(XYPlot candlestickPlot, final OHLCDataset instrumentPriceData, final Integer instrumentId) 
+	private void addAnnotationsToCandlestickPlot(XYPlot candlestickPlot, final OHLCDataset instrumentPriceData, final Instrument instrument) 
 			throws Exception {
 		
 		XYTextAnnotation textAnnotation;
 		List<Integer> indexOfDistributionDays = new ArrayList<>();
-		Instrument instrument = this.instrumentDAO.getInstrument(instrumentId);
-		List<Quotation> quotationsSortedByDate;
+		List<Quotation> quotationsSortedByDate = instrument.getQuotationsSortedByDate();
 		
-		instrument.setQuotations(this.quotationDAO.getQuotationsOfInstrument(instrumentId));
-		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
         indexOfDistributionDays = this.getIndexOfDistributionDays(quotationsSortedByDate);
         
 		for(Integer indexOfDistributionDay:indexOfDistributionDays) {
