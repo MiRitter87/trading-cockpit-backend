@@ -12,6 +12,7 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartTheme;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.StandardChartTheme;
+import org.jfree.chart.annotations.XYTextAnnotation;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
@@ -144,6 +145,7 @@ public class StatisticChartController {
 		XYPlot candleStickSubplot = new XYPlot(instrumentPriceData, timeAxisCandlestick, valueAxisCandlestick, null);
 		candlestickRenderer.setDrawVolume(false);
 		candleStickSubplot.setRenderer(candlestickRenderer);
+		this.addAnnotationsToCandlestickPlot(candleStickSubplot, instrumentPriceData, instrumentId);
 		
 		//Build Volume Plot.
 		XYBarRenderer volumeRenderer = new XYBarRenderer();
@@ -388,5 +390,33 @@ public class StatisticChartController {
 		}
 		
 		return indexOfDistributionDays;
+	}
+	
+	
+	/**
+	 * Adds text annotations for Distribution Days to the given plot.
+	 * 
+	 * @param candlestickPlot The Plot to which annotations are added.
+	 * @param instrumentPriceData Price data displayed in the plot.
+	 * @param instrumentId The ID of the Instrument whose price data are displayed.
+	 * @throws Exception Annotation creation failed.
+	 */
+	private void addAnnotationsToCandlestickPlot(XYPlot candlestickPlot, final OHLCDataset instrumentPriceData, final Integer instrumentId) 
+			throws Exception {
+		
+		XYTextAnnotation textAnnotation;
+		List<Integer> indexOfDistributionDays = new ArrayList<>();
+		Instrument instrument = this.instrumentDAO.getInstrument(instrumentId);
+		List<Quotation> quotationsSortedByDate;
+		
+		instrument.setQuotations(this.quotationDAO.getQuotationsOfInstrument(instrumentId));
+		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
+        indexOfDistributionDays = this.getIndexOfDistributionDays(quotationsSortedByDate);
+        
+		for(Integer indexOfDistributionDay:indexOfDistributionDays) {
+			textAnnotation = new XYTextAnnotation("D", instrumentPriceData.getXValue(0, indexOfDistributionDay), 
+					instrumentPriceData.getHighValue(0, indexOfDistributionDay) * 1.03);	//Show annotation 3 percent above high price.
+			candlestickPlot.addAnnotation(textAnnotation);
+		}
 	}
 }
