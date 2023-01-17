@@ -131,10 +131,10 @@ public class StatisticChartController {
 		IntervalXYDataset volumeData = this.getInstrumentVolumeDataset(instrumentId);
 		IntervalXYDataset distributionDaySumData = this.getDistributionDaySumDataset(instrumentId);
 		JFreeChart chart;
-		ValueAxis timeAxisCandlestick = new DateAxis("Time");
-        NumberAxis valueAxisCandlestick = new NumberAxis("!Preis");
-        NumberAxis volumeAxis = new NumberAxis("!Volumen");
-        NumberAxis distributionDaySumAxis = new NumberAxis("!# Distribution Days");
+		ValueAxis timeAxisCandlestick = new DateAxis();
+        NumberAxis valueAxisCandlestick = new NumberAxis();
+        NumberAxis volumeAxis = new NumberAxis();
+        NumberAxis distributionDaySumAxis = new NumberAxis();
         ChartTheme currentTheme = new StandardChartTheme("JFree");
         CandlestickRenderer candlestickRenderer = new CandlestickRenderer();
 		
@@ -292,8 +292,9 @@ public class StatisticChartController {
 			close[quotationIndex] = tempQuotation.getClose().doubleValue();
 			volume[quotationIndex] = tempQuotation.getVolume();
 		}
-        
-		return new DefaultHighLowDataset("!Series 1", date, high, low, open, close, volume);
+		
+		return new DefaultHighLowDataset(this.resources.getString("statistic.chartDistributionDays.timeSeriesPriceName"), 
+				date, high, low, open, close, volume);
 	}
 	
 	
@@ -308,7 +309,7 @@ public class StatisticChartController {
 		Instrument instrument = this.instrumentDAO.getInstrument(instrumentId);
 		List<Quotation> quotationsSortedByDate;
 		TimeSeriesCollection dataset = new TimeSeriesCollection();
-		TimeSeries volumeTimeSeries = new TimeSeries("!Volume");
+		TimeSeries volumeTimeSeries = new TimeSeries(this.resources.getString("statistic.chartDistributionDays.timeSeriesVolumeName"));
 		
 		instrument.setQuotations(this.quotationDAO.getQuotationsOfInstrument(instrumentId));
 		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
@@ -337,7 +338,7 @@ public class StatisticChartController {
 		List<Quotation> quotationsSortedByDate;
 		int indexStart, indexEnd, numberOfDistributionDays;
 		TimeSeriesCollection dataset = new TimeSeriesCollection();
-		TimeSeries distributionDaysTimeSeries = new TimeSeries("!#Distribution Days");
+		TimeSeries distributionDaysTimeSeries = new TimeSeries(this.resources.getString("statistic.chartDistributionDays.timeSeriesDDSumName"));
 		
 		instrument.setQuotations(this.quotationDAO.getQuotationsOfInstrument(instrumentId));
 		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
