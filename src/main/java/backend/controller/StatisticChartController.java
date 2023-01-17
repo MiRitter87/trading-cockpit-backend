@@ -129,40 +129,20 @@ public class StatisticChartController {
 	public JFreeChart getDistributionDaysChart(final Integer instrumentId) throws Exception {
 		Instrument instrument = this.instrumentDAO.getInstrument(instrumentId);
 		instrument.setQuotations(this.quotationDAO.getQuotationsOfInstrument(instrumentId));
-		OHLCDataset instrumentPriceData = this.getInstrumentOHLCDataset(instrument);
-		IntervalXYDataset volumeData = this.getInstrumentVolumeDataset(instrument);
-		IntervalXYDataset distributionDaySumData = this.getDistributionDaySumDataset(instrument);
 		JFreeChart chart;
-		ValueAxis timeAxisCandlestick = new DateAxis();
-        NumberAxis valueAxisCandlestick = new NumberAxis();
-        NumberAxis volumeAxis = new NumberAxis();
-        NumberAxis distributionDaySumAxis = new NumberAxis();
+		ValueAxis timeAxis = new DateAxis();	//The shared time axis of all subplots.
         ChartTheme currentTheme = new StandardChartTheme("JFree");
-        CandlestickRenderer candlestickRenderer = new CandlestickRenderer();
-		
-        //Do not begin y-Axis at zero. Use lowest value of provided Dataset instead.
-        valueAxisCandlestick.setAutoRangeIncludesZero(false);
         
-		//Build Candlestick Plot based on OHLC Dataset.
-		XYPlot candleStickSubplot = new XYPlot(instrumentPriceData, timeAxisCandlestick, valueAxisCandlestick, null);
-		candlestickRenderer.setDrawVolume(false);
-		candleStickSubplot.setRenderer(candlestickRenderer);
-		this.addAnnotationsToCandlestickPlot(candleStickSubplot, instrumentPriceData, instrument);
-		
-		//Build Volume Plot.
-		XYBarRenderer volumeRenderer = new XYBarRenderer();
-		XYPlot volumeSubplot = new XYPlot(volumeData, timeAxisCandlestick, volumeAxis, volumeRenderer);
-		
-		//Build the Plot for the rolling 21-day sum of distribution days.
-		XYBarRenderer distributionDaySumRenderer = new XYBarRenderer();
-		XYPlot distributionDaySumSubplot = new XYPlot(distributionDaySumData, timeAxisCandlestick, distributionDaySumAxis, distributionDaySumRenderer);
+		XYPlot candleStickSubplot = this.getCandlestickPlot(instrument, timeAxis);
+		XYPlot volumeSubplot = this.getVolumePlot(instrument, timeAxis);
+		XYPlot distributionDaySumSubplot = this.getDistributionDaySumPlot(instrument, timeAxis);
 		
 		//Build combined plot based on subplots.
 		CombinedDomainXYPlot combinedPlot = new CombinedDomainXYPlot();
 		combinedPlot.add(distributionDaySumSubplot, 1);		//Distribution Day Sum Plot takes 1 vertical size unit.
 		combinedPlot.add(candleStickSubplot, 4);			//Price Plot takes 4 vertical size units.
 		combinedPlot.add(volumeSubplot, 1);					//Volume Plot takes 1 vertical size unit.
-		combinedPlot.setDomainAxis(timeAxisCandlestick);
+		combinedPlot.setDomainAxis(timeAxis);
 		
 		//Build chart based on combined Plot.
 		chart = new JFreeChart(instrument.getName(), JFreeChart.DEFAULT_TITLE_FONT, combinedPlot, true);
@@ -405,5 +385,68 @@ public class StatisticChartController {
 					instrumentPriceData.getHighValue(0, indexOfDistributionDay) * 1.03);	//Show annotation 3 percent above high price.
 			candlestickPlot.addAnnotation(textAnnotation);
 		}
+	}
+	
+	
+	/**
+	 * Builds a plot to display prices of an Instrument using a Candlestick chart.
+	 * 
+	 * @param instrument The Instrument.
+	 * @param timeAxis The x-Axis (time).
+	 * @return A XYPlot depicting prices using a Candlestick chart.
+	 * @throws Exception Plot generation failed.
+	 */
+	private XYPlot getCandlestickPlot(final Instrument instrument, final ValueAxis timeAxis) throws Exception {
+		OHLCDataset instrumentPriceData = this.getInstrumentOHLCDataset(instrument);
+		NumberAxis valueAxisCandlestick = new NumberAxis();
+        CandlestickRenderer candlestickRenderer = new CandlestickRenderer();
+        
+        //Do not begin y-Axis at zero. Use lowest value of provided Dataset instead.
+        valueAxisCandlestick.setAutoRangeIncludesZero(false);
+		
+		XYPlot candleStickSubplot = new XYPlot(instrumentPriceData, timeAxis, valueAxisCandlestick, null);
+		candlestickRenderer.setDrawVolume(false);
+		candleStickSubplot.setRenderer(candlestickRenderer);
+		this.addAnnotationsToCandlestickPlot(candleStickSubplot, instrumentPriceData, instrument);
+		
+		return candleStickSubplot;
+	}
+	
+	
+	/**
+	 * Builds a plot to display volume data of an Instrument.
+	 * 
+	 * @param instrument The Instrument.
+	 * @param timeAxis The x-Axis (time).
+	 * @return A XYPlot depicting volume data.
+	 * @throws Exception Plot generation failed.
+	 */
+	private XYPlot getVolumePlot(final Instrument instrument, final ValueAxis timeAxis) throws Exception {
+		IntervalXYDataset volumeData = this.getInstrumentVolumeDataset(instrument);
+		XYBarRenderer volumeRenderer = new XYBarRenderer();
+        NumberAxis volumeAxis = new NumberAxis();
+		
+		XYPlot volumeSubplot = new XYPlot(volumeData, timeAxis, volumeAxis, volumeRenderer);
+		
+		return volumeSubplot;
+	}
+	
+	
+	/**
+	 * Builds a plot to display the rolling 21-day sum of Distribution Days.
+	 * 
+	 * @param instrument The Instrument.
+	 * @param timeAxis The x-Axis (time).
+	 * @return A XYPlot depicting the Distribution Day sum.
+	 * @throws Exception Plot generation failed.
+	 */
+	private XYPlot getDistributionDaySumPlot(final Instrument instrument, final ValueAxis timeAxis) throws Exception {
+		IntervalXYDataset distributionDaySumData = this.getDistributionDaySumDataset(instrument);
+        NumberAxis distributionDaySumAxis = new NumberAxis();
+		
+		XYBarRenderer distributionDaySumRenderer = new XYBarRenderer();
+		XYPlot distributionDaySumSubplot = new XYPlot(distributionDaySumData, timeAxis, distributionDaySumAxis, distributionDaySumRenderer);
+		
+		return distributionDaySumSubplot;
 	}
 }
