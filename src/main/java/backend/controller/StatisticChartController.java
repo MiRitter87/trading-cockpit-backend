@@ -298,10 +298,10 @@ public class StatisticChartController {
 	
 	
 	/**
-	 * Gets a dataset containing the rolling 21-day sum of distribution days of the given Instrument.
+	 * Gets a dataset containing the rolling 25-day sum of distribution days of the given Instrument.
 	 * 
 	 * @param instrument The Instrument.
-	 * @return A dataset with the rolling 21-day sum of distribution days.
+	 * @return A dataset with the rolling 25-day sum of distribution days.
 	 * @throws Exception Dataset creation failed.
 	 */
 	private IntervalXYDataset getDistributionDaySumDataset(final Instrument instrument) throws Exception {
@@ -313,12 +313,12 @@ public class StatisticChartController {
 		
         indexOfDistributionDays = this.getIndexOfDistributionDays(quotationsSortedByDate);
         
-        //Determine the rolling 21-day sum of distribution days.
+        //Determine the rolling 25-day sum of distribution days.
         for(Quotation tempQuotation: quotationsSortedByDate) {
         	indexStart = quotationsSortedByDate.indexOf(tempQuotation);
         	
-        	if((indexStart + 20) <= quotationsSortedByDate.size())
-        		indexEnd = indexStart + 20;
+        	if((indexStart + 24) <= quotationsSortedByDate.size())
+        		indexEnd = indexStart + 24;
         	else
         		indexEnd = quotationsSortedByDate.size();
         		
@@ -433,7 +433,7 @@ public class StatisticChartController {
 	
 	
 	/**
-	 * Builds a plot to display the rolling 21-day sum of Distribution Days.
+	 * Builds a plot to display the rolling 25-day sum of Distribution Days.
 	 * 
 	 * @param instrument The Instrument.
 	 * @param timeAxis The x-Axis (time).
