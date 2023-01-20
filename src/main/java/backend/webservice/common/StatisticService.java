@@ -171,6 +171,9 @@ public class StatisticService {
 		JFreeChart chart;
 		StreamingOutput streamingOutput = null;
 		
+		if(instrumentId == null)
+			return Response.status(Status.BAD_REQUEST).build();
+		
 		try {
 			chart = statisticChartController.getDistributionDaysChart(instrumentId);
 			
