@@ -34,9 +34,9 @@ public class ScanWS {
 	private Date lastScan;
 	
 	/**
-	 * The status.
+	 * The execution status.
 	 */
-	private ScanExecutionStatus status;
+	private ScanExecutionStatus executionStatus;
 	
 	/**
 	 * The percentage value indicating how much of the scan has been executed.
@@ -122,18 +122,18 @@ public class ScanWS {
 
 
 	/**
-	 * @return the status
+	 * @return the execution status
 	 */
-	public ScanExecutionStatus getStatus() {
-		return status;
+	public ScanExecutionStatus getExecutionStatus() {
+		return executionStatus;
 	}
 
 
 	/**
-	 * @param status the status to set
+	 * @param executionStatus the status to set
 	 */
-	public void setStatus(ScanExecutionStatus status) {
-		this.status = status;
+	public void setExecutionStatus(ScanExecutionStatus executionStatus) {
+		this.executionStatus = executionStatus;
 	}
 
 

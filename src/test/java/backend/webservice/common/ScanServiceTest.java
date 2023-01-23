@@ -585,8 +585,8 @@ public class ScanServiceTest {
 	
 	@Test
 	/**
-	 * Tests changing a scan to status "IN_PROGRESS" while another scan is already in status "IN_PROGRESS".
-	 * Only one scan at a time can be in status "IN_PROGRESS".
+	 * Tests changing a scan to execution status "IN_PROGRESS" while another scan is already in execution status "IN_PROGRESS".
+	 * Only one scan at a time can be in execution status "IN_PROGRESS".
 	 */
 	public void testUpdateScanMultipleInProgress() {
 		WebServiceResult updateScanResult;
@@ -594,11 +594,11 @@ public class ScanServiceTest {
 		String actualErrorMessage, expectedErrorMessage;
 		
 		try {
-			//Set one scan to status "IN_PROGRESS".
+			//Set one scan to execution status "IN_PROGRESS".
 			this.singleListScan.setExecutionStatus(ScanExecutionStatus.IN_PROGRESS);
 			scanDAO.updateScan(this.singleListScan);
 			
-			//Try to set a second scan to status "IN_PROGRESS".
+			//Try to set a second scan to execution status "IN_PROGRESS".
 			this.multiListScan.setExecutionStatus(ScanExecutionStatus.IN_PROGRESS);
 			updateScanResult = service.updateScan(this.convertToWsScan(multiListScan));
 			
@@ -614,7 +614,7 @@ public class ScanServiceTest {
 			fail(e.getMessage());
 		}
 		
-		//The second scan should not have been set to status "IN_PROGRESS".
+		//The second scan should not have been set to execution status "IN_PROGRESS".
 	}
 	
 	
@@ -709,7 +709,7 @@ public class ScanServiceTest {
 		scanWS.setId(scan.getId());
 		scanWS.setName(scan.getName());
 		scanWS.setDescription(scan.getDescription());
-		scanWS.setStatus(scan.getExecutionStatus());
+		scanWS.setExecutionStatus(scan.getExecutionStatus());
 		scanWS.setPercentCompleted(scan.getPercentCompleted());
 		scanWS.setLastScan(scan.getLastScan());
 		
