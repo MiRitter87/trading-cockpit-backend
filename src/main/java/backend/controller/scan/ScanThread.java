@@ -26,7 +26,7 @@ import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 import backend.model.list.List;
 import backend.model.scan.Scan;
-import backend.model.scan.ScanStatus;
+import backend.model.scan.ScanExecutionStatus;
 
 /**
  * Queries historical stock quotes of instruments that are part of a scan.
@@ -360,7 +360,7 @@ public class ScanThread extends Thread {
 	private void setScanToFinished() {
 		try {
 			this.scan.setLastScan(new Date());
-			this.scan.setStatus(ScanStatus.FINISHED);		
+			this.scan.setExecutionStatus(ScanExecutionStatus.FINISHED);		
 			this.scanDAO.updateScan(this.scan);
 		} catch (ObjectUnchangedException e) {
 			logger.error("The scan was executed although being already in status 'FINISHED'.", e);

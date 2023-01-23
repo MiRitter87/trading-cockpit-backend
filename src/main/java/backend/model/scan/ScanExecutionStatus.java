@@ -1,11 +1,11 @@
 package backend.model.scan;
 
 /**
- * The status of a scan.
+ * The execution status of a Scan.
  * 
  * @author Michael
  */
-public enum ScanStatus {
+public enum ScanExecutionStatus {
 	/**
 	 * The scan process is currently running.
 	 */

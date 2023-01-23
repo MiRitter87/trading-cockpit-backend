@@ -36,7 +36,7 @@ public class ScanWS {
 	/**
 	 * The status.
 	 */
-	private ScanStatus status;
+	private ScanExecutionStatus status;
 	
 	/**
 	 * The percentage value indicating how much of the scan has been executed.
@@ -124,7 +124,7 @@ public class ScanWS {
 	/**
 	 * @return the status
 	 */
-	public ScanStatus getStatus() {
+	public ScanExecutionStatus getStatus() {
 		return status;
 	}
 
@@ -132,7 +132,7 @@ public class ScanWS {
 	/**
 	 * @param status the status to set
 	 */
-	public void setStatus(ScanStatus status) {
+	public void setStatus(ScanExecutionStatus status) {
 		this.status = status;
 	}
 

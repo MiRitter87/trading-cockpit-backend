@@ -29,7 +29,7 @@ import backend.model.list.List;
 import backend.model.list.ListArray;
 import backend.model.list.ListWS;
 import backend.model.scan.Scan;
-import backend.model.scan.ScanStatus;
+import backend.model.scan.ScanExecutionStatus;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
 import backend.tools.WebServiceTools;
@@ -294,7 +294,7 @@ public class ListServiceTest {
 		
 		scan.setName("Dummy Scan");
 		scan.setDescription("Some Description");
-		scan.setStatus(ScanStatus.FINISHED);
+		scan.setExecutionStatus(ScanExecutionStatus.FINISHED);
 		scan.setLastScan(new Date());
 		scan.addList(this.multiInstrumentList);
 		

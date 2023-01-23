@@ -32,7 +32,7 @@ import backend.model.instrument.Quotation;
 import backend.model.list.List;
 import backend.model.scan.Scan;
 import backend.model.scan.ScanArray;
-import backend.model.scan.ScanStatus;
+import backend.model.scan.ScanExecutionStatus;
 import backend.model.scan.ScanWS;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
@@ -595,11 +595,11 @@ public class ScanServiceTest {
 		
 		try {
 			//Set one scan to status "IN_PROGRESS".
-			this.singleListScan.setStatus(ScanStatus.IN_PROGRESS);
+			this.singleListScan.setExecutionStatus(ScanExecutionStatus.IN_PROGRESS);
 			scanDAO.updateScan(this.singleListScan);
 			
 			//Try to set a second scan to status "IN_PROGRESS".
-			this.multiListScan.setStatus(ScanStatus.IN_PROGRESS);
+			this.multiListScan.setExecutionStatus(ScanExecutionStatus.IN_PROGRESS);
 			updateScanResult = service.updateScan(this.convertToWsScan(multiListScan));
 			
 			//There should be a return message of type E.
@@ -709,7 +709,7 @@ public class ScanServiceTest {
 		scanWS.setId(scan.getId());
 		scanWS.setName(scan.getName());
 		scanWS.setDescription(scan.getDescription());
-		scanWS.setStatus(scan.getStatus());
+		scanWS.setStatus(scan.getExecutionStatus());
 		scanWS.setPercentCompleted(scan.getPercentCompleted());
 		scanWS.setLastScan(scan.getLastScan());
 		

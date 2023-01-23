@@ -229,9 +229,9 @@ public class ScanTest {
 	 */
 	public void testStatusIsNull() {
 		ValidationMessageProvider messageProvider = new ValidationMessageProvider();		
-		this.scan.setStatus(null);
+		this.scan.setExecutionStatus(null);
 		
-		String expectedErrorMessage = messageProvider.getNotNullValidationMessage("scan", "status");
+		String expectedErrorMessage = messageProvider.getNotNullValidationMessage("scan", "executionStatus");
 		String errorMessage = "";
 		
 		try {

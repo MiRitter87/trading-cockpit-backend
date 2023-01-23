@@ -3,7 +3,7 @@ package backend.controller.scan;
 import backend.controller.DataProvider;
 import backend.controller.MainController;
 import backend.model.scan.Scan;
-import backend.model.scan.ScanStatus;
+import backend.model.scan.ScanExecutionStatus;
 
 /**
  * Controls the whole scan process.
@@ -67,7 +67,7 @@ public class ScanController {
 	 * @param databaseScan The database state of the scan before the update has been performed.
 	 */
 	public void checkAndExecute(final Scan scan, final Scan databaseScan) {
-		if(scan.getStatus() == ScanStatus.IN_PROGRESS && databaseScan.getStatus() == ScanStatus.FINISHED)
+		if(scan.getExecutionStatus() == ScanExecutionStatus.IN_PROGRESS && databaseScan.getExecutionStatus() == ScanExecutionStatus.FINISHED)
 			this.execute(scan);			
 	}
 	

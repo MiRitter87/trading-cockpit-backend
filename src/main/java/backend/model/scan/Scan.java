@@ -72,12 +72,12 @@ public class Scan {
 	private Date lastScan;
 	
 	/**
-	 * The status.
+	 * The execution status.
 	 */
-	@Column(name="STATUS", length = 20)
+	@Column(name="EXECUTION_STATUS", length = 20)
 	@Enumerated(EnumType.STRING)
-	@NotNull(message = "{scan.status.notNull.message}")
-	private ScanStatus status;
+	@NotNull(message = "{scan.executionStatus.notNull.message}")
+	private ScanExecutionStatus executionStatus;
 	
 	/**
 	 * The percentage value indicating how much of the scan has been executed.
@@ -102,7 +102,7 @@ public class Scan {
 	 * Default constructor.
 	 */
 	public Scan() {
-		this.status = ScanStatus.FINISHED;
+		this.executionStatus = ScanExecutionStatus.FINISHED;
 		this.percentCompleted = 0;
 		this.lists = new HashSet<List>();
 	}
@@ -173,18 +173,18 @@ public class Scan {
 
 
 	/**
-	 * @return the status
+	 * @return the execution status
 	 */
-	public ScanStatus getStatus() {
-		return status;
+	public ScanExecutionStatus getExecutionStatus() {
+		return executionStatus;
 	}
 
 
 	/**
-	 * @param status the status to set
+	 * @param executionStatus the execution status to set
 	 */
-	public void setStatus(ScanStatus status) {
-		this.status = status;
+	public void setExecutionStatus(ScanExecutionStatus executionStatus) {
+		this.executionStatus = executionStatus;
 	}
 
 
@@ -226,7 +226,7 @@ public class Scan {
 		int result = 1;
 		result = prime * result + ((description == null) ? 0 : description.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result + ((status == null) ? 0 : status.hashCode());
+		result = prime * result + ((executionStatus == null) ? 0 : executionStatus.hashCode());
 		result = prime * result + ((lastScan == null) ? 0 : lastScan.hashCode());
 		result = prime * result + ((lists == null) ? 0 : lists.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
@@ -261,7 +261,7 @@ public class Scan {
 		} else if (!id.equals(other.id)) {
 			return false;
 		}
-		if (status != other.status) {
+		if (executionStatus != other.executionStatus) {
 			return false;
 		}
 		if (lastScan == null && other.lastScan != null)
