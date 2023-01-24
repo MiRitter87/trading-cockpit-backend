@@ -711,7 +711,7 @@ public class ScanServiceTest {
 		scanWS.setDescription(scan.getDescription());
 		scanWS.setExecutionStatus(scan.getExecutionStatus());
 		scanWS.setCompletionStatus(scan.getCompletionStatus());
-		scanWS.setPercentCompleted(scan.getPercentCompleted());
+		scanWS.setProgress(scan.getProgress());
 		scanWS.setLastScan(scan.getLastScan());
 		
 		//Lists

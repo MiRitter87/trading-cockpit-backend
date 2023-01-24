@@ -122,7 +122,7 @@ public class ScanThread extends Thread {
 			this.updateInstrument(instrument);
 			
 			instrumentsProcessed++;
-			this.updateScanPercentCompleted(instrumentsProcessed, instruments.size());
+			this.updateScanProgress(instrumentsProcessed, instruments.size());
 			
 			try {
 				sleep(this.queryInterval * 1000);
@@ -323,33 +323,33 @@ public class ScanThread extends Thread {
 	
 	
 	/**
-	 * Updates the status field 'percentCompleted' of the running scan.
+	 * Updates the status field 'progress' of the running scan.
 	 * 
 	 * @param numberOfInstrumentsCompleted The number of instruments that already have been scanned.
 	 * @param totalNumberOfInstruments The total number of instruments of the scan.
 	 */
-	private void updateScanPercentCompleted(final int numberOfInstrumentsCompleted, final int totalNumberOfInstruments) {
-		BigDecimal percentCompleted, instrumentsCompleted, numberOfInstruments;
-		int roundedPercentCompleted = 0;
+	private void updateScanProgress(final int numberOfInstrumentsCompleted, final int totalNumberOfInstruments) {
+		BigDecimal progress, instrumentsCompleted, numberOfInstruments;
+		int roundedProgress = 0;
 		
 		instrumentsCompleted = BigDecimal.valueOf(numberOfInstrumentsCompleted);
 		numberOfInstruments = BigDecimal.valueOf(totalNumberOfInstruments);
 		
-		percentCompleted = instrumentsCompleted.divide(numberOfInstruments, 2, RoundingMode.HALF_UP);
-		percentCompleted = percentCompleted.multiply(BigDecimal.valueOf(100));
-		roundedPercentCompleted = percentCompleted.intValue();
+		progress = instrumentsCompleted.divide(numberOfInstruments, 2, RoundingMode.HALF_UP);
+		progress = progress.multiply(BigDecimal.valueOf(100));
+		roundedProgress = progress.intValue();
 		
-		if(this.scan.getPercentCompleted().equals(roundedPercentCompleted)) {
+		if(this.scan.getProgress().equals(roundedProgress)) {
 			return;
 		}
 		
 		try {			
-			this.scan.setPercentCompleted(roundedPercentCompleted);
+			this.scan.setProgress(roundedProgress);
 			this.scanDAO.updateScan(this.scan);
 		} catch (ObjectUnchangedException e) {
-			logger.error("Tried to update 'percentCompleted' in scan process but value did not change.", e);
+			logger.error("Tried to update 'progress' in scan process but value did not change.", e);
 		} catch (Exception e) {
-			logger.error("Failed to update 'percentCompleted' of scan during scan process.", e);
+			logger.error("Failed to update 'progress' of scan during scan process.", e);
 		}			
 	}
 	

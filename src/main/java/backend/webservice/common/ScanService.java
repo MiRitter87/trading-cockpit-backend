@@ -245,7 +245,7 @@ public class ScanService {
 		scan.setDescription(scanWS.getDescription());
 		scan.setExecutionStatus(scanWS.getExecutionStatus());
 		scan.setCompletionStatus(scanWS.getCompletionStatus());
-		scan.setPercentCompleted(scanWS.getPercentCompleted());
+		scan.setProgress(scanWS.getProgress());
 		scan.setLastScan(scanWS.getLastScan());
 		
 		//Convert the list IDs into list objects.

@@ -46,7 +46,7 @@ public class ScanWS {
 	/**
 	 * The percentage value indicating how much of the scan has been executed.
 	 */
-	private Integer percentCompleted;
+	private Integer progress;
 	
 	/**
 	 * The lists whose instruments are scanned.
@@ -159,18 +159,18 @@ public class ScanWS {
 
 
 	/**
-	 * @return the percentCompleted
+	 * @return the progress
 	 */
-	public Integer getPercentCompleted() {
-		return percentCompleted;
+	public Integer getProgress() {
+		return progress;
 	}
 
 
 	/**
-	 * @param percentCompleted the percentCompleted to set
+	 * @param progress the progress to set
 	 */
-	public void setPercentCompleted(Integer percentCompleted) {
-		this.percentCompleted = percentCompleted;
+	public void setProgress(Integer progress) {
+		this.progress = progress;
 	}
 
 

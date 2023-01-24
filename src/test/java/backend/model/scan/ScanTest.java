@@ -308,18 +308,18 @@ public class ScanTest {
 	
 	@Test
 	/**
-	 * Tests validation of a scan whose percentCompleted attribute is too low.
+	 * Tests validation of a scan whose progress attribute is too low.
 	 */
-	public void testPercentCompletedTooLow() {
+	public void testProgressTooLow() {
 		ValidationMessageProvider messageProvider = new ValidationMessageProvider();		
-		this.scan.setPercentCompleted(-1);
+		this.scan.setProgress(-1);
 		
-		String expectedErrorMessage = messageProvider.getMinValidationMessage("scan", "percentCompleted", "0");
+		String expectedErrorMessage = messageProvider.getMinValidationMessage("scan", "progress", "0");
 		String errorMessage = "";
 		
 		try {
 			this.scan.validate();
-			fail("Validation should have failed because percentCompleted is too low.");
+			fail("Validation should have failed because progress is too low.");
 		} 
 		catch (Exception expected) {
 			errorMessage = expected.getMessage();
@@ -331,18 +331,18 @@ public class ScanTest {
 	
 	@Test
 	/**
-	 * Tests validation of a scan whose percentCompleted attribute is too high.
+	 * Tests validation of a scan whose progress attribute is too high.
 	 */
-	public void testPercentCompletedTooHigh() {
+	public void testProgressTooHigh() {
 		ValidationMessageProvider messageProvider = new ValidationMessageProvider();		
-		this.scan.setPercentCompleted(101);
+		this.scan.setProgress(101);
 		
-		String expectedErrorMessage = messageProvider.getMaxValidationMessage("scan", "percentCompleted", "100");
+		String expectedErrorMessage = messageProvider.getMaxValidationMessage("scan", "progress", "100");
 		String errorMessage = "";
 		
 		try {
 			this.scan.validate();
-			fail("Validation should have failed because percentCompleted is too high.");
+			fail("Validation should have failed because progress is too high.");
 		} 
 		catch (Exception expected) {
 			errorMessage = expected.getMessage();
@@ -354,18 +354,18 @@ public class ScanTest {
 	
 	@Test
 	/**
-	 * Tests validation of a scan whose percentCompleted attribute is null.
+	 * Tests validation of a scan whose progress attribute is null.
 	 */
-	public void testPercentCompletedIsNull() {
+	public void testProgressIsNull() {
 		ValidationMessageProvider messageProvider = new ValidationMessageProvider();		
-		this.scan.setPercentCompleted(null);
+		this.scan.setProgress(null);
 		
-		String expectedErrorMessage = messageProvider.getNotNullValidationMessage("scan", "percentCompleted");
+		String expectedErrorMessage = messageProvider.getNotNullValidationMessage("scan", "progress");
 		String errorMessage = "";
 		
 		try {
 			this.scan.validate();
-			fail("Validation should have failed because percentCompleted is null.");
+			fail("Validation should have failed because progress is null.");
 		} 
 		catch (Exception expected) {
 			errorMessage = expected.getMessage();

@@ -90,11 +90,11 @@ public class Scan {
 	/**
 	 * The percentage value indicating how much of the scan has been executed.
 	 */
-	@Column(name="PERCENT_COMPLETED")
-	@Min(value = 0, message = "{scan.percentCompleted.min.message}")
-	@Max(value = 100, message = "{scan.percentCompleted.max.message}")
-	@NotNull(message = "{scan.percentCompleted.notNull.message}")
-	private Integer percentCompleted;
+	@Column(name="PROGRESS")
+	@Min(value = 0, message = "{scan.progress.min.message}")
+	@Max(value = 100, message = "{scan.progress.max.message}")
+	@NotNull(message = "{scan.progress.notNull.message}")
+	private Integer progress;
 	
 	/**
 	 * The lists whose instruments are scanned.
@@ -112,7 +112,7 @@ public class Scan {
 	public Scan() {
 		this.executionStatus = ScanExecutionStatus.FINISHED;
 		this.completionStatus = ScanCompletionStatus.COMPLETE;
-		this.percentCompleted = 0;
+		this.progress = 0;
 		this.lists = new HashSet<List>();
 	}
 
@@ -214,18 +214,18 @@ public class Scan {
 
 
 	/**
-	 * @return the percentCompleted
+	 * @return the progress
 	 */
-	public Integer getPercentCompleted() {
-		return percentCompleted;
+	public Integer getProgress() {
+		return progress;
 	}
 
 
 	/**
-	 * @param percentCompleted the percentCompleted to set
+	 * @param progress the progress to set
 	 */
-	public void setPercentCompleted(Integer percentCompleted) {
-		this.percentCompleted = percentCompleted;
+	public void setProgress(Integer progress) {
+		this.progress = progress;
 	}
 
 
@@ -256,7 +256,7 @@ public class Scan {
 		result = prime * result + ((lastScan == null) ? 0 : lastScan.hashCode());
 		result = prime * result + ((lists == null) ? 0 : lists.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((percentCompleted == null) ? 0 : percentCompleted.hashCode());
+		result = prime * result + ((progress == null) ? 0 : progress.hashCode());
 		return result;
 	}
 
@@ -308,11 +308,11 @@ public class Scan {
 		} else if (!name.equals(other.name)) {
 			return false;
 		}
-		if (percentCompleted == null) {
-			if (other.percentCompleted != null) {
+		if (progress == null) {
+			if (other.progress != null) {
 				return false;
 			}
-		} else if (!percentCompleted.equals(other.percentCompleted)) {
+		} else if (!progress.equals(other.progress)) {
 			return false;
 		}
 		
