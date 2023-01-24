@@ -225,9 +225,9 @@ public class ScanTest {
 	
 	@Test
 	/**
-	 * Tests validation of a scan whose status is null.
+	 * Tests validation of a scan whose execution status is null.
 	 */
-	public void testStatusIsNull() {
+	public void testExecutionStatusIsNull() {
 		ValidationMessageProvider messageProvider = new ValidationMessageProvider();		
 		this.scan.setExecutionStatus(null);
 		
@@ -236,7 +236,30 @@ public class ScanTest {
 		
 		try {
 			this.scan.validate();
-			fail("Validation should have failed because status is null.");
+			fail("Validation should have failed because execution status is null.");
+		} 
+		catch (Exception expected) {
+			errorMessage = expected.getMessage();
+		}
+		
+		assertEquals(expectedErrorMessage, errorMessage);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests validation of a scan whose completion status is null.
+	 */
+	public void testCompletionStatusIsNull() {
+		ValidationMessageProvider messageProvider = new ValidationMessageProvider();		
+		this.scan.setCompletionStatus(null);
+		
+		String expectedErrorMessage = messageProvider.getNotNullValidationMessage("scan", "completionStatus");
+		String errorMessage = "";
+		
+		try {
+			this.scan.validate();
+			fail("Validation should have failed because completion status is null.");
 		} 
 		catch (Exception expected) {
 			errorMessage = expected.getMessage();

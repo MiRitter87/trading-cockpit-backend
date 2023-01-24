@@ -244,6 +244,7 @@ public class ScanService {
 		scan.setName(scanWS.getName());
 		scan.setDescription(scanWS.getDescription());
 		scan.setExecutionStatus(scanWS.getExecutionStatus());
+		scan.setCompletionStatus(scanWS.getCompletionStatus());
 		scan.setPercentCompleted(scanWS.getPercentCompleted());
 		scan.setLastScan(scanWS.getLastScan());
 		

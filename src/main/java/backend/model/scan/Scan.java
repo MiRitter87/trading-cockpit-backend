@@ -80,6 +80,14 @@ public class Scan {
 	private ScanExecutionStatus executionStatus;
 	
 	/**
+	 * The completion status.
+	 */
+	@Column(name="COMPLETION_STATUS", length = 20)
+	@Enumerated(EnumType.STRING)
+	@NotNull(message = "{scan.completionStatus.notNull.message}")
+	private ScanCompletionStatus completionStatus;
+	
+	/**
 	 * The percentage value indicating how much of the scan has been executed.
 	 */
 	@Column(name="PERCENT_COMPLETED")
@@ -103,6 +111,7 @@ public class Scan {
 	 */
 	public Scan() {
 		this.executionStatus = ScanExecutionStatus.FINISHED;
+		this.completionStatus = ScanCompletionStatus.COMPLETE;
 		this.percentCompleted = 0;
 		this.lists = new HashSet<List>();
 	}
@@ -189,6 +198,22 @@ public class Scan {
 
 
 	/**
+	 * @return the completionStatus
+	 */
+	public ScanCompletionStatus getCompletionStatus() {
+		return completionStatus;
+	}
+
+
+	/**
+	 * @param completionStatus the completionStatus to set
+	 */
+	public void setCompletionStatus(ScanCompletionStatus completionStatus) {
+		this.completionStatus = completionStatus;
+	}
+
+
+	/**
 	 * @return the percentCompleted
 	 */
 	public Integer getPercentCompleted() {
@@ -227,6 +252,7 @@ public class Scan {
 		result = prime * result + ((description == null) ? 0 : description.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((executionStatus == null) ? 0 : executionStatus.hashCode());
+		result = prime * result + ((completionStatus == null) ? 0 : completionStatus.hashCode());
 		result = prime * result + ((lastScan == null) ? 0 : lastScan.hashCode());
 		result = prime * result + ((lists == null) ? 0 : lists.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
@@ -262,6 +288,9 @@ public class Scan {
 			return false;
 		}
 		if (executionStatus != other.executionStatus) {
+			return false;
+		}
+		if (completionStatus != other.completionStatus) {
 			return false;
 		}
 		if (lastScan == null && other.lastScan != null)

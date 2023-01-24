@@ -39,6 +39,11 @@ public class ScanWS {
 	private ScanExecutionStatus executionStatus;
 	
 	/**
+	 * The completion status.
+	 */
+	private ScanCompletionStatus completionStatus;
+	
+	/**
 	 * The percentage value indicating how much of the scan has been executed.
 	 */
 	private Integer percentCompleted;
@@ -134,6 +139,22 @@ public class ScanWS {
 	 */
 	public void setExecutionStatus(ScanExecutionStatus executionStatus) {
 		this.executionStatus = executionStatus;
+	}
+
+
+	/**
+	 * @return the completionStatus
+	 */
+	public ScanCompletionStatus getCompletionStatus() {
+		return completionStatus;
+	}
+
+
+	/**
+	 * @param completionStatus the completionStatus to set
+	 */
+	public void setCompletionStatus(ScanCompletionStatus completionStatus) {
+		this.completionStatus = completionStatus;
 	}
 
 

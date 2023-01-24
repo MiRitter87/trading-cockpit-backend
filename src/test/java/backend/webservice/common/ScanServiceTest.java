@@ -710,6 +710,7 @@ public class ScanServiceTest {
 		scanWS.setName(scan.getName());
 		scanWS.setDescription(scan.getDescription());
 		scanWS.setExecutionStatus(scan.getExecutionStatus());
+		scanWS.setCompletionStatus(scan.getCompletionStatus());
 		scanWS.setPercentCompleted(scan.getPercentCompleted());
 		scanWS.setLastScan(scan.getLastScan());
 		
