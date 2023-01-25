@@ -94,6 +94,7 @@ public class ScanHibernateDAO implements ScanDAO {
 		//Use entity graphs to load data of referenced list instances.
 		EntityGraph<Scan> graph = entityManager.createEntityGraph(Scan.class);
 		graph.addAttributeNodes("lists");
+		graph.addAttributeNodes("incompleteInstruments");
 		
 		entityManager.getTransaction().begin();
 		
@@ -130,6 +131,7 @@ public class ScanHibernateDAO implements ScanDAO {
 		//Use entity graphs to load data of referenced list instances.
 		EntityGraph<Scan> graph = entityManager.createEntityGraph(Scan.class);
 		graph.addAttributeNodes("lists");
+		graph.addAttributeNodes("incompleteInstruments");
 		Map<String, Object> hints = new HashMap<String, Object>();
 		hints.put("javax.persistence.loadgraph", graph);
 		

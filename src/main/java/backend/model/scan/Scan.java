@@ -29,6 +29,7 @@ import org.hibernate.validator.HibernateValidator;
 import org.hibernate.validator.messageinterpolation.ExpressionLanguageFeatureLevel;
 
 import backend.model.NoItemsException;
+import backend.model.instrument.Instrument;
 import backend.model.list.List;
 
 /**
@@ -105,6 +106,15 @@ public class Scan {
     	inverseJoinColumns = { @JoinColumn(name = "LIST_ID") })
 	private Set<List> lists;
 	
+	/**
+	 * Instruments whose data could not be retrieved correctly during the scan process.
+	 */
+	@ManyToMany
+	@JoinTable(name = "SCAN_INCOMPLETE_INSTRUMENT", 
+		joinColumns = { @JoinColumn(name = "SCAN_ID") }, 
+		inverseJoinColumns = { @JoinColumn(name = "INSTRUMENT_ID") })
+	private Set<Instrument> incompleteInstruments;
+	
 	
 	/**
 	 * Default constructor.
@@ -114,6 +124,7 @@ public class Scan {
 		this.completionStatus = ScanCompletionStatus.COMPLETE;
 		this.progress = 0;
 		this.lists = new HashSet<List>();
+		this.incompleteInstruments = new HashSet<Instrument>();
 	}
 
 
@@ -245,6 +256,22 @@ public class Scan {
 	}
 	
 	
+	/**
+	 * @return the incompleteInstruments
+	 */
+	public Set<Instrument> getIncompleteInstruments() {
+		return incompleteInstruments;
+	}
+
+
+	/**
+	 * @param incompleteInstruments the incompleteInstruments to set
+	 */
+	public void setIncompleteInstruments(Set<Instrument> incompleteInstruments) {
+		this.incompleteInstruments = incompleteInstruments;
+	}
+
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -255,6 +282,7 @@ public class Scan {
 		result = prime * result + ((completionStatus == null) ? 0 : completionStatus.hashCode());
 		result = prime * result + ((lastScan == null) ? 0 : lastScan.hashCode());
 		result = prime * result + ((lists == null) ? 0 : lists.hashCode());
+		result = prime * result + ((incompleteInstruments == null) ? 0 : incompleteInstruments.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + ((progress == null) ? 0 : progress.hashCode());
 		return result;
@@ -319,12 +347,15 @@ public class Scan {
 		if(this.areListsEqual(other) == false)
 			return false;
 		
+		if(this.areIncompleteInstrumentsEqual(other) == false)
+			return false;
+		
 		return true;
 	}
 	
 	
 	/**
-	 * Checks if the list of lists is equal.
+	 * Checks if the referenced lists are equal.
 	 * 
 	 * @param other The other scan for comparison.
 	 * @return true, if lists are equal; false otherwise.
@@ -354,15 +385,61 @@ public class Scan {
 	
 	
 	/**
+	 * Checks if the referenced incomplete instruments are equal.
+	 * 
+	 * @param other The other scan for comparison.
+	 * @return true, if incomplete instruments are equal; false otherwise.
+	 */
+	private boolean areIncompleteInstrumentsEqual(Scan other) {
+		if (this.incompleteInstruments == null && other.incompleteInstruments != null)
+			return false;
+		
+		if (this.incompleteInstruments != null && other.incompleteInstruments == null)
+			return false;
+		
+		if(this.incompleteInstruments.size() != other.incompleteInstruments.size())
+			return false;
+		
+		for(Instrument tempInstrument:this.incompleteInstruments) {
+			Instrument otherInstrument = other.getIncompleteInstrumentWithId(tempInstrument.getId());
+			
+			if(otherInstrument == null)
+				return false;
+			
+			if(!tempInstrument.equals(otherInstrument))
+				return false;
+		}
+		
+		return true;
+	}
+	
+	
+	/**
 	 * Gets the list with the given id.
 	 * 
-	 * @param id The id of the list.
+	 * @param id The id of the List.
 	 * @return The list with the given id, if found.
 	 */
-	public List getListWithId(Integer id) {
+	public List getListWithId(final Integer id) {
 		for(List tempList:this.lists) {
 			if(tempList.getId().equals(id))
 				return tempList;
+		}
+		
+		return null;
+	}
+	
+	
+	/**
+	 * Gets the incomplete Instrument with the given id.
+	 * 
+	 * @param id The id of the Instrument.
+	 * @return The Instrument with the given id, if found.
+	 */
+	public Instrument getIncompleteInstrumentWithId(final Integer id) {
+		for(Instrument tempInstrument:this.incompleteInstruments) {
+			if(tempInstrument.getId().equals(id))
+				return tempInstrument;
 		}
 		
 		return null;
