@@ -203,9 +203,11 @@ public class ScanThread extends Thread {
 			if(obsoleteQuotations.size() > 0)
 				this.quotationDAO.deleteQuotations(new ArrayList<>(obsoleteQuotations));
 			
-			
 			this.checkAgeOfNewestQuotation(instrument.getSymbol(), wsQuotations, 5);
+			
+			this.scan.getIncompleteInstruments().remove(instrument);
 		} catch (Exception e) {
+			this.scan.addIncompleteInstrument(instrument);			
 			logger.error("Failed to update quotations of instrument with ID " +instrument.getId(), e);
 		}
 	}

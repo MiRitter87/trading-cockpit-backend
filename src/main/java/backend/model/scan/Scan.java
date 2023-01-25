@@ -447,12 +447,22 @@ public class Scan {
 
 
 	/**
-	 * Adds a list to the scan.
+	 * Adds a list to the Scan.
 	 * 
 	 * @param list The list to be added.
 	 */
 	public void addList(final List list) {
 		this.lists.add(list);
+	}
+	
+	
+	/**
+	 * Adds an incomplete Instrument to the Scan.
+	 * 
+	 * @param instrument The Instrument to be added.
+	 */
+	public void addIncompleteInstrument(final Instrument instrument) {
+		this.incompleteInstruments.add(instrument);
 	}
 	
 	
