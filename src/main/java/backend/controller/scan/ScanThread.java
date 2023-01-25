@@ -26,6 +26,7 @@ import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 import backend.model.list.List;
 import backend.model.scan.Scan;
+import backend.model.scan.ScanCompletionStatus;
 import backend.model.scan.ScanExecutionStatus;
 
 /**
@@ -362,7 +363,13 @@ public class ScanThread extends Thread {
 	private void setScanToFinished() {
 		try {
 			this.scan.setLastScan(new Date());
-			this.scan.setExecutionStatus(ScanExecutionStatus.FINISHED);		
+			this.scan.setExecutionStatus(ScanExecutionStatus.FINISHED);
+			
+			if(this.scan.getIncompleteInstruments().size() == 0)
+				this.scan.setCompletionStatus(ScanCompletionStatus.COMPLETE);
+			else
+				this.scan.setCompletionStatus(ScanCompletionStatus.INCOMPLETE);
+			
 			this.scanDAO.updateScan(this.scan);
 		} catch (ObjectUnchangedException e) {
 			logger.error("The scan was executed although being already in status 'FINISHED'.", e);
