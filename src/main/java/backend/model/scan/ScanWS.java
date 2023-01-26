@@ -53,12 +53,18 @@ public class ScanWS {
 	 */
 	private List<Integer> listIds;
 	
+	/**
+	 * The instruments whose data could not be retrieved successfully during the last scan run.
+	 */
+	private List<Integer> incompleteInstrumentIds;
+	
 	
 	/**
 	 * Constructor.
 	 */
 	public ScanWS() {
 		this.listIds = new ArrayList<Integer>();
+		this.incompleteInstrumentIds = new ArrayList<Integer>();
 	}
 
 
@@ -187,5 +193,21 @@ public class ScanWS {
 	 */
 	public void setListIds(List<Integer> listIds) {
 		this.listIds = listIds;
+	}
+
+
+	/**
+	 * @return the incompleteInstrumentIds
+	 */
+	public List<Integer> getIncompleteInstrumentIds() {
+		return incompleteInstrumentIds;
+	}
+
+
+	/**
+	 * @param incompleteInstrumentIds the incompleteInstrumentIds to set
+	 */
+	public void setIncompleteInstrumentIds(List<Integer> incompleteInstrumentIds) {
+		this.incompleteInstrumentIds = incompleteInstrumentIds;
 	}
 }

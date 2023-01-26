@@ -9,9 +9,11 @@ import org.apache.logging.log4j.Logger;
 import backend.controller.scan.ScanController;
 import backend.dao.DAOManager;
 import backend.dao.ObjectUnchangedException;
+import backend.dao.instrument.InstrumentDAO;
 import backend.dao.list.ListDAO;
 import backend.dao.scan.ScanDAO;
 import backend.dao.scan.ScanInProgressException;
+import backend.model.instrument.Instrument;
 import backend.model.list.List;
 import backend.model.scan.Scan;
 import backend.model.scan.ScanArray;
@@ -27,14 +29,19 @@ import backend.model.webservice.WebServiceResult;
  */
 public class ScanService {
 	/**
-	 * DAO for scan access.
+	 * DAO for Scan access.
 	 */
 	private ScanDAO scanDAO;
 	
 	/**
-	 * DAO for list access.
+	 * DAO for List access.
 	 */
 	private ListDAO listDAO;
+	
+	/**
+	 * DAO for Instrument access.
+	 */
+	private InstrumentDAO instrumentDAO;
 	
 	/**
 	 * Access to localized application resources.
@@ -53,6 +60,7 @@ public class ScanService {
 	public ScanService() {
 		this.scanDAO = DAOManager.getInstance().getScanDAO();
 		this.listDAO = DAOManager.getInstance().getListDAO();
+		this.instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
 	}
 	
 	
@@ -238,6 +246,7 @@ public class ScanService {
 	private Scan convertScan(final ScanWS scanWS) throws Exception {
 		Scan scan = new Scan();
 		List list;
+		Instrument instrument;
 		
 		//Simple object attributes.
 		scan.setId(scanWS.getId());
@@ -248,10 +257,16 @@ public class ScanService {
 		scan.setProgress(scanWS.getProgress());
 		scan.setLastScan(scanWS.getLastScan());
 		
-		//Convert the list IDs into list objects.
+		//Convert the List IDs into List objects.
 		for(Integer listId:scanWS.getListIds()) {
 			list = this.listDAO.getList(listId);
 			scan.addList(list);
+		}
+		
+		//Convert the Instrument IDs into Instrument objects.
+		for(Integer instrumentId:scanWS.getIncompleteInstrumentIds()) {
+			instrument = this.instrumentDAO.getInstrument(instrumentId);
+			scan.addIncompleteInstrument(instrument);
 		}
 		
 		return scan;

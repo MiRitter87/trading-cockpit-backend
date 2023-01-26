@@ -703,7 +703,9 @@ public class ScanServiceTest {
 	private ScanWS convertToWsScan(final Scan scan) {
 		ScanWS scanWS = new ScanWS();
 		Iterator<List> listIterator;
+		Iterator<Instrument> instrumentIterator;
 		List list;
+		Instrument instrument;
 		
 		//Head level
 		scanWS.setId(scan.getId());
@@ -719,6 +721,13 @@ public class ScanServiceTest {
 		while(listIterator.hasNext()) {
 			list = listIterator.next();
 			scanWS.getListIds().add(list.getId());
+		}
+		
+		//Instruments
+		instrumentIterator = scan.getIncompleteInstruments().iterator();
+		while(instrumentIterator.hasNext()) {
+			instrument = instrumentIterator.next();
+			scanWS.getIncompleteInstrumentIds().add(instrument.getId());
 		}
 		
 		return scanWS;
