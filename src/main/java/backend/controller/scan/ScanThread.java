@@ -47,6 +47,11 @@ public class ScanThread extends Thread {
 	private Scan scan;
 	
 	/**
+	 * Indication to only scan incomplete instruments of the scan.
+	 */
+	private boolean scanOnlyIncompleteInstruments;
+	
+	/**
 	 * DAO to access quotations from a third-party data provider of quotation data.
 	 */
 	QuotationProviderDAO quotationProviderDAO;
@@ -89,10 +94,12 @@ public class ScanThread extends Thread {
 	 * @param queryInterval The interval in seconds between each historical quotation query.
 	 * @param dataProvider The DataProvider for historical quotation data.
 	 * @param scan The scan that is executed by the thread.
+	 * @param scanOnlyIncompleteInstruments Indication to only scan incomplete instruments of the scan.
 	 */
-	public ScanThread(final int queryInterval, final DataProvider dataProvider, final Scan scan) {
+	public ScanThread(final int queryInterval, final DataProvider dataProvider, final Scan scan, final boolean scanOnlyIncompleteInstruments) {
 		this.queryInterval = queryInterval;
 		this.scan = scan;
+		this.scanOnlyIncompleteInstruments = scanOnlyIncompleteInstruments;
 		
 		this.quotationProviderDAO = QuotationProviderDAOFactory.getQuotationProviderDAO(dataProvider);
 		this.quotationDAO = DAOManager.getInstance().getQuotationDAO();
@@ -115,7 +122,7 @@ public class ScanThread extends Thread {
 		
 		logger.info("Starting execution of scan with ID: " +this.scan.getId());
 		
-		instruments = this.getInstrumentsOfScan(this.scan);
+		instruments = this.getInstrumentsOfScan();
 		instrumentIterator = instruments.iterator();
 		
 		while(instrumentIterator.hasNext()) {
@@ -135,19 +142,31 @@ public class ScanThread extends Thread {
 		this.updateRSNumbers();
 		this.updateStatistics();
 		this.setScanToFinished();
-		logger.info("Finished execution of scan with ID: " +this.scan.getId());
+		logger.info("Finished execution of scan with ID: " + this.scan.getId());
 	}
 	
 	
 	/**
-	 * Provides all instruments that are contained in the lists of the given scan.
+	 * Provides all instruments that are to be updated during the current scan run.
 	 * 
-	 * @param scan The scan of which the instruments are extracted.
-	 * @return The
+	 * @return The instruments for the current scan run.
 	 */
-	private Set<Instrument> getInstrumentsOfScan(final Scan scan) {
+	private Set<Instrument> getInstrumentsOfScan() {
+		if(this.scanOnlyIncompleteInstruments)
+			return this.getIncompleteInstrumentsFromScan();	
+		else
+			return this.getInstrumentsFromScanLists();
+	}
+	
+	
+	/**
+	 * Provides all instruments based on the lists that are defined in the current scan.
+	 * 
+	 * @return All instruments based on the lists that are defined in the current scan.
+	 */
+	private Set<Instrument> getInstrumentsFromScanLists() {
 		Set<Instrument> instruments = new HashSet<>();
-		Iterator<List> listIterator = scan.getLists().iterator();
+		Iterator<List> listIterator = this.scan.getLists().iterator();
 		List tempList;
 		
 		while(listIterator.hasNext()) {
@@ -156,6 +175,16 @@ public class ScanThread extends Thread {
 		}
 		
 		return instruments;
+	}
+	
+	
+	/**
+	 * Provides all incomplete instruments defined in the current scan.
+	 * 
+	 * @return All incomplete instruments defined in the current scan.
+	 */
+	private Set<Instrument> getIncompleteInstrumentsFromScan() {
+		return this.scan.getIncompleteInstruments();
 	}
 	
 	

@@ -3,6 +3,7 @@ package backend.controller.scan;
 import backend.controller.DataProvider;
 import backend.controller.MainController;
 import backend.model.scan.Scan;
+import backend.model.scan.ScanCompletionStatus;
 import backend.model.scan.ScanExecutionStatus;
 
 /**
@@ -67,17 +68,23 @@ public class ScanController {
 	 * @param databaseScan The database state of the scan before the update has been performed.
 	 */
 	public void checkAndExecute(final Scan scan, final Scan databaseScan) {
-		if(scan.getExecutionStatus() == ScanExecutionStatus.IN_PROGRESS && databaseScan.getExecutionStatus() == ScanExecutionStatus.FINISHED)
-			this.execute(scan);			
+		if(scan.getExecutionStatus() != ScanExecutionStatus.IN_PROGRESS || databaseScan.getExecutionStatus() != ScanExecutionStatus.FINISHED)
+			return;
+		
+		if(scan.getCompletionStatus() == ScanCompletionStatus.COMPLETE)
+			this.execute(scan, false);
+		else if(scan.getCompletionStatus() == ScanCompletionStatus.INCOMPLETE)
+			this.execute(scan, true);
 	}
 	
 	/**
 	 * Executes the given scan.
 	 * 
 	 * @param scan The scan to be executed.
+	 * @param scanOnlyIncompleteIntruments Indication to only scan incomplete instruments of the scan.
 	 */
-	private void execute(final Scan scan) {		
-		Thread scanThread = new ScanThread(this.queryInterval, this.dataProvider, scan);
+	private void execute(final Scan scan, final boolean scanOnlyIncompleteIntruments) {		
+		Thread scanThread = new ScanThread(this.queryInterval, this.dataProvider, scan, scanOnlyIncompleteIntruments);
 		scanThread.start();
 	}
 	
