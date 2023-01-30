@@ -180,11 +180,16 @@ public class ScanThread extends Thread {
 	
 	/**
 	 * Provides all incomplete instruments defined in the current scan.
+	 * A copy of the scans Set is provided allowing for deletion during iteration.
 	 * 
 	 * @return All incomplete instruments defined in the current scan.
 	 */
 	private Set<Instrument> getIncompleteInstrumentsFromScan() {
-		return this.scan.getIncompleteInstruments();
+		Set<Instrument> incompleteInstruments = new HashSet<>();
+		
+		incompleteInstruments.addAll(this.scan.getIncompleteInstruments());
+		
+		return incompleteInstruments;
 	}
 	
 	
