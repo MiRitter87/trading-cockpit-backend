@@ -1,6 +1,7 @@
 package backend.dao.scan;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +15,8 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 import backend.dao.ObjectUnchangedException;
+import backend.model.instrument.Instrument;
+import backend.model.instrument.InstrumentArray;
 import backend.model.scan.Scan;
 import backend.model.scan.ScanExecutionStatus;
 
@@ -152,6 +155,7 @@ public class ScanHibernateDAO implements ScanDAO {
 		
 		entityManager = this.sessionFactory.createEntityManager();;
 		this.checkForRunningScans(entityManager, scan);
+		this.updateIncompleteInstruments(scan);
 		
 		entityManager.getTransaction().begin();
 		entityManager.merge(scan);
@@ -198,6 +202,32 @@ public class ScanHibernateDAO implements ScanDAO {
 		
 		if(idsOfRunningScans.size() > 0) {
 			throw new ScanInProgressException((Integer) idsOfRunningScans.get(0));
+		}
+	}
+	
+	
+	/**
+	 * Updates incomplete instruments of the Scan.
+	 * Those incomplete instruments are removed that are not part of any List within the scan.
+	 * 
+	 * @param scan The scan to be updated.
+	 */
+	private void updateIncompleteInstruments(Scan scan) {
+		InstrumentArray instrumentsOfLists = new InstrumentArray();
+		Iterator<Instrument> instrumentIterator;
+		Instrument incompleteInstrument, instrumentOfList;
+		
+		instrumentsOfLists.getInstruments().addAll(scan.getInstrumentsFromScanLists());
+		
+		//Check for each of the incomplete instruments if the corresponding Instrument is still defined in one of the scans lists.
+		instrumentIterator = scan.getIncompleteInstruments().iterator();
+		
+		while(instrumentIterator.hasNext()) {
+			incompleteInstrument = instrumentIterator.next();
+			instrumentOfList = instrumentsOfLists.getInstrumentById(incompleteInstrument.getId());
+			
+			if(instrumentOfList == null)
+				instrumentIterator.remove();
 		}
 	}
 }

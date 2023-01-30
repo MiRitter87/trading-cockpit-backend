@@ -24,7 +24,6 @@ import backend.model.instrument.Indicator;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
-import backend.model.list.List;
 import backend.model.scan.Scan;
 import backend.model.scan.ScanCompletionStatus;
 import backend.model.scan.ScanExecutionStatus;
@@ -155,26 +154,7 @@ public class ScanThread extends Thread {
 		if(this.scanOnlyIncompleteInstruments)
 			return this.getIncompleteInstrumentsFromScan();	
 		else
-			return this.getInstrumentsFromScanLists();
-	}
-	
-	
-	/**
-	 * Provides all instruments based on the lists that are defined in the current scan.
-	 * 
-	 * @return All instruments based on the lists that are defined in the current scan.
-	 */
-	private Set<Instrument> getInstrumentsFromScanLists() {
-		Set<Instrument> instruments = new HashSet<>();
-		Iterator<List> listIterator = this.scan.getLists().iterator();
-		List tempList;
-		
-		while(listIterator.hasNext()) {
-			tempList = listIterator.next();
-			instruments.addAll(tempList.getInstruments());			
-		}
-		
-		return instruments;
+			return this.scan.getInstrumentsFromScanLists();
 	}
 	
 	

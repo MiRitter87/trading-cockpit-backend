@@ -2,6 +2,7 @@ package backend.model.scan;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -463,6 +464,25 @@ public class Scan {
 	 */
 	public void addIncompleteInstrument(final Instrument instrument) {
 		this.incompleteInstruments.add(instrument);
+	}
+	
+	
+	/**
+	 * Provides all instruments based on the lists that are defined in the scan.
+	 * 
+	 * @return All instruments based on the lists that are defined in the scan.
+	 */
+	public Set<Instrument> getInstrumentsFromScanLists() {
+		Set<Instrument> instruments = new HashSet<>();
+		Iterator<List> listIterator = this.getLists().iterator();
+		List tempList;
+		
+		while(listIterator.hasNext()) {
+			tempList = listIterator.next();
+			instruments.addAll(tempList.getInstruments());			
+		}
+		
+		return instruments;
 	}
 	
 	

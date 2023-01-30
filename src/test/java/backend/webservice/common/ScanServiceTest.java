@@ -648,50 +648,47 @@ public class ScanServiceTest {
 	}
 	
 	
-//	@Test
-//	/**
-//	 * Tests updating of a Scan that has multiple lists defined. The Scan also has incomplete instruments.
-//	 * A List is removed that contains an Instrument with incomplete data.
-//	 * The incompleteInstruments entry of the Scan has to be removed automatically on List removal.
-//	 */
-//	public void testUpdateScanRemoveListIncompleteInstrument() {
-//		WebServiceResult updateScanResult;
-//		ScanService service = new ScanService();
-//		Scan databaseScan;
-//		
-//		try {
-//			assertEquals(0, this.multiListScan.getIncompleteInstruments().size());
-//			
-//			//At first add incomplete Instrument.
-//			this.multiListScan.addIncompleteInstrument(this.microsoftStock);
-//			this.scanDAO.updateScan(this.multiListScan);
-//			
-//			databaseScan = this.scanDAO.getScan(this.multiListScan.getId());
-//			assertEquals(this.multiListScan.getIncompleteInstruments().size(), databaseScan.getIncompleteInstruments().size());
-//			
-//			//Remove List from Scan that contains the incomplete Instrument.
-//			this.multiListScan.getLists().remove(this.multiInstrumentList);
-//			//TODO remove after test
-//			//this.multiListScan.getIncompleteInstruments().remove(this.microsoftStock);
-//			updateScanResult = service.updateScan(this.convertToWsScan(this.multiListScan));
-//			
-//			//Assure no error message exists
-//			assertTrue(WebServiceTools.resultContainsErrorMessage(updateScanResult) == false);
-//			
-//			//There should be a success message
-//			assertTrue(updateScanResult.getMessages().size() == 1);
-//			assertTrue(updateScanResult.getMessages().get(0).getType() == WebServiceMessageType.S);
-//			
-//			//The incomplete Instrument entry should have been removed after the List containing the incomplete Instrument has been removed.
-//			databaseScan = this.scanDAO.getScan(this.multiListScan.getId());
-//			assertEquals(this.multiListScan.getLists().size(), databaseScan.getLists().size());			
-//			assertEquals(0, databaseScan.getIncompleteInstruments().size());
-//		} catch (ObjectUnchangedException e) {
-//			fail(e.getMessage());
-//		} catch (Exception e) {
-//			fail(e.getMessage());
-//		}
-//	}
+	@Test
+	/**
+	 * Tests updating of a Scan that has multiple lists defined. The Scan also has incomplete instruments.
+	 * A List is removed that contains an Instrument with incomplete data.
+	 * The incompleteInstruments entry of the Scan has to be removed automatically on List removal.
+	 */
+	public void testUpdateScanRemoveListIncompleteInstrument() {
+		WebServiceResult updateScanResult;
+		ScanService service = new ScanService();
+		Scan databaseScan;
+		
+		try {
+			assertEquals(0, this.multiListScan.getIncompleteInstruments().size());
+			
+			//At first add incomplete Instrument.
+			this.multiListScan.addIncompleteInstrument(this.microsoftStock);
+			scanDAO.updateScan(this.multiListScan);
+			
+			//Assure that incomplete Instrument is persisted.
+			databaseScan = scanDAO.getScan(this.multiListScan.getId());
+			assertEquals(1, databaseScan.getIncompleteInstruments().size());
+			
+			//Remove List from Scan that contains the incomplete Instrument.
+			this.multiListScan.getLists().remove(this.multiInstrumentList);
+			updateScanResult = service.updateScan(this.convertToWsScan(this.multiListScan));
+			
+			//Assure no error message exists
+			assertTrue(WebServiceTools.resultContainsErrorMessage(updateScanResult) == false);
+			
+			//There should be a success message
+			assertTrue(updateScanResult.getMessages().size() == 1);
+			assertTrue(updateScanResult.getMessages().get(0).getType() == WebServiceMessageType.S);
+			
+			//The incomplete Instrument entry of the Scan should have been removed after the List containing the incomplete Instrument has been removed.
+			databaseScan = scanDAO.getScan(this.multiListScan.getId());
+			assertEquals(this.multiListScan.getLists().size(), databaseScan.getLists().size());			
+			assertEquals(0, databaseScan.getIncompleteInstruments().size());
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
 	
 	
 	@Test
