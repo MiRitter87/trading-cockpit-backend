@@ -21,12 +21,14 @@ import backend.dao.ObjectUnchangedException;
 import backend.dao.instrument.InstrumentDAO;
 import backend.dao.list.ListDAO;
 import backend.dao.quotation.QuotationDAO;
+import backend.dao.scan.ScanDAO;
 import backend.model.ObjectInUseException;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
 import backend.model.list.List;
 import backend.model.list.ListArray;
 import backend.model.list.ListWS;
+import backend.model.scan.Scan;
 import backend.model.webservice.WebServiceMessage;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
@@ -38,14 +40,19 @@ import backend.model.webservice.WebServiceResult;
  */
 public class ListService {
 	/**
-	 * DAO for list access.
+	 * DAO for List access.
 	 */
 	private ListDAO listDAO;
 	
 	/**
-	 * DAO for instrument access.
+	 * DAO for Instrument access.
 	 */
 	private InstrumentDAO instrumentDAO;
+	
+	/**
+	 * DAO for Scan access.
+	 */
+	private ScanDAO scanDAO;
 	
 	/**
 	 * Access to localized application resources.
@@ -64,6 +71,7 @@ public class ListService {
 	public ListService() {
 		this.listDAO = DAOManager.getInstance().getListDAO();
 		this.instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
+		this.scanDAO = DAOManager.getInstance().getScanDAO();
 	}
 	
 	
@@ -194,21 +202,7 @@ public class ListService {
 		}
 		
 		//Update list if validation is successful.
-		try {
-			this.listDAO.updateList(convertedList);
-			updateListResult.addMessage(new WebServiceMessage(WebServiceMessageType.S, 
-					MessageFormat.format(this.resources.getString("list.updateSuccess"), convertedList.getId())));
-		} 
-		catch(ObjectUnchangedException objectUnchangedException) {
-			updateListResult.addMessage(new WebServiceMessage(WebServiceMessageType.I, 
-					MessageFormat.format(this.resources.getString("list.updateUnchanged"), convertedList.getId())));
-		}
-		catch (Exception e) {
-			updateListResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
-					MessageFormat.format(this.resources.getString("list.updateError"), convertedList.getId())));
-			
-			logger.error(MessageFormat.format(this.resources.getString("list.updateError"), convertedList.getId()), e);
-		}
+		updateListResult = this.update(convertedList);
 		
 		return updateListResult;
 	}
@@ -319,5 +313,54 @@ public class ListService {
 		}
 		
 		return list;
+	}
+	
+	
+	/**
+	 * Updates the given List.
+	 * 
+	 * @param list The List to be updated.
+	 * @return The result of the update function.
+	 */
+	private WebServiceResult update(final List list) {
+		WebServiceResult updateListResult = new WebServiceResult();
+		
+		try {
+			this.listDAO.updateList(list);
+			this.updateRelatedScans(list);
+			updateListResult.addMessage(new WebServiceMessage(WebServiceMessageType.S, 
+					MessageFormat.format(this.resources.getString("list.updateSuccess"), list.getId())));
+		} 
+		catch(ObjectUnchangedException objectUnchangedException) {
+			updateListResult.addMessage(new WebServiceMessage(WebServiceMessageType.I, 
+					MessageFormat.format(this.resources.getString("list.updateUnchanged"), list.getId())));
+		}
+		catch (Exception e) {
+			updateListResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
+					MessageFormat.format(this.resources.getString("list.updateError"), list.getId())));
+			
+			logger.error(MessageFormat.format(this.resources.getString("list.updateError"), list.getId()), e);
+		}
+		
+		return updateListResult;
+	}
+	
+	
+	/**
+	 * Updates scans that are related to the given List.
+	 * 
+	 * Instruments being removed from a List can affect the incomplete instruments of a Scan.
+	 * Therefore all scans have to be updated that use the given List.
+	 * 
+	 * @param list The List.
+	 * @throws Exception The update of related scans failed.
+	 */
+	private void updateRelatedScans(final List list) throws Exception {
+		java.util.List<Scan> scans = this.scanDAO.getScans();
+		
+		for(Scan tempScan: scans) {
+			if(tempScan.hasListWithId(list.getId()))
+				this.scanDAO.updateScan(tempScan);
+		}
 	}
 }

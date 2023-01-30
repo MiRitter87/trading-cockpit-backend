@@ -151,11 +151,11 @@ public class ScanHibernateDAO implements ScanDAO {
 	public void updateScan(Scan scan) throws ObjectUnchangedException, ScanInProgressException, Exception {
 		EntityManager entityManager;
 		
+		this.updateIncompleteInstruments(scan);
 		this.checkScanDataChanged(scan);
 		
 		entityManager = this.sessionFactory.createEntityManager();;
 		this.checkForRunningScans(entityManager, scan);
-		this.updateIncompleteInstruments(scan);
 		
 		entityManager.getTransaction().begin();
 		entityManager.merge(scan);

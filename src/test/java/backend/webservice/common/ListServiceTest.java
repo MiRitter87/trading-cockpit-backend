@@ -19,6 +19,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import backend.dao.DAOManager;
+import backend.dao.ObjectUnchangedException;
 import backend.dao.instrument.InstrumentDAO;
 import backend.dao.list.ListDAO;
 import backend.dao.scan.ScanDAO;
@@ -645,6 +646,53 @@ public class ListServiceTest {
 		//The new list should not have been persisted
 		assertNull(newList.getId());
 	}
+	
+	
+	@Test
+	/**
+	 * Tests the removal of a scans incomplete instruments if those instruments are removed from scan-related lists.
+	 */
+	public void testRemoveIncompleteInstrumentsOnListChange() {
+		WebServiceResult updateListResult;
+		ListService service = new ListService();
+		Scan databaseScan;
+		
+		try {
+			//Add incomplete Instrument to Scan.
+			this.scan.addIncompleteInstrument(this.amazonStock);
+			scanDAO.updateScan(this.scan);
+			
+			//Assure that incomplete Instrument is persisted.
+			databaseScan = scanDAO.getScan(this.scan.getId());
+			assertEquals(1, databaseScan.getIncompleteInstruments().size());
+			
+			//Remove Instrument from List used in Scan.
+			this.multiInstrumentList.removeInstrument(this.amazonStock);
+			updateListResult = service.updateList(this.convertToWsList(this.multiInstrumentList));
+			
+			//Assure no error message exists
+			assertTrue(WebServiceTools.resultContainsErrorMessage(updateListResult) == false);
+			
+			//There should be a success message
+			assertTrue(updateListResult.getMessages().size() == 1);
+			assertTrue(updateListResult.getMessages().get(0).getType() == WebServiceMessageType.S);
+			
+			//Check if incomplete Instrument has been removed from Scan.
+			databaseScan = scanDAO.getScan(this.scan.getId());
+			assertEquals(0, databaseScan.getIncompleteInstruments().size());
+		} catch (ObjectUnchangedException e) {
+			fail(e.getMessage());
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	/*
+	 * TODO Add two new tests handling scan.incompleteInstruments on list modification.
+	 * 
+	 * testDontRemoveIncompleteInstrumentOnListChange
+	 */
 	
 	
 	/**

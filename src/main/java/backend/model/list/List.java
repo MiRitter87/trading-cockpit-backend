@@ -154,6 +154,16 @@ public class List {
 	}
 	
 	
+	/**
+	 * Removes the given Instrument from the List.
+	 * 
+	 * @param instrument The Instrument to be removed.
+	 */
+	public void removeInstrument(final Instrument instrument) {
+		this.instruments.remove(instrument);
+	}
+	
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;

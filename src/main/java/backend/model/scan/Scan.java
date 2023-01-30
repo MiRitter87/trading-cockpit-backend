@@ -487,6 +487,27 @@ public class Scan {
 	
 	
 	/**
+	 * Checks if the scan has the List with the given ID.
+	 * 
+	 * @param id The ID of the List.
+	 * @return true, if Scan has List with ID; false, otherwise.
+	 */
+	public boolean hasListWithId(final Integer id) {
+		Iterator<List> listIterator = this.getLists().iterator();
+		List list;
+		
+		while(listIterator.hasNext()) {
+			list = listIterator.next();
+			
+			if(list.getId().equals(id))
+				return true;
+		}
+		
+		return false;
+	}
+	
+	
+	/**
 	 * Validates the scan.
 	 * 
 	 * @throws Exception In case a general validation error occurred.
