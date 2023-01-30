@@ -650,7 +650,7 @@ public class ListServiceTest {
 	
 	@Test
 	/**
-	 * Tests the removal of a scans incomplete instruments if those instruments are removed from scan-related lists.
+	 * Tests the removal of a scans incomplete instruments if those instruments are removed from all scan-related lists.
 	 */
 	public void testRemoveIncompleteInstrumentsOnListChange() {
 		WebServiceResult updateListResult;
@@ -662,7 +662,7 @@ public class ListServiceTest {
 			this.scan.addIncompleteInstrument(this.amazonStock);
 			scanDAO.updateScan(this.scan);
 			
-			//Assure that incomplete Instrument is persisted.
+			//Assure that the incomplete Instrument is persisted.
 			databaseScan = scanDAO.getScan(this.scan.getId());
 			assertEquals(1, databaseScan.getIncompleteInstruments().size());
 			
@@ -688,11 +688,47 @@ public class ListServiceTest {
 	}
 	
 	
-	/*
-	 * TODO Add two new tests handling scan.incompleteInstruments on list modification.
-	 * 
-	 * testDontRemoveIncompleteInstrumentOnListChange
+	@Test
+	/**
+	 * Tests the removal of a scans incomplete instruments.
+	 * If an Instrument is contained in multiple lists of a scan and only removed from one of the lists, 
+	 * the incomplete Instrument of a scan should not be removed.
 	 */
+	public void testDontRemoveIncompleteInstrumentOnListChange() {
+		WebServiceResult updateListResult;
+		ListService service = new ListService();
+		Scan databaseScan;
+		
+		try {
+			//Add another list and an incomplete Instrument to the Scan.
+			this.scan.addList(this.singleInstrumentList);
+			this.scan.addIncompleteInstrument(this.amazonStock);
+			scanDAO.updateScan(this.scan);
+			
+			//Assure that the incomplete Instrument is persisted.
+			databaseScan = scanDAO.getScan(this.scan.getId());
+			assertEquals(1, databaseScan.getIncompleteInstruments().size());
+			
+			//Remove Instrument from List used in Scan.
+			this.multiInstrumentList.removeInstrument(this.amazonStock);
+			updateListResult = service.updateList(this.convertToWsList(this.multiInstrumentList));
+			
+			//Assure no error message exists
+			assertTrue(WebServiceTools.resultContainsErrorMessage(updateListResult) == false);
+			
+			//There should be a success message
+			assertTrue(updateListResult.getMessages().size() == 1);
+			assertTrue(updateListResult.getMessages().get(0).getType() == WebServiceMessageType.S);
+			
+			//The incomplete Instrument should not have been removed because it is still part of the Scan via another List.
+			databaseScan = scanDAO.getScan(this.scan.getId());
+			assertEquals(1, databaseScan.getIncompleteInstruments().size());
+		} catch (ObjectUnchangedException e) {
+			fail(e.getMessage());
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
 	
 	
 	/**

@@ -359,8 +359,16 @@ public class ListService {
 		java.util.List<Scan> scans = this.scanDAO.getScans();
 		
 		for(Scan tempScan: scans) {
-			if(tempScan.hasListWithId(list.getId()))
-				this.scanDAO.updateScan(tempScan);
+			if(tempScan.hasListWithId(list.getId())) {
+				try {
+					this.scanDAO.updateScan(tempScan);
+				}
+				catch(ObjectUnchangedException objectUnchangedException) {
+					//Nothing to do here.
+					//This might be the case if an Instrument is removed from a List but the same Instrument is part of the Scan via another list.
+					//So no changes of the incomplete instruments take place.
+				}
+			}
 		}
 	}
 }
