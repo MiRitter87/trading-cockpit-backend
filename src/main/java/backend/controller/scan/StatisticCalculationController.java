@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import backend.dao.DAOManager;
+import backend.dao.ObjectUnchangedException;
 import backend.dao.instrument.InstrumentDAO;
 import backend.dao.quotation.QuotationDAO;
 import backend.dao.statistic.StatisticDAO;
@@ -201,8 +202,14 @@ public class StatisticCalculationController {
 		for(Statistic deleteStatistic: statisticsForDeletion)
 			statisticDAO.deleteStatistic(deleteStatistic);
 		
-		for(Statistic updateStatistic: statisticsForUpdate)
-			statisticDAO.updateStatistic(updateStatistic);
+		for(Statistic updateStatistic: statisticsForUpdate) {
+			try {
+				statisticDAO.updateStatistic(updateStatistic);				
+			}
+			catch(ObjectUnchangedException objectUnchangedException) {
+				//No changes to be persisted. Just continue with the next Statistic.
+			}
+		}
 	}
 	
 	
