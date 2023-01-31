@@ -151,6 +151,10 @@ public class QuotationProviderYahooDAO implements QuotationProviderDAO {
 			ArrayList<?> result = (ArrayList<?>) quoteResponse.get("result");
 			LinkedHashMap<?, ?> resultAttributes = (LinkedHashMap<?, ?>) result.get(0);
 			ArrayList<?> timestampData = (ArrayList<?>) resultAttributes.get("timestamp");
+			
+			if(timestampData == null)
+				throw new Exception("There are no Quotation data (timestamps) for the given Instrument.");
+			
 			LinkedHashMap<?, ?> metaAttributes = (LinkedHashMap<?, ?>) resultAttributes.get("meta");
 			LinkedHashMap<?, ?> indicators = (LinkedHashMap<?, ?>) resultAttributes.get("indicators");
 			ArrayList<?> quote = (ArrayList<?>) indicators.get("quote");
