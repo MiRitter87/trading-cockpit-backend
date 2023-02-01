@@ -1,5 +1,6 @@
 package backend.dao.quotation;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
@@ -42,6 +43,43 @@ public class QuotationProviderInvestingDAOTest {
 			    	System.out.println(element.getFirstChild().asNormalizedText());
 			    }
 			}
+		} 
+		catch(FailingHttpStatusCodeException e) {
+			fail(e.getMessage());
+		} 
+		catch(MalformedURLException e) {
+			fail(e.getMessage());
+		} 
+		catch(IOException e) {
+			fail(e.getMessage());
+		}
+	    finally {
+	    	webClient.close();
+	    }
+	}
+	
+	
+	@Test
+	/**
+	 * Tests initializing the WebClient from a local html page.
+	 */
+	public void testLoadLocalHtmlPage() {
+		String userPath = System.getProperty("user.dir");
+		String htmlPath = "file:\\" + userPath +  "\\src\\test\\resources\\investingNYSEQuoteAMZN.htm";
+		String expectedTitleText, actualTitleText;
+		HtmlPage htmlPage;
+		WebClient webClient = new WebClient();
+		
+		webClient.getOptions().setUseInsecureSSL(true);
+	    webClient.getOptions().setCssEnabled(false);
+	    webClient.getOptions().setJavaScriptEnabled(false);
+		
+		try {
+			htmlPage = webClient.getPage(htmlPath);
+			expectedTitleText = "Amazon Stock Price Today | NASDAQ AMZN Live Ticker - Investing.com";
+			actualTitleText = htmlPage.getTitleText();
+			
+			assertEquals(expectedTitleText, actualTitleText);
 		} 
 		catch(FailingHttpStatusCodeException e) {
 			fail(e.getMessage());
