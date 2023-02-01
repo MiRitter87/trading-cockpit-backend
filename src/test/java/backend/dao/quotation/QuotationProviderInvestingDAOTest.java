@@ -4,11 +4,13 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 /**
@@ -32,7 +34,14 @@ public class QuotationProviderInvestingDAOTest {
 	    
 		try {
 			htmlPage = webClient.getPage(url);
-			System.out.println(htmlPage.getTitleText());
+			
+			final List<DomElement> spans = htmlPage.getElementsByTagName("span");
+			for (DomElement element : spans) {
+
+			    if (element.getAttribute("data-test").equals("instrument-price-last") && element.getAttribute("class").equals("text-2xl")) {
+			    	System.out.println(element.getFirstChild().asNormalizedText());
+			    }
+			}
 		} 
 		catch(FailingHttpStatusCodeException e) {
 			fail(e.getMessage());
