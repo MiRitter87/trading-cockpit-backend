@@ -1,18 +1,16 @@
 package backend.dao.quotation;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.List;
+import java.math.BigDecimal;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.DomElement;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import backend.model.StockExchange;
+import backend.model.instrument.Quotation;
 
 /**
  * Tests the Investing Quotation DAO.
@@ -20,78 +18,58 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
  * @author Michael
  */
 public class QuotationProviderInvestingDAOTest {
-	@Test
 	/**
-	 * Tests getting current Quotation data from a stock listed at the NYSE.
+	 * DAO to access quotation data from investing.com.
 	 */
-	public void testGetCurrentQuotationNYSE() {
-		String url = "https://www.investing.com/equities/amazon-com-inc";
-	    WebClient webClient = new WebClient();
-	    HtmlPage htmlPage;
-	    
-	    webClient.getOptions().setUseInsecureSSL(true);
-	    webClient.getOptions().setCssEnabled(false);
-	    webClient.getOptions().setJavaScriptEnabled(false);
-	    
-		try {
-			htmlPage = webClient.getPage(url);
-			
-			final List<DomElement> spans = htmlPage.getElementsByTagName("span");
-			for (DomElement element : spans) {
-
-			    if (element.getAttribute("data-test").equals("instrument-price-last") && element.getAttribute("class").equals("text-2xl")) {
-			    	System.out.println(element.getFirstChild().asNormalizedText());
-			    }
-			}
-		} 
-		catch(FailingHttpStatusCodeException e) {
-			fail(e.getMessage());
-		} 
-		catch(MalformedURLException e) {
-			fail(e.getMessage());
-		} 
-		catch(IOException e) {
-			fail(e.getMessage());
-		}
-	    finally {
-	    	webClient.close();
-	    }
+	private static QuotationProviderInvestingDAO quotationProviderInvestingDAO;
+	
+	
+	@BeforeAll
+	/**
+	 * Tasks to be performed once at startup of test class.
+	 */
+	public static void setUpClass() {
+		quotationProviderInvestingDAO = new QuotationProviderInvestingDAOStub();
+	}
+	
+	
+	@AfterAll
+	/**
+	 * Tasks to be performed once at end of test class.
+	 */
+	public static void tearDownClass() {
+		quotationProviderInvestingDAO = null;
+	}
+	
+	
+	/**
+	 * Gets a Quotation as expected from the investing.com website.
+	 * 
+	 * @return A Quotation.
+	 */
+	private Quotation getAmazonQuotation() {
+		Quotation quotation = new Quotation();
+		
+		quotation.setClose(BigDecimal.valueOf(103.13));
+		
+		return quotation;
 	}
 	
 	
 	@Test
 	/**
-	 * Tests initializing the WebClient from a local html page.
+	 * Tests getting current Quotation data from a stock listed at the NYSE.
 	 */
-	public void testLoadLocalHtmlPage() {
-		String userPath = System.getProperty("user.dir");
-		String htmlPath = "file:\\" + userPath +  "\\src\\test\\resources\\investingNYSEQuoteAMZN.htm";
-		String expectedTitleText, actualTitleText;
-		HtmlPage htmlPage;
-		WebClient webClient = new WebClient();
-		
-		webClient.getOptions().setUseInsecureSSL(true);
-	    webClient.getOptions().setCssEnabled(false);
-	    webClient.getOptions().setJavaScriptEnabled(false);
+	public void testGetCurrentQuotationNYSE() {
+		Quotation actualQuotation, expectedQuotation;
 		
 		try {
-			htmlPage = webClient.getPage(htmlPath);
-			expectedTitleText = "Amazon Stock Price Today | NASDAQ AMZN Live Ticker - Investing.com";
-			actualTitleText = htmlPage.getTitleText();
+			actualQuotation = quotationProviderInvestingDAO.getCurrentQuotation("AMZN", StockExchange.NYSE);
+			expectedQuotation = this.getAmazonQuotation();
 			
-			assertEquals(expectedTitleText, actualTitleText);
-		} 
-		catch(FailingHttpStatusCodeException e) {
-			fail(e.getMessage());
-		} 
-		catch(MalformedURLException e) {
-			fail(e.getMessage());
-		} 
-		catch(IOException e) {
+			assertTrue(expectedQuotation.getClose().compareTo(actualQuotation.getClose()) == 0);
+		} catch (Exception e) {
 			fail(e.getMessage());
 		}
-	    finally {
-	    	webClient.close();
-	    }
 	}
 }
