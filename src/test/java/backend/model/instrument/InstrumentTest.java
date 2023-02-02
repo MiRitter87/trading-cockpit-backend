@@ -315,6 +315,45 @@ public class InstrumentTest {
 	
 	@Test
 	/**
+	 * Tests validation of an Instrument whose companyPathInvestingCom is too long.
+	 */
+	public void testCompanyPathInvestingComTooLong() {
+		ValidationMessageProvider messageProvider = new ValidationMessageProvider();		
+		this.instrument.setCompanyPathInvestingCom("denison-mines-corp?cid=24520kjndfkvnfkjgndffjkkfn11");
+		
+		String expectedErrorMessage = messageProvider.getSizeValidationMessage("instrument", "companyPathInvestingCom", 
+				String.valueOf(this.instrument.getCompanyPathInvestingCom().length()), "0", "50");
+		String errorMessage = "";
+		
+		try {
+			this.instrument.validate();
+			fail("Validation should have failed because companyPathInvestingCom is too long.");
+		} 
+		catch (Exception expected) {
+			errorMessage = expected.getMessage();
+		}
+		
+		assertEquals(expectedErrorMessage, errorMessage);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests validation of an Instrument whose companyNameInvestingCom is null.
+	 */
+	public void testCompanyPathInvestingComIsNull() {
+		this.instrument.setCompanyPathInvestingCom(null);
+		
+		try {
+			this.instrument.validate();
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	@Test
+	/**
 	 * Tests getting a quotation by a given date.
 	 * A quotation for the date exists.
 	 */

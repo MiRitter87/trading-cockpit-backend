@@ -101,6 +101,15 @@ public class Instrument {
 	private Instrument industryGroup;
 	
 	/**
+	 * The path of the URL that specifies the company at investing.com.
+	 * 
+	 * Example: In the URL "https://www.investing.com/equities/apple-computer-inc" the company path would be "apple-computer-inc".
+	 */
+	@Column(name="COMPANY_PATH_INVESTING_COM", length = 50)
+	@Size(min = 0, max = 50, message = "{instrument.companyPathInvestingCom.size.message}")
+	private String companyPathInvestingCom;
+	
+	/**
 	 * The quotations.
 	 */
 	@Transient
@@ -258,6 +267,22 @@ public class Instrument {
 
 
 	/**
+	 * @return the companyPathInvestingCom
+	 */
+	public String getCompanyPathInvestingCom() {
+		return companyPathInvestingCom;
+	}
+
+
+	/**
+	 * @param companyPathInvestingCom the companyPathInvestingCom to set
+	 */
+	public void setCompanyPathInvestingCom(String companyPathInvestingCom) {
+		this.companyPathInvestingCom = companyPathInvestingCom;
+	}
+
+
+	/**
 	 * Adds a quotation to the instrument.
 	 * 
 	 * @param quotation The quotation to be added.
@@ -354,6 +379,7 @@ public class Instrument {
 		result = prime * result + ((type == null) ? 0 : type.hashCode());
 		result = prime * result + ((sector == null) ? 0 : sector.hashCode());
 		result = prime * result + ((industryGroup == null) ? 0 : industryGroup.hashCode());
+		result = prime * result + ((companyPathInvestingCom == null) ? 0 : companyPathInvestingCom.hashCode());
 		return result;
 	}
 
@@ -409,6 +435,13 @@ public class Instrument {
 				return false;
 			}
 		} else if (!industryGroup.equals(other.industryGroup)) {
+			return false;
+		}
+		if (companyPathInvestingCom == null) {
+			if (other.companyPathInvestingCom != null) {
+				return false;
+			}
+		} else if (!companyPathInvestingCom.equals(other.companyPathInvestingCom)) {
 			return false;
 		}
 		
