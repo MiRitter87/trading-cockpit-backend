@@ -3,6 +3,7 @@ package backend.dao.quotation;
 import java.util.List;
 
 import backend.model.StockExchange;
+import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 
@@ -15,12 +16,11 @@ public interface QuotationProviderDAO {
 	/**
 	 * Provides a Quotation with the most recent data of an Instrument.
 	 * 
-	 * @param symbol The symbol.
-	 * @param stockExchange The stock exchange.
+	 * @param instrument The Instrument for which the current Quotation is requested.
 	 * @return The most recent Quotation of an instrument.
 	 * @throws Exception In case the Quotation retrieval failed.
 	 */
-	Quotation getCurrentQuotation(final String symbol, final StockExchange stockExchange) throws Exception;
+	Quotation getCurrentQuotation(final Instrument instrument) throws Exception;
 	
 	
 	/**

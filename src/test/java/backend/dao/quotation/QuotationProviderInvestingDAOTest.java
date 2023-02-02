@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import backend.model.StockExchange;
+import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
 
 /**
@@ -22,7 +23,7 @@ public class QuotationProviderInvestingDAOTest {
 	 * DAO to access quotation data from investing.com.
 	 */
 	private static QuotationProviderInvestingDAO quotationProviderInvestingDAO;
-	
+
 	
 	@BeforeAll
 	/**
@@ -64,7 +65,7 @@ public class QuotationProviderInvestingDAOTest {
 		Quotation actualQuotation, expectedQuotation;
 		
 		try {
-			actualQuotation = quotationProviderInvestingDAO.getCurrentQuotation("AMZN", StockExchange.NYSE);
+			actualQuotation = quotationProviderInvestingDAO.getCurrentQuotation(new Instrument("AMZN", StockExchange.NYSE));
 			expectedQuotation = this.getAmazonQuotation();
 			
 			assertTrue(expectedQuotation.getClose().compareTo(actualQuotation.getClose()) == 0);

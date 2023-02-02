@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 
 import backend.model.Currency;
 import backend.model.StockExchange;
+import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 
@@ -429,7 +430,7 @@ public class QuotationProviderYahooDAOTest {
 		Quotation actualQuotation, expectedQuotation;
 		
 		try {
-			actualQuotation = quotationProviderYahooDAO.getCurrentQuotation("DML", StockExchange.TSX);
+			actualQuotation = quotationProviderYahooDAO.getCurrentQuotation(new Instrument("DML", StockExchange.TSX));
 			expectedQuotation = this.getDenisonMinesQuotation();
 			
 			assertTrue(expectedQuotation.getClose().compareTo(actualQuotation.getClose()) == 0);
@@ -448,7 +449,7 @@ public class QuotationProviderYahooDAOTest {
 		Quotation actualQuotation, expectedQuotation;
 		
 		try {
-			actualQuotation = quotationProviderYahooDAO.getCurrentQuotation("RIO", StockExchange.LSE);
+			actualQuotation = quotationProviderYahooDAO.getCurrentQuotation(new Instrument("RIO", StockExchange.LSE));
 			expectedQuotation = this.getRioTintoQuotation();
 			
 			assertTrue(expectedQuotation.getClose().compareTo(actualQuotation.getClose()) == 0);

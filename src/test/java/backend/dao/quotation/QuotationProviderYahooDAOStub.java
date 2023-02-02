@@ -5,6 +5,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import backend.model.StockExchange;
+import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 
@@ -38,12 +39,12 @@ public class QuotationProviderYahooDAOStub extends QuotationProviderYahooDAO {
 	
 	
 	@Override
-	public Quotation getCurrentQuotation(final String symbol, final StockExchange stockExchange) throws Exception {
+	public Quotation getCurrentQuotation(final Instrument instrument) throws Exception {
 		String jsonPath = "";
 		
-		if(symbol.equals("DML") && stockExchange.equals(StockExchange.TSX))
+		if(instrument.getSymbol().equals("DML") && instrument.getStockExchange().equals(StockExchange.TSX))
 			jsonPath = "src/test/resources/yahooTSEQuoteDML.json";
-		else if(symbol.equals("RIO") && stockExchange.equals(StockExchange.LSE))
+		else if(instrument.getSymbol().equals("RIO") && instrument.getStockExchange().equals(StockExchange.LSE))
 			jsonPath = "src/test/resources/yahooLSEQuoteRIO.json";
 		else
 			return null;

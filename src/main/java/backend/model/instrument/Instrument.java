@@ -113,6 +113,20 @@ public class Instrument {
 	public Instrument() {
 		this.quotations = new ArrayList<>();
 	}
+	
+	
+	/**
+	 * Initializes the Instrument.
+	 * 
+	 * @param symbol The symbol of the Instrument.
+	 * @param stockExchange The stock exchange of the Instrument.
+	 */
+	public Instrument(final String symbol, final StockExchange stockExchange) {
+		this.symbol = symbol;
+		this.stockExchange = stockExchange;
+		
+		this.quotations = new ArrayList<>();
+	}
 
 
 	/**

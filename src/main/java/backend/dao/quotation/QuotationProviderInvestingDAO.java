@@ -8,6 +8,7 @@ import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 import backend.model.StockExchange;
+import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 
@@ -19,7 +20,7 @@ import backend.model.instrument.Quotation;
 public class QuotationProviderInvestingDAO implements QuotationProviderDAO {
 
 	@Override
-	public Quotation getCurrentQuotation(String symbol, StockExchange stockExchange) throws Exception {
+	public Quotation getCurrentQuotation(final Instrument instrument) throws Exception {
 		//TODO Build correct url based on Instrument attributes.
 		String url = "https://www.investing.com/equities/amazon-com-inc";
 	    WebClient webClient = new WebClient();

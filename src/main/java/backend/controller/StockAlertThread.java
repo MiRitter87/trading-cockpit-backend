@@ -90,8 +90,7 @@ public class StockAlertThread extends Thread {
 			
 		//Get the Quotation of the stock defined in the price alert.
 		try {
-			quotation = this.quotationProviderDAO.getCurrentQuotation(
-					priceAlert.getInstrument().getSymbol(), priceAlert.getInstrument().getStockExchange());
+			quotation = this.quotationProviderDAO.getCurrentQuotation(priceAlert.getInstrument());
 		} catch (Exception e) {
 			logger.error("Failed to determine quotation for symbol: " +priceAlert.getInstrument().getSymbol(), e);
 			return;

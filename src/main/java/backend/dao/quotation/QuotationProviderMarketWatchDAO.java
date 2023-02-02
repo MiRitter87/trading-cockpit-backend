@@ -19,6 +19,7 @@ import com.opencsv.CSVReaderHeaderAware;
 
 import backend.model.Currency;
 import backend.model.StockExchange;
+import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 import okhttp3.OkHttpClient;
@@ -88,7 +89,7 @@ public class QuotationProviderMarketWatchDAO implements QuotationProviderDAO {
 	
 
 	@Override
-	public Quotation getCurrentQuotation(String symbol, StockExchange stockExchange) throws Exception {
+	public Quotation getCurrentQuotation(final Instrument instrument) throws Exception {
 		throw new Exception("Method is not supported.");
 	}
 

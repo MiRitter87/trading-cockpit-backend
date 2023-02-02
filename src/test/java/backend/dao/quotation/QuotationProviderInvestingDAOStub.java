@@ -3,7 +3,7 @@ package backend.dao.quotation;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
-import backend.model.StockExchange;
+import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
 
 /**
@@ -15,7 +15,7 @@ import backend.model.instrument.Quotation;
  */
 public class QuotationProviderInvestingDAOStub extends QuotationProviderInvestingDAO {
 	@Override
-	public Quotation getCurrentQuotation(final String symbol, final StockExchange stockExchange) throws Exception {
+	public Quotation getCurrentQuotation(final Instrument instrument) throws Exception {
 		String userPath = System.getProperty("user.dir");
 		//TODO Build path based on symbol and exchange of Instrument.
 		String htmlPath = "file:\\" + userPath +  "\\src\\test\\resources\\investingNYSEQuoteAMZN.htm";

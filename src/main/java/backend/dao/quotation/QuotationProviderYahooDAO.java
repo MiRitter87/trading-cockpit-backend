@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import backend.model.Currency;
 import backend.model.StockExchange;
+import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 import okhttp3.OkHttpClient;
@@ -82,8 +83,8 @@ public class QuotationProviderYahooDAO implements QuotationProviderDAO {
 	
 
 	@Override
-	public Quotation getCurrentQuotation(String symbol, StockExchange stockExchange) throws Exception {
-		String jsonQuotation = this.getCurrentQuotationJSONFromYahoo(symbol, stockExchange);
+	public Quotation getCurrentQuotation(final Instrument instrument) throws Exception {
+		String jsonQuotation = this.getCurrentQuotationJSONFromYahoo(instrument.getSymbol(), instrument.getStockExchange());
 		Quotation quotation = this.convertJSONToQuotation(jsonQuotation);
 		
 		return quotation;
