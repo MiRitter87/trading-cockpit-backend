@@ -1,5 +1,6 @@
 package backend.dao.quotation;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
+import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 
 /**
@@ -57,6 +59,23 @@ public class QuotationProviderInvestingDAOTest {
 	}
 	
 	
+	/**
+	 * Gets an Instrument of the Amazon stock.
+	 * 
+	 * @return Instrument of the Amazon stock.
+	 */
+	private Instrument getAmazonInstrument() {
+		Instrument instrument = new Instrument();
+		
+		instrument.setSymbol("AMZN");
+		instrument.setStockExchange(StockExchange.NYSE);
+		instrument.setType(InstrumentType.STOCK);
+		instrument.setCompanyPathInvestingCom("amazon-com-inc");
+		
+		return instrument;
+	}
+	
+	
 	@Test
 	/**
 	 * Tests getting current Quotation data from a stock listed at the NYSE.
@@ -65,12 +84,26 @@ public class QuotationProviderInvestingDAOTest {
 		Quotation actualQuotation, expectedQuotation;
 		
 		try {
-			actualQuotation = quotationProviderInvestingDAO.getCurrentQuotation(new Instrument("AMZN", StockExchange.NYSE));
+			actualQuotation = quotationProviderInvestingDAO.getCurrentQuotation(this.getAmazonInstrument());
 			expectedQuotation = this.getAmazonQuotation();
 			
 			assertTrue(expectedQuotation.getClose().compareTo(actualQuotation.getClose()) == 0);
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of the query URL for the current quotation of a stock.
+	 */
+	public void testGetQueryUrlCurrentQuotationStock() {
+		Instrument amazonStock = this.getAmazonInstrument();
+		final String expectedURL = "https://www.investing.com/equities/amazon-com-inc";
+		String actualURL = "";
+		
+		actualURL = quotationProviderInvestingDAO.getQueryUrlCurrentQuotation(amazonStock);
+		assertEquals(expectedURL, actualURL);
 	}
 }

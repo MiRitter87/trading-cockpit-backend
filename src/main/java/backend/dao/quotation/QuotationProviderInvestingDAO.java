@@ -18,6 +18,21 @@ import backend.model.instrument.Quotation;
  * @author Michael
  */
 public class QuotationProviderInvestingDAO implements QuotationProviderDAO {
+	/**
+	 * Placeholder for the type used in a query URL.
+	 */
+	private static final String PLACEHOLDER_TYPE = "{type}";
+	
+	/**
+	 * Placeholder for the company used in a query URL.
+	 */
+	private static final String PLACEHOLDER_COMPANY = "{company}";
+	
+	/**
+	 * URL to quote investing.com: Current quotation.
+	 */
+	private static final String BASE_URL_CURRENT_QUOTATION = "https://www.investing.com/" + PLACEHOLDER_TYPE + "/" + PLACEHOLDER_COMPANY;
+	
 
 	@Override
 	public Quotation getCurrentQuotation(final Instrument instrument) throws Exception {
@@ -77,5 +92,21 @@ public class QuotationProviderInvestingDAO implements QuotationProviderDAO {
 		//TODO Set currency.
 		
 		return quotation;
+	}
+	
+	
+	/**
+	 * Gets the query URL for the current quotation of the given Instrument.
+	 * 
+	 * @param instrument The Instrument for which the query URL is determined.
+	 * @return The query URL.
+	 */
+	protected String getQueryUrlCurrentQuotation(final Instrument instrument) {
+		String queryUrl = new String(BASE_URL_CURRENT_QUOTATION);
+		
+		queryUrl = queryUrl.replace(PLACEHOLDER_TYPE, "equities");	//TODO determine dynamically
+		queryUrl = queryUrl.replace(PLACEHOLDER_COMPANY, instrument.getCompanyPathInvestingCom());
+		
+		return queryUrl;
 	}
 }
