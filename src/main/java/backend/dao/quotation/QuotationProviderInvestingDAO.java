@@ -33,6 +33,16 @@ public class QuotationProviderInvestingDAO implements QuotationProviderDAO {
 	 */
 	private static final String BASE_URL_CURRENT_QUOTATION = "https://www.investing.com/" + PLACEHOLDER_TYPE + "/" + PLACEHOLDER_COMPANY;
 	
+	/**
+	 * Type used in the URL for equities.
+	 */
+	private static final String URL_TYPE_EQUITY = "equities";
+	
+	/**
+	 * Type used in the URL for ETFs.
+	 */
+	private static final String URL_TYPE_ETF = "etfs";
+	
 
 	@Override
 	public Quotation getCurrentQuotation(final Instrument instrument) throws Exception {
@@ -104,9 +114,29 @@ public class QuotationProviderInvestingDAO implements QuotationProviderDAO {
 	protected String getQueryUrlCurrentQuotation(final Instrument instrument) {
 		String queryUrl = new String(BASE_URL_CURRENT_QUOTATION);
 		
-		queryUrl = queryUrl.replace(PLACEHOLDER_TYPE, "equities");	//TODO determine dynamically
+		queryUrl = queryUrl.replace(PLACEHOLDER_TYPE, this.getTypeForQueryURL(instrument));
 		queryUrl = queryUrl.replace(PLACEHOLDER_COMPANY, instrument.getCompanyPathInvestingCom());
 		
 		return queryUrl;
+	}
+	
+	
+	/**
+	 * Gets the Instrument type for construction of the query URL.
+	 * 
+	 * @param instrument The Instrument.
+	 * @return The type used in the URL.
+	 */
+	private String getTypeForQueryURL(final Instrument instrument) {
+		switch(instrument.getType()) {
+			case STOCK:
+				return URL_TYPE_EQUITY;
+			case ETF:
+			case SECTOR:
+			case IND_GROUP:
+				return URL_TYPE_ETF;
+			default:
+				return "";
+		}
 	}
 }

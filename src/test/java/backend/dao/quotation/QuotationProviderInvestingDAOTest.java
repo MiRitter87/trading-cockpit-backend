@@ -76,6 +76,23 @@ public class QuotationProviderInvestingDAOTest {
 	}
 	
 	
+	/**
+	 * Gets an Instrument of the Dow Jones Industrial ETF.
+	 * 
+	 * @return Instrument of the Dow Jones Industrial ETF.
+	 */
+	private Instrument getDowJonesIndustrialETF() {
+		Instrument instrument = new Instrument();
+		
+		instrument.setSymbol("DIA");
+		instrument.setStockExchange(StockExchange.NYSE);
+		instrument.setType(InstrumentType.ETF);
+		instrument.setCompanyPathInvestingCom("diamonds-trust");
+		
+		return instrument;
+	}
+	
+	
 	@Test
 	/**
 	 * Tests getting current Quotation data from a stock listed at the NYSE.
@@ -104,6 +121,20 @@ public class QuotationProviderInvestingDAOTest {
 		String actualURL = "";
 		
 		actualURL = quotationProviderInvestingDAO.getQueryUrlCurrentQuotation(amazonStock);
+		assertEquals(expectedURL, actualURL);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of the query URL for the current quotation of an ETF.
+	 */
+	public void testGetQueryUrlCurrentQuotationETF() {
+		Instrument diaETF = this.getDowJonesIndustrialETF();
+		final String expectedURL = "https://www.investing.com/etfs/diamonds-trust";
+		String actualURL = "";
+		
+		actualURL = quotationProviderInvestingDAO.getQueryUrlCurrentQuotation(diaETF);
 		assertEquals(expectedURL, actualURL);
 	}
 }
