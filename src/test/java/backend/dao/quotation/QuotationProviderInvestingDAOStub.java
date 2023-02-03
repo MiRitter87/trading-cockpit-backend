@@ -33,7 +33,7 @@ public class QuotationProviderInvestingDAOStub extends QuotationProviderInvestin
 			
 			htmlPage = webClient.getPage(htmlPath);
 			
-			quotation = this.getQuotationFromHtmlPage(htmlPage);			
+			quotation = this.getQuotationFromHtmlPage(htmlPage, instrument);			
 		}
 		finally {
 			webClient.close();

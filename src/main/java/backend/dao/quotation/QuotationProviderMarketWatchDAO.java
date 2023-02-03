@@ -31,7 +31,7 @@ import okhttp3.Response;
  * 
  * @author Michael
  */
-public class QuotationProviderMarketWatchDAO implements QuotationProviderDAO {
+public class QuotationProviderMarketWatchDAO extends AbstractQuotationProviderDAO implements QuotationProviderDAO {
 	/**
 	 * Placeholder for the symbol used in a query URL.
 	 */
@@ -290,30 +290,6 @@ public class QuotationProviderMarketWatchDAO implements QuotationProviderDAO {
 		}
 		
 		return type;
-	}
-	
-	
-	/**
-	 * Gets the Currency for the given StockExchange.
-	 * 
-	 * @param stockExchange The StockExchange.
-	 * @return
-	 */
-	protected Currency getCurrencyForStockExchange(final StockExchange stockExchange) {
-		switch(stockExchange) {
-			case TSX:
-			case TSXV:
-			case CSE:
-				return Currency.CAD;
-			case NYSE:
-				return Currency.USD;
-			case LSE:
-				return Currency.GBP;
-			default:
-				break;
-		}
-		
-		return null;
 	}
 	
 	

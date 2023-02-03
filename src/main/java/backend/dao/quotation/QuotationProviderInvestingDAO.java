@@ -17,7 +17,7 @@ import backend.model.instrument.Quotation;
  * 
  * @author Michael
  */
-public class QuotationProviderInvestingDAO implements QuotationProviderDAO {
+public class QuotationProviderInvestingDAO extends AbstractQuotationProviderDAO implements QuotationProviderDAO {
 	/**
 	 * Placeholder for the type used in a query URL.
 	 */
@@ -46,8 +46,7 @@ public class QuotationProviderInvestingDAO implements QuotationProviderDAO {
 
 	@Override
 	public Quotation getCurrentQuotation(final Instrument instrument) throws Exception {
-		//TODO Build correct url based on Instrument attributes.
-		String url = "https://www.investing.com/equities/amazon-com-inc";
+		String url = this.getQueryUrlCurrentQuotation(instrument);
 	    WebClient webClient = new WebClient();
 	    HtmlPage htmlPage;
 	    Quotation quotation;
@@ -59,7 +58,7 @@ public class QuotationProviderInvestingDAO implements QuotationProviderDAO {
 		try {
 			htmlPage = webClient.getPage(url);
 			
-			quotation = this.getQuotationFromHtmlPage(htmlPage);
+			quotation = this.getQuotationFromHtmlPage(htmlPage, instrument);
 		}
 	    finally {
 	    	webClient.close();
@@ -80,10 +79,11 @@ public class QuotationProviderInvestingDAO implements QuotationProviderDAO {
 	 * Gets the current Quotation from the HTML page.
 	 * 
 	 * @param htmlPage The HTML page containing the Quotation information.
+	 * @param instrument The Instrument for which Quotation data are extracted.
 	 * @return The current Quotation.
 	 * @throws Exception Failed to extract Quotation data from given HTML page.
 	 */
-	protected Quotation getQuotationFromHtmlPage(final HtmlPage htmlPage) throws Exception {
+	protected Quotation getQuotationFromHtmlPage(final HtmlPage htmlPage, final Instrument instrument) throws Exception {
 		Quotation quotation = new Quotation();
 		String currentPrice = "";
 		
@@ -92,6 +92,7 @@ public class QuotationProviderInvestingDAO implements QuotationProviderDAO {
 
 		    if (element.getAttribute("data-test").equals("instrument-price-last") && element.getAttribute("class").equals("text-2xl")) {
 		    	currentPrice = element.getFirstChild().asNormalizedText();
+		    	quotation.setCurrency(this.getCurrencyForStockExchange(instrument.getStockExchange()));
 		    }
 		}
 		
@@ -99,7 +100,6 @@ public class QuotationProviderInvestingDAO implements QuotationProviderDAO {
 			throw new Exception("The price could not be determined.");
 		
 		quotation.setClose(new BigDecimal(currentPrice));
-		//TODO Set currency.
 		
 		return quotation;
 	}

@@ -10,6 +10,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import backend.model.Currency;
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
@@ -105,6 +106,7 @@ public class QuotationProviderInvestingDAOTest {
 			expectedQuotation = this.getAmazonQuotation();
 			
 			assertTrue(expectedQuotation.getClose().compareTo(actualQuotation.getClose()) == 0);
+			assertEquals(Currency.USD, actualQuotation.getCurrency());
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
