@@ -1048,6 +1048,7 @@ public class InstrumentServiceTest {
 		instrumentWS.setType(instrument.getType());
 		instrumentWS.setStockExchange(instrument.getStockExchange());
 		instrumentWS.setName(instrument.getName());
+		instrumentWS.setCompanyPathInvestingCom(instrument.getCompanyPathInvestingCom());
 		
 		//Object references.
 		if(instrument.getSector() != null)

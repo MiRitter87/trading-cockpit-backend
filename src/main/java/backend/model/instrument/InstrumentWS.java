@@ -44,6 +44,13 @@ public class InstrumentWS {
 	 */
 	private Integer industryGroupId;
 	
+	/**
+	 * The path of the URL that specifies the company at investing.com.
+	 * 
+	 * Example: In the URL "https://www.investing.com/equities/apple-computer-inc" the company path would be "apple-computer-inc".
+	 */
+	private String companyPathInvestingCom;
+	
 	
 	/**
 	 * Constructor.
@@ -162,5 +169,21 @@ public class InstrumentWS {
 	 */
 	public void setIndustryGroupId(Integer industryGroupId) {
 		this.industryGroupId = industryGroupId;
+	}
+
+
+	/**
+	 * @return the companyPathInvestingCom
+	 */
+	public String getCompanyPathInvestingCom() {
+		return companyPathInvestingCom;
+	}
+
+
+	/**
+	 * @param companyPathInvestingCom the companyPathInvestingCom to set
+	 */
+	public void setCompanyPathInvestingCom(String companyPathInvestingCom) {
+		this.companyPathInvestingCom = companyPathInvestingCom;
 	}
 }
