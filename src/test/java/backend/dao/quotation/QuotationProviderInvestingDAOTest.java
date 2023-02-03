@@ -122,8 +122,13 @@ public class QuotationProviderInvestingDAOTest {
 		final String expectedURL = "https://www.investing.com/equities/amazon-com-inc";
 		String actualURL = "";
 		
-		actualURL = quotationProviderInvestingDAO.getQueryUrlCurrentQuotation(amazonStock);
-		assertEquals(expectedURL, actualURL);
+		try {
+			actualURL = quotationProviderInvestingDAO.getQueryUrlCurrentQuotation(amazonStock);
+			assertEquals(expectedURL, actualURL);
+		}
+		catch(Exception e) {
+			fail(e.getMessage());
+		}
 	}
 	
 	
@@ -136,7 +141,31 @@ public class QuotationProviderInvestingDAOTest {
 		final String expectedURL = "https://www.investing.com/etfs/diamonds-trust";
 		String actualURL = "";
 		
-		actualURL = quotationProviderInvestingDAO.getQueryUrlCurrentQuotation(diaETF);
-		assertEquals(expectedURL, actualURL);
+		try {
+			actualURL = quotationProviderInvestingDAO.getQueryUrlCurrentQuotation(diaETF);
+			assertEquals(expectedURL, actualURL);
+		}
+		catch(Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of the query URL if attribute 'companyPathInvestingCom' of Instrument is not defined.
+	 */
+	public void testGetQueryUrlWithoutCompanyPath() {
+		Instrument amazonStock = this.getAmazonInstrument();
+		
+		amazonStock.setCompanyPathInvestingCom("");
+		
+		try {
+			quotationProviderInvestingDAO.getQueryUrlCurrentQuotation(amazonStock);
+			fail("Determination of URL should have failed because attribute 'companyPathInvestingCom' is not defined.");
+		}
+		catch(Exception expected) {
+			//All is well.
+		}
 	}
 }

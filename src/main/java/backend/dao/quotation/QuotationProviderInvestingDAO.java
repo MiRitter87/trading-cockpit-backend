@@ -110,9 +110,13 @@ public class QuotationProviderInvestingDAO extends AbstractQuotationProviderDAO 
 	 * 
 	 * @param instrument The Instrument for which the query URL is determined.
 	 * @return The query URL.
+	 * @throws Exception URL could not be created.
 	 */
-	protected String getQueryUrlCurrentQuotation(final Instrument instrument) {
+	protected String getQueryUrlCurrentQuotation(final Instrument instrument) throws Exception {
 		String queryUrl = new String(BASE_URL_CURRENT_QUOTATION);
+		
+		if(instrument.getCompanyPathInvestingCom() == null || instrument.getCompanyPathInvestingCom() == "")
+			throw new Exception("Query URL for investing.com could not be created because attribute 'companyPathInvestingCom' is not defined.");
 		
 		queryUrl = queryUrl.replace(PLACEHOLDER_TYPE, this.getTypeForQueryURL(instrument));
 		queryUrl = queryUrl.replace(PLACEHOLDER_COMPANY, instrument.getCompanyPathInvestingCom());
