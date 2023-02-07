@@ -55,6 +55,7 @@ public class QuotationProviderInvestingDAOTest {
 		Quotation quotation = new Quotation();
 		
 		quotation.setClose(BigDecimal.valueOf(103.13));
+		quotation.setCurrency(Currency.USD);
 		
 		return quotation;
 	}
@@ -106,7 +107,7 @@ public class QuotationProviderInvestingDAOTest {
 			expectedQuotation = this.getAmazonQuotation();
 			
 			assertTrue(expectedQuotation.getClose().compareTo(actualQuotation.getClose()) == 0);
-			assertEquals(Currency.USD, actualQuotation.getCurrency());
+			assertEquals(expectedQuotation.getCurrency(), actualQuotation.getCurrency());
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}

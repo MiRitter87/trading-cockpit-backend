@@ -12,7 +12,6 @@ import backend.model.instrument.Quotation;
  * A local HTML file is used instead of a live query to investing.com.
  * 
  * @author Michael
- *
  */
 public class QuotationProviderInvestingDAOStub extends QuotationProviderInvestingDAO {
 	@Override
