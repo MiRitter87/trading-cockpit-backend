@@ -3,6 +3,7 @@ package backend.dao.quotation;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
@@ -36,8 +37,25 @@ public class QuotationProviderGlobeAndMailDAO extends AbstractQuotationProviderD
 
 	@Override
 	public Quotation getCurrentQuotation(Instrument instrument) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		String url = this.getQueryUrlCurrentQuotation(instrument);
+	    WebClient webClient = new WebClient();
+	    HtmlPage htmlPage;
+	    Quotation quotation;
+	    
+	    webClient.getOptions().setUseInsecureSSL(true);
+	    webClient.getOptions().setCssEnabled(false);
+	    webClient.getOptions().setJavaScriptEnabled(false);
+	    
+		try {
+			htmlPage = webClient.getPage(url);
+			
+			quotation = this.getQuotationFromHtmlPage(htmlPage, instrument);
+		}
+	    finally {
+	    	webClient.close();
+	    }
+		
+		return quotation;
 	}
 
 	@Override
