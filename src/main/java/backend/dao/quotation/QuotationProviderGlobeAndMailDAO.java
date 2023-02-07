@@ -17,6 +17,22 @@ import backend.model.instrument.Quotation;
  * @author Michael
  */
 public class QuotationProviderGlobeAndMailDAO extends AbstractQuotationProviderDAO implements QuotationProviderDAO {
+	/**
+	 * Placeholder for the symbol used in a query URL.
+	 */
+	private static final String PLACEHOLDER_SYMBOL = "{symbol}";
+	
+	/**
+	 * Placeholder for the stock exchange used in a query URL.
+	 */
+	private static final String PLACEHOLDER_EXCHANGE = "{exchange}";
+	
+	/**
+	 * URL to quote theglobeandmail.com: Current quotation.
+	 */
+	private static final String BASE_URL_CURRENT_QUOTATION = "https://www.theglobeandmail.com/investing/markets/stocks/" + 
+			PLACEHOLDER_SYMBOL + "-" + PLACEHOLDER_EXCHANGE + "/";
+	
 
 	@Override
 	public Quotation getCurrentQuotation(Instrument instrument) throws Exception {
@@ -62,5 +78,45 @@ public class QuotationProviderGlobeAndMailDAO extends AbstractQuotationProviderD
 		quotation.setCurrency(this.getCurrencyForStockExchange(instrument.getStockExchange()));
 		
 		return quotation;
+	}
+	
+	
+	/**
+	 * Gets the query URL for the current quotation of the given Instrument.
+	 * 
+	 * @param instrument The Instrument for which the query URL is determined.
+	 * @return The query URL.
+	 * @throws Exception URL could not be created.
+	 */
+	protected String getQueryUrlCurrentQuotation(final Instrument instrument) throws Exception {
+		String queryUrl = new String(BASE_URL_CURRENT_QUOTATION);
+		
+		if(instrument.getStockExchange() == StockExchange.LSE || instrument.getStockExchange() == StockExchange.NYSE)
+			throw new Error("The DAO for TheGlobeAndMail does not provide current quotations for the exchange: " + instrument.getStockExchange());
+		
+		queryUrl = queryUrl.replace(PLACEHOLDER_SYMBOL, instrument.getSymbol());
+		queryUrl = queryUrl.replace(PLACEHOLDER_EXCHANGE, this.getExchangeForQueryURL(instrument));
+		
+		return queryUrl;
+	}
+	
+	
+	/**
+	 * Gets the stock exchange for construction of the query URL.
+	 * 
+	 * @param instrument The Instrument.
+	 * @return The stock exchange used in the URL.
+	 */
+	private String getExchangeForQueryURL(final Instrument instrument) {
+		switch(instrument.getStockExchange()) {
+			case TSX:
+				return "T";
+			case TSXV:
+				return "X";
+			case CSE:
+				return "CN";
+			default:
+				return "";
+		}
 	}
 }

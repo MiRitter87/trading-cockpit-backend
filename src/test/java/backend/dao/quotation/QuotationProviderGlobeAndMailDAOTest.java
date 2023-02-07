@@ -63,6 +63,38 @@ public class QuotationProviderGlobeAndMailDAOTest {
 	
 	
 	/**
+	 * Gets an Instrument of the Denison Mines stock.
+	 * 
+	 * @return Instrument of the Denison Mines stock.
+	 */
+	private Instrument getDenisonMinesInstrument() {
+		Instrument instrument = new Instrument();
+		
+		instrument.setSymbol("DML");
+		instrument.setStockExchange(StockExchange.TSX);
+		instrument.setType(InstrumentType.STOCK);
+		
+		return instrument;
+	}
+	
+	
+	/**
+	 * Gets an Instrument of the Algernon stock.
+	 * 
+	 * @return Instrument of the Algernon stock.
+	 */
+	private Instrument getAlgernonInstrument() {
+		Instrument instrument = new Instrument();
+		
+		instrument.setSymbol("AGN");
+		instrument.setStockExchange(StockExchange.CSE);
+		instrument.setType(InstrumentType.STOCK);
+		
+		return instrument;
+	}
+	
+	
+	/**
 	 * Gets a Quotation as expected from the theglobeandmail.com website.
 	 * 
 	 * @return A Quotation.
@@ -91,6 +123,63 @@ public class QuotationProviderGlobeAndMailDAOTest {
 			assertTrue(expectedQuotation.getClose().compareTo(actualQuotation.getClose()) == 0);
 			assertEquals(expectedQuotation.getCurrency(), actualQuotation.getCurrency());
 		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of the query URL for the current quotation of a stock listed at the TSX/V.
+	 */
+	public void testGetQueryUrlCurrentQuotationTSXV() {
+		Instrument patriotBatteryMetalsStock = this.getPatriotBatteryMetalsInstrument();
+		final String expectedURL = "https://www.theglobeandmail.com/investing/markets/stocks/PMET-X/";
+		String actualURL = "";
+		
+		try {
+			actualURL = quotationProviderGlobeAndMailDAO.getQueryUrlCurrentQuotation(patriotBatteryMetalsStock);
+			assertEquals(expectedURL, actualURL);
+		}
+		catch(Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of the query URL for the current quotation of a stock listed at the TSX.
+	 */
+	public void testGetQueryUrlCurrentQuotationTSX() {
+		Instrument denisonMinesStock = this.getDenisonMinesInstrument();
+		final String expectedURL = "https://www.theglobeandmail.com/investing/markets/stocks/DML-T/";
+		String actualURL = "";
+		
+		try {
+			actualURL = quotationProviderGlobeAndMailDAO.getQueryUrlCurrentQuotation(denisonMinesStock);
+			assertEquals(expectedURL, actualURL);
+		}
+		catch(Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of the query URL for the current quotation of a stock listed at the CSE.
+	 */
+	public void testGetQueryUrlCurrentQuotationCSE() {
+		Instrument algernonStock = this.getAlgernonInstrument();
+		final String expectedURL = "https://www.theglobeandmail.com/investing/markets/stocks/AGN-CN/";
+		String actualURL = "";
+		
+		try {
+			actualURL = quotationProviderGlobeAndMailDAO.getQueryUrlCurrentQuotation(algernonStock);
+			assertEquals(expectedURL, actualURL);
+		}
+		catch(Exception e) {
 			fail(e.getMessage());
 		}
 	}
