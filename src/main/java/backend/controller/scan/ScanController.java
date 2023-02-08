@@ -106,18 +106,8 @@ public class ScanController {
 	 * @throws Exception In case the property could not be read or initialized.
 	 */
 	private void initializeDataProvider() throws Exception {
-		String queryInterval = MainController.getInstance().getConfigurationProperty(PROPERTY_DATA_PROVIDER);
+		String dataProviderAsString = MainController.getInstance().getConfigurationProperty(PROPERTY_DATA_PROVIDER);
 		
-		switch(queryInterval) {
-			case "YAHOO":
-				this.dataProvider = DataProvider.YAHOO;
-				break;
-			case "MARKETWATCH":
-				this.dataProvider = DataProvider.MARKETWATCH;
-				break;
-			default:
-				this.dataProvider = null;
-				break;
-		}
+		this.dataProvider = MainController.getInstance().getDataProviderForString(dataProviderAsString);
 	}
 }

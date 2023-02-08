@@ -1,12 +1,16 @@
 package backend.controller;
 
 import java.time.LocalTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import backend.model.StockExchange;
 
 /**
  * Controls the process, that cyclically queries stock quotes and updates the alerts accordingly.
@@ -40,6 +44,31 @@ public class StockAlertController {
 	protected static final String PROPERTY_END_TIME_MINUTE = "endTime.minute";
 	
 	/**
+	 * Property Key: Data Provider for stock exchange NYSE.
+	 */
+	protected static final String PROPERTY_DATA_PROVIDER_NYSE = "dataProvider.priceAlert.nyse";
+	
+	/**
+	 * Property Key: Data Provider for stock exchange TSX.
+	 */
+	protected static final String PROPERTY_DATA_PROVIDER_TSX = "dataProvider.priceAlert.tsx";
+	
+	/**
+	 * Property Key: Data Provider for stock exchange TSX/V.
+	 */
+	protected static final String PROPERTY_DATA_PROVIDER_TSXV = "dataProvider.priceAlert.tsxv";
+	
+	/**
+	 * Property Key: Data Provider for stock exchange CSE.
+	 */
+	protected static final String PROPERTY_DATA_PROVIDER_CSE = "dataProvider.priceAlert.cse";
+	
+	/**
+	 * Property Key: Data Provider for stock exchange LSE.
+	 */
+	protected static final String PROPERTY_DATA_PROVIDER_LSE = "dataProvider.priceAlert.lse";
+	
+	/**
 	 * The interval in seconds between each stock quote query.
 	 */
 	private int queryInterval;
@@ -53,6 +82,11 @@ public class StockAlertController {
 	 * The end time of the trading session.
 	 */
 	private LocalTime endTime;
+	
+	/**
+	 * A Map of stock exchanges and their corresponding data providers.
+	 */
+	private Map<StockExchange, DataProvider> dataProviders;
 	
 	/**
 	 * Executes threads cyclically.
@@ -74,6 +108,7 @@ public class StockAlertController {
 		this.initializeQueryInterval();
 		this.initializeStartTime();
 		this.initializeEndTime();
+		this.initializeDataProviders();
 	}
 	
 	
@@ -98,6 +133,14 @@ public class StockAlertController {
 	 */
 	public LocalTime getEndTime() {
 		return endTime;
+	}
+	
+	
+	/**
+	 * @return the dataProviders
+	 */
+	public Map<StockExchange, DataProvider> getDataProviders() {
+		return this.dataProviders;
 	}
 
 
@@ -161,5 +204,37 @@ public class StockAlertController {
 		endTimeMinute = MainController.getInstance().getConfigurationProperty(PROPERTY_END_TIME_MINUTE);
 				
 		this.endTime = LocalTime.of(Integer.valueOf(endTimeHour), Integer.valueOf(endTimeMinute));
+	}
+	
+	
+	/**
+	 * Initializes the relations between stock exchanges and their corresponding data providers.
+	 * 
+	 * @throws Exception In case a property could not be read or initialized.
+	 */
+	private void initializeDataProviders() throws Exception {
+		this.dataProviders = new HashMap<>();
+		String dataProviderAsString;
+		DataProvider dataProvider;
+		
+		dataProviderAsString = MainController.getInstance().getConfigurationProperty(PROPERTY_DATA_PROVIDER_NYSE);
+		dataProvider = MainController.getInstance().getDataProviderForString(dataProviderAsString);
+		this.dataProviders.put(StockExchange.NYSE, dataProvider);
+		
+		dataProviderAsString = MainController.getInstance().getConfigurationProperty(PROPERTY_DATA_PROVIDER_TSX);
+		dataProvider = MainController.getInstance().getDataProviderForString(dataProviderAsString);
+		this.dataProviders.put(StockExchange.TSX, dataProvider);
+		
+		dataProviderAsString = MainController.getInstance().getConfigurationProperty(PROPERTY_DATA_PROVIDER_TSXV);
+		dataProvider = MainController.getInstance().getDataProviderForString(dataProviderAsString);
+		this.dataProviders.put(StockExchange.TSXV, dataProvider);
+		
+		dataProviderAsString = MainController.getInstance().getConfigurationProperty(PROPERTY_DATA_PROVIDER_CSE);
+		dataProvider = MainController.getInstance().getDataProviderForString(dataProviderAsString);
+		this.dataProviders.put(StockExchange.CSE, dataProvider);
+		
+		dataProviderAsString = MainController.getInstance().getConfigurationProperty(PROPERTY_DATA_PROVIDER_LSE);
+		dataProvider = MainController.getInstance().getDataProviderForString(dataProviderAsString);
+		this.dataProviders.put(StockExchange.LSE, dataProvider);
 	}
 }

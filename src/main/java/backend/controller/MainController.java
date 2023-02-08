@@ -116,4 +116,26 @@ public class MainController {
 		
 		return value;
 	}
+	
+	
+	/**
+	 * Returns a DataProvider based on the given String.
+	 * 
+	 * @param dataProviderAsString The String representation of a DataProvider.
+	 * @return The DataProvider that matches the given String.
+	 */
+	public DataProvider getDataProviderForString(final String dataProviderAsString) {
+		switch(dataProviderAsString) {
+			case "YAHOO":
+				return DataProvider.YAHOO;
+			case "MARKETWATCH":
+				return DataProvider.MARKETWATCH;
+			case "INVESTING":
+				return DataProvider.INVESTING;
+			case "GLOBEANDMAIL":
+				return DataProvider.GLOBEANDMAIL;
+			default:
+				return null;
+		}
+	}
 }

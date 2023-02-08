@@ -4,10 +4,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.time.LocalTime;
+import java.util.Map;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import backend.model.StockExchange;
 
 /**
  * Tests the functionality of the StockAlertController
@@ -76,5 +79,30 @@ public class StockAlertControllerTest {
 		final LocalTime actualEndTime = this.stockAlertController.getEndTime();
 		
 		assertEquals(expectedEndTime, actualEndTime);		
+	}
+	
+	
+	@Test
+	/**
+	 * Tests getting the data providers.
+	 */
+	public void testGetDataProviders() {
+		final Map<StockExchange, DataProvider> dataProviders = this.stockAlertController.getDataProviders();
+		DataProvider dataProvider;
+		
+		dataProvider = dataProviders.get(StockExchange.NYSE);
+		assertEquals(DataProvider.YAHOO, dataProvider);
+		
+		dataProvider = dataProviders.get(StockExchange.TSX);
+		assertEquals(DataProvider.INVESTING, dataProvider);
+		
+		dataProvider = dataProviders.get(StockExchange.TSXV);
+		assertEquals(DataProvider.GLOBEANDMAIL, dataProvider);
+		
+		dataProvider = dataProviders.get(StockExchange.CSE);
+		assertEquals(DataProvider.YAHOO, dataProvider);
+		
+		dataProvider = dataProviders.get(StockExchange.LSE);
+		assertEquals(DataProvider.YAHOO, dataProvider);
 	}
 }

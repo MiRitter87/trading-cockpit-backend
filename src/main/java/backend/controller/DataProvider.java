@@ -14,5 +14,15 @@ public enum DataProvider {
 	/**
 	 * MarketWatch.
 	 */
-	MARKETWATCH
+	MARKETWATCH,
+	
+	/**
+	 * investing.com
+	 */
+	INVESTING,
+	
+	/**
+	 * TheGlobeAndMail.com
+	 */
+	GLOBEANDMAIL
 }
