@@ -106,8 +106,6 @@ public class ScanController {
 	 * @throws Exception In case the property could not be read or initialized.
 	 */
 	private void initializeDataProvider() throws Exception {
-		String dataProviderAsString = MainController.getInstance().getConfigurationProperty(PROPERTY_DATA_PROVIDER);
-		
-		this.dataProvider = MainController.getInstance().getDataProviderForString(dataProviderAsString);
+		this.dataProvider = MainController.getInstance().getDataProviderForProperty(PROPERTY_DATA_PROVIDER);
 	}
 }

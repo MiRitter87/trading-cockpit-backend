@@ -121,10 +121,13 @@ public class MainController {
 	/**
 	 * Returns a DataProvider based on the given String.
 	 * 
-	 * @param dataProviderAsString The String representation of a DataProvider.
+	 * @param propertyKey The key of the property.
 	 * @return The DataProvider that matches the given String.
+	 * @throws Exception In case the property could not be read.
 	 */
-	public DataProvider getDataProviderForString(final String dataProviderAsString) {
+	public DataProvider getDataProviderForProperty(final String propertyKey) throws Exception {
+		String dataProviderAsString = this.getConfigurationProperty(propertyKey);
+		
 		switch(dataProviderAsString) {
 			case "YAHOO":
 				return DataProvider.YAHOO;

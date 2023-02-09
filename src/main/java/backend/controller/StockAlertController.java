@@ -214,27 +214,11 @@ public class StockAlertController {
 	 */
 	private void initializeDataProviders() throws Exception {
 		this.dataProviders = new HashMap<>();
-		String dataProviderAsString;
-		DataProvider dataProvider;
 		
-		dataProviderAsString = MainController.getInstance().getConfigurationProperty(PROPERTY_DATA_PROVIDER_NYSE);
-		dataProvider = MainController.getInstance().getDataProviderForString(dataProviderAsString);
-		this.dataProviders.put(StockExchange.NYSE, dataProvider);
-		
-		dataProviderAsString = MainController.getInstance().getConfigurationProperty(PROPERTY_DATA_PROVIDER_TSX);
-		dataProvider = MainController.getInstance().getDataProviderForString(dataProviderAsString);
-		this.dataProviders.put(StockExchange.TSX, dataProvider);
-		
-		dataProviderAsString = MainController.getInstance().getConfigurationProperty(PROPERTY_DATA_PROVIDER_TSXV);
-		dataProvider = MainController.getInstance().getDataProviderForString(dataProviderAsString);
-		this.dataProviders.put(StockExchange.TSXV, dataProvider);
-		
-		dataProviderAsString = MainController.getInstance().getConfigurationProperty(PROPERTY_DATA_PROVIDER_CSE);
-		dataProvider = MainController.getInstance().getDataProviderForString(dataProviderAsString);
-		this.dataProviders.put(StockExchange.CSE, dataProvider);
-		
-		dataProviderAsString = MainController.getInstance().getConfigurationProperty(PROPERTY_DATA_PROVIDER_LSE);
-		dataProvider = MainController.getInstance().getDataProviderForString(dataProviderAsString);
-		this.dataProviders.put(StockExchange.LSE, dataProvider);
+		this.dataProviders.put(StockExchange.NYSE, MainController.getInstance().getDataProviderForProperty(PROPERTY_DATA_PROVIDER_NYSE));
+		this.dataProviders.put(StockExchange.TSX, MainController.getInstance().getDataProviderForProperty(PROPERTY_DATA_PROVIDER_TSX));
+		this.dataProviders.put(StockExchange.TSXV, MainController.getInstance().getDataProviderForProperty(PROPERTY_DATA_PROVIDER_TSXV));
+		this.dataProviders.put(StockExchange.CSE, MainController.getInstance().getDataProviderForProperty(PROPERTY_DATA_PROVIDER_CSE));
+		this.dataProviders.put(StockExchange.LSE, MainController.getInstance().getDataProviderForProperty(PROPERTY_DATA_PROVIDER_LSE));
 	}
 }
