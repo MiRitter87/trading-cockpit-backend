@@ -9,10 +9,12 @@ The backend provides WebServices to create, read, update and delete the followin
 - Lists
 - Scans
 
-Furthermore it uses the following third-party WebServices and Interfaces.
+Quotation data are retrieved using the following third-party WebServices and Interfaces.
 
 - Yahoo finance for retrieval of current and historical instrument prices
-- MarketWatch for retrieval of historical instrument prices
+- MarketWatch.com for retrieval of historical instrument prices
+- investing.com for retrieval of current instrument prices
+- TheGlobeAndMail.com for retrieval of current instrument prices
 
 ### Price Alerts
 A price alert notifies you if the price of an instrument reaches a certain threshold. There are two types of alerts. One alert informs you if a price is equal or higher than your defined price. The other type informs you if the price is equal of lower your defined price. The backend queries stock quotes cyclically to check if the defined threshold has been triggered.
@@ -25,6 +27,7 @@ Lists allow you to organize sets of instruments. The list feature allows you for
 
 ### Scans
 A Scan consists of multiple lists that have instruments defined in them. The scan process queries historical price and volume data of the instruments. Indicators are then calculated and the instruments are ranked according to their performance of the past year.
+The backend offers multiple templates to filter the scan results by different characteristics. For example stocks can be filtered that have advanced on above-average volume.
 
 ### Dashboard
 The Dashboard aims to provide a meta overview of the current state of the market.
@@ -45,6 +48,7 @@ The Trading Cockpit is based on the following technologies and frameworks
  - **Apache POI** to generate Excel Sheets
  - **OpenCSV** to parse CSV files
  - **JFreeChart** to generate charts
+ - **HtmlUnit** to extract price information from third-party Websites
  - **Apache Maven** as build system
 
 ## Installation
@@ -57,16 +61,21 @@ The Trading Cockpit is based on the following technologies and frameworks
 ## Configuration
 The configuration file "tradingCockpitBackend.properties" has multiple properties that control the applications behavior.
 
-| Property   				|      Description      											|  Example |
-|---------------------------|:-----------------------------------------------------------------:|---------:|
-| queryInterval.priceAlert 	|  Number of seconds between stock quote queries for the price alert| 30       |
-| queryInterval.scan		|  Number of seconds between stock quote queries for the scanner	| 5		   |
-| startTime.hour 			|  Application starts stock quote queries at this time 				| 15       |
-| startTime.minute 			|  Application starts stock quote queries at this time 				| 30       |
-| endTime.hour 				|  Application ends stock quote queries at this time 				| 22       |
-| endTime.minute 			|  Application ends stock quote queries at this time 				| 0        |
-| dataProvider.scan			|  Data provider for historical quotation data						| YAHOO	   |
+| Property   					|      Description      											|  Example |
+|-------------------------------|:-----------------------------------------------------------------:|---------:|
+| queryInterval.priceAlert 		|  Number of seconds between stock quote queries for the price alert| 30       |
+| queryInterval.scan			|  Number of seconds between stock quote queries for the scanner	| 5		   |
+| startTime.hour 				|  Application starts stock quote queries at this time 				| 15       |
+| startTime.minute 				|  Application starts stock quote queries at this time 				| 30       |
+| endTime.hour 					|  Application ends stock quote queries at this time 				| 22       |
+| endTime.minute 				|  Application ends stock quote queries at this time 				| 0        |
+| dataProvider.scan				|  Data provider for historical quotation data						| YAHOO	   |
+| dataProvider.priceAlert.nyse	|  Data provider for current quotations of exchange NYSE			| YAHOO	   |
+| dataProvider.priceAlert.tsx	|  Data provider for current quotations of exchange TSX				| YAHOO    |
+| dataProvider.priceAlert.tsxv	|  Data provider for current quotations of exchange TSX/V			| YAHOO	   |
+| dataProvider.priceAlert.cse	|  Data provider for current quotations of exchange CSE				| YAHOO    |
+| dataProvider.priceAlert.lse	|  Data provider for current quotaitons of exchange LSE				| YAHOO    |
 
 ## License
 
-Copyright © 2022, [MiRitter87](https://github.com/MiRitter87). No License.
+Copyright © 2023, [MiRitter87](https://github.com/MiRitter87). No License.
