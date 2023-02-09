@@ -149,7 +149,9 @@ public class StockAlertController {
 	 */
 	public void start() {
 		this.executorService = Executors.newSingleThreadScheduledExecutor();
-		executorService.scheduleAtFixedRate(new StockAlertThread(this.startTime, this.endTime), 0, this.getQueryInterval(), TimeUnit.SECONDS);
+		
+		executorService.scheduleAtFixedRate(new StockAlertThread(this.startTime, this.endTime, this.dataProviders), 
+				0, this.getQueryInterval(), TimeUnit.SECONDS);
 	}
 	
 	

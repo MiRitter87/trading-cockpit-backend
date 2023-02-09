@@ -6,6 +6,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,7 +15,11 @@ import backend.dao.DAOManager;
 import backend.dao.priceAlert.PriceAlertDAO;
 import backend.dao.priceAlert.PriceAlertOrderAttribute;
 import backend.dao.quotation.QuotationProviderDAO;
+import backend.dao.quotation.QuotationProviderGlobeAndMailDAO;
+import backend.dao.quotation.QuotationProviderInvestingDAO;
 import backend.dao.quotation.QuotationProviderYahooDAO;
+import backend.model.StockExchange;
+import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
 import backend.model.priceAlert.ConfirmationStatus;
 import backend.model.priceAlert.PriceAlert;
@@ -39,9 +44,24 @@ public class StockAlertThread extends Thread {
 	private LocalTime endTime;
 	
 	/**
-	 * DAO to access stock quotes.
+	 * A Map of stock exchanges and their corresponding data providers.
 	 */
-	private QuotationProviderDAO quotationProviderDAO;
+	private Map<StockExchange, DataProvider> dataProviders;
+	
+	/**
+	 * DAO to access stock quotes using Yahoo.
+	 */
+	private QuotationProviderYahooDAO quotationProviderYahooDAO;
+	
+	/**
+	 * DAO to access stock quotes using investing.com.
+	 */
+	private QuotationProviderInvestingDAO quotationProviderInvestingDAO;
+	
+	/**
+	 * DAO to access stock quotes using TheGlobeAndMail.com.
+	 */
+	private QuotationProviderGlobeAndMailDAO quotationProviderGlobeAndMailDAO;
 	
 	/**
 	 * DAO to access price alerts.
@@ -59,12 +79,16 @@ public class StockAlertThread extends Thread {
 	 * 
 	 * @param startTime The start time of the process.
 	 * @param endTime The end time of the process.
+	 * @param dataProviders Stock exchanges and their corresponding data providers.
 	 */
-	public StockAlertThread(final LocalTime startTime, final LocalTime endTime) {
+	public StockAlertThread(final LocalTime startTime, final LocalTime endTime, final Map<StockExchange, DataProvider> dataProviders) {
 		this.startTime = startTime;
 		this.endTime = endTime;
+		this.dataProviders = dataProviders;
 		
-		this.quotationProviderDAO = new QuotationProviderYahooDAO(new OkHttpClient());
+		this.quotationProviderYahooDAO = new QuotationProviderYahooDAO(new OkHttpClient());
+		this.quotationProviderInvestingDAO = new QuotationProviderInvestingDAO();
+		this.quotationProviderGlobeAndMailDAO = new QuotationProviderGlobeAndMailDAO();
 		this.priceAlertDAO = DAOManager.getInstance().getPriceAlertDAO();
 	}
 	
@@ -90,7 +114,7 @@ public class StockAlertThread extends Thread {
 			
 		//Get the Quotation of the stock defined in the price alert.
 		try {
-			quotation = this.quotationProviderDAO.getCurrentQuotation(priceAlert.getInstrument());
+			quotation = this.getCurrentQuotationOfInstrument(priceAlert.getInstrument());
 		} catch (Exception e) {
 			logger.error("Failed to determine quotation for symbol: " +priceAlert.getInstrument().getSymbol(), e);
 			return;
@@ -192,5 +216,49 @@ public class StockAlertThread extends Thread {
 		percentDistance = percentDistance.multiply(BigDecimal.valueOf(100));
 		
 		return percentDistance.floatValue();
+	}
+	
+	
+	/**
+	 * Determines the current Quotation for the given Instrument.
+	 * 
+	 * @param instrument The Instrument.
+	 * @return The current Quotation.
+	 * @throws Exception Determination of current Quotation failed.
+	 */
+	private Quotation getCurrentQuotationOfInstrument(final Instrument instrument) throws Exception {
+		Quotation quotation;
+		final DataProvider dataProvider;
+		final QuotationProviderDAO quotationProviderDAO;
+		
+		dataProvider = this.dataProviders.get(instrument.getStockExchange());
+		
+		if(dataProvider == null)
+			throw new Exception("There is no data provider defined for the stock exchange: " + instrument.getStockExchange().toString());
+		
+		quotationProviderDAO = this.getDAOForDataProvider(dataProvider);
+		quotation = quotationProviderDAO.getCurrentQuotation(instrument);
+		
+		return quotation;
+	}
+	
+	
+	/**
+	 * Provides the QuotationProviderDAO for the given DataProvider.
+	 * @param dataProvider The DataProvider.
+	 * @return The corresponding QuotationProviderDAO.
+	 * @throws Exception DataProvider could not be determined.
+	 */
+	private QuotationProviderDAO getDAOForDataProvider(final DataProvider dataProvider) throws Exception {
+		switch(dataProvider) {
+			case YAHOO:
+				return this.quotationProviderYahooDAO;
+			case INVESTING:
+				return this.quotationProviderInvestingDAO;
+			case GLOBEANDMAIL:
+				return this.quotationProviderGlobeAndMailDAO;
+			default:
+				throw new Exception("No DAO could be determined for the DataProvider: " +dataProvider.toString());
+		}
 	}
 }
