@@ -21,6 +21,51 @@ public class IndicatorCalculator {
 	 */
 	private static final int TRADING_DAYS_PER_MONTH = 21;
 	
+	
+	/**
+	 * Calculates indicators for the given Quotation.
+	 * 
+	 * @param instrument The Instrument to which the Quotation belongs to.
+	 * @param quotation The Quotation for which indicators are calculated.
+	 * @param mostRecent Calculates all indicators if true (the most recent Quotation). Calculates only indicators relevant for history if false.
+	 * @return The Quotation with the calculated indicators.
+	 */
+	public Quotation calculateIndicators(final Instrument instrument, final Quotation quotation, boolean mostRecent) {
+		java.util.List<Quotation> sortedQuotations = instrument.getQuotationsSortedByDate();
+		Indicator indicator;
+		
+		if(quotation.getIndicator() == null)
+			indicator = new Indicator();
+		else
+			indicator = quotation.getIndicator();
+		
+		if(mostRecent) {
+			//These indicators are calculated only for the most recent Quotation.
+			indicator.setRsPercentSum(this.getRSPercentSum(instrument, quotation));
+			indicator.setSma50(this.getSimpleMovingAverage(50, quotation, sortedQuotations));
+			indicator.setSma150(this.getSimpleMovingAverage(150, quotation, sortedQuotations));
+			indicator.setSma200(this.getSimpleMovingAverage(200, quotation, sortedQuotations));
+			indicator.setDistanceTo52WeekHigh(this.getDistanceTo52WeekHigh(quotation, sortedQuotations));
+			indicator.setDistanceTo52WeekLow(this.getDistanceTo52WeekLow(quotation, sortedQuotations));
+			indicator.setBollingerBandWidth(this.getBollingerBandWidth(10, 2, quotation, sortedQuotations));
+			indicator.setVolumeDifferential5Days(this.getVolumeDifferential(30, 5, quotation, sortedQuotations));
+			indicator.setVolumeDifferential10Days(this.getVolumeDifferential(30, 10, quotation, sortedQuotations));
+			indicator.setBaseLengthWeeks(this.getBaseLengthWeeks(quotation, sortedQuotations));
+			indicator.setUpDownVolumeRatio(this.getUpDownVolumeRatio(50, quotation, sortedQuotations));
+			indicator.setPerformance5Days(this.getPricePerformanceForDays(quotation, sortedQuotations, 5));
+			indicator.setLiquidity20Days(this.getLiquidityForDays(quotation, sortedQuotations, 20));
+		}
+		else {
+			//These indicators are calculated for historical quotations.
+			indicator.setSma50(this.getSimpleMovingAverage(50, quotation, sortedQuotations));
+		}
+		
+		quotation.setIndicator(indicator);
+		
+		return quotation;
+	}
+	
+	
 	/**
 	 * Calculates the percentage sum needed for calculation of the RS number.
 	 * 

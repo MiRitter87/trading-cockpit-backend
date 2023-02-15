@@ -20,7 +20,6 @@ import backend.dao.quotation.QuotationDAO;
 import backend.dao.quotation.QuotationProviderDAO;
 import backend.dao.quotation.QuotationProviderDAOFactory;
 import backend.dao.scan.ScanDAO;
-import backend.model.instrument.Indicator;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
@@ -252,9 +251,9 @@ public class ScanThread extends Thread {
 				quotation = sortedQuotations.get(i);
 				
 				if(i == 0)
-					quotation = this.calculateIndicators(instrument, quotation, true);
+					quotation = this.indicatorCalculator.calculateIndicators(instrument, quotation, true);
 				else
-					quotation = this.calculateIndicators(instrument, quotation, false);
+					quotation = this.indicatorCalculator.calculateIndicators(instrument, quotation, false);
 				
 				modifiedQuotations.add(quotation);
 			}
@@ -264,50 +263,6 @@ public class ScanThread extends Thread {
 		catch(Exception exception) {
 			logger.error("Failed to retrieve or update indicators of instrument with ID " +instrument.getId(), exception);
 		}
-	}
-	
-	
-	/**
-	 * Calculates indicators for the given Quotation.
-	 * 
-	 * @param instrument The Instrument to which the Quotation belongs to.
-	 * @param quotation The Quotation for which indicators are calculated.
-	 * @param mostRecent Calculates all indicators if true (the most recent Quotation). Calculates only indicators relevant for history if false.
-	 * @return The Quotation with the calculated indicators.
-	 */
-	private Quotation calculateIndicators(final Instrument instrument, final Quotation quotation, boolean mostRecent) {
-		java.util.List<Quotation> sortedQuotations = instrument.getQuotationsSortedByDate();
-		Indicator indicator;
-		
-		if(quotation.getIndicator() == null)
-			indicator = new Indicator();
-		else
-			indicator = quotation.getIndicator();
-		
-		if(mostRecent) {
-			//These indicators are calculated only for the most recent Quotation.
-			indicator.setRsPercentSum(this.indicatorCalculator.getRSPercentSum(instrument, quotation));
-			indicator.setSma50(this.indicatorCalculator.getSimpleMovingAverage(50, quotation, sortedQuotations));
-			indicator.setSma150(this.indicatorCalculator.getSimpleMovingAverage(150, quotation, sortedQuotations));
-			indicator.setSma200(this.indicatorCalculator.getSimpleMovingAverage(200, quotation, sortedQuotations));
-			indicator.setDistanceTo52WeekHigh(this.indicatorCalculator.getDistanceTo52WeekHigh(quotation, sortedQuotations));
-			indicator.setDistanceTo52WeekLow(this.indicatorCalculator.getDistanceTo52WeekLow(quotation, sortedQuotations));
-			indicator.setBollingerBandWidth(this.indicatorCalculator.getBollingerBandWidth(10, 2, quotation, sortedQuotations));
-			indicator.setVolumeDifferential5Days(this.indicatorCalculator.getVolumeDifferential(30, 5, quotation, sortedQuotations));
-			indicator.setVolumeDifferential10Days(this.indicatorCalculator.getVolumeDifferential(30, 10, quotation, sortedQuotations));
-			indicator.setBaseLengthWeeks(this.indicatorCalculator.getBaseLengthWeeks(quotation, sortedQuotations));
-			indicator.setUpDownVolumeRatio(this.indicatorCalculator.getUpDownVolumeRatio(50, quotation, sortedQuotations));
-			indicator.setPerformance5Days(this.indicatorCalculator.getPricePerformanceForDays(quotation, sortedQuotations, 5));
-			indicator.setLiquidity20Days(this.indicatorCalculator.getLiquidityForDays(quotation, sortedQuotations, 20));
-		}
-		else {
-			//These indicators are calculated for historical quotations.
-			indicator.setSma50(this.indicatorCalculator.getSimpleMovingAverage(50, quotation, sortedQuotations));
-		}
-		
-		quotation.setIndicator(indicator);
-		
-		return quotation;
 	}
 	
 	
