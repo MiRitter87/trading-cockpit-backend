@@ -163,7 +163,7 @@ public class IndicatorCalculatorTest {
 		//= -22,29% -22,29% -8,72% -40,87% +4,62% = -89,55%
 		expectedRSPercentSum = (float) -89.55;
 		
-		actualRSPercentSum = indicatorCalculator.getRSPercentSum(this.dmlStock,sortedQuotations.get(0));
+		actualRSPercentSum = indicatorCalculator.getRSPercentSum(sortedQuotations.get(0), sortedQuotations);
 		
 		assertEquals(expectedRSPercentSum, actualRSPercentSum);
 	}
@@ -190,7 +190,7 @@ public class IndicatorCalculatorTest {
 		//= -22,29% -22,29% -8,72% -40,87% = -94,17%
 		expectedRSPercentSum = (float) -94.17;
 		
-		actualRSPercentSum = indicatorCalculator.getRSPercentSum(this.dmlStock,sortedQuotations.get(0));
+		actualRSPercentSum = indicatorCalculator.getRSPercentSum(sortedQuotations.get(0), sortedQuotations);
 		
 		assertEquals(expectedRSPercentSum, actualRSPercentSum);
 	}

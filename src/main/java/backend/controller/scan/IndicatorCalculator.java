@@ -41,7 +41,7 @@ public class IndicatorCalculator {
 		
 		if(mostRecent) {
 			//These indicators are calculated only for the most recent Quotation.
-			indicator.setRsPercentSum(this.getRSPercentSum(instrument, quotation));
+			indicator.setRsPercentSum(this.getRSPercentSum(quotation, sortedQuotations));
 			indicator.setSma50(this.getSimpleMovingAverage(50, quotation, sortedQuotations));
 			indicator.setSma150(this.getSimpleMovingAverage(150, quotation, sortedQuotations));
 			indicator.setSma200(this.getSimpleMovingAverage(200, quotation, sortedQuotations));
@@ -69,14 +69,22 @@ public class IndicatorCalculator {
 	/**
 	 * Calculates the percentage sum needed for calculation of the RS number.
 	 * 
-	 * @param instrument The instrument whose quotations are used for calculation.
 	 * @param quotation The quotation of the date on which the percentage sum is calculated.
+	 * @param quotations A list of quotations that build the trading history used for percentage sum calculation.
 	 * @return The percentage sum.
 	 */
-	public float getRSPercentSum(final Instrument instrument, final Quotation quotation) {
-		List<Quotation> sortedQuotations = instrument.getQuotationsSortedByDate();
-		int indexOfQuotation = sortedQuotations.indexOf(quotation);
+	public float getRSPercentSum(final Quotation quotation, final List<Quotation> quotations) {
+		Instrument instrument = new Instrument();
+		List<Quotation> sortedQuotations;
+		int indexOfQuotation = 0;
 		BigDecimal rsPercentSum = BigDecimal.valueOf(0);
+		
+		//Sort the quotations by date for determination of RS percent sum.
+		instrument.setQuotations(quotations);
+		sortedQuotations = instrument.getQuotationsSortedByDate();
+		
+		//Get the staring point of RS percent sum calculation.
+		indexOfQuotation = sortedQuotations.indexOf(quotation);
 		
 		rsPercentSum = rsPercentSum.add(this.getPerformanceOfIntervalForRS(sortedQuotations, indexOfQuotation, 3));
 		rsPercentSum = rsPercentSum.add(this.getPerformanceOfIntervalForRS(sortedQuotations, indexOfQuotation, 3));
