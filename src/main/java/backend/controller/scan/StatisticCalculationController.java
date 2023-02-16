@@ -14,6 +14,7 @@ import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 import backend.model.statistic.Statistic;
 import backend.model.statistic.StatisticArray;
+import backend.tools.DateTools;
 
 /**
  * Controls the creation and update of statistical data.
@@ -93,7 +94,7 @@ public class StatisticCalculationController {
 				if(statistic == null) {
 					statistic = new Statistic();
 					statistic.setInstrumentType(instrument.getType());
-					statistic.setDate(statistics.getDateWithoutIntradayAttributes(currentQuotation.getDate()));
+					statistic.setDate(DateTools.getDateWithoutIntradayAttributes(currentQuotation.getDate()));
 					statistics.addStatistic(statistic);
 				}
 				

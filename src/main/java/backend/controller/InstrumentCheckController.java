@@ -1,8 +1,16 @@
 package backend.controller;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.ResourceBundle;
 
+import backend.model.instrument.Instrument;
+import backend.model.instrument.Quotation;
 import backend.model.protocol.Protocol;
+import backend.model.protocol.ProtocolEntry;
+import backend.model.protocol.ProtocolEntryCategory;
+import backend.tools.DateTools;
 
 /**
  * Performs health checks for an Instrument.
@@ -10,6 +18,12 @@ import backend.model.protocol.Protocol;
  * @author Michael
  */
 public class InstrumentCheckController {
+	/**
+	 * Access to localized application resources.
+	 */
+	private ResourceBundle resources = ResourceBundle.getBundle("backend");	
+	
+	
 	/**
 	 * Checks the health of the given Instrument beginning at the given start date.
 	 * 
@@ -20,5 +34,81 @@ public class InstrumentCheckController {
 	 */
 	public Protocol checkInstrument(final Integer instrumentId, final Date startDate) throws Exception {
 		return null;
+	}
+	
+	
+	/**
+	 * Checks if the price has breached the SMA(50) on a closing basis.
+	 * The check begins at the start date and goes up until the most recent Quotation.
+	 * 
+	 * For each day on which the SMA(50) has been breached, a ProtocolEntry is provided with further information.
+	 * 
+	 * @param startDate The date at which the check starts.
+	 * @param quotations The quotations that build the trading history.
+	 * @return List of ProtocolEntry, for all days on which the SMA(50) was breached.
+	 */
+	public List<ProtocolEntry> checkCloseBelowSma50(final Date startDate, final List<Quotation> quotations) {
+		Instrument instrument = new Instrument();
+		List<Quotation> quotationsSortedByDate;
+		int startIndex;
+		Quotation currentDayQuotation, previousDayQuotation;
+		List<ProtocolEntry> protocolEntries = new ArrayList<>();
+		ProtocolEntry protocolEntry;
+		
+		instrument.setQuotations(quotations);
+		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
+		startIndex = this.getIndexOfQuotationWithDate(quotationsSortedByDate, startDate);
+		
+		//TODO handle startindex = -1
+		
+		for(int i = startIndex; i >= 0; i--) {
+			if((i+1) < quotationsSortedByDate.size()) {
+				previousDayQuotation = quotationsSortedByDate.get(i+1);
+			}
+			else {
+				continue;
+			}
+			
+			currentDayQuotation = quotationsSortedByDate.get(i);
+			
+			//TODO handle any indicator is null
+			
+			if(previousDayQuotation.getClose().floatValue() >= previousDayQuotation.getIndicator().getSma50() &&
+					currentDayQuotation.getClose().floatValue() < currentDayQuotation.getIndicator().getSma50()) {
+				
+				protocolEntry = new ProtocolEntry();
+				protocolEntry.setCategory(ProtocolEntryCategory.VIOLATION);
+				protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(currentDayQuotation.getDate()));
+				protocolEntry.setText(this.resources.getString("protocol.closeBelowSma50"));
+				protocolEntries.add(protocolEntry);
+			}
+		}
+		
+		return protocolEntries;
+	}
+	
+	
+	/**
+	 * Gets the index of the Quotation with the given date.
+	 * 
+	 * @param quotations A List of quotations.
+	 * @param date The date.
+	 * @return The index of the Quotation with the given date. -1, if no Quotation was found.
+	 */
+	private int getIndexOfQuotationWithDate(final List<Quotation> quotations, final Date date) {
+		Quotation quotation;
+		Date quotationDate, inputDate;
+		
+		inputDate = DateTools.getDateWithoutIntradayAttributes(date);
+		
+		for(int i = 0; i < quotations.size(); i++) {
+			quotation = quotations.get(i);
+			quotationDate = DateTools.getDateWithoutIntradayAttributes(quotation.getDate());
+			
+			if(inputDate.getTime() == quotationDate.getTime())
+				return i;
+		}
+		
+		return -1;
 	}
 }
