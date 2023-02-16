@@ -1,6 +1,7 @@
 package backend.model.protocol;
 
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * The entry of a protocol that informs about the health of an Instrument at a certain date.
@@ -73,5 +74,24 @@ public class ProtocolEntry {
 	 */
 	public void setText(String text) {
 		this.text = text;
+	}
+
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(category, date, text);
+	}
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ProtocolEntry other = (ProtocolEntry) obj;
+		return category == other.category && Objects.equals(date, other.date) && Objects.equals(text, other.text);
 	}
 }

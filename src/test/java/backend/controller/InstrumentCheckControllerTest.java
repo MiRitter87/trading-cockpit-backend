@@ -20,6 +20,7 @@ import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 import backend.model.protocol.ProtocolEntry;
 import backend.model.protocol.ProtocolEntryCategory;
+import backend.tools.DateTools;
 
 /**
  * Tests the InstrumentCheckController.
@@ -100,23 +101,40 @@ public class InstrumentCheckControllerTest {
 	 * Tests the check if Instrument closed below SMA(50).
 	 */
 	public void checkCloseBelowSma50Test() {
-		ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
+		ProtocolEntry expectedProtocolEntry1 = new ProtocolEntry();
+		ProtocolEntry expectedProtocolEntry2 = new ProtocolEntry();
 		ProtocolEntry actualProtocolEntry;
 		List<ProtocolEntry> protocolEntries;
 		Calendar calendar = Calendar.getInstance();
 		InstrumentCheckController controller = new InstrumentCheckController();
 		
-		//Define the expected ProtocolEntry.
+		//Define the expected protocol entries.
 		calendar.set(2022, 3, 21);		//The day on which the price closed below the SMA(50).
-		expectedProtocolEntry.setDate(calendar.getTime());
-		expectedProtocolEntry.setCategory(ProtocolEntryCategory.VIOLATION);
-		expectedProtocolEntry.setText(this.resources.getString("protocol.closeBelowSma50"));
+		expectedProtocolEntry1.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
+		expectedProtocolEntry1.setCategory(ProtocolEntryCategory.VIOLATION);
+		expectedProtocolEntry1.setText(this.resources.getString("protocol.closeBelowSma50"));
+		
+		calendar.set(2022, 6, 22);		//The day on which the price closed below the SMA(50).
+		expectedProtocolEntry2.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
+		expectedProtocolEntry2.setCategory(ProtocolEntryCategory.VIOLATION);
+		expectedProtocolEntry2.setText(this.resources.getString("protocol.closeBelowSma50"));
 		
 		//Call controller to perform check.
 		calendar.set(2022, 3, 7);	//Begin check on 07.04.22
-		protocolEntries = controller.checkCloseBelowSma50(calendar.getTime(), dmlQuotations);
-
-		//Verify the check result
-		assertEquals(2, protocolEntries.size());
+		try {
+			protocolEntries = controller.checkCloseBelowSma50(calendar.getTime(), dmlQuotations);
+			
+			//Verify the check result
+			assertEquals(2, protocolEntries.size());
+			
+			//Validate the protocol entries
+			actualProtocolEntry = protocolEntries.get(0);
+			assertEquals(expectedProtocolEntry1, actualProtocolEntry);
+			
+			actualProtocolEntry = protocolEntries.get(1);
+			assertEquals(expectedProtocolEntry2, actualProtocolEntry);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
 	}
 }

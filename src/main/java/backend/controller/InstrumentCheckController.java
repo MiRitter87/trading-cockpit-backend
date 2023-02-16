@@ -45,9 +45,10 @@ public class InstrumentCheckController {
 	 * 
 	 * @param startDate The date at which the check starts.
 	 * @param quotations The quotations that build the trading history.
-	 * @return List of ProtocolEntry, for all days on which the SMA(50) was breached.
+	 * @return List of ProtocolEntry, for all days on which the SMA(50) was breached.#
+	 * @throws Exception The check failed because data are not fully available or corrupt.
 	 */
-	public List<ProtocolEntry> checkCloseBelowSma50(final Date startDate, final List<Quotation> quotations) {
+	public List<ProtocolEntry> checkCloseBelowSma50(final Date startDate, final List<Quotation> quotations) throws Exception {
 		Instrument instrument = new Instrument();
 		List<Quotation> quotationsSortedByDate;
 		int startIndex;
@@ -59,7 +60,8 @@ public class InstrumentCheckController {
 		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
 		startIndex = this.getIndexOfQuotationWithDate(quotationsSortedByDate, startDate);
 		
-		//TODO handle startindex = -1
+		if(startIndex == -1)
+			throw new Exception("Could not find a quotation for the given start date.");
 		
 		for(int i = startIndex; i >= 0; i--) {
 			if((i+1) < quotationsSortedByDate.size()) {
@@ -71,7 +73,11 @@ public class InstrumentCheckController {
 			
 			currentDayQuotation = quotationsSortedByDate.get(i);
 			
-			//TODO handle any indicator is null
+			if(previousDayQuotation.getIndicator() == null)
+				throw new Exception("No indicator is defined for Quotation with ID: " +previousDayQuotation.getId());
+			
+			if(currentDayQuotation.getIndicator() == null)
+				throw new Exception("No indicator is defined for Quotation with ID: " +currentDayQuotation.getId());
 			
 			if(previousDayQuotation.getClose().floatValue() >= previousDayQuotation.getIndicator().getSma50() &&
 					currentDayQuotation.getClose().floatValue() < currentDayQuotation.getIndicator().getSma50()) {
