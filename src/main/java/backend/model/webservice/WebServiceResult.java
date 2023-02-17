@@ -11,6 +11,7 @@ import backend.model.instrument.InstrumentArray;
 import backend.model.instrument.QuotationArray;
 import backend.model.list.ListArray;
 import backend.model.priceAlert.PriceAlertArray;
+import backend.model.protocol.Protocol;
 import backend.model.scan.ScanArray;
 import backend.model.statistic.StatisticArray;
 
@@ -21,7 +22,8 @@ import backend.model.statistic.StatisticArray;
  * @author Michael
  *
  */
-@XmlSeeAlso({PriceAlertArray.class, InstrumentArray.class, QuotationArray.class, ListArray.class, ScanArray.class, StatisticArray.class})
+@XmlSeeAlso({PriceAlertArray.class, InstrumentArray.class, QuotationArray.class, ListArray.class, ScanArray.class, 
+	StatisticArray.class, Protocol.class})
 public class WebServiceResult {
 	/**
 	 * A list of messages.

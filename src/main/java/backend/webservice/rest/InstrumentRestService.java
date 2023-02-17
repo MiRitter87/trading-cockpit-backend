@@ -112,6 +112,6 @@ public class InstrumentRestService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public WebServiceResult getInstrumentHealthProtocol(@PathParam("id") final Integer id, @QueryParam("startDate") final Date startDate) {
 		InstrumentService instrumentService = new InstrumentService();
-		return instrumentService.getInstrument(id);
+		return instrumentService.getInstrumentHealthProtocol(id, startDate);
 	}
 }

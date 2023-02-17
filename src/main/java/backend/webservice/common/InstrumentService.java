@@ -2,12 +2,14 @@ package backend.webservice.common;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import backend.controller.InstrumentCheckController;
 import backend.dao.DAOManager;
 import backend.dao.ObjectUnchangedException;
 import backend.dao.instrument.DuplicateInstrumentException;
@@ -21,6 +23,7 @@ import backend.model.instrument.InstrumentType;
 import backend.model.instrument.InstrumentWS;
 import backend.model.instrument.Quotation;
 import backend.model.priceAlert.PriceAlert;
+import backend.model.protocol.Protocol;
 import backend.model.webservice.WebServiceMessage;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
@@ -268,6 +271,30 @@ public class InstrumentService {
 		}
 		
 		return updateInstrumentResult;
+	}
+	
+	
+	/**
+	 * Checks the health of the Instrument with the given id.
+	 * 
+	 * @param instrumentId The ID of the instrument.
+	 * @param startDate The start date for the health check.
+	 * @return A Protocol with health information about the given Instrument.
+	 */
+	public WebServiceResult getInstrumentHealthProtocol(final Integer instrumentId, final Date startDate) {
+		WebServiceResult getHealthProtocolResult = new WebServiceResult();
+		InstrumentCheckController controller = new InstrumentCheckController();
+		Protocol protocol;
+		
+		try {
+			protocol = controller.checkInstrument(instrumentId, startDate);
+			getHealthProtocolResult.setData(protocol);
+		} catch (Exception e) {
+			getHealthProtocolResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, this.resources.getString("instrument.getHealthError")));
+			logger.error(this.resources.getString("instrument.getHealthError"), e.getMessage(), e);
+		}
+		
+		return getHealthProtocolResult;
 	}
 	
 	
