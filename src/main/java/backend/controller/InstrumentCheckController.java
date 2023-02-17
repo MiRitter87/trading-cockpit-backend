@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import backend.dao.DAOManager;
+import backend.dao.quotation.QuotationDAO;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
 import backend.model.protocol.Protocol;
@@ -21,7 +23,20 @@ public class InstrumentCheckController {
 	/**
 	 * Access to localized application resources.
 	 */
-	private ResourceBundle resources = ResourceBundle.getBundle("backend");	
+	private ResourceBundle resources = ResourceBundle.getBundle("backend");
+	
+	/**
+	 * DAO to access Quotation data of Instrument.
+	 */
+	private QuotationDAO quotationDAO;
+	
+	
+	/**
+	 * Default constructor.
+	 */
+	public InstrumentCheckController() {
+		this.quotationDAO = DAOManager.getInstance().getQuotationDAO();
+	}
 	
 	
 	/**
@@ -33,7 +48,14 @@ public class InstrumentCheckController {
 	 * @throws Exception Health check failed.
 	 */
 	public Protocol checkInstrument(final Integer instrumentId, final Date startDate) throws Exception {
-		return null;
+		List<Quotation> quotations;
+		Protocol protocol = new Protocol();
+		
+		quotations = this.quotationDAO.getQuotationsOfInstrument(instrumentId);
+		
+		protocol.getProtocolEntries().addAll(this.checkCloseBelowSma50(startDate, quotations));
+		
+		return protocol;
 	}
 	
 	
