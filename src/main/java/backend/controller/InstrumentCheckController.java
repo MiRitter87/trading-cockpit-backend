@@ -83,7 +83,7 @@ public class InstrumentCheckController {
 		startIndex = this.getIndexOfQuotationWithDate(quotationsSortedByDate, startDate);
 		
 		if(startIndex == -1)
-			throw new Exception("Could not find a quotation for the given start date.");
+			throw new Exception("Could not find a quotation at or after the given start date.");
 		
 		for(int i = startIndex; i >= 0; i--) {
 			if((i+1) < quotationsSortedByDate.size()) {
@@ -118,14 +118,16 @@ public class InstrumentCheckController {
 	
 	/**
 	 * Gets the index of the Quotation with the given date.
+	 * If no Quotation exists on the given day, the index of the first Quotation coming afterwards is determined.
 	 * 
 	 * @param quotations A List of quotations.
 	 * @param date The date.
-	 * @return The index of the Quotation with the given date. -1, if no Quotation was found.
+	 * @return The index of the Quotation. -1, if no Quotation was found.
 	 */
 	private int getIndexOfQuotationWithDate(final List<Quotation> quotations, final Date date) {
 		Quotation quotation;
 		Date quotationDate, inputDate;
+		int indexOfQuotation = -1;
 		
 		inputDate = DateTools.getDateWithoutIntradayAttributes(date);
 		
@@ -133,10 +135,10 @@ public class InstrumentCheckController {
 			quotation = quotations.get(i);
 			quotationDate = DateTools.getDateWithoutIntradayAttributes(quotation.getDate());
 			
-			if(inputDate.getTime() == quotationDate.getTime())
-				return i;
+			if(inputDate.getTime() <= quotationDate.getTime())
+				indexOfQuotation = i;
 		}
 		
-		return -1;
+		return indexOfQuotation;
 	}
 }
