@@ -1,6 +1,8 @@
 package backend.webservice.common;
 
 import java.text.MessageFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -278,16 +280,18 @@ public class InstrumentService {
 	 * Checks the health of the Instrument with the given id.
 	 * 
 	 * @param instrumentId The ID of the instrument.
-	 * @param startDate The start date for the health check.
+	 * @param startDate The start date for the health check. Format used: yyyy-MM-dd
 	 * @return A Protocol with health information about the given Instrument.
 	 */
-	public WebServiceResult getInstrumentHealthProtocol(final Integer instrumentId, final Date startDate) {
+	public WebServiceResult getInstrumentHealthProtocol(final Integer instrumentId, final String startDate) {
 		WebServiceResult getHealthProtocolResult = new WebServiceResult();
 		InstrumentCheckController controller = new InstrumentCheckController();
 		Protocol protocol;
+		Date convertedStartDate;
 		
 		try {
-			protocol = controller.checkInstrument(instrumentId, startDate);
+			convertedStartDate = this.convertStringToDate(startDate);
+			protocol = controller.checkInstrument(instrumentId, convertedStartDate);
 			getHealthProtocolResult.setData(protocol);
 		} catch (Exception e) {
 			getHealthProtocolResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, this.resources.getString("instrument.getHealthError")));
@@ -361,5 +365,22 @@ public class InstrumentService {
 		catch (Exception validationException) {
 			webServiceResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, validationException.getMessage()));
 		}
+	}
+	
+	
+	/**
+	 * Converts the given String into a Date object.
+	 * 
+	 * @param dateAsString A date in the format yyyy-MM-dd.
+	 * @return A Date object.
+	 * @throws ParseException Date formatting failed.
+	 */
+	private Date convertStringToDate(final String dateAsString) throws ParseException {
+		Date date;
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		
+		date = formatter.parse(dateAsString);
+		
+		return date;
 	}
 }

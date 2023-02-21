@@ -1,7 +1,5 @@
 package backend.webservice.rest;
 
-import java.util.Date;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -104,13 +102,13 @@ public class InstrumentRestService {
 	 * Checks the health of the Instrument with the given id.
 	 * 
 	 * @param id The ID of the instrument.
-	 * @param startDate The start date for the health check.
+	 * @param startDate The start date for the health check. Format used: yyyy-MM-dd
 	 * @return A Protocol with health information about the given Instrument.
 	 */
 	@GET
 	@Path("/{id}/health")
 	@Produces(MediaType.APPLICATION_JSON)
-	public WebServiceResult getInstrumentHealthProtocol(@PathParam("id") final Integer id, @QueryParam("startDate") final Date startDate) {
+	public WebServiceResult getInstrumentHealthProtocol(@PathParam("id") final Integer id, @QueryParam("startDate") final String startDate) {
 		InstrumentService instrumentService = new InstrumentService();
 		return instrumentService.getInstrumentHealthProtocol(id, startDate);
 	}
