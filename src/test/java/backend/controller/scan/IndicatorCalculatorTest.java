@@ -37,19 +37,24 @@ public class IndicatorCalculatorTest {
 	private Instrument dmlStock;
 	
 	/**
-	 * A Quotation for testing.
+	 * Stock of Rio Tinto.
 	 */
-	private Quotation quotation1;
+	private Instrument rioStock;
 	
 	/**
 	 * A Quotation for testing.
 	 */
-	private Quotation quotation2;
+	private Quotation dmlQuotation1;
 	
 	/**
 	 * A Quotation for testing.
 	 */
-	private Quotation quotation3;
+	private Quotation dmlQuotation2;
+	
+	/**
+	 * A Quotation for testing.
+	 */
+	private Quotation dmlQuotation3;
 	
 	/**
 	 * DAO to access quotation data from Yahoo.
@@ -86,8 +91,9 @@ public class IndicatorCalculatorTest {
 	private void setUp() {
 		try {
 			this.indicatorCalculator = new IndicatorCalculator();
-			this.initializeDummyInstrument();
-			this.initializeDummyQuotations();
+			this.initializeDmlInstrument();
+			this.initializeDmlQuotations();
+			this.initializeRioInstrument();
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
@@ -100,17 +106,20 @@ public class IndicatorCalculatorTest {
 	 */
 	private void tearDown() {
 		this.indicatorCalculator = null;
+		
 		this.dmlStock = null;
-		this.quotation3 = null;
-		this.quotation2 = null;
-		this.quotation1 = null;
+		this.rioStock = null;
+		
+		this.dmlQuotation3 = null;
+		this.dmlQuotation2 = null;
+		this.dmlQuotation1 = null;
 	}
 	
 	
 	/**
-	 * Initializes the dummy instrument.
+	 * Initializes the DML Instrument.
 	 */
-	private void initializeDummyInstrument() {
+	private void initializeDmlInstrument() {
 		List<Quotation> quotations = new ArrayList<>();
 		
 		this.dmlStock = new Instrument();
@@ -129,20 +138,41 @@ public class IndicatorCalculatorTest {
 	
 	
 	/**
-	 * Initializes dummy quotations.
+	 * Initializes the RIO Instrument.
 	 */
-	private void initializeDummyQuotations() {
-		this.quotation1 = new Quotation();
-		this.quotation1.setIndicator(new Indicator());
-		this.quotation1.getIndicator().setRsPercentSum((float) 34.5);
+	private void initializeRioInstrument() {
+		List<Quotation> quotations = new ArrayList<>();
 		
-		this.quotation2 = new Quotation();
-		this.quotation2.setIndicator(new Indicator());
-		this.quotation2.getIndicator().setRsPercentSum((float) -5);
+		this.rioStock = new Instrument();
+		this.rioStock.setSymbol("RIO");
+		this.rioStock.setStockExchange(StockExchange.LSE);
+		this.rioStock.setType(InstrumentType.STOCK);
+		this.rioStock.setName("Rio Tinto");
 		
-		this.quotation3 = new Quotation();
-		this.quotation3.setIndicator(new Indicator());
-		this.quotation3.getIndicator().setRsPercentSum((float) 12.35);
+		try {
+			quotations.addAll(quotationProviderYahooDAO.getQuotationHistory("RIO", StockExchange.LSE, InstrumentType.STOCK, 1));
+			this.rioStock.setQuotations(quotations);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}	
+	
+	
+	/**
+	 * Initializes dummy quotations of the DML Instrument.
+	 */
+	private void initializeDmlQuotations() {
+		this.dmlQuotation1 = new Quotation();
+		this.dmlQuotation1.setIndicator(new Indicator());
+		this.dmlQuotation1.getIndicator().setRsPercentSum((float) 34.5);
+		
+		this.dmlQuotation2 = new Quotation();
+		this.dmlQuotation2.setIndicator(new Indicator());
+		this.dmlQuotation2.getIndicator().setRsPercentSum((float) -5);
+		
+		this.dmlQuotation3 = new Quotation();
+		this.dmlQuotation3.setIndicator(new Indicator());
+		this.dmlQuotation3.getIndicator().setRsPercentSum((float) 12.35);
 	}
 	
 	
@@ -204,17 +234,17 @@ public class IndicatorCalculatorTest {
 		List<Quotation> quotations = new ArrayList<>();
 		
 		//Prepare all quotations on which the RS number is to be calculated.
-		quotations.add(this.quotation1);
-		quotations.add(this.quotation2);
-		quotations.add(this.quotation3);
+		quotations.add(this.dmlQuotation1);
+		quotations.add(this.dmlQuotation2);
+		quotations.add(this.dmlQuotation3);
 		
 		//Calculate the RS numbers.
 		this.indicatorCalculator.calculateRsNumbers(quotations);
 		
 		//Verify the correct calculation.
-		assertEquals(33, this.quotation2.getIndicator().getRsNumber());
-		assertEquals(67, this.quotation3.getIndicator().getRsNumber());
-		assertEquals(100, this.quotation1.getIndicator().getRsNumber());
+		assertEquals(33, this.dmlQuotation2.getIndicator().getRsNumber());
+		assertEquals(67, this.dmlQuotation3.getIndicator().getRsNumber());
+		assertEquals(100, this.dmlQuotation1.getIndicator().getRsNumber());
 	}
 	
 	
