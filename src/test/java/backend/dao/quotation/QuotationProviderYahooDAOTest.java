@@ -110,10 +110,10 @@ public class QuotationProviderYahooDAOTest {
 		
 		secondsSince1970 = 1672823859;
 		quotation.setDate(new Date(secondsSince1970 * 1000));
-		quotation.setOpen(BigDecimal.valueOf(59.10));
-		quotation.setHigh(BigDecimal.valueOf(59.41));
-		quotation.setLow(BigDecimal.valueOf(58.34));
-		quotation.setClose(BigDecimal.valueOf(58.35));
+		quotation.setOpen(BigDecimal.valueOf(5910));
+		quotation.setHigh(BigDecimal.valueOf(5941));
+		quotation.setLow(BigDecimal.valueOf(5834));
+		quotation.setClose(BigDecimal.valueOf(5835));
 		quotation.setCurrency(Currency.GBP);
 		quotation.setVolume(243671);
 		historicalQuotations.add(quotation);
@@ -121,10 +121,10 @@ public class QuotationProviderYahooDAOTest {
 		quotation = new Quotation();
 		secondsSince1970 = 1672732800;
 		quotation.setDate(new Date(secondsSince1970  * 1000));
-		quotation.setOpen(BigDecimal.valueOf(58.18));
-		quotation.setHigh(BigDecimal.valueOf(59.05));
-		quotation.setLow(BigDecimal.valueOf(58.10));
-		quotation.setClose(BigDecimal.valueOf(58.39));
+		quotation.setOpen(BigDecimal.valueOf(5818));
+		quotation.setHigh(BigDecimal.valueOf(5905));
+		quotation.setLow(BigDecimal.valueOf(5810));
+		quotation.setClose(BigDecimal.valueOf(5839));
 		quotation.setCurrency(Currency.GBP);
 		quotation.setVolume(2112533);
 		historicalQuotations.add(quotation);
@@ -132,10 +132,10 @@ public class QuotationProviderYahooDAOTest {
 		quotation = new Quotation();
 		secondsSince1970 = 1672387200;
 		quotation.setDate(new Date(secondsSince1970  * 1000));
-		quotation.setOpen(BigDecimal.valueOf(58.03));
-		quotation.setHigh(BigDecimal.valueOf(58.46));
-		quotation.setLow(BigDecimal.valueOf(57.87));
-		quotation.setClose(BigDecimal.valueOf(57.98));
+		quotation.setOpen(BigDecimal.valueOf(5803));
+		quotation.setHigh(BigDecimal.valueOf(5846));
+		quotation.setLow(BigDecimal.valueOf(5787));
+		quotation.setClose(BigDecimal.valueOf(5798));
 		quotation.setCurrency(Currency.GBP);
 		quotation.setVolume(588428);
 		historicalQuotations.add(quotation);
@@ -167,7 +167,7 @@ public class QuotationProviderYahooDAOTest {
 	private Quotation getRioTintoQuotation() {
 		Quotation quotation = new Quotation();
 		
-		quotation.setClose(BigDecimal.valueOf(57.43));
+		quotation.setClose(BigDecimal.valueOf(5743));
 		quotation.setCurrency(Currency.GBP);
 		
 		return quotation;

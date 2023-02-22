@@ -379,10 +379,6 @@ public class QuotationProviderYahooDAO implements QuotationProviderDAO {
 	protected BigDecimal getPrice(double apiPrice, final Currency currency) {
 		BigDecimal price = BigDecimal.valueOf(apiPrice);
 		
-		//Yahoo provides prices in pence. To get prices in pounds, divide price in pence by 100.
-		if(currency == Currency.GBP)
-			price = price.divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
-		
 		return price;
 	}
 	
@@ -422,10 +418,6 @@ public class QuotationProviderYahooDAO implements QuotationProviderDAO {
 		priceRaw = (double) prices.get(index);
 		price = BigDecimal.valueOf(priceRaw);
 		price = price.setScale(2, RoundingMode.HALF_UP);
-		
-		//Yahoo provides prices in pence. To get prices in pounds, divide price in pence by 100.
-		if(currency == Currency.GBP)
-			price = price.divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
 		
 		return price;
 	}
