@@ -52,8 +52,8 @@ public class IndicatorCalculator {
 			indicator.setVolumeDifferential10Days(this.getVolumeDifferential(30, 10, quotation, sortedQuotations));
 			indicator.setBaseLengthWeeks(this.getBaseLengthWeeks(quotation, sortedQuotations));
 			indicator.setUpDownVolumeRatio(this.getUpDownVolumeRatio(50, quotation, sortedQuotations));
-			indicator.setPerformance5Days(this.getPricePerformanceForDays(quotation, sortedQuotations, 5));
-			indicator.setLiquidity20Days(this.getLiquidityForDays(quotation, sortedQuotations, 20));
+			indicator.setPerformance5Days(this.getPricePerformanceForDays(5, quotation, sortedQuotations));
+			indicator.setLiquidity20Days(this.getLiquidityForDays(20, quotation, sortedQuotations));
 		}
 		else {
 			//These indicators are calculated for historical quotations.
@@ -469,12 +469,12 @@ public class IndicatorCalculator {
 	/**
 	 * Provides the price performance for the given number of days.
 	 * 
+	 * @param days The number of days for performance calculation.
 	 * @param quotation The Quotation for which the price performance is calculated.
 	 * @param quotations A list of quotations that build the trading history used for price performance calculation.
-	 * @param days The number of days for performance calculation.
 	 * @return The performance of the given interval in percent.
 	 */
-	public float getPricePerformanceForDays(final Quotation quotation, final List<Quotation> quotations, final int days) {
+	public float getPricePerformanceForDays( final int days, final Quotation quotation, final List<Quotation> quotations) {
 		Instrument instrument = new Instrument();
 		List<Quotation> sortedQuotations;
 		BigDecimal divisionResult = BigDecimal.valueOf(0);
@@ -503,12 +503,12 @@ public class IndicatorCalculator {
 	/**
 	 * Provides the average trading liquidity for the given number of days.
 	 * 
+	 * @param days The number of days for liquidity calculation.
 	 * @param quotation The Quotation for which the liquidity is calculated.
 	 * @param quotations A list of quotations that build the trading history used for liquidity calculation.
-	 * @param days The number of days for liquidity calculation.
 	 * @return The liquidity of the given interval.
 	 */
-	public float getLiquidityForDays(final Quotation quotation, final List<Quotation> quotations, final int days) {
+	public float getLiquidityForDays(final int days, final Quotation quotation, final List<Quotation> quotations) {
 		float averagePrice, liquidity;
 		long averageVolume;
 		

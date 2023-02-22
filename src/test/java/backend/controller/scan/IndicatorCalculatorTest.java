@@ -416,7 +416,7 @@ public class IndicatorCalculatorTest {
 		List<Quotation> sortedQuotations = this.dmlStock.getQuotationsSortedByDate();
 		float expectedPerformance = (float) 6.25, actualPerformance;
 		
-		actualPerformance = this.indicatorCalculator.getPricePerformanceForDays(sortedQuotations.get(0), sortedQuotations, 20);
+		actualPerformance = this.indicatorCalculator.getPricePerformanceForDays(20, sortedQuotations.get(0), sortedQuotations);
 		
 		assertEquals(expectedPerformance, actualPerformance);
 	}
@@ -430,7 +430,7 @@ public class IndicatorCalculatorTest {
 		List<Quotation> sortedQuotations = this.dmlStock.getQuotationsSortedByDate();
 		float expectedLiquidity = (float) 2036934, actualLiquidity;
 		
-		actualLiquidity = this.indicatorCalculator.getLiquidityForDays(sortedQuotations.get(0), sortedQuotations, 20);
+		actualLiquidity = this.indicatorCalculator.getLiquidityForDays(20, sortedQuotations.get(0), sortedQuotations);
 		
 		assertEquals(expectedLiquidity, actualLiquidity);
 	}
