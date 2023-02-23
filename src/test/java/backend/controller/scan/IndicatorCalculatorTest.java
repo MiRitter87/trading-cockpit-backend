@@ -464,4 +464,20 @@ public class IndicatorCalculatorTest {
 		
 		assertEquals(expectedLiquidity, actualLiquidity);
 	}
+	
+	@Test
+	/**
+	 * Tests the calculation of the trading liquidity for the given daily interval.
+	 * 
+	 * If the Instrument is traded at the LSE, the result has to be divided by 100,
+	 * because all data providers use pence instead of pounds.
+	 */
+	public void testGetLiquidityForDaysLse() {
+		List<Quotation> sortedQuotations = this.rioStock.getQuotationsSortedByDate();
+		float expectedLiquidity = (float) 162189066, actualLiquidity;
+		
+		actualLiquidity = this.indicatorCalculator.getLiquidityForDays(20, sortedQuotations.get(0), sortedQuotations);
+		
+		assertEquals(expectedLiquidity, actualLiquidity);
+	}
 }

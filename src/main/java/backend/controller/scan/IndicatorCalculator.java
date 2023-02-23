@@ -5,6 +5,7 @@ import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.List;
 
+import backend.model.Currency;
 import backend.model.instrument.Indicator;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
@@ -516,6 +517,10 @@ public class IndicatorCalculator {
 		averageVolume = this.getSimpleMovingAverageVolume(days, quotation, quotations);
 		
 		liquidity = averagePrice * averageVolume;
+		
+		//Divide by 100 to convert price from pence to pounds.
+		if(quotation.getCurrency() == Currency.GBP)
+			liquidity = liquidity / 100;
 		
 		return liquidity;
 	}
