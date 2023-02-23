@@ -37,11 +37,24 @@ public class QuotationProviderCNBCDAO implements QuotationProviderDAO {
 		return null;
 	}
 
+	
 	@Override
 	public List<Quotation> getQuotationHistory(String symbol, StockExchange stockExchange,
 			InstrumentType instrumentType, Integer years) throws Exception {
 		
 		throw new Exception("Method is not supported.");
+	}
+	
+	
+	/**
+	 * Converts the quotation data from CNBC provided as JSON String to a Quotation object.
+	 * 
+	 * @param quotationDataAsJSON The quotation data as JSON String.
+	 * @return The Quotation.
+	 * @throws Exception Quotation conversion failed.
+	 */
+	protected Quotation convertJSONToQuotation(final String quotationDataAsJSON) throws Exception {
+		return null;
 	}
 
 	
