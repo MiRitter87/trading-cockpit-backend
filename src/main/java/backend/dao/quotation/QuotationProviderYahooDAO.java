@@ -84,7 +84,7 @@ public class QuotationProviderYahooDAO implements QuotationProviderDAO {
 
 	@Override
 	public Quotation getCurrentQuotation(final Instrument instrument) throws Exception {
-		String jsonQuotation = this.getCurrentQuotationJSONFromYahoo(instrument.getSymbol(), instrument.getStockExchange());
+		String jsonQuotation = this.getCurrentQuotationJSON(instrument.getSymbol(), instrument.getStockExchange());
 		Quotation quotation = this.convertJSONToQuotation(jsonQuotation);
 		
 		return quotation;
@@ -210,7 +210,7 @@ public class QuotationProviderYahooDAO implements QuotationProviderDAO {
 	 * @return The quotation data as JSON string.
 	 * @throws Exception Quotation data determination failed.
 	 */
-	protected String getCurrentQuotationJSONFromYahoo(final String symbol, final StockExchange stockExchange) throws Exception {
+	protected String getCurrentQuotationJSON(final String symbol, final StockExchange stockExchange) throws Exception {
 		Request request = new Request.Builder()
 				.url(this.getQueryUrlCurrentQuotation(symbol, stockExchange))
 				.header("Connection", "close")

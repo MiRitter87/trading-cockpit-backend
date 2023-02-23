@@ -1,5 +1,6 @@
 package backend.dao.quotation;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -15,6 +16,9 @@ import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * Provides access to quotation data using the API of CNBC.
@@ -39,11 +43,36 @@ public class QuotationProviderCNBCDAO implements QuotationProviderDAO {
 			+ "symbols=" + PLACEHOLDER_SYMBOL + PLACEHOLDER_COUNTRY_CODE + 
 			"&requestMethod=itv&noform=1&partnerId=2&fund=1&exthrs=1&output=json&events=1";
 	
+	/**
+	 * The HTTP client used for data queries.
+	 */
+	private OkHttpClient httpClient;
+	
+	
+	/**
+	 * Default constructor.
+	 */
+	public QuotationProviderCNBCDAO() {
+		
+	}
+	
+	
+	/**
+	 * Constructor.
+	 * 
+	 * @param httpClient The HTTP client used for data queries.
+	 */
+	public QuotationProviderCNBCDAO(final OkHttpClient  httpClient) {
+		this.httpClient = httpClient;
+	}
+	
 	
 	@Override
 	public Quotation getCurrentQuotation(Instrument instrument) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		String jsonQuotation = this.getCurrentQuotationJSON(instrument.getSymbol(), instrument.getStockExchange());
+		Quotation quotation = this.convertJSONToQuotation(jsonQuotation);
+		
+		return quotation;
 	}
 
 	
@@ -52,6 +81,34 @@ public class QuotationProviderCNBCDAO implements QuotationProviderDAO {
 			InstrumentType instrumentType, Integer years) throws Exception {
 		
 		throw new Exception("Method is not supported.");
+	}
+	
+	
+	/**
+	 * Gets the current quotation data from CNBC as JSON String.
+	 * 
+	 * @param symbol The symbol.
+	 * @param stockExchange The stock exchange.
+	 * @return The quotation data as JSON string.
+	 * @throws Exception Quotation data determination failed.
+	 */
+	protected String getCurrentQuotationJSON(final String symbol, final StockExchange stockExchange) throws Exception {
+		Request request = new Request.Builder()
+				.url(this.getQueryUrlCurrentQuotation(symbol, stockExchange))
+				.header("Connection", "close")
+				.build();
+		Response response;
+		String jsonResult;
+		
+		try {
+			response = this.httpClient.newCall(request).execute();
+			jsonResult = response.body().string();
+			response.close();
+		} catch (IOException e) {
+			throw new Exception(e);
+		}
+		
+		return jsonResult;
 	}
 	
 	
