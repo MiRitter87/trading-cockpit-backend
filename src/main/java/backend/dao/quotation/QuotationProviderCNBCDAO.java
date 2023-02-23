@@ -1,7 +1,16 @@
 package backend.dao.quotation;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import backend.model.Currency;
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
@@ -54,7 +63,28 @@ public class QuotationProviderCNBCDAO implements QuotationProviderDAO {
 	 * @throws Exception Quotation conversion failed.
 	 */
 	protected Quotation convertJSONToQuotation(final String quotationDataAsJSON) throws Exception {
-		return null;
+		Quotation quotation = new Quotation();
+		ObjectMapper mapper = new ObjectMapper();
+		Map<?, ?> map;
+		LinkedHashMap<?, ?> quoteResponse;
+		ArrayList<?> result;
+		LinkedHashMap<?, ?> resultAttributes;
+		
+		try {
+			map = mapper.readValue(quotationDataAsJSON, Map.class);
+			quoteResponse = (LinkedHashMap<?, ?>) map.get("FormattedQuoteResult");
+			result = (ArrayList<?>) quoteResponse.get("FormattedQuote");
+			resultAttributes = (LinkedHashMap<?, ?>) result.get(0);
+			
+			quotation.setCurrency(this.getCurrency((String) resultAttributes.get("currencyCode")));
+			quotation.setClose(this.getPrice((String) resultAttributes.get("last"), quotation.getCurrency()));
+		} catch (JsonMappingException e) {
+			throw new Exception(e);
+		} catch (JsonProcessingException e) {
+			throw new Exception(e);
+		}
+		
+		return quotation;
 	}
 
 	
@@ -103,5 +133,39 @@ public class QuotationProviderCNBCDAO implements QuotationProviderDAO {
 		}
 		
 		return countryCode;
+	}
+	
+	
+	/**
+	 * Gets the currency from the CNBC API.
+	 * 
+	 * @param apiCurrency The currency as provided by CNBC.
+	 * @return The currency as used by the backend.
+	 */
+	protected Currency getCurrency(String apiCurrency) {
+		switch(apiCurrency) {
+			case "USD":
+				return Currency.USD;
+			case "CAD":
+				return Currency.CAD;
+			case "GBp":
+				return Currency.GBP;
+			default:
+				return null;
+		}
+	}
+	
+	
+	/**
+	 * Gets the price from the CNBC API.
+	 * 
+	 * @param apiPrice The price as provided by CNBC.
+	 * @param currency The Currency of the price.
+	 * @return The price as used by the backend
+	 */
+	protected BigDecimal getPrice(final String apiPrice, final Currency currency) {
+		BigDecimal price = new BigDecimal(apiPrice.replaceAll(",", ""));
+		
+		return price;
 	}
 }

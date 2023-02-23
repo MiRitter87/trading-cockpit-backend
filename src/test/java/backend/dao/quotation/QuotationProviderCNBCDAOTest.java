@@ -1,13 +1,19 @@
 package backend.dao.quotation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+
+import java.math.BigDecimal;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import backend.model.Currency;
 import backend.model.StockExchange;
+import backend.model.instrument.Instrument;
+import backend.model.instrument.Quotation;
 
 /**
  * Tests the CNBC Quotation DAO.
@@ -26,7 +32,7 @@ public class QuotationProviderCNBCDAOTest {
 	 * Tasks to be performed once at startup of test class.
 	 */
 	public static void setUpClass() {
-		quotationProviderCNBCDAO = new QuotationProviderCNBCDAO();
+		quotationProviderCNBCDAO = new QuotationProviderCNBCDAOStub();
 	}
 	
 	
@@ -36,6 +42,21 @@ public class QuotationProviderCNBCDAOTest {
 	 */
 	public static void tearDownClass() {
 		quotationProviderCNBCDAO = null;
+	}
+	
+	
+	/**
+	 * Gets a Quotation as expected from the CNBC API.
+	 * 
+	 * @return A Quotation.
+	 */
+	private Quotation getRioTintoQuotation() {
+		Quotation quotation = new Quotation();
+		
+		quotation.setClose(BigDecimal.valueOf(5965));
+		quotation.setCurrency(Currency.GBP);
+		
+		return quotation;
 	}
 	
 	
@@ -137,6 +158,25 @@ public class QuotationProviderCNBCDAOTest {
 		}
 		catch(Exception expected) {
 			//All is well.
+		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests getting current Quotation data from a stock listed at the LSE.
+	 */
+	public void testGetCurrentQuotationLSE() {
+		Quotation actualQuotation, expectedQuotation;
+		
+		try {
+			actualQuotation = quotationProviderCNBCDAO.getCurrentQuotation(new Instrument("RIO", StockExchange.LSE));
+			expectedQuotation = this.getRioTintoQuotation();
+			
+			assertTrue(expectedQuotation.getClose().compareTo(actualQuotation.getClose()) == 0);
+			assertEquals(expectedQuotation.getCurrency(), actualQuotation.getCurrency());
+		} catch (Exception e) {
+			fail(e.getMessage());
 		}
 	}
 }
