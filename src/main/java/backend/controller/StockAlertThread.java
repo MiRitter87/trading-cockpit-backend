@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 import backend.dao.DAOManager;
 import backend.dao.priceAlert.PriceAlertDAO;
 import backend.dao.priceAlert.PriceAlertOrderAttribute;
+import backend.dao.quotation.QuotationProviderCNBCDAO;
 import backend.dao.quotation.QuotationProviderDAO;
 import backend.dao.quotation.QuotationProviderGlobeAndMailDAO;
 import backend.dao.quotation.QuotationProviderInvestingDAO;
@@ -64,6 +65,11 @@ public class StockAlertThread extends Thread {
 	private QuotationProviderGlobeAndMailDAO quotationProviderGlobeAndMailDAO;
 	
 	/**
+	 * DAO to access stock quotes using CNBC.
+	 */
+	private QuotationProviderCNBCDAO quotationProviderCNBCDAO;
+	
+	/**
 	 * DAO to access price alerts.
 	 */
 	private PriceAlertDAO priceAlertDAO;
@@ -82,13 +88,17 @@ public class StockAlertThread extends Thread {
 	 * @param dataProviders Stock exchanges and their corresponding data providers.
 	 */
 	public StockAlertThread(final LocalTime startTime, final LocalTime endTime, final Map<StockExchange, DataProvider> dataProviders) {
+		//OKHttpClient should be shared across the whole application according to documentation.
+		OkHttpClient okHttpClient = new OkHttpClient();		
+		
 		this.startTime = startTime;
 		this.endTime = endTime;
 		this.dataProviders = dataProviders;
 		
-		this.quotationProviderYahooDAO = new QuotationProviderYahooDAO(new OkHttpClient());
+		this.quotationProviderYahooDAO = new QuotationProviderYahooDAO(okHttpClient);
 		this.quotationProviderInvestingDAO = new QuotationProviderInvestingDAO();
 		this.quotationProviderGlobeAndMailDAO = new QuotationProviderGlobeAndMailDAO();
+		this.quotationProviderCNBCDAO = new QuotationProviderCNBCDAO(okHttpClient);
 		this.priceAlertDAO = DAOManager.getInstance().getPriceAlertDAO();
 	}
 	
@@ -257,6 +267,8 @@ public class StockAlertThread extends Thread {
 				return this.quotationProviderInvestingDAO;
 			case GLOBEANDMAIL:
 				return this.quotationProviderGlobeAndMailDAO;
+			case CNBC:
+				return this.quotationProviderCNBCDAO;
 			default:
 				throw new Exception("No DAO could be determined for the DataProvider: " +dataProvider.toString());
 		}

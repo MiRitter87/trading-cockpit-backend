@@ -7,12 +7,12 @@ package backend.controller;
  */
 public enum DataProvider {
 	/**
-	 * Yahoo Finance.
+	 * Yahoo Finance
 	 */
 	YAHOO,
 	
 	/**
-	 * MarketWatch.
+	 * MarketWatch
 	 */
 	MARKETWATCH,
 	
@@ -24,5 +24,10 @@ public enum DataProvider {
 	/**
 	 * TheGlobeAndMail.com
 	 */
-	GLOBEANDMAIL
+	GLOBEANDMAIL,
+	
+	/**
+	 * CNBC
+	 */
+	CNBC
 }

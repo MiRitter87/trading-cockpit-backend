@@ -137,6 +137,8 @@ public class MainController {
 				return DataProvider.INVESTING;
 			case "GLOBEANDMAIL":
 				return DataProvider.GLOBEANDMAIL;
+			case "CNBC":
+				return DataProvider.CNBC;
 			default:
 				return null;
 		}

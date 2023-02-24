@@ -21,6 +21,12 @@ public class QuotationProviderDAOFactory {
 				return new QuotationProviderYahooDAO(new OkHttpClient());
 			case MARKETWATCH:
 				return new QuotationProviderMarketWatchDAO(new OkHttpClient());
+			case CNBC:
+				return new QuotationProviderCNBCDAO(new OkHttpClient());
+			case INVESTING:
+				return new QuotationProviderInvestingDAO();
+			case GLOBEANDMAIL:
+				return new QuotationProviderGlobeAndMailDAO();
 		}
 		
 		return null;

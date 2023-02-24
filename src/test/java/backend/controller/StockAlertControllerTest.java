@@ -103,6 +103,6 @@ public class StockAlertControllerTest {
 		assertEquals(DataProvider.YAHOO, dataProvider);
 		
 		dataProvider = dataProviders.get(StockExchange.LSE);
-		assertEquals(DataProvider.YAHOO, dataProvider);
+		assertEquals(DataProvider.CNBC, dataProvider);
 	}
 }
