@@ -9,6 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import backend.dao.DAOManager;
+import okhttp3.OkHttpClient;
 
 
 /**
@@ -31,6 +32,14 @@ public class MainController {
 	 * Queries stock quotes and triggers stock alerts.
 	 */
 	private StockAlertController stockAlertController;
+	
+	/**
+	 * Client that is used for HTTP queries of third-party WebServices.
+	 * 
+	 * The OkHttpClient instance should be shared across the whole application according to the documentation.
+	 * @see https://square.github.io/okhttp/4.x/okhttp/okhttp3/-ok-http-client/
+	 */
+	private OkHttpClient okHttpClient;
 	
 	/**
 	 * Application logging.
@@ -67,6 +76,8 @@ public class MainController {
 		try {
 			this.stockAlertController = new StockAlertController();
 			this.stockAlertController.start();
+			
+			this.okHttpClient = new OkHttpClient();
 		} catch (Exception e) {
 			logger.error("The query mechanism for stock alerts failed to start.", e);
 		}
@@ -74,6 +85,7 @@ public class MainController {
 		System.out.println("Application started.");
 	}
 
+	
 	/**
 	 * Performs tasks on application shutdown.
 	 */
@@ -142,5 +154,15 @@ public class MainController {
 			default:
 				return null;
 		}
+	}
+	
+	
+	/**
+	 * Gets the OkHttpClient.
+	 * 
+	 * @return the OkHttpClient.
+	 */
+	public OkHttpClient getOkHttpClient() {
+		return this.okHttpClient;
 	}
 }

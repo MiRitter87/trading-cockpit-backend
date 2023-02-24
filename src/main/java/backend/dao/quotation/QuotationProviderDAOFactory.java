@@ -1,10 +1,11 @@
 package backend.dao.quotation;
 
 import backend.controller.DataProvider;
+import backend.controller.MainController;
 import okhttp3.OkHttpClient;
 
 /**
- * Factory class for  QuotationProviderDAO implementations.
+ * Factory class for QuotationProviderDAO implementations.
  * 
  * @author Michael
  */
@@ -16,13 +17,15 @@ public class QuotationProviderDAOFactory {
 	 * @return The QuotationProviderDAO for the given DataProvider.
 	 */
 	public static QuotationProviderDAO getQuotationProviderDAO(final DataProvider dataProvider) {
+		OkHttpClient okHttpClient = MainController.getInstance().getOkHttpClient();	
+		
 		switch(dataProvider) {
 			case YAHOO:
-				return new QuotationProviderYahooDAO(new OkHttpClient());
+				return new QuotationProviderYahooDAO(okHttpClient);
 			case MARKETWATCH:
-				return new QuotationProviderMarketWatchDAO(new OkHttpClient());
+				return new QuotationProviderMarketWatchDAO(okHttpClient);
 			case CNBC:
-				return new QuotationProviderCNBCDAO(new OkHttpClient());
+				return new QuotationProviderCNBCDAO(okHttpClient);
 			case INVESTING:
 				return new QuotationProviderInvestingDAO();
 			case GLOBEANDMAIL:

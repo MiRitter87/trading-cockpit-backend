@@ -88,8 +88,7 @@ public class StockAlertThread extends Thread {
 	 * @param dataProviders Stock exchanges and their corresponding data providers.
 	 */
 	public StockAlertThread(final LocalTime startTime, final LocalTime endTime, final Map<StockExchange, DataProvider> dataProviders) {
-		//OKHttpClient should be shared across the whole application according to documentation.
-		OkHttpClient okHttpClient = new OkHttpClient();		
+		OkHttpClient okHttpClient = MainController.getInstance().getOkHttpClient();	
 		
 		this.startTime = startTime;
 		this.endTime = endTime;
