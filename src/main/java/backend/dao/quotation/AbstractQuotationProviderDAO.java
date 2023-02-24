@@ -1,7 +1,12 @@
 package backend.dao.quotation;
 
+import java.io.IOException;
+
 import backend.model.Currency;
 import backend.model.StockExchange;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * Abstract base class of the different QuotationProviderDAO implementations.
@@ -31,5 +36,33 @@ public abstract class AbstractQuotationProviderDAO {
 		}
 		
 		return null;
+	}
+	
+	
+	/**
+	 * Gets the current quotation data from the given URL as JSON String.
+	 * 
+	 * @param queryUrl The query URL.
+	 * @param okHttpClient The HTML client performing the request.
+	 * @return The quotation data as JSON string.
+	 * @throws Exception Quotation data determination failed.
+	 */
+	protected String getCurrentQuotationJSON(final String queryUrl, final OkHttpClient okHttpClient) throws Exception {
+		Request request = new Request.Builder()
+				.url(queryUrl)
+				.header("Connection", "close")
+				.build();
+		Response response;
+		String jsonResult;
+		
+		try {
+			response = okHttpClient.newCall(request).execute();
+			jsonResult = response.body().string();
+			response.close();
+		} catch (IOException e) {
+			throw new Exception(e);
+		}
+		
+		return jsonResult;
 	}
 }

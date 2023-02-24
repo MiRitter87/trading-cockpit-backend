@@ -1,6 +1,5 @@
 package backend.dao.quotation;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -17,15 +16,13 @@ import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 /**
  * Provides access to quotation data using the API of CNBC.
  * 
  * @author Michael
  */
-public class QuotationProviderCNBCDAO implements QuotationProviderDAO {
+public class QuotationProviderCNBCDAO extends AbstractQuotationProviderDAO implements QuotationProviderDAO {
 	/**
 	 * Placeholder for the symbol used in a query URL.
 	 */
@@ -93,20 +90,8 @@ public class QuotationProviderCNBCDAO implements QuotationProviderDAO {
 	 * @throws Exception Quotation data determination failed.
 	 */
 	protected String getCurrentQuotationJSON(final String symbol, final StockExchange stockExchange) throws Exception {
-		Request request = new Request.Builder()
-				.url(this.getQueryUrlCurrentQuotation(symbol, stockExchange))
-				.header("Connection", "close")
-				.build();
-		Response response;
-		String jsonResult;
-		
-		try {
-			response = this.httpClient.newCall(request).execute();
-			jsonResult = response.body().string();
-			response.close();
-		} catch (IOException e) {
-			throw new Exception(e);
-		}
+		String queryUrl = this.getQueryUrlCurrentQuotation(symbol, stockExchange);
+		String jsonResult = this.getCurrentQuotationJSON(queryUrl, this.httpClient);
 		
 		return jsonResult;
 	}
