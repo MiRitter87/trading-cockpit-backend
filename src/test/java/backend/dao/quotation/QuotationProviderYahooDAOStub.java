@@ -24,11 +24,11 @@ public class QuotationProviderYahooDAOStub extends QuotationProviderYahooDAO {
 		String jsonPath = "";
 		
 		if(symbol.equals("DML") && stockExchange.equals(StockExchange.TSX))
-			jsonPath = "src/test/resources/yahooTSEQuotationHistoryDML.json";
+			jsonPath = "src/test/resources/yahoo/YahooTSEQuotationHistoryDML.json";
 		else if(symbol.equals("BNCH") && stockExchange.equals(StockExchange.TSXV))
-			jsonPath = "src/test/resources/yahooTSXVQuotationHistoryBNCH.json";
+			jsonPath = "src/test/resources/yahoo/YahooTSXVQuotationHistoryBNCH.json";
 		else if(symbol.equals("RIO") && stockExchange.equals(StockExchange.LSE))
-			jsonPath = "src/test/resources/yahooLSEQuotationHistoryRIO.json";
+			jsonPath = "src/test/resources/yahoo/YahooLSEQuotationHistoryRIO.json";
 		else
 			return null;
 		
@@ -43,9 +43,9 @@ public class QuotationProviderYahooDAOStub extends QuotationProviderYahooDAO {
 		String jsonPath = "";
 		
 		if(instrument.getSymbol().equals("DML") && instrument.getStockExchange().equals(StockExchange.TSX))
-			jsonPath = "src/test/resources/yahooTSEQuoteDML.json";
+			jsonPath = "src/test/resources/Yahoo/yahooTSEQuoteDML.json";
 		else if(instrument.getSymbol().equals("RIO") && instrument.getStockExchange().equals(StockExchange.LSE))
-			jsonPath = "src/test/resources/yahooLSEQuoteRIO.json";
+			jsonPath = "src/test/resources/Yahoo/yahooLSEQuoteRIO.json";
 		else
 			return null;
 		
