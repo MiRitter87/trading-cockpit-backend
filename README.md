@@ -11,10 +11,11 @@ The backend provides WebServices to create, read, update and delete the followin
 
 Quotation data are retrieved using the following third-party WebServices and Interfaces.
 
-- Yahoo finance for retrieval of current and historical instrument prices
+- Yahoo.com for retrieval of current and historical instrument prices
 - MarketWatch.com for retrieval of historical instrument prices
 - investing.com for retrieval of current instrument prices
 - TheGlobeAndMail.com for retrieval of current instrument prices
+- CNBC.com for retrieval of current instrument prices
 
 ### Price Alerts
 A price alert notifies you if the price of an instrument reaches a certain threshold. There are two types of alerts. One alert informs you if a price is equal or higher than your defined price. The other type informs you if the price is equal of lower your defined price. The backend queries stock quotes cyclically to check if the defined threshold has been triggered.
@@ -58,6 +59,17 @@ The Trading Cockpit is based on the following technologies and frameworks
 3. Move the configuration file "tradingCockpitBackend.properties" from the "target"-folder of your build path to the "conf"-folder of your WebServer.
 4. Modify the configuration file according to your needs.
 
+## Available Data Provider
+
+| Data Provider   			| Historical Quotations			| Real-Time Quotations			| Delayed Quotations	|
+|---------------------------|-------------------------------|-------------------------------|-----------------------|
+| Yahoo				 		| NYSE, TSX, TSX/V, CSE, LSE	| NYSE, TSX, TSX/V, CSE		    | LSE					|
+| MarketWatch				| NYSE, TSX, TSX/V, CSE, LSE	|								|						|
+| Investing					|  								| NYSE, TSX, LSE				| TSX/V, CSE			|
+| GlobeAndMail				| 								| TSX, TSX/V, CSE				|						|
+| CNBC						|								| NYSE, LSE						| TSX, TSX/V			|
+
+
 ## Configuration
 The configuration file "tradingCockpitBackend.properties" has multiple properties that control the applications behavior.
 
@@ -74,7 +86,7 @@ The configuration file "tradingCockpitBackend.properties" has multiple propertie
 | dataProvider.priceAlert.tsx	|  Data provider for current quotations of exchange TSX				| YAHOO    |
 | dataProvider.priceAlert.tsxv	|  Data provider for current quotations of exchange TSX/V			| YAHOO	   |
 | dataProvider.priceAlert.cse	|  Data provider for current quotations of exchange CSE				| YAHOO    |
-| dataProvider.priceAlert.lse	|  Data provider for current quotaitons of exchange LSE				| YAHOO    |
+| dataProvider.priceAlert.lse	|  Data provider for current quotaitons of exchange LSE				| CNBC	   |
 
 ## License
 
