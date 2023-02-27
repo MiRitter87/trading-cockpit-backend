@@ -54,7 +54,7 @@ public class QuotationProviderInvestingDAOTest {
 	private Quotation getAmazonQuotation() {
 		Quotation quotation = new Quotation();
 		
-		quotation.setClose(BigDecimal.valueOf(103.13));
+		quotation.setClose(BigDecimal.valueOf(93.50));
 		quotation.setCurrency(Currency.USD);
 		
 		return quotation;
