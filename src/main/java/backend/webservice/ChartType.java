@@ -19,5 +19,10 @@ public enum ChartType {
 	/**
 	 * A chart of an Instrument marked with Distribution Days.
 	 */
-	DISTRIBUTION_DAYS
+	DISTRIBUTION_DAYS,
+	
+	/**
+	 * A chart of an Instrument marked with Follow-Through Days.
+	 */
+	FOLLOW_THROUGH_DAYS
 }

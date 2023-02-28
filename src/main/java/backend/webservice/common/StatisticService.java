@@ -17,6 +17,7 @@ import org.jfree.chart.JFreeChart;
 import backend.controller.statistic.AboveSma50ChartController;
 import backend.controller.statistic.AdvanceDeclineNumberChartController;
 import backend.controller.statistic.DistributionDaysChartController;
+import backend.controller.statistic.FollowThroughDaysChartController;
 import backend.dao.DAOManager;
 import backend.dao.statistic.StatisticDAO;
 import backend.model.instrument.InstrumentType;
@@ -97,6 +98,8 @@ public class StatisticService {
 				return this.getInstrumentsAboveSma50Chart(listId);
 			case DISTRIBUTION_DAYS:
 				return this.getDistributionDaysChart(instrumentId);
+			case FOLLOW_THROUGH_DAYS:
+				return this.getFollowThroughDaysChart(instrumentId);
 			default:
 				return Response.status(404).build();				
 		}
@@ -187,6 +190,38 @@ public class StatisticService {
 			};
 		} catch (Exception exception) {
 			logger.error(this.resources.getString("statistic.chartDistributionDays.getError"), exception);
+			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+		}
+		
+		return Response.ok(streamingOutput).build();
+	}
+	
+	
+	/**
+	 * Provides a chart of an Instrument marked with Follow-Through Days.
+	 * 
+	 * @param instrumentId The ID of the Instrument used for Statistic chart creation.
+	 * @return A Response containing the generated chart.
+	 */
+	private Response getFollowThroughDaysChart(final Integer instrumentId) {
+		FollowThroughDaysChartController ftdChartController = new FollowThroughDaysChartController();
+		JFreeChart chart;
+		StreamingOutput streamingOutput = null;
+		
+		if(instrumentId == null)
+			return Response.status(Status.BAD_REQUEST).build();
+		
+		try {
+			chart = ftdChartController.getFollowThroughDaysChart(instrumentId);
+			
+			streamingOutput = new StreamingOutput() {
+				@Override
+				public void write(OutputStream output) throws IOException, WebApplicationException {
+					ChartUtils.writeChartAsPNG(output, chart, 1600, 600);
+				}
+			};
+		} catch (Exception exception) {
+			logger.error(this.resources.getString("statistic.chartFollowThroughDays.getError"), exception);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
 		}
 		
