@@ -124,7 +124,7 @@ public abstract class StatisticChartController {
 			volume[quotationIndex] = tempQuotation.getVolume();
 		}
 		
-		return new DefaultHighLowDataset(this.resources.getString("statistic.chartDistributionDays.timeSeriesPriceName"), 
+		return new DefaultHighLowDataset(this.resources.getString("statistic.chartGeneral.timeSeriesPriceName"), 
 				date, high, low, open, close, volume);
 	}
 	
@@ -182,7 +182,7 @@ public abstract class StatisticChartController {
 	private IntervalXYDataset getInstrumentVolumeDataset(final Instrument instrument) throws Exception {
 		List<Quotation> quotationsSortedByDate = instrument.getQuotationsSortedByDate();
 		TimeSeriesCollection dataset = new TimeSeriesCollection();
-		TimeSeries volumeTimeSeries = new TimeSeries(this.resources.getString("statistic.chartDistributionDays.timeSeriesVolumeName"));
+		TimeSeries volumeTimeSeries = new TimeSeries(this.resources.getString("statistic.chartGeneral.timeSeriesVolumeName"));
 		
 		for(Quotation tempQuotation : quotationsSortedByDate) {
 			volumeTimeSeries.add(new Day(tempQuotation.getDate()), tempQuotation.getVolume());
