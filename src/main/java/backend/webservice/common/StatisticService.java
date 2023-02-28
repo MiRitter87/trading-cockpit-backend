@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
 
+import backend.controller.statistic.AboveSma50ChartController;
 import backend.controller.statistic.AdvanceDeclineNumberChartController;
 import backend.controller.statistic.StatisticChartController;
 import backend.dao.DAOManager;
@@ -139,12 +140,12 @@ public class StatisticService {
 	 * @return A Response containing the generated chart.
 	 */
 	private Response getInstrumentsAboveSma50Chart(final Integer listId) {
-		StatisticChartController statisticChartController = new StatisticChartController();
+		AboveSma50ChartController aboveSma50ChartController = new AboveSma50ChartController();
 		JFreeChart chart;
 		StreamingOutput streamingOutput = null;
 		
 		try {
-			chart = statisticChartController.getInstrumentsAboveSma50Chart(InstrumentType.STOCK, listId);
+			chart = aboveSma50ChartController.getInstrumentsAboveSma50Chart(InstrumentType.STOCK, listId);
 			
 			streamingOutput = new StreamingOutput() {
 				@Override
