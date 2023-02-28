@@ -14,7 +14,8 @@ import org.apache.logging.log4j.Logger;
 import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
 
-import backend.controller.StatisticChartController;
+import backend.controller.statistic.AdvanceDeclineNumberChartController;
+import backend.controller.statistic.StatisticChartController;
 import backend.dao.DAOManager;
 import backend.dao.statistic.StatisticDAO;
 import backend.model.instrument.InstrumentType;
@@ -109,12 +110,12 @@ public class StatisticService {
 	 * @return A Response containing the generated chart.
 	 */
 	private Response getAdvanceDeclineNumberChart(final Integer listId) {
-		StatisticChartController statisticChartController = new StatisticChartController();
+		AdvanceDeclineNumberChartController adChartController = new AdvanceDeclineNumberChartController();
 		JFreeChart chart;
 		StreamingOutput streamingOutput = null;
 		
 		try {
-			chart = statisticChartController.getAdvanceDeclineNumberChart(InstrumentType.STOCK, listId);
+			chart = adChartController.getAdvanceDeclineNumberChart(InstrumentType.STOCK, listId);
 			
 			streamingOutput = new StreamingOutput() {
 				@Override
