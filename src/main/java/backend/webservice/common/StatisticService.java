@@ -16,7 +16,7 @@ import org.jfree.chart.JFreeChart;
 
 import backend.controller.statistic.AboveSma50ChartController;
 import backend.controller.statistic.AdvanceDeclineNumberChartController;
-import backend.controller.statistic.StatisticChartController;
+import backend.controller.statistic.DistributionDaysChartController;
 import backend.dao.DAOManager;
 import backend.dao.statistic.StatisticDAO;
 import backend.model.instrument.InstrumentType;
@@ -169,7 +169,7 @@ public class StatisticService {
 	 * @return A Response containing the generated chart.
 	 */
 	private Response getDistributionDaysChart(final Integer instrumentId) {
-		StatisticChartController statisticChartController = new StatisticChartController();
+		DistributionDaysChartController distributionDaysChartController = new DistributionDaysChartController();
 		JFreeChart chart;
 		StreamingOutput streamingOutput = null;
 		
@@ -177,7 +177,7 @@ public class StatisticService {
 			return Response.status(Status.BAD_REQUEST).build();
 		
 		try {
-			chart = statisticChartController.getDistributionDaysChart(instrumentId);
+			chart = distributionDaysChartController.getDistributionDaysChart(instrumentId);
 			
 			streamingOutput = new StreamingOutput() {
 				@Override
