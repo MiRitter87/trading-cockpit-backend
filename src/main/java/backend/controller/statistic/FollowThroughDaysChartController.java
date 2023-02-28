@@ -1,14 +1,21 @@
 package backend.controller.statistic;
 
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jfree.chart.ChartTheme;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.StandardChartTheme;
+import org.jfree.chart.annotations.XYTextAnnotation;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.CombinedDomainXYPlot;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.data.xy.OHLCDataset;
 
 import backend.model.instrument.Instrument;
+import backend.model.instrument.Quotation;
 
 /**
  * Controller for the creation of a chart displaying an Instrument with Follow-Through Days.
@@ -16,6 +23,12 @@ import backend.model.instrument.Instrument;
  * @author Michael
  */
 public class FollowThroughDaysChartController extends StatisticChartController {
+	/**
+	 * The performance threshold that defines a Follow-Through Day.
+	 */
+	private static final float FTD_PERCENT_THRESHOLD = (float) 1.7;
+	
+	
 	/**
 	 * Gets a chart of an Instrument marked with Follow-Through Days.
 	 * 
@@ -33,6 +46,8 @@ public class FollowThroughDaysChartController extends StatisticChartController {
 		XYPlot candleStickSubplot = this.getCandlestickPlot(instrument, timeAxis);
 		XYPlot volumeSubplot = this.getVolumePlot(instrument, timeAxis);
 		
+		this.addAnnotationsToCandlestickPlot(candleStickSubplot, instrument);
+		
 		//Build combined plot based on subplots.
 		CombinedDomainXYPlot combinedPlot = new CombinedDomainXYPlot();
 		combinedPlot.add(candleStickSubplot, 4);			//Price Plot takes 4 vertical size units.
@@ -44,5 +59,55 @@ public class FollowThroughDaysChartController extends StatisticChartController {
 		currentTheme.apply(chart);
 		
 		return chart;
+	}
+	
+	
+	/**
+	 * Adds text annotations for Follow-Through Days to the given plot.
+	 * 
+	 * @param candlestickPlot The Plot to which annotations are added.
+	 * @param instrument The Instrument whose price data are displayed.
+	 * @throws Exception Annotation creation failed.
+	 */
+	private void addAnnotationsToCandlestickPlot(XYPlot candlestickPlot, final Instrument instrument) 
+			throws Exception {
+		
+		OHLCDataset instrumentPriceData = this.getInstrumentOHLCDataset(instrument);
+		XYTextAnnotation textAnnotation;
+		List<Integer> indexOfFollowThroughDays = new ArrayList<>();
+		List<Quotation> quotationsSortedByDate = instrument.getQuotationsSortedByDate();
+		
+		indexOfFollowThroughDays = this.getIndexOfFollowThroughDays(quotationsSortedByDate);
+        
+		for(Integer indexOfFollowThroughDay:indexOfFollowThroughDays) {
+			textAnnotation = new XYTextAnnotation("F", instrumentPriceData.getXValue(0, indexOfFollowThroughDay), 
+					instrumentPriceData.getHighValue(0, indexOfFollowThroughDay) * 1.03);	//Show annotation 3 percent above high price.
+			candlestickPlot.addAnnotation(textAnnotation);
+		}
+	}
+	
+	
+	/**
+	 * Determines a List of index numbers of quotations that constitute a Follow-Through Day.
+	 * 
+	 * @param quotationsSortedByDate A List of Quotations sorted by Date.
+	 * @return A List of index numbers of the given List that constitute a Follow-Through Day.
+	 */
+	private List<Integer> getIndexOfFollowThroughDays(final List<Quotation> quotationsSortedByDate) {
+		List<Integer> indexOfFollowThroughDays = new ArrayList<>();
+		Quotation currentQuotation, previousQuotation;
+		float performance;
+		
+		for(int i = 0; i < quotationsSortedByDate.size() - 1; i++) {
+			currentQuotation = quotationsSortedByDate.get(i);
+			previousQuotation = quotationsSortedByDate.get(i+1);
+			performance = currentQuotation.getClose().divide(previousQuotation.getClose(), 4, RoundingMode.HALF_UP).floatValue() - 1;
+			performance = performance * 100;	//Get performance in percent.
+			
+			if(performance >= FTD_PERCENT_THRESHOLD && (currentQuotation.getVolume() > previousQuotation.getVolume()))
+				indexOfFollowThroughDays.add(i);
+		}
+		
+		return indexOfFollowThroughDays;
 	}
 }

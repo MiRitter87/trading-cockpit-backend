@@ -30,6 +30,12 @@ import backend.model.instrument.Quotation;
  */
 public class DistributionDaysChartController extends StatisticChartController {
 	/**
+	 * The performance threshold that defines a Distribution Day.
+	 */
+	private static final float DD_PERCENT_THRESHOLD = (float) -0.2;
+	
+	
+	/**
 	 * Gets a chart of an Instrument marked with Distribution Days.
 	 * 
 	 * @param instrumentId The ID of the Instrument used for Statistic chart creation.
@@ -143,7 +149,7 @@ public class DistributionDaysChartController extends StatisticChartController {
 			performance = performance * 100;	//Get performance in percent.
 			priceHasAdvanced = this.hasPriceAdvancedPercent(quotationsSortedByDate, currentQuotation, 24, 5);
 			
-			if(performance < -0.2 && (currentQuotation.getVolume() > previousQuotation.getVolume()) && !priceHasAdvanced)
+			if(performance < DD_PERCENT_THRESHOLD && (currentQuotation.getVolume() > previousQuotation.getVolume()) && !priceHasAdvanced)
 				indexOfDistributionDays.add(i);
 		}
 		
