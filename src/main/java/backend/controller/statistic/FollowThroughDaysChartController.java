@@ -150,22 +150,62 @@ public class FollowThroughDaysChartController extends StatisticChartController {
 	private IntervalXYDataset getFailedFTDDataset(final Instrument instrument) throws Exception {
 		List<Quotation> quotationsSortedByDate = instrument.getQuotationsSortedByDate();
 		List<Integer> indexOfFollowThroughDays = new ArrayList<>();
-		int indexStart, indexEnd;
 		TimeSeriesCollection dataset = new TimeSeriesCollection();
 		TimeSeries failedFTDTimeSeries = new TimeSeries(this.resources.getString("statistic.chartFollowThroughDays.timeSeriesFailedFTDName"));
 		
 		indexOfFollowThroughDays = this.getIndexOfFollowThroughDays(quotationsSortedByDate);
         
         //Determine failed Follow-Through Days.
-        for(Quotation tempQuotation: quotationsSortedByDate) {
+        for(Quotation tempQuotation: quotationsSortedByDate) {        	
         	if(indexOfFollowThroughDays.contains(quotationsSortedByDate.indexOf(tempQuotation))) {
-        		//For starters just display all Follow-Through Days. Later only display failed FTDs.     	
-        		failedFTDTimeSeries.add(new Day(tempQuotation.getDate()), 1);        		
+        		//A Follow-Through Day is considered failed if a Distribution Day follows during the next 5 trading days.
+        		if(this.isDistributionDayFollowing(tempQuotation, quotationsSortedByDate, 5))    	
+        			failedFTDTimeSeries.add(new Day(tempQuotation.getDate()), 1);  
+        		
+        		//TODO A Follow-Through Day is considered failed if the price undercuts the low established within 10 days before the FTD.
         	}
         }
         
         dataset.addSeries(failedFTDTimeSeries);
 		
 		return dataset;
+	}
+	
+	
+	/**
+	 * Checks if a Distribution Day is following during the next days after the given Quotation.
+	 * 
+	 * @param quotation The Quotation which is reference point for the checkup.
+	 * @param quotationsSortedByDate A sorted List of quotations building the trading history.
+	 * @param numberDays The number of days checked after the given Quotation.
+	 * @return true, if Distribution Day follows in the given number of days after the given Quotation. False, if not.
+	 */
+	private boolean isDistributionDayFollowing(final Quotation quotation, final List<Quotation> quotationsSortedByDate, final int numberDays) {
+		Quotation currentQuotation, nextQuotation;
+		int indexStart, indexEnd;
+		
+		indexStart = quotationsSortedByDate.indexOf(quotation);
+    	
+    	if((indexStart - numberDays) < 0) {
+    		indexEnd = 0;
+    	}
+    	else {
+    		indexEnd = indexStart - numberDays;    		
+    	}
+    	
+    	indexStart--;	//Do not start Distribution Day check at the date of the current Quotation but a day later.
+    	
+    	if(indexStart < 0)
+    		return false;	//quotation is already the newest price.
+    		
+		for(int i = indexStart; i >= indexEnd; i--) {
+			currentQuotation = quotationsSortedByDate.get(i+1);
+			nextQuotation = quotationsSortedByDate.get(i);
+			
+			if(this.isDistributionDay(nextQuotation, currentQuotation))
+				return true;
+		}
+
+		return false;
 	}
 }
