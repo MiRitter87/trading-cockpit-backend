@@ -9,9 +9,13 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.StandardChartTheme;
 import org.jfree.chart.annotations.XYTextAnnotation;
 import org.jfree.chart.axis.DateAxis;
+import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.CombinedDomainXYPlot;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYBarRenderer;
+import org.jfree.data.time.TimeSeriesCollection;
+import org.jfree.data.xy.IntervalXYDataset;
 import org.jfree.data.xy.OHLCDataset;
 
 import backend.model.instrument.Instrument;
@@ -45,11 +49,13 @@ public class FollowThroughDaysChartController extends StatisticChartController {
         
 		XYPlot candleStickSubplot = this.getCandlestickPlot(instrument, timeAxis);
 		XYPlot volumeSubplot = this.getVolumePlot(instrument, timeAxis);
+		XYPlot failedFTDSubplot = this.getFailedFTDPlot(instrument, timeAxis);
 		
 		this.addAnnotationsToCandlestickPlot(candleStickSubplot, instrument);
 		
 		//Build combined plot based on subplots.
 		CombinedDomainXYPlot combinedPlot = new CombinedDomainXYPlot();
+		combinedPlot.add(failedFTDSubplot, 1);				//Failed FTD Plot takes 1 vertical size unit.
 		combinedPlot.add(candleStickSubplot, 4);			//Price Plot takes 4 vertical size units.
 		combinedPlot.add(volumeSubplot, 1);					//Volume Plot takes 1 vertical size unit.
 		combinedPlot.setDomainAxis(timeAxis);
@@ -109,5 +115,24 @@ public class FollowThroughDaysChartController extends StatisticChartController {
 		}
 		
 		return indexOfFollowThroughDays;
+	}
+	
+	
+	/**
+	 * Builds a plot to display failed Follow-Through Days.
+	 * 
+	 * @param instrument The Instrument.
+	 * @param timeAxis The x-Axis (time).
+	 * @return A XYPlot depicting failed Follow-Through Days.
+	 * @throws Exception Plot generation failed.
+	 */
+	private XYPlot getFailedFTDPlot(final Instrument instrument, final ValueAxis timeAxis) throws Exception {
+		IntervalXYDataset distributionDaySumData = new TimeSeriesCollection();
+        NumberAxis failedFTDAxis = new NumberAxis();
+		
+		XYBarRenderer failedFTDRenderer = new XYBarRenderer();
+		XYPlot failedFTDSubplot = new XYPlot(distributionDaySumData, timeAxis, failedFTDAxis, failedFTDRenderer);
+		
+		return failedFTDSubplot;
 	}
 }
