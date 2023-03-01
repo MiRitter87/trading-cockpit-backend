@@ -1,5 +1,6 @@
 package backend.controller.statistic;
 
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -34,6 +35,11 @@ import backend.model.statistic.Statistic;
  * @author Michael
  */
 public abstract class StatisticChartController {
+	/**
+	 * The performance threshold that defines a Distribution Day.
+	 */
+	private static final float DD_PERCENT_THRESHOLD = (float) -0.2;
+	
 	/**
 	 * DAO to access Statistic data.
 	 */
@@ -192,5 +198,25 @@ public abstract class StatisticChartController {
 		
         return dataset;
 
+	}
+	
+	
+	/**
+	 * Checks if the day of the current Quotation constitutes a Distribution Day.
+	 * 
+	 * @param currentQuotation The current Quotation.
+	 * @param previousQuotation The previous Quotation.
+	 * @return true, if day of current Quotation in Distribution Day; false, if not.
+	 */
+	protected boolean isDistributionDay(final Quotation currentQuotation, final Quotation previousQuotation) {
+		float performance;
+		
+		performance = currentQuotation.getClose().divide(previousQuotation.getClose(), 4, RoundingMode.HALF_UP).floatValue() - 1;
+		performance = performance * 100;	//Get performance in percent.
+		
+		if(performance < DD_PERCENT_THRESHOLD && (currentQuotation.getVolume() > previousQuotation.getVolume()))
+			return true;
+		else
+			return false;
 	}
 }
