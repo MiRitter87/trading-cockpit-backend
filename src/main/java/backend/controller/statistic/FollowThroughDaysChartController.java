@@ -14,6 +14,8 @@ import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.CombinedDomainXYPlot;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
+import org.jfree.data.time.Day;
+import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.IntervalXYDataset;
 import org.jfree.data.xy.OHLCDataset;
@@ -127,12 +129,43 @@ public class FollowThroughDaysChartController extends StatisticChartController {
 	 * @throws Exception Plot generation failed.
 	 */
 	private XYPlot getFailedFTDPlot(final Instrument instrument, final ValueAxis timeAxis) throws Exception {
-		IntervalXYDataset distributionDaySumData = new TimeSeriesCollection();
+		IntervalXYDataset distributionDaySumData = this.getFailedFTDDataset(instrument);
         NumberAxis failedFTDAxis = new NumberAxis();
 		
 		XYBarRenderer failedFTDRenderer = new XYBarRenderer();
 		XYPlot failedFTDSubplot = new XYPlot(distributionDaySumData, timeAxis, failedFTDAxis, failedFTDRenderer);
 		
 		return failedFTDSubplot;
+	}
+	
+	
+	
+	/**
+	 * Gets a dataset containing failed Follow-Through Days of the given Instrument.
+	 * 
+	 * @param instrument The Instrument.
+	 * @return A dataset with the failed Follow-Through Days.
+	 * @throws Exception Dataset creation failed.
+	 */
+	private IntervalXYDataset getFailedFTDDataset(final Instrument instrument) throws Exception {
+		List<Quotation> quotationsSortedByDate = instrument.getQuotationsSortedByDate();
+		List<Integer> indexOfFollowThroughDays = new ArrayList<>();
+		int indexStart, indexEnd;
+		TimeSeriesCollection dataset = new TimeSeriesCollection();
+		TimeSeries failedFTDTimeSeries = new TimeSeries(this.resources.getString("statistic.chartFollowThroughDays.timeSeriesFailedFTDName"));
+		
+		indexOfFollowThroughDays = this.getIndexOfFollowThroughDays(quotationsSortedByDate);
+        
+        //Determine failed Follow-Through Days.
+        for(Quotation tempQuotation: quotationsSortedByDate) {
+        	if(indexOfFollowThroughDays.contains(quotationsSortedByDate.indexOf(tempQuotation))) {
+        		//For starters just display all Follow-Through Days. Later only display failed FTDs.     	
+        		failedFTDTimeSeries.add(new Day(tempQuotation.getDate()), 1);        		
+        	}
+        }
+        
+        dataset.addSeries(failedFTDTimeSeries);
+		
+		return dataset;
 	}
 }
