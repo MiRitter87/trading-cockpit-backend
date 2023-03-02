@@ -1,5 +1,6 @@
 package backend.controller.statistic;
 
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
@@ -135,17 +136,21 @@ public class FollowThroughDaysChartController extends StatisticChartController {
 		
 		List<Integer> indexOfFailedFollowThroughDays = new ArrayList<>();
 		Quotation currentQuotation;
-		boolean isDistributionDayFollowing;
+		boolean isDistributionDayFollowing, isLowBeforeFTDUndercut;
 		
 		//Check for each Follow-Through Day if it failed.
 		for(Integer indexOfFollowThroughDay:indexOfFollowThroughDays) {
 			currentQuotation = quotationsSortedByDate.get(indexOfFollowThroughDay);
 			
-			isDistributionDayFollowing = this.isDistributionDayFollowing(currentQuotation, quotationsSortedByDate, 5);
+			//A Follow-Through Day is considered failed if a Distribution Day follows within 3 days after the FTD.
+			isDistributionDayFollowing = this.isDistributionDayFollowing(currentQuotation, quotationsSortedByDate, 3);
 			if(isDistributionDayFollowing)
 				indexOfFailedFollowThroughDays.add(indexOfFollowThroughDay);
 			
-			//TODO A Follow-Through Day is considered failed if the price undercuts the low established within 10 days before the FTD.
+			//A Follow-Through Day is considered failed if the price undercuts the low established within 10 days before the FTD.
+			isLowBeforeFTDUndercut = this.isLowBeforeFTDUndercut(currentQuotation, quotationsSortedByDate, 10, 10);
+			if(isLowBeforeFTDUndercut && !indexOfFailedFollowThroughDays.contains(indexOfFollowThroughDay))
+				indexOfFailedFollowThroughDays.add(indexOfFollowThroughDay);
 		}
 		
 		return indexOfFailedFollowThroughDays;
@@ -256,5 +261,71 @@ public class FollowThroughDaysChartController extends StatisticChartController {
 			return true;
 		else
 			return false;
+	}
+	
+	
+	/**
+	 * Checks if the low price established before the Follow-Through Day has been undercut after the FTD occurred.
+	 * 
+	 * @param quotation The Quotation that constitutes the Follow-Through Day.
+	 * @param quotationsSortedByDate A sorted List of quotations building the trading history.
+	 * @param daysBeforeFTD The number of days before the FTD to define for the low price.
+	 * @param daysAfterFTD The number of days after the FTD to check if the low price has been undercut.
+	 * @return true, if low price before FTD has been undercut; false, if not.
+	 */
+	private boolean isLowBeforeFTDUndercut(final Quotation quotation, final List<Quotation> quotationsSortedByDate, 
+			final int daysBeforeFTD, final int daysAfterFTD) {
+		
+		BigDecimal lowBeforeFTD = this.getLowPrice(quotation, quotationsSortedByDate, 10);
+		BigDecimal lowAfterFTD = this.getLowPrice(quotation, quotationsSortedByDate, -10);
+		
+		if(lowBeforeFTD.compareTo(lowAfterFTD) < 1)
+			return false;
+		else
+			return true;
+	}
+	
+	
+	/**
+	 * Gets the low price for the given number of days.
+	 * 
+	 * @param quotation The Quotation from which the low price determination is started.
+	 * @param quotationsSortedByDate A sorted List of quotations building the trading history.
+	 * @param days The number of days in the past (positive number) or future (negative number).
+	 * @return The low price of the period.
+	 */
+	private BigDecimal getLowPrice(final Quotation quotation, final List<Quotation> quotationsSortedByDate, final int days) {
+		BigDecimal lowPrice = quotation.getLow();
+		Quotation currentQuotation;
+		int indexStart, indexEnd;
+		
+		indexStart = quotationsSortedByDate.indexOf(quotation);
+    	
+    	if((indexStart + days) >= quotationsSortedByDate.size()-1) {
+    		indexEnd = quotationsSortedByDate.size()-1;
+    	}
+    	else if((indexStart + days) < 0)
+    		indexEnd = 0;
+    	else {
+    		indexEnd = indexStart + days;    		
+    	}
+    	
+    	if(days > 0) {
+    		for(int i = indexStart; i <= indexEnd; i++) {
+    			currentQuotation = quotationsSortedByDate.get(i);
+    			if(currentQuotation.getLow().compareTo(lowPrice) == -1)
+    				lowPrice = currentQuotation.getLow();
+    		}
+    	}
+    	
+    	if(days < 0) {
+    		for(int i = indexStart; i >= indexEnd; i--) {
+    			currentQuotation = quotationsSortedByDate.get(i);
+    			if(currentQuotation.getLow().compareTo(lowPrice) == -1)
+    				lowPrice = currentQuotation.getLow();
+    		}
+    	}
+		
+		return lowPrice;
 	}
 }
