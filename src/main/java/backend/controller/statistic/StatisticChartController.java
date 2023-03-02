@@ -206,7 +206,7 @@ public abstract class StatisticChartController {
 	 * 
 	 * @param currentQuotation The current Quotation.
 	 * @param previousQuotation The previous Quotation.
-	 * @return true, if day of current Quotation in Distribution Day; false, if not.
+	 * @return true, if day of current Quotation is Distribution Day; false, if not.
 	 */
 	protected boolean isDistributionDay(final Quotation currentQuotation, final Quotation previousQuotation) {
 		float performance;

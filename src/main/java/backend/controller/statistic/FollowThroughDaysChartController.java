@@ -104,15 +104,14 @@ public class FollowThroughDaysChartController extends StatisticChartController {
 	private List<Integer> getIndexOfFollowThroughDays(final List<Quotation> quotationsSortedByDate) {
 		List<Integer> indexOfFollowThroughDays = new ArrayList<>();
 		Quotation currentQuotation, previousQuotation;
-		float performance;
+		boolean isFollowThroughDay;
 		
 		for(int i = 0; i < quotationsSortedByDate.size() - 1; i++) {
 			currentQuotation = quotationsSortedByDate.get(i);
 			previousQuotation = quotationsSortedByDate.get(i+1);
-			performance = currentQuotation.getClose().divide(previousQuotation.getClose(), 4, RoundingMode.HALF_UP).floatValue() - 1;
-			performance = performance * 100;	//Get performance in percent.
+			isFollowThroughDay = this.isFollowThroughDay(currentQuotation, previousQuotation);
 			
-			if(performance >= FTD_PERCENT_THRESHOLD && (currentQuotation.getVolume() > previousQuotation.getVolume()))
+			if(isFollowThroughDay)
 				indexOfFollowThroughDays.add(i);
 		}
 		
@@ -207,5 +206,25 @@ public class FollowThroughDaysChartController extends StatisticChartController {
 		}
 
 		return false;
+	}
+	
+	
+	/**
+	 * Checks if the day of the current Quotation constitutes a Follow-Through Day.
+	 * 
+	 * @param currentQuotation The current Quotation.
+	 * @param previousQuotation The previous Quotation.
+	 * @return true, if day of current Quotation is Follow-Through Day; false, if not.
+	 */
+	private boolean isFollowThroughDay(final Quotation currentQuotation, final Quotation previousQuotation) {
+		float performance;
+		
+		performance = currentQuotation.getClose().divide(previousQuotation.getClose(), 4, RoundingMode.HALF_UP).floatValue() - 1;
+		performance = performance * 100;	//Get performance in percent.
+		
+		if(performance >= FTD_PERCENT_THRESHOLD && (currentQuotation.getVolume() > previousQuotation.getVolume()))
+			return true;
+		else
+			return false;
 	}
 }
