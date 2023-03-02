@@ -82,10 +82,14 @@ public class FollowThroughDaysChartController extends StatisticChartController {
 		
 		OHLCDataset instrumentPriceData = this.getInstrumentOHLCDataset(instrument);
 		XYTextAnnotation textAnnotation;
-		List<Integer> indexOfFollowThroughDays = new ArrayList<>();
+		List<Integer> indexOfFollowThroughDays, indexOfFailedFollowThroughDays;
 		List<Quotation> quotationsSortedByDate = instrument.getQuotationsSortedByDate();
 		
 		indexOfFollowThroughDays = this.getIndexOfFollowThroughDays(quotationsSortedByDate);
+		indexOfFailedFollowThroughDays = this.getIndexOfFailedFollowThroughDays(indexOfFollowThroughDays, quotationsSortedByDate);
+		
+		//Do not draw annotations for failed Follow-Through Days.
+		indexOfFollowThroughDays.removeAll(indexOfFailedFollowThroughDays);
         
 		for(Integer indexOfFollowThroughDay:indexOfFollowThroughDays) {
 			textAnnotation = new XYTextAnnotation("F", instrumentPriceData.getXValue(0, indexOfFollowThroughDay), 
@@ -120,6 +124,35 @@ public class FollowThroughDaysChartController extends StatisticChartController {
 	
 	
 	/**
+	 * Determines a List of index numbers of quotations that constitute a failed Follow-Through Day.
+	 * 
+	 * @param idsOfFollowThroughDays Index numbers of Follow-Through Days.
+	 * @param quotationsSortedByDate A List of Quotations sorted by Date.
+	 * @return A List of index numbers of the given List that constitute a failed Follow-Through Day.
+	 */
+	private List<Integer> getIndexOfFailedFollowThroughDays(final List<Integer> indexOfFollowThroughDays, 
+			final List<Quotation> quotationsSortedByDate) {
+		
+		List<Integer> indexOfFailedFollowThroughDays = new ArrayList<>();
+		Quotation currentQuotation;
+		boolean isDistributionDayFollowing;
+		
+		//Check for each Follow-Through Day if it failed.
+		for(Integer indexOfFollowThroughDay:indexOfFollowThroughDays) {
+			currentQuotation = quotationsSortedByDate.get(indexOfFollowThroughDay);
+			
+			isDistributionDayFollowing = this.isDistributionDayFollowing(currentQuotation, quotationsSortedByDate, 5);
+			if(isDistributionDayFollowing)
+				indexOfFailedFollowThroughDays.add(indexOfFollowThroughDay);
+			
+			//TODO A Follow-Through Day is considered failed if the price undercuts the low established within 10 days before the FTD.
+		}
+		
+		return indexOfFailedFollowThroughDays;
+	}
+	
+	
+	/**
 	 * Builds a plot to display failed Follow-Through Days.
 	 * 
 	 * @param instrument The Instrument.
@@ -148,22 +181,19 @@ public class FollowThroughDaysChartController extends StatisticChartController {
 	 */
 	private IntervalXYDataset getFailedFTDDataset(final Instrument instrument) throws Exception {
 		List<Quotation> quotationsSortedByDate = instrument.getQuotationsSortedByDate();
-		List<Integer> indexOfFollowThroughDays = new ArrayList<>();
+		List<Integer> indexOfFollowThroughDays, indexOfFailedFollowThroughDays;
 		TimeSeriesCollection dataset = new TimeSeriesCollection();
 		TimeSeries failedFTDTimeSeries = new TimeSeries(this.resources.getString("statistic.chartFollowThroughDays.timeSeriesFailedFTDName"));
+		Quotation currentQuotation;
 		
 		indexOfFollowThroughDays = this.getIndexOfFollowThroughDays(quotationsSortedByDate);
+		indexOfFailedFollowThroughDays = this.getIndexOfFailedFollowThroughDays(indexOfFollowThroughDays, quotationsSortedByDate);
         
-        //Determine failed Follow-Through Days.
-        for(Quotation tempQuotation: quotationsSortedByDate) {        	
-        	if(indexOfFollowThroughDays.contains(quotationsSortedByDate.indexOf(tempQuotation))) {
-        		//A Follow-Through Day is considered failed if a Distribution Day follows during the next 5 trading days.
-        		if(this.isDistributionDayFollowing(tempQuotation, quotationsSortedByDate, 5))    	
-        			failedFTDTimeSeries.add(new Day(tempQuotation.getDate()), 1);  
-        		
-        		//TODO A Follow-Through Day is considered failed if the price undercuts the low established within 10 days before the FTD.
-        	}
-        }
+        //Construct dataset of failed Follow-Through Days.
+		for(int indexOfFailedFTD: indexOfFailedFollowThroughDays) {
+			currentQuotation = quotationsSortedByDate.get(indexOfFailedFTD);
+			failedFTDTimeSeries.add(new Day(currentQuotation.getDate()), 1);  
+		}
         
         dataset.addSeries(failedFTDTimeSeries);
 		
