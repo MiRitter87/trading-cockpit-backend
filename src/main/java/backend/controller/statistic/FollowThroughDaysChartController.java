@@ -276,8 +276,8 @@ public class FollowThroughDaysChartController extends StatisticChartController {
 	private boolean isLowBeforeFTDUndercut(final Quotation quotation, final List<Quotation> quotationsSortedByDate, 
 			final int daysBeforeFTD, final int daysAfterFTD) {
 		
-		BigDecimal lowBeforeFTD = this.getLowPrice(quotation, quotationsSortedByDate, 10);
-		BigDecimal lowAfterFTD = this.getLowPrice(quotation, quotationsSortedByDate, -10);
+		BigDecimal lowBeforeFTD = this.getLowPrice(quotation, quotationsSortedByDate, daysBeforeFTD);
+		BigDecimal lowAfterFTD = this.getLowPrice(quotation, quotationsSortedByDate, -daysAfterFTD);
 		
 		if(lowBeforeFTD.compareTo(lowAfterFTD) < 1)
 			return false;
@@ -310,6 +310,7 @@ public class FollowThroughDaysChartController extends StatisticChartController {
     		indexEnd = indexStart + days;    		
     	}
     	
+    	//Calculate low price of past quotations.
     	if(days > 0) {
     		for(int i = indexStart; i <= indexEnd; i++) {
     			currentQuotation = quotationsSortedByDate.get(i);
@@ -318,6 +319,7 @@ public class FollowThroughDaysChartController extends StatisticChartController {
     		}
     	}
     	
+    	//Calculate low price of future quotations.
     	if(days < 0) {
     		for(int i = indexStart; i >= indexEnd; i--) {
     			currentQuotation = quotationsSortedByDate.get(i);
