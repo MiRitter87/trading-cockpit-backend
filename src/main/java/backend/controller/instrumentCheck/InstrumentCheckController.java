@@ -1,4 +1,4 @@
-package backend.controller;
+package backend.controller.instrumentCheck;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -45,13 +45,15 @@ public class InstrumentCheckController {
 	 * @param instrumentId The id of the Instrument.
 	 * @param startDate The start date of the health check.
 	 * @return A protocol containing the health information from the start date until the most recent quotation.
+	 * @throws NoQuotationsExistException Exception indicating no Quotations exist at and after given start date.
 	 * @throws Exception Health check failed.
 	 */
-	public Protocol checkInstrument(final Integer instrumentId, final Date startDate) throws Exception {
+	public Protocol checkInstrument(final Integer instrumentId, final Date startDate) throws NoQuotationsExistException, Exception {
 		List<Quotation> quotations;
 		Protocol protocol = new Protocol();
 		
 		quotations = this.quotationDAO.getQuotationsOfInstrument(instrumentId);
+		this.checkQuotationsExistAfterStartDate(startDate, quotations);
 		
 		protocol.getProtocolEntries().addAll(this.checkCloseBelowSma50(startDate, quotations));
 		
@@ -140,5 +142,20 @@ public class InstrumentCheckController {
 		}
 		
 		return indexOfQuotation;
+	}
+	
+	
+	/**
+	 * Checks if quotations exist at and after the given start date.
+	 * 
+	 * @param startDate The start date.
+	 * @param quotations A list of quotations.
+	 * @throws NoQuotationsExistException Exception indicating no Quotations exist at and after given start date.
+	 */
+	public void checkQuotationsExistAfterStartDate(final Date startDate, final List<Quotation> quotations)  throws NoQuotationsExistException {
+		int indexOfQuotationWithDate = this.getIndexOfQuotationWithDate(quotations, startDate);
+		
+		if(indexOfQuotationWithDate == -1)
+			throw new NoQuotationsExistException(startDate);
 	}
 }

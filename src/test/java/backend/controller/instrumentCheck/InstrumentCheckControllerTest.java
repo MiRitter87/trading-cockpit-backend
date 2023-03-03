@@ -1,4 +1,4 @@
-package backend.controller;
+package backend.controller.instrumentCheck;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -160,6 +160,24 @@ public class InstrumentCheckControllerTest {
 			assertEquals(expectedProtocolEntry2, actualProtocolEntry);
 		} catch (Exception e) {
 			fail(e.getMessage());
+		}
+	}
+	
+	
+	@Test
+	/**
+	 * Checks if a proper Exception is thrown if no quotations exist at or after the given start date.
+	 */
+	public void testCheckQuotationsExistAfterStartDate() {
+		Calendar calendar = Calendar.getInstance();
+		
+		calendar.set(2022, 6, 23);	//23.07.22 (The last Quotation is for the 22.07.22)
+		
+		try {
+			this.instrumentCheckController.checkQuotationsExistAfterStartDate(calendar.getTime(), dmlQuotations);
+			fail("The check should have failed because there is no Quotation at or after the given date.");
+		} catch (NoQuotationsExistException expected) {
+			//All is well.
 		}
 	}
 }

@@ -11,7 +11,8 @@ import java.util.ResourceBundle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import backend.controller.InstrumentCheckController;
+import backend.controller.instrumentCheck.InstrumentCheckController;
+import backend.controller.instrumentCheck.NoQuotationsExistException;
 import backend.dao.DAOManager;
 import backend.dao.ObjectUnchangedException;
 import backend.dao.instrument.DuplicateInstrumentException;
@@ -293,7 +294,12 @@ public class InstrumentService {
 			convertedStartDate = this.convertStringToDate(startDate);
 			protocol = controller.checkInstrument(instrumentId, convertedStartDate);
 			getHealthProtocolResult.setData(protocol);
-		} catch (Exception e) {
+		}
+		catch(NoQuotationsExistException noQuotationsExistException) {
+			getHealthProtocolResult.addMessage(new WebServiceMessage(
+					WebServiceMessageType.E, this.resources.getString("instrument.getHealthNoQuotationsForDate")));
+		}
+		catch(Exception e) {
 			getHealthProtocolResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, this.resources.getString("instrument.getHealthError")));
 			logger.error(this.resources.getString("instrument.getHealthError"), e.getMessage(), e);
 		}
