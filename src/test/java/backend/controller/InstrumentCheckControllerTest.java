@@ -8,7 +8,9 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import backend.controller.scan.IndicatorCalculator;
@@ -41,7 +43,12 @@ public class InstrumentCheckControllerTest {
 	/**
 	 * A list of quotations of the DML stock.
 	 */
-	private static List<Quotation> dmlQuotations;
+	private List<Quotation> dmlQuotations;
+	
+	/**
+	 * The controller for Instrument checks.
+	 */
+	private InstrumentCheckController instrumentCheckController;
 	
 	
 	@BeforeAll
@@ -50,9 +57,6 @@ public class InstrumentCheckControllerTest {
 	 */
 	public static void setUpClass() {
 		quotationProviderYahooDAO = new QuotationProviderYahooDAOStub();
-		
-		initializeDMLQuotations();
-		initializeDMLIndicators();
 	}
 	
 	
@@ -65,10 +69,32 @@ public class InstrumentCheckControllerTest {
 	}
 	
 	
+	@BeforeEach
+	/**
+	 * Tasks to be performed before each test is run.
+	 */
+	private void setUp() {
+		this.instrumentCheckController = new InstrumentCheckController();
+		
+		this.initializeDMLQuotations();
+		this.initializeDMLIndicators();
+	}
+	
+	
+	@AfterEach
+	/**
+	 * Tasks to be performed after each test has been run.
+	 */
+	private void tearDown() {
+		this.instrumentCheckController = null;
+		this.dmlQuotations = null;
+	}
+	
+	
 	/**
 	 * Initializes quotations of the DML stock.
 	 */
-	private static void initializeDMLQuotations() {
+	private void initializeDMLQuotations() {
 		try {
 			dmlQuotations = quotationProviderYahooDAO.getQuotationHistory("DML", StockExchange.TSX, InstrumentType.STOCK, 1);
 		} catch (Exception e) {
@@ -80,7 +106,7 @@ public class InstrumentCheckControllerTest {
 	/**
 	 * Initializes the indicators of the DML stock.
 	 */
-	private static void initializeDMLIndicators() {
+	private void initializeDMLIndicators() {
 		IndicatorCalculator indicatorCalculator = new IndicatorCalculator();
 		List<Quotation> sortedQuotations;
 		Instrument instrument = new Instrument();
@@ -106,7 +132,6 @@ public class InstrumentCheckControllerTest {
 		ProtocolEntry actualProtocolEntry;
 		List<ProtocolEntry> protocolEntries;
 		Calendar calendar = Calendar.getInstance();
-		InstrumentCheckController controller = new InstrumentCheckController();
 		
 		//Define the expected protocol entries.
 		calendar.set(2022, 3, 21);		//The day on which the price closed below the SMA(50).
@@ -122,7 +147,7 @@ public class InstrumentCheckControllerTest {
 		//Call controller to perform check.
 		calendar.set(2022, 3, 7);	//Begin check on 07.04.22
 		try {
-			protocolEntries = controller.checkCloseBelowSma50(calendar.getTime(), dmlQuotations);
+			protocolEntries = this.instrumentCheckController.checkCloseBelowSma50(calendar.getTime(), dmlQuotations);
 			
 			//Verify the check result
 			assertEquals(2, protocolEntries.size());
