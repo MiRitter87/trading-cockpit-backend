@@ -1,4 +1,4 @@
-package backend.controller;
+package backend.controller.alert;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -11,6 +11,8 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import backend.controller.DataProvider;
+import backend.controller.MainController;
 import backend.dao.DAOManager;
 import backend.dao.priceAlert.PriceAlertDAO;
 import backend.dao.priceAlert.PriceAlertOrderAttribute;

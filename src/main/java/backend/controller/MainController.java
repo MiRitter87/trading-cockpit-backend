@@ -8,6 +8,7 @@ import java.util.Properties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import backend.controller.alert.StockAlertController;
 import backend.dao.DAOManager;
 import okhttp3.OkHttpClient;
 

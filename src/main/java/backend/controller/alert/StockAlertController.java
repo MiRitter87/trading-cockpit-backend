@@ -1,4 +1,4 @@
-package backend.controller;
+package backend.controller.alert;
 
 import java.time.LocalTime;
 import java.util.HashMap;
@@ -10,6 +10,8 @@ import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import backend.controller.DataProvider;
+import backend.controller.MainController;
 import backend.model.StockExchange;
 
 /**

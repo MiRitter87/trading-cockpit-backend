@@ -127,7 +127,7 @@ public class InstrumentCheckControllerTest {
 	/**
 	 * Tests the check if Instrument closed below SMA(50).
 	 */
-	public void checkCloseBelowSma50Test() {
+	public void testCheckCloseBelowSma50() {
 		ProtocolEntry expectedProtocolEntry1 = new ProtocolEntry();
 		ProtocolEntry expectedProtocolEntry2 = new ProtocolEntry();
 		ProtocolEntry actualProtocolEntry;
@@ -187,7 +187,7 @@ public class InstrumentCheckControllerTest {
 	/**
 	 * Tests the check if Instrument had largest down day of the year.
 	 */
-	public void checkLargestDownDayTest() {
+	public void testCheckLargestDownDay() {
 		ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
 		ProtocolEntry actualProtocolEntry;
 		List<ProtocolEntry> protocolEntries;
