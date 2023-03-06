@@ -1,6 +1,5 @@
 package backend.controller.statistic;
 
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -18,6 +17,7 @@ import org.jfree.data.xy.DefaultHighLowDataset;
 import org.jfree.data.xy.IntervalXYDataset;
 import org.jfree.data.xy.OHLCDataset;
 
+import backend.controller.scan.IndicatorCalculator;
 import backend.controller.scan.StatisticCalculationController;
 import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
@@ -43,17 +43,22 @@ public abstract class StatisticChartController {
 	/**
 	 * DAO to access Statistic data.
 	 */
-	StatisticDAO statisticDAO;
+	private StatisticDAO statisticDAO;
 	
 	/**
 	 * DAO to access Instrument data.
 	 */
-	InstrumentDAO instrumentDAO;
+	protected InstrumentDAO instrumentDAO;
 	
 	/**
 	 * DAO to access Quotation data.
 	 */
-	QuotationDAO quotationDAO;
+	protected QuotationDAO quotationDAO;
+	
+	/**
+	 * Indicator calculator.
+	 */
+	protected IndicatorCalculator indicatorCalculator;
 	
 	/**
 	 * Access to localized application resources.
@@ -68,6 +73,8 @@ public abstract class StatisticChartController {
 		this.statisticDAO = DAOManager.getInstance().getStatisticDAO();
 		this.instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
 		this.quotationDAO = DAOManager.getInstance().getQuotationDAO();
+		
+		this.indicatorCalculator = new IndicatorCalculator();
 	}
 	
 	
@@ -211,8 +218,7 @@ public abstract class StatisticChartController {
 	protected boolean isDistributionDay(final Quotation currentQuotation, final Quotation previousQuotation) {
 		float performance;
 		
-		performance = currentQuotation.getClose().divide(previousQuotation.getClose(), 4, RoundingMode.HALF_UP).floatValue() - 1;
-		performance = performance * 100;	//Get performance in percent.
+		performance = this.indicatorCalculator.getPerformance(currentQuotation, previousQuotation);
 		
 		if(performance < DD_PERCENT_THRESHOLD && (currentQuotation.getVolume() > previousQuotation.getVolume()))
 			return true;

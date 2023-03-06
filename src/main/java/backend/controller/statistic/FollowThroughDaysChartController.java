@@ -1,7 +1,6 @@
 package backend.controller.statistic;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -254,8 +253,7 @@ public class FollowThroughDaysChartController extends StatisticChartController {
 	private boolean isFollowThroughDay(final Quotation currentQuotation, final Quotation previousQuotation) {
 		float performance;
 		
-		performance = currentQuotation.getClose().divide(previousQuotation.getClose(), 4, RoundingMode.HALF_UP).floatValue() - 1;
-		performance = performance * 100;	//Get performance in percent.
+		performance = this.indicatorCalculator.getPerformance(currentQuotation, previousQuotation);
 		
 		if(performance >= FTD_PERCENT_THRESHOLD && (currentQuotation.getVolume() > previousQuotation.getVolume()))
 			return true;

@@ -1,6 +1,5 @@
 package backend.controller.statistic;
 
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -181,9 +180,7 @@ public class DistributionDaysChartController extends StatisticChartController {
     		
 		for(int i = indexStart; i >= indexEnd; i--) {
 			futureQuotation = quotationsSortedByDate.get(i);
-			
-			performance = futureQuotation.getHigh().divide(currentQuotation.getClose(), 4, RoundingMode.HALF_UP).floatValue() - 1;
-			performance = performance * 100;	//Get performance in percent.
+			performance = this.indicatorCalculator.getPerformance(futureQuotation, currentQuotation);
 			
 			if(performance >= percent)
 				return true;

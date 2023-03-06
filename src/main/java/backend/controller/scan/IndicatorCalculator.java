@@ -527,6 +527,23 @@ public class IndicatorCalculator {
 	
 	
 	/**
+	 * Calculates the price performance between the current Quotation and the previous Quotation.
+	 * 
+	 * @param currentQuotation The current Quotation.
+	 * @param previousQuotation The previous Quotation.
+	 * @return The price performance.
+	 */
+	public float getPerformance(final Quotation currentQuotation, final Quotation previousQuotation) {
+		float performance;
+		
+		performance = currentQuotation.getClose().divide(previousQuotation.getClose(), 4, RoundingMode.HALF_UP).floatValue() - 1;
+		performance = performance * 100;	//Get performance in percent.
+		
+		return performance;
+	}
+	
+	
+	/**
 	 * Provides the performance of a given interval for relative strength calculation.
 	 * 
 	 * @param sortedQuotations The quotations containing date and price information for performance calculation.
