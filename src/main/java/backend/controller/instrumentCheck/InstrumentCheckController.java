@@ -1,5 +1,6 @@
 package backend.controller.instrumentCheck;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -69,7 +70,7 @@ public class InstrumentCheckController {
 	 * 
 	 * @param startDate The date at which the check starts.
 	 * @param quotations The quotations that build the trading history.
-	 * @return List of ProtocolEntry, for all days on which the SMA(50) was breached.#
+	 * @return List of ProtocolEntry, for all days on which the SMA(50) was breached.
 	 * @throws Exception The check failed because data are not fully available or corrupt.
 	 */
 	public List<ProtocolEntry> checkCloseBelowSma50(final Date startDate, final List<Quotation> quotations) throws Exception {
@@ -119,6 +120,36 @@ public class InstrumentCheckController {
 	
 	
 	/**
+	 * Checks for the largest down day of the year.
+	 * The check begins at the start date and goes up until the most recent Quotation.
+	 * 
+	 * @param startDate The date at which the check starts.
+	 * @param quotations The quotations that build the trading history.
+	 * @return List of ProtocolEntry, for the day of the largest down day of the year after the start date.
+	 * @throws Exception The check failed because data are not fully available or corrupt.
+	 */
+	public List<ProtocolEntry> checkLargestDownDay(final Date startDate, final List<Quotation> quotations) throws Exception {
+		Instrument instrument = new Instrument();
+		List<Quotation> quotationsSortedByDate;
+		int startIndex;
+		Quotation currentDayQuotation, previousDayQuotation;
+		List<ProtocolEntry> protocolEntries = new ArrayList<>();
+		ProtocolEntry protocolEntry;
+		
+		instrument.setQuotations(quotations);
+		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
+		startIndex = this.getIndexOfQuotationWithDate(quotationsSortedByDate, startDate);
+		
+		if(startIndex == -1)
+			throw new Exception("Could not find a quotation at or after the given start date.");
+		
+		//Get largest down day
+		
+		return protocolEntries;
+	}
+	
+	
+	/**
 	 * Gets the index of the Quotation with the given date.
 	 * If no Quotation exists on the given day, the index of the first Quotation coming afterwards is determined.
 	 * 
@@ -157,5 +188,28 @@ public class InstrumentCheckController {
 		
 		if(indexOfQuotationWithDate == -1)
 			throw new NoQuotationsExistException(startDate);
+	}
+	
+	
+	
+	/**
+	 * Determines the largest down day of the given trading history.
+	 * 
+	 * @param quotations A list of quotations.
+	 * @return The largest down day.
+	 */
+	private Quotation getLargestDownDay(final List<Quotation> quotations) {
+		Instrument instrument = new Instrument();
+		float largestDownPerformance = 0, performance;
+		List<Quotation> sortedQuotations;
+		Quotation largestDownQuotation = null;
+		
+		//Sort the quotations by date for calculation of price performance based on last x days.
+		instrument.setQuotations(quotations);
+		sortedQuotations = instrument.getQuotationsSortedByDate();
+		
+		
+		
+		return largestDownQuotation;
 	}
 }

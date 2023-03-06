@@ -475,7 +475,7 @@ public class IndicatorCalculator {
 	 * @param quotations A list of quotations that build the trading history used for price performance calculation.
 	 * @return The performance of the given interval in percent.
 	 */
-	public float getPricePerformanceForDays( final int days, final Quotation quotation, final List<Quotation> quotations) {
+	public float getPricePerformanceForDays(final int days, final Quotation quotation, final List<Quotation> quotations) {
 		Instrument instrument = new Instrument();
 		List<Quotation> sortedQuotations;
 		BigDecimal divisionResult = BigDecimal.valueOf(0);

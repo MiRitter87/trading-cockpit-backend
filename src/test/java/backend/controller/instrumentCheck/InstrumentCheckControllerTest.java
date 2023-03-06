@@ -3,6 +3,7 @@ package backend.controller.instrumentCheck;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.text.MessageFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -178,6 +179,39 @@ public class InstrumentCheckControllerTest {
 			fail("The check should have failed because there is no Quotation at or after the given date.");
 		} catch (NoQuotationsExistException expected) {
 			//All is well.
+		}
+	}
+	
+	
+	//@Test
+	/**
+	 * Tests the check if Instrument had largest down day of year.
+	 */
+	public void checkLargestDownDayTest() {
+		ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
+		ProtocolEntry actualProtocolEntry;
+		List<ProtocolEntry> protocolEntries;
+		Calendar calendar = Calendar.getInstance();
+		
+		//Define the expected protocol entry.
+		calendar.set(2022, 4, 9);		//Largest down day is 09.05.22 (-12,34%)
+		expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
+		expectedProtocolEntry.setCategory(ProtocolEntryCategory.VIOLATION);
+		expectedProtocolEntry.setText(MessageFormat.format(this.resources.getString("protocol.largestDownDay"), "-12,34"));
+		
+		//Call controller to perform check.
+		calendar.set(2022, 4, 4);	//Begin check on 04.05.22
+		try {
+			protocolEntries = this.instrumentCheckController.checkLargestDownDay(calendar.getTime(), dmlQuotations);
+			
+			//Verify the check result.
+			assertEquals(1, protocolEntries.size());
+			
+			//Validate the protocol entry.
+			actualProtocolEntry = protocolEntries.get(0);
+			assertEquals(expectedProtocolEntry, actualProtocolEntry);
+		} catch (Exception e) {
+			fail(e.getMessage());
 		}
 	}
 }
