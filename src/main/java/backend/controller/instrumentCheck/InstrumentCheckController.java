@@ -65,6 +65,7 @@ public class InstrumentCheckController {
 		
 		protocol.getProtocolEntries().addAll(this.checkCloseBelowSma50(startDate, quotations));
 		protocol.getProtocolEntries().addAll(this.checkLargestDownDay(startDate, quotations));
+		protocol.sortEntriesByDate();
 		
 		return protocol;
 	}

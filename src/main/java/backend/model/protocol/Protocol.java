@@ -1,6 +1,7 @@
 package backend.model.protocol;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -41,5 +42,13 @@ public class Protocol {
 	 */
 	public void setProtocolEntries(List<ProtocolEntry> protocolEntries) {
 		this.protocolEntries = protocolEntries;
+	}
+	
+	
+	/**
+	 * Sorts the protocol entries by their date.
+	 */
+	public void sortEntriesByDate() {
+		Collections.sort(this.protocolEntries, new ProtocolEntryDateComparator());
 	}
 }
