@@ -183,9 +183,9 @@ public class InstrumentCheckControllerTest {
 	}
 	
 	
-	//@Test
+	@Test
 	/**
-	 * Tests the check if Instrument had largest down day of year.
+	 * Tests the check if Instrument had largest down day of the year.
 	 */
 	public void checkLargestDownDayTest() {
 		ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
