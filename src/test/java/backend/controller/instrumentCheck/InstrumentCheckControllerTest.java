@@ -113,7 +113,7 @@ public class InstrumentCheckControllerTest {
 		Instrument instrument = new Instrument();
 		Quotation quotation;
 
-		instrument.setQuotations(dmlQuotations);
+		instrument.setQuotations(this.dmlQuotations);
 		sortedQuotations = instrument.getQuotationsSortedByDate();
 		
 		for(int i = 0; i < sortedQuotations.size(); i++) {
@@ -148,7 +148,7 @@ public class InstrumentCheckControllerTest {
 		//Call controller to perform check.
 		calendar.set(2022, 3, 7);	//Begin check on 07.04.22
 		try {
-			protocolEntries = this.instrumentCheckController.checkCloseBelowSma50(calendar.getTime(), dmlQuotations);
+			protocolEntries = this.instrumentCheckController.checkCloseBelowSma50(calendar.getTime(), this.dmlQuotations);
 			
 			//Verify the check result
 			assertEquals(2, protocolEntries.size());
@@ -175,7 +175,7 @@ public class InstrumentCheckControllerTest {
 		calendar.set(2022, 6, 23);	//23.07.22 (The last Quotation is for the 22.07.22)
 		
 		try {
-			this.instrumentCheckController.checkQuotationsExistAfterStartDate(calendar.getTime(), dmlQuotations);
+			this.instrumentCheckController.checkQuotationsExistAfterStartDate(calendar.getTime(), this.dmlQuotations);
 			fail("The check should have failed because there is no Quotation at or after the given date.");
 		} catch (NoQuotationsExistException expected) {
 			//All is well.
@@ -202,7 +202,7 @@ public class InstrumentCheckControllerTest {
 		//Call controller to perform check.
 		calendar.set(2022, 4, 4);	//Begin check on 04.05.22
 		try {
-			protocolEntries = this.instrumentCheckController.checkLargestDownDay(calendar.getTime(), dmlQuotations);
+			protocolEntries = this.instrumentCheckController.checkLargestDownDay(calendar.getTime(), this.dmlQuotations);
 			
 			//Verify the check result.
 			assertEquals(1, protocolEntries.size());
@@ -216,6 +216,7 @@ public class InstrumentCheckControllerTest {
 	}
 	
 	
+	//@Test
 	/**
 	 * Tests the check if there are more down-days than up-days.
 	 */
@@ -234,7 +235,7 @@ public class InstrumentCheckControllerTest {
 		//Call controller to perform check.
 		calendar.set(2022, 6, 20);	//Begin check on 20.07.22 (2 of 3 days are down days from there on)
 		try {
-			protocolEntries = this.instrumentCheckController.checkMoreDownThanUpDays(calendar.getTime(), dmlQuotations);
+			protocolEntries = this.instrumentCheckController.checkMoreDownThanUpDays(calendar.getTime(), this.dmlQuotations);
 			
 			//Verify the check result.
 			assertEquals(1, protocolEntries.size());
@@ -245,5 +246,24 @@ public class InstrumentCheckControllerTest {
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests getting the number of up days in a range of the trading history.
+	 */
+	public void testGetNumberOfUpDays() {
+		List<Quotation> sortedQuotations;
+		Instrument instrument = new Instrument();
+		int expectedNumberOfUpDays, actualNumberOfUpDays;
+
+		instrument.setQuotations(this.dmlQuotations);
+		sortedQuotations = instrument.getQuotationsSortedByDate();
+		
+		expectedNumberOfUpDays = 1;
+		actualNumberOfUpDays = this.instrumentCheckController.getNumberOfUpDays(sortedQuotations.get(2), sortedQuotations.get(0), sortedQuotations);
+		
+		assertEquals(expectedNumberOfUpDays, actualNumberOfUpDays);
 	}
 }

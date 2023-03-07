@@ -173,7 +173,9 @@ public class InstrumentCheckController {
 	 * @throws Exception The check failed because data are not fully available or corrupt.
 	 */
 	public List<ProtocolEntry> checkMoreDownThanUpDays(final Date startDate, final List<Quotation> quotations) throws Exception {
-		return null;
+		List<ProtocolEntry> protocolEntries = new ArrayList<>();
+		
+		return protocolEntries;
 	}
 	
 	
@@ -251,5 +253,42 @@ public class InstrumentCheckController {
 		}
 		
 		return largestDownQuotation;
+	}
+	
+	
+	/**
+	 * Counts the number of up-days from startQuotation to endQuotation.
+	 * 
+	 * @param startQuotation The first Quotation used for counting.
+	 * @param endQuotation The last Quotation used for counting.
+	 * @param sortedQuotations The quotations that build the trading history.
+	 * @return The number of up-days.
+	 */
+	public int getNumberOfUpDays(final Quotation startQuotation, final Quotation endQuotation, final List<Quotation> sortedQuotations) {
+		int indexOfStartQuotation, indexOfEndQuotation, numberOfUpDays = 0;
+		Quotation currentQuotation, previousQuotation;
+		float performance;
+		
+		indexOfStartQuotation = sortedQuotations.indexOf(startQuotation);
+		indexOfEndQuotation = sortedQuotations.indexOf(endQuotation);
+		
+		for(int i = indexOfStartQuotation; i >= indexOfEndQuotation; i--) {
+			if(sortedQuotations.size() <= (i+1))
+				continue;	//Can't calculate performance for oldest Quotation because no previous Quotation exists for this one.
+			
+			previousQuotation = sortedQuotations.get(i+1);
+			currentQuotation = sortedQuotations.get(i);
+			performance = this.indicatorCalculator.getPerformance(currentQuotation, previousQuotation);
+			
+			if(performance > 0)
+				numberOfUpDays++;
+		}
+		
+		return numberOfUpDays;
+	}
+	
+	
+	private int getNumberOfDownDays() {
+		return 0;
 	}
 }
