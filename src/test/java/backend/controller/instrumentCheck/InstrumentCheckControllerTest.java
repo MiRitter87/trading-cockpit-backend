@@ -214,4 +214,36 @@ public class InstrumentCheckControllerTest {
 			fail(e.getMessage());
 		}
 	}
+	
+	
+	/**
+	 * Tests the check if there are more down-days than up-days.
+	 */
+	public void testCheckMoreDownThanUpDays() {
+		ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
+		ProtocolEntry actualProtocolEntry;
+		List<ProtocolEntry> protocolEntries;
+		Calendar calendar = Calendar.getInstance();
+		
+		//Define the expected protocol entry.
+		calendar.set(2022, 6, 22);		//The first day on which the number of down-days exceeds the number of up-days.
+		expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
+		expectedProtocolEntry.setCategory(ProtocolEntryCategory.VIOLATION);
+		expectedProtocolEntry.setText(MessageFormat.format(this.resources.getString("protocol.moreDownDays"), "2", "3"));
+		
+		//Call controller to perform check.
+		calendar.set(2022, 6, 20);	//Begin check on 20.07.22 (2 of 3 days are down days from there on)
+		try {
+			protocolEntries = this.instrumentCheckController.checkMoreDownThanUpDays(calendar.getTime(), dmlQuotations);
+			
+			//Verify the check result.
+			assertEquals(1, protocolEntries.size());
+			
+			//Validate the protocol entry.
+			actualProtocolEntry = protocolEntries.get(0);
+			assertEquals(expectedProtocolEntry, actualProtocolEntry);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
 }

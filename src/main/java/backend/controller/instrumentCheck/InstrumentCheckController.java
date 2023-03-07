@@ -164,6 +164,20 @@ public class InstrumentCheckController {
 	
 	
 	/**
+	 * Checks if there are more down days than up days.
+	 * The check begins at the start date and goes up until the most recent Quotation.
+	 * 
+	 * @param startDate The date at which the check starts.
+	 * @param quotations The quotations that build the trading history.
+	 * @return List of ProtocolEntry, for each day on which the number of down-days exceeds the number of up-days after the start date.
+	 * @throws Exception The check failed because data are not fully available or corrupt.
+	 */
+	public List<ProtocolEntry> checkMoreDownThanUpDays(final Date startDate, final List<Quotation> quotations) throws Exception {
+		return null;
+	}
+	
+	
+	/**
 	 * Gets the index of the Quotation with the given date.
 	 * If no Quotation exists on the given day, the index of the first Quotation coming afterwards is determined.
 	 * 
