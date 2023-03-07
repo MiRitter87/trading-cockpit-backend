@@ -1,11 +1,13 @@
 package backend.controller.instrumentCheck;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.text.MessageFormat;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import org.junit.jupiter.api.AfterAll;
@@ -216,7 +218,7 @@ public class InstrumentCheckControllerTest {
 	}
 	
 	
-	//@Test
+	@Test
 	/**
 	 * Tests the check if there are more down-days than up-days.
 	 */
@@ -251,38 +253,30 @@ public class InstrumentCheckControllerTest {
 	
 	@Test
 	/**
-	 * Tests getting the number of up-days in a range of the trading history.
+	 * Tests getting the number of up- and down-days in a range of the trading history.
 	 */
-	public void testGetNumberOfUpDays() {
+	public void testGetNumberOfUpAndDownDays() { 
 		List<Quotation> sortedQuotations;
 		Instrument instrument = new Instrument();
-		int expectedNumberOfUpDays, actualNumberOfUpDays;
+		int expectedNumberOfUpDays, actualNumberOfUpDays, expectedNumberOfDownDays, actualNumberOfDownDays, expectedDaysTotal, actualDaysTotal;
+		Map<String, Integer> resultMap;
 
 		instrument.setQuotations(this.dmlQuotations);
 		sortedQuotations = instrument.getQuotationsSortedByDate();
 		
 		expectedNumberOfUpDays = 1;
-		actualNumberOfUpDays = this.instrumentCheckController.getNumberOfUpDays(sortedQuotations.get(2), sortedQuotations.get(0), sortedQuotations);
+		expectedNumberOfDownDays = 2;
+		expectedDaysTotal = 3;
+		
+		resultMap = this.instrumentCheckController.getNumberOfUpAndDownDays(sortedQuotations.get(2), sortedQuotations.get(0), sortedQuotations);
+		assertNotNull(resultMap);		
+		
+		actualNumberOfUpDays = resultMap.get(InstrumentCheckController.MAP_ENTRY_UP_DAYS);
+		actualNumberOfDownDays = resultMap.get(InstrumentCheckController.MAP_ENTRY_DOWN_DAYS);
+		actualDaysTotal = resultMap.get(InstrumentCheckController.MAP_ENTRY_DAYS_TOTAL);
 		
 		assertEquals(expectedNumberOfUpDays, actualNumberOfUpDays);
-	}
-	
-	
-	@Test
-	/**
-	 * Tests getting the number of down-days in a range of the trading history.
-	 */
-	public void testGetNumberOfDownDays() {
-		List<Quotation> sortedQuotations;
-		Instrument instrument = new Instrument();
-		int expectedNumberOfDownDays, actualNumberOfDownDays;
-
-		instrument.setQuotations(this.dmlQuotations);
-		sortedQuotations = instrument.getQuotationsSortedByDate();
-		
-		expectedNumberOfDownDays = 2;
-		actualNumberOfDownDays = this.instrumentCheckController.getNumberOfDownDays(sortedQuotations.get(2), sortedQuotations.get(0), sortedQuotations);
-		
 		assertEquals(expectedNumberOfDownDays, actualNumberOfDownDays);
+		assertEquals(expectedDaysTotal, actualDaysTotal);
 	}
 }

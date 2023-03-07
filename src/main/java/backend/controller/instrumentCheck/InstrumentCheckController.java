@@ -3,7 +3,9 @@ package backend.controller.instrumentCheck;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import backend.controller.scan.IndicatorCalculator;
@@ -22,6 +24,21 @@ import backend.tools.DateTools;
  * @author Michael
  */
 public class InstrumentCheckController {
+	/**
+	 * Key of the Map entry containing the number of up-days.
+	 */
+	public final static String MAP_ENTRY_UP_DAYS = "NUMBER_UP_DAYS";
+	
+	/**
+	 * Key of the Map entry containing the number of down-days.
+	 */
+	public final static String MAP_ENTRY_DOWN_DAYS = "NUMBER_DOWN_DAYS";
+	
+	/**
+	 * Key of the Map entry containing the total number of days.
+	 */
+	public final static String MAP_ENTRY_DAYS_TOTAL = "DAYS_TOTAL";
+	
 	/**
 	 * Access to localized application resources.
 	 */
@@ -65,6 +82,7 @@ public class InstrumentCheckController {
 		
 		protocol.getProtocolEntries().addAll(this.checkCloseBelowSma50(startDate, quotations));
 		protocol.getProtocolEntries().addAll(this.checkLargestDownDay(startDate, quotations));
+		protocol.getProtocolEntries().addAll(this.checkMoreDownThanUpDays(startDate, quotations));
 		protocol.sortEntriesByDate();
 		
 		return protocol;
@@ -173,7 +191,43 @@ public class InstrumentCheckController {
 	 * @throws Exception The check failed because data are not fully available or corrupt.
 	 */
 	public List<ProtocolEntry> checkMoreDownThanUpDays(final Date startDate, final List<Quotation> quotations) throws Exception {
+		Instrument instrument = new Instrument();
+		List<Quotation> quotationsSortedByDate;
+		Quotation startQuotation, currentQuotation;
+		int startIndex, numberOfUpDays, numberOfDownDays, numberOfDaysTotal;
 		List<ProtocolEntry> protocolEntries = new ArrayList<>();
+		ProtocolEntry protocolEntry;
+		Map<String, Integer> upDownDaySums;
+		
+		instrument.setQuotations(quotations);
+		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
+		startIndex = this.getIndexOfQuotationWithDate(quotationsSortedByDate, startDate);
+		
+		if(startIndex == -1)
+			throw new Exception("Could not find a quotation at or after the given start date.");
+		
+		startQuotation = quotationsSortedByDate.get(startIndex);
+		
+		for(int i = startIndex; i >= 0; i--) {
+			currentQuotation = quotationsSortedByDate.get(i);
+			
+			//Skip the first day, because more down than up days can only be calculated for at least two quotations.
+			if(i == startIndex)
+				continue;
+			
+			upDownDaySums = this.getNumberOfUpAndDownDays(startQuotation, currentQuotation, quotationsSortedByDate);
+			numberOfUpDays = upDownDaySums.get(MAP_ENTRY_UP_DAYS);
+			numberOfDownDays = upDownDaySums.get(MAP_ENTRY_DOWN_DAYS);
+			numberOfDaysTotal = upDownDaySums.get(MAP_ENTRY_DAYS_TOTAL);
+			
+			if(numberOfDownDays > numberOfUpDays) {
+				protocolEntry = new ProtocolEntry();
+				protocolEntry.setCategory(ProtocolEntryCategory.VIOLATION);
+				protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(currentQuotation.getDate()));
+				protocolEntry.setText(MessageFormat.format(this.resources.getString("protocol.moreDownDays"), numberOfDownDays, numberOfDaysTotal));
+				protocolEntries.add(protocolEntry);
+			}
+		}
 		
 		return protocolEntries;
 	}
@@ -254,23 +308,24 @@ public class InstrumentCheckController {
 		
 		return largestDownQuotation;
 	}
-	
-	
-	//TODO Refactor up and down day calculation using one method returning a Map with both values removing redundancies.
-	
+		
 	
 	/**
-	 * Counts the number of up-days from startQuotation to endQuotation.
+	 * Counts the number of up- and down-days from startQuotation to endQuotation.
 	 * 
 	 * @param startQuotation The first Quotation used for counting.
 	 * @param endQuotation The last Quotation used for counting.
 	 * @param sortedQuotations The quotations that build the trading history.
-	 * @return The number of up-days.
+	 * @return A Map containing the number of up- and down-days.
 	 */
-	public int getNumberOfUpDays(final Quotation startQuotation, final Quotation endQuotation, final List<Quotation> sortedQuotations) {
-		int indexOfStartQuotation, indexOfEndQuotation, numberOfUpDays = 0;
+	public Map<String, Integer> getNumberOfUpAndDownDays(final Quotation startQuotation, final Quotation endQuotation, 
+			final List<Quotation> sortedQuotations) {
+		
+		int indexOfStartQuotation, indexOfEndQuotation;
+		int numberOfUpDays = 0, numberOfDownDays = 0, numberOfDaysTotal = 0;
 		Quotation currentQuotation, previousQuotation;
 		float performance;
+		Map<String, Integer> resultMap = new HashMap<>(2);
 		
 		indexOfStartQuotation = sortedQuotations.indexOf(startQuotation);
 		indexOfEndQuotation = sortedQuotations.indexOf(endQuotation);
@@ -285,40 +340,16 @@ public class InstrumentCheckController {
 			
 			if(performance > 0)
 				numberOfUpDays++;
-		}
-		
-		return numberOfUpDays;
-	}
-	
-	
-	/**
-	 * Counts the number of down-days from startQuotation to endQuotation.
-	 * 
-	 * @param startQuotation The first Quotation used for counting.
-	 * @param endQuotation The last Quotation used for counting.
-	 * @param sortedQuotations The quotations that build the trading history.
-	 * @return The number of down-days.
-	 */
-	public int getNumberOfDownDays(final Quotation startQuotation, final Quotation endQuotation, final List<Quotation> sortedQuotations) {
-		int indexOfStartQuotation, indexOfEndQuotation, numberOfDownDays = 0;
-		Quotation currentQuotation, previousQuotation;
-		float performance;
-		
-		indexOfStartQuotation = sortedQuotations.indexOf(startQuotation);
-		indexOfEndQuotation = sortedQuotations.indexOf(endQuotation);
-		
-		for(int i = indexOfStartQuotation; i >= indexOfEndQuotation; i--) {
-			if(sortedQuotations.size() <= (i+1))
-				continue;	//Can't calculate performance for oldest Quotation because no previous Quotation exists for this one.
-			
-			previousQuotation = sortedQuotations.get(i+1);
-			currentQuotation = sortedQuotations.get(i);
-			performance = this.indicatorCalculator.getPerformance(currentQuotation, previousQuotation);
-			
-			if(performance < 0)
+			else if(performance < 0)
 				numberOfDownDays++;
+			
+			numberOfDaysTotal++;
 		}
 		
-		return numberOfDownDays;
+		resultMap.put(MAP_ENTRY_UP_DAYS, numberOfUpDays);
+		resultMap.put(MAP_ENTRY_DOWN_DAYS, numberOfDownDays);
+		resultMap.put(MAP_ENTRY_DAYS_TOTAL, numberOfDaysTotal);
+		
+		return resultMap;
 	}
 }
