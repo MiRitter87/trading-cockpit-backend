@@ -251,7 +251,7 @@ public class InstrumentCheckControllerTest {
 	
 	@Test
 	/**
-	 * Tests getting the number of up days in a range of the trading history.
+	 * Tests getting the number of up-days in a range of the trading history.
 	 */
 	public void testGetNumberOfUpDays() {
 		List<Quotation> sortedQuotations;
@@ -265,5 +265,24 @@ public class InstrumentCheckControllerTest {
 		actualNumberOfUpDays = this.instrumentCheckController.getNumberOfUpDays(sortedQuotations.get(2), sortedQuotations.get(0), sortedQuotations);
 		
 		assertEquals(expectedNumberOfUpDays, actualNumberOfUpDays);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests getting the number of down-days in a range of the trading history.
+	 */
+	public void testGetNumberOfDownDays() {
+		List<Quotation> sortedQuotations;
+		Instrument instrument = new Instrument();
+		int expectedNumberOfDownDays, actualNumberOfDownDays;
+
+		instrument.setQuotations(this.dmlQuotations);
+		sortedQuotations = instrument.getQuotationsSortedByDate();
+		
+		expectedNumberOfDownDays = 2;
+		actualNumberOfDownDays = this.instrumentCheckController.getNumberOfDownDays(sortedQuotations.get(2), sortedQuotations.get(0), sortedQuotations);
+		
+		assertEquals(expectedNumberOfDownDays, actualNumberOfDownDays);
 	}
 }

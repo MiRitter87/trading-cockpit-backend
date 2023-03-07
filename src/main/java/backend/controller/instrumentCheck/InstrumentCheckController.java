@@ -256,6 +256,9 @@ public class InstrumentCheckController {
 	}
 	
 	
+	//TODO Refactor up and down day calculation using one method returning a Map with both values removing redundancies.
+	
+	
 	/**
 	 * Counts the number of up-days from startQuotation to endQuotation.
 	 * 
@@ -288,7 +291,34 @@ public class InstrumentCheckController {
 	}
 	
 	
-	private int getNumberOfDownDays() {
-		return 0;
+	/**
+	 * Counts the number of down-days from startQuotation to endQuotation.
+	 * 
+	 * @param startQuotation The first Quotation used for counting.
+	 * @param endQuotation The last Quotation used for counting.
+	 * @param sortedQuotations The quotations that build the trading history.
+	 * @return The number of down-days.
+	 */
+	public int getNumberOfDownDays(final Quotation startQuotation, final Quotation endQuotation, final List<Quotation> sortedQuotations) {
+		int indexOfStartQuotation, indexOfEndQuotation, numberOfDownDays = 0;
+		Quotation currentQuotation, previousQuotation;
+		float performance;
+		
+		indexOfStartQuotation = sortedQuotations.indexOf(startQuotation);
+		indexOfEndQuotation = sortedQuotations.indexOf(endQuotation);
+		
+		for(int i = indexOfStartQuotation; i >= indexOfEndQuotation; i--) {
+			if(sortedQuotations.size() <= (i+1))
+				continue;	//Can't calculate performance for oldest Quotation because no previous Quotation exists for this one.
+			
+			previousQuotation = sortedQuotations.get(i+1);
+			currentQuotation = sortedQuotations.get(i);
+			performance = this.indicatorCalculator.getPerformance(currentQuotation, previousQuotation);
+			
+			if(performance < 0)
+				numberOfDownDays++;
+		}
+		
+		return numberOfDownDays;
 	}
 }
