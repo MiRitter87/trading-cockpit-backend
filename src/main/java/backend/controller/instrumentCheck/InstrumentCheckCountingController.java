@@ -19,7 +19,6 @@ import backend.tools.DateTools;
 
 /**
  * Controller that performs Instrument health checks that are based on counting specific characteristics.
- * Occurrences of certain characteristics are counted in the given trading range.
  * 
  * @author Michael
  */
@@ -89,7 +88,7 @@ public class InstrumentCheckCountingController {
 		
 		instrument.setQuotations(quotations);
 		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
-		startIndex = this.getIndexOfQuotationWithDate(quotationsSortedByDate, startDate);
+		startIndex = InstrumentCheckController.getIndexOfQuotationWithDate(quotationsSortedByDate, startDate);
 		
 		if(startIndex == -1)
 			throw new Exception("Could not find a quotation at or after the given start date.");
@@ -141,7 +140,7 @@ public class InstrumentCheckCountingController {
 		
 		instrument.setQuotations(quotations);
 		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
-		startIndex = this.getIndexOfQuotationWithDate(quotationsSortedByDate, startDate);
+		startIndex = InstrumentCheckController.getIndexOfQuotationWithDate(quotationsSortedByDate, startDate);
 		
 		if(startIndex == -1)
 			throw new Exception("Could not find a quotation at or after the given start date.");
@@ -256,33 +255,5 @@ public class InstrumentCheckCountingController {
 		resultMap.put(MAP_ENTRY_DAYS_TOTAL, numberOfDaysTotal);
 		
 		return resultMap;
-	}
-	
-	
-	//TODO Refactor and remove obsolete copy
-	/**
-	 * Gets the index of the Quotation with the given date.
-	 * If no Quotation exists on the given day, the index of the first Quotation coming afterwards is determined.
-	 * 
-	 * @param quotations A List of quotations.
-	 * @param date The date.
-	 * @return The index of the Quotation. -1, if no Quotation was found.
-	 */
-	private int getIndexOfQuotationWithDate(final List<Quotation> quotations, final Date date) {
-		Quotation quotation;
-		Date quotationDate, inputDate;
-		int indexOfQuotation = -1;
-		
-		inputDate = DateTools.getDateWithoutIntradayAttributes(date);
-		
-		for(int i = 0; i < quotations.size(); i++) {
-			quotation = quotations.get(i);
-			quotationDate = DateTools.getDateWithoutIntradayAttributes(quotation.getDate());
-			
-			if(inputDate.getTime() <= quotationDate.getTime())
-				indexOfQuotation = i;
-		}
-		
-		return indexOfQuotation;
 	}
 }

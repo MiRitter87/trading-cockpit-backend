@@ -17,7 +17,7 @@ import backend.model.protocol.ProtocolEntryCategory;
 import backend.tools.DateTools;
 
 /**
- * Performs health checks for an Instrument.
+ * Controller that performs Instrument health checks.
  * 
  * @author Michael
  */
@@ -100,7 +100,7 @@ public class InstrumentCheckController {
 		
 		instrument.setQuotations(quotations);
 		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
-		startIndex = this.getIndexOfQuotationWithDate(quotationsSortedByDate, startDate);
+		startIndex = getIndexOfQuotationWithDate(quotationsSortedByDate, startDate);
 		
 		if(startIndex == -1)
 			throw new Exception("Could not find a quotation at or after the given start date.");
@@ -171,8 +171,6 @@ public class InstrumentCheckController {
 	}
 	
 	
-	
-	//TODO Refactor and remove obsolete copy
 	/**
 	 * Gets the index of the Quotation with the given date.
 	 * If no Quotation exists on the given day, the index of the first Quotation coming afterwards is determined.
@@ -181,7 +179,7 @@ public class InstrumentCheckController {
 	 * @param date The date.
 	 * @return The index of the Quotation. -1, if no Quotation was found.
 	 */
-	private int getIndexOfQuotationWithDate(final List<Quotation> quotations, final Date date) {
+	public static int getIndexOfQuotationWithDate(final List<Quotation> quotations, final Date date) {
 		Quotation quotation;
 		Date quotationDate, inputDate;
 		int indexOfQuotation = -1;
@@ -208,7 +206,7 @@ public class InstrumentCheckController {
 	 * @throws NoQuotationsExistException Exception indicating no Quotations exist at and after given start date.
 	 */
 	public void checkQuotationsExistAfterStartDate(final Date startDate, final List<Quotation> quotations)  throws NoQuotationsExistException {
-		int indexOfQuotationWithDate = this.getIndexOfQuotationWithDate(quotations, startDate);
+		int indexOfQuotationWithDate = getIndexOfQuotationWithDate(quotations, startDate);
 		
 		if(indexOfQuotationWithDate == -1)
 			throw new NoQuotationsExistException(startDate);
