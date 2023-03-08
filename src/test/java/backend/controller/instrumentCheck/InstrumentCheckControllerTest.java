@@ -281,11 +281,36 @@ public class InstrumentCheckControllerTest {
 	}
 	
 	
+	@Test
 	/**
 	 * Tests the check if there are more bad closes than good closes.
 	 */
 	public void testCheckMoreBadThanGoodCloses() {
-		//TODO Implement later
+		ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
+		ProtocolEntry actualProtocolEntry;
+		List<ProtocolEntry> protocolEntries;
+		Calendar calendar = Calendar.getInstance();
+		
+		//Define the expected protocol entry.
+		calendar.set(2022, 6, 22);		//The first day on which the number of bad closes exceeds the number of good closes.
+		expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
+		expectedProtocolEntry.setCategory(ProtocolEntryCategory.VIOLATION);
+		expectedProtocolEntry.setText(MessageFormat.format(this.resources.getString("protocol.moreBadCloses"), "3", "5"));
+		
+		//Call controller to perform check.
+		calendar.set(2022, 6, 18);	//Begin check on 18.07.22 (3 of 5 days have bad closes from there on)
+		try {
+			protocolEntries = this.instrumentCheckController.checkMoreBadThanGoodCloses(calendar.getTime(), this.dmlQuotations);
+			
+			//Verify the check result.
+			assertEquals(1, protocolEntries.size());
+			
+			//Validate the protocol entry.
+			actualProtocolEntry = protocolEntries.get(0);
+			assertEquals(expectedProtocolEntry, actualProtocolEntry);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
 	}
 	
 	

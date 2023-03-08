@@ -95,6 +95,7 @@ public class InstrumentCheckController {
 		protocol.getProtocolEntries().addAll(this.checkCloseBelowSma50(startDate, quotations));
 		protocol.getProtocolEntries().addAll(this.checkLargestDownDay(startDate, quotations));
 		protocol.getProtocolEntries().addAll(this.checkMoreDownThanUpDays(startDate, quotations));
+		protocol.getProtocolEntries().addAll(this.checkMoreBadThanGoodCloses(startDate, quotations));
 		protocol.sortEntriesByDate();
 		
 		return protocol;
@@ -221,11 +222,11 @@ public class InstrumentCheckController {
 		startQuotation = quotationsSortedByDate.get(startIndex);
 		
 		for(int i = startIndex; i >= 0; i--) {
-			currentQuotation = quotationsSortedByDate.get(i);
-			
 			//Skip the first day, because more down than up days can only be calculated for at least two quotations.
 			if(i == startIndex)
 				continue;
+			
+			currentQuotation = quotationsSortedByDate.get(i);			
 			
 			upDownDaySums = this.getNumberOfUpAndDownDays(startQuotation, currentQuotation, quotationsSortedByDate);
 			numberOfUpDays = upDownDaySums.get(MAP_ENTRY_UP_DAYS);
@@ -256,7 +257,45 @@ public class InstrumentCheckController {
 	 * @throws Exception The check failed because data are not fully available or corrupt.
 	 */
 	public List<ProtocolEntry> checkMoreBadThanGoodCloses(final Date startDate, final List<Quotation> quotations) throws Exception {
-		return null;
+		Instrument instrument = new Instrument();
+		List<Quotation> quotationsSortedByDate;
+		Quotation startQuotation, currentQuotation;
+		int startIndex, numberOfGoodCloses, numberOfBadCloses, numberOfDaysTotal;
+		List<ProtocolEntry> protocolEntries = new ArrayList<>();
+		ProtocolEntry protocolEntry;
+		Map<String, Integer> goodBadCloseSums;
+		
+		instrument.setQuotations(quotations);
+		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
+		startIndex = this.getIndexOfQuotationWithDate(quotationsSortedByDate, startDate);
+		
+		if(startIndex == -1)
+			throw new Exception("Could not find a quotation at or after the given start date.");
+		
+		startQuotation = quotationsSortedByDate.get(startIndex);
+		
+		for(int i = startIndex; i >= 0; i--) {
+			//Skip the first day, because more bad than good closes can only be calculated for at least two quotations.
+			if(i == startIndex)
+				continue;
+			
+			currentQuotation = quotationsSortedByDate.get(i);
+			
+			goodBadCloseSums = this.getNumberOfGoodAndBadCloses(startQuotation, currentQuotation, quotationsSortedByDate);
+			numberOfGoodCloses = goodBadCloseSums.get(MAP_ENTRY_GOOD_CLOSES);
+			numberOfBadCloses = goodBadCloseSums.get(MAP_ENTRY_BAD_CLOSES);
+			numberOfDaysTotal = goodBadCloseSums.get(MAP_ENTRY_DAYS_TOTAL);
+			
+			if(numberOfBadCloses > numberOfGoodCloses) {
+				protocolEntry = new ProtocolEntry();
+				protocolEntry.setCategory(ProtocolEntryCategory.VIOLATION);
+				protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(currentQuotation.getDate()));
+				protocolEntry.setText(MessageFormat.format(this.resources.getString("protocol.moreBadCloses"), numberOfBadCloses, numberOfDaysTotal));
+				protocolEntries.add(protocolEntry);
+			}
+		}
+		
+		return protocolEntries;
 	}
 	
 	
