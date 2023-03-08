@@ -1,0 +1,253 @@
+package backend.controller.instrumentCheck;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.text.MessageFormat;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
+
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import backend.controller.scan.IndicatorCalculator;
+import backend.dao.quotation.QuotationProviderYahooDAO;
+import backend.dao.quotation.QuotationProviderYahooDAOStub;
+import backend.model.StockExchange;
+import backend.model.instrument.Instrument;
+import backend.model.instrument.InstrumentType;
+import backend.model.instrument.Quotation;
+import backend.model.protocol.ProtocolEntry;
+import backend.model.protocol.ProtocolEntryCategory;
+import backend.tools.DateTools;
+
+/**
+ * Tets the InstrumentCheckCountingController.
+ * 
+ * @author Michael
+ */
+public class InstrumentCheckCountingControllerTest {
+	/**
+	 * Access to localized application resources.
+	 */
+	private ResourceBundle resources = ResourceBundle.getBundle("backend");	
+	
+	/**
+	 * DAO to access quotation data from Yahoo.
+	 */
+	private static QuotationProviderYahooDAO quotationProviderYahooDAO;
+	
+	/**
+	 * A list of quotations of the DML stock.
+	 */
+	private List<Quotation> dmlQuotations;
+	
+	/**
+	 * The controller for counting related Instrument checks.
+	 */
+	private InstrumentCheckCountingController instrumentCheckCountingController;
+	
+	
+	@BeforeAll
+	/**
+	 * Tasks to be performed once at startup of test class.
+	 */
+	public static void setUpClass() {
+		quotationProviderYahooDAO = new QuotationProviderYahooDAOStub();
+	}
+	
+	
+	@AfterAll
+	/**
+	 * Tasks to be performed once at end of test class.
+	 */
+	public static void tearDownClass() {
+		quotationProviderYahooDAO = null;
+	}
+	
+	
+	@BeforeEach
+	/**
+	 * Tasks to be performed before each test is run.
+	 */
+	private void setUp() {
+		this.instrumentCheckCountingController = new InstrumentCheckCountingController();
+		
+		this.initializeDMLQuotations();
+		this.initializeDMLIndicators();
+	}
+	
+	
+	@AfterEach
+	/**
+	 * Tasks to be performed after each test has been run.
+	 */
+	private void tearDown() {
+		this.instrumentCheckCountingController = null;
+		this.dmlQuotations = null;
+	}
+	
+	
+	/**
+	 * Initializes quotations of the DML stock.
+	 */
+	private void initializeDMLQuotations() {
+		try {
+			dmlQuotations = quotationProviderYahooDAO.getQuotationHistory("DML", StockExchange.TSX, InstrumentType.STOCK, 1);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	/**
+	 * Initializes the indicators of the DML stock.
+	 */
+	private void initializeDMLIndicators() {
+		IndicatorCalculator indicatorCalculator = new IndicatorCalculator();
+		List<Quotation> sortedQuotations;
+		Instrument instrument = new Instrument();
+		Quotation quotation;
+
+		instrument.setQuotations(this.dmlQuotations);
+		sortedQuotations = instrument.getQuotationsSortedByDate();
+		
+		for(int i = 0; i < sortedQuotations.size(); i++) {
+			quotation = sortedQuotations.get(i);
+			quotation = indicatorCalculator.calculateIndicators(instrument, quotation, true);
+		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests getting the number of good and bad closes in a range of the trading history.
+	 */
+	public void testGetNumberOfGoodAndBadCloses() {
+		List<Quotation> sortedQuotations;
+		Instrument instrument = new Instrument();
+		int expectedNumberOfGoodCloses, actualNumberOfGoodCloses, expectedNumberOfBadCloses, actualNumberOfBadCloses;
+		int expectedDaysTotal, actualDaysTotal;
+		Map<String, Integer> resultMap;
+
+		instrument.setQuotations(this.dmlQuotations);
+		sortedQuotations = instrument.getQuotationsSortedByDate();
+		
+		expectedNumberOfGoodCloses = 3;
+		expectedNumberOfBadCloses = 3;
+		expectedDaysTotal = 6;
+		
+		resultMap = this.instrumentCheckCountingController.getNumberOfGoodAndBadCloses(sortedQuotations.get(5), sortedQuotations.get(0), sortedQuotations);
+		assertNotNull(resultMap);		
+		
+		actualNumberOfGoodCloses = resultMap.get(InstrumentCheckCountingController.MAP_ENTRY_GOOD_CLOSES);
+		actualNumberOfBadCloses = resultMap.get(InstrumentCheckCountingController.MAP_ENTRY_BAD_CLOSES);
+		actualDaysTotal = resultMap.get(InstrumentCheckCountingController.MAP_ENTRY_DAYS_TOTAL);
+		
+		assertEquals(expectedNumberOfGoodCloses, actualNumberOfGoodCloses);
+		assertEquals(expectedNumberOfBadCloses, actualNumberOfBadCloses);
+		assertEquals(expectedDaysTotal, actualDaysTotal);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the check if there are more bad closes than good closes.
+	 */
+	public void testCheckMoreBadThanGoodCloses() {
+		ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
+		ProtocolEntry actualProtocolEntry;
+		List<ProtocolEntry> protocolEntries;
+		Calendar calendar = Calendar.getInstance();
+		
+		//Define the expected protocol entry.
+		calendar.set(2022, 6, 22);		//The first day on which the number of bad closes exceeds the number of good closes.
+		expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
+		expectedProtocolEntry.setCategory(ProtocolEntryCategory.VIOLATION);
+		expectedProtocolEntry.setText(MessageFormat.format(this.resources.getString("protocol.moreBadCloses"), "3", "5"));
+		
+		//Call controller to perform check.
+		calendar.set(2022, 6, 18);	//Begin check on 18.07.22 (3 of 5 days have bad closes from there on)
+		try {
+			protocolEntries = this.instrumentCheckCountingController.checkMoreBadThanGoodCloses(calendar.getTime(), this.dmlQuotations);
+			
+			//Verify the check result.
+			assertEquals(1, protocolEntries.size());
+			
+			//Validate the protocol entry.
+			actualProtocolEntry = protocolEntries.get(0);
+			assertEquals(expectedProtocolEntry, actualProtocolEntry);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests getting the number of up- and down-days in a range of the trading history.
+	 */
+	public void testGetNumberOfUpAndDownDays() { 
+		List<Quotation> sortedQuotations;
+		Instrument instrument = new Instrument();
+		int expectedNumberOfUpDays, actualNumberOfUpDays, expectedNumberOfDownDays, actualNumberOfDownDays, expectedDaysTotal, actualDaysTotal;
+		Map<String, Integer> resultMap;
+
+		instrument.setQuotations(this.dmlQuotations);
+		sortedQuotations = instrument.getQuotationsSortedByDate();
+		
+		expectedNumberOfUpDays = 1;
+		expectedNumberOfDownDays = 2;
+		expectedDaysTotal = 3;
+		
+		resultMap = this.instrumentCheckCountingController.getNumberOfUpAndDownDays(sortedQuotations.get(2), sortedQuotations.get(0), sortedQuotations);
+		assertNotNull(resultMap);		
+		
+		actualNumberOfUpDays = resultMap.get(InstrumentCheckCountingController.MAP_ENTRY_UP_DAYS);
+		actualNumberOfDownDays = resultMap.get(InstrumentCheckCountingController.MAP_ENTRY_DOWN_DAYS);
+		actualDaysTotal = resultMap.get(InstrumentCheckCountingController.MAP_ENTRY_DAYS_TOTAL);
+		
+		assertEquals(expectedNumberOfUpDays, actualNumberOfUpDays);
+		assertEquals(expectedNumberOfDownDays, actualNumberOfDownDays);
+		assertEquals(expectedDaysTotal, actualDaysTotal);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the check if there are more down-days than up-days.
+	 */
+	public void testCheckMoreDownThanUpDays() {
+		ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
+		ProtocolEntry actualProtocolEntry;
+		List<ProtocolEntry> protocolEntries;
+		Calendar calendar = Calendar.getInstance();
+		
+		//Define the expected protocol entry.
+		calendar.set(2022, 6, 22);		//The first day on which the number of down-days exceeds the number of up-days.
+		expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
+		expectedProtocolEntry.setCategory(ProtocolEntryCategory.VIOLATION);
+		expectedProtocolEntry.setText(MessageFormat.format(this.resources.getString("protocol.moreDownDays"), "2", "3"));
+		
+		//Call controller to perform check.
+		calendar.set(2022, 6, 20);	//Begin check on 20.07.22 (2 of 3 days are down days from there on)
+		try {
+			protocolEntries = this.instrumentCheckCountingController.checkMoreDownThanUpDays(calendar.getTime(), this.dmlQuotations);
+			
+			//Verify the check result.
+			assertEquals(1, protocolEntries.size());
+			
+			//Validate the protocol entry.
+			actualProtocolEntry = protocolEntries.get(0);
+			assertEquals(expectedProtocolEntry, actualProtocolEntry);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+}
