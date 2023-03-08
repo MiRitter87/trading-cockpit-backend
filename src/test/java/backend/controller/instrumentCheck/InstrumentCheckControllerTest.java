@@ -279,4 +279,42 @@ public class InstrumentCheckControllerTest {
 		assertEquals(expectedNumberOfDownDays, actualNumberOfDownDays);
 		assertEquals(expectedDaysTotal, actualDaysTotal);
 	}
+	
+	
+	/**
+	 * Tests the check if there are more bad closes than good closes.
+	 */
+	public void testCheckMoreBadThanGoodCloses() {
+		//TODO Implement later
+	}
+	
+	
+	/**
+	 * Tests getting the number of good and bad closes in a range of the trading history.
+	 */
+	public void testGetNumberOfGoodAndBadCloses() {
+		List<Quotation> sortedQuotations;
+		Instrument instrument = new Instrument();
+		int expectedNumberOfGoodCloses, actualNumberOfGoodCloses, expectedNumberOfBadCloses, actualNumberOfBadCloses;
+		int expectedDaysTotal, actualDaysTotal;
+		Map<String, Integer> resultMap;
+
+		instrument.setQuotations(this.dmlQuotations);
+		sortedQuotations = instrument.getQuotationsSortedByDate();
+		
+		expectedNumberOfGoodCloses = 3;
+		expectedNumberOfBadCloses = 3;
+		expectedDaysTotal = 6;
+		
+		resultMap = this.instrumentCheckController.getNumberOfGoodAndBadCloses(sortedQuotations.get(5), sortedQuotations.get(0), sortedQuotations);
+		assertNotNull(resultMap);		
+		
+		actualNumberOfGoodCloses = resultMap.get(InstrumentCheckController.MAP_ENTRY_GOOD_CLOSES);
+		actualNumberOfBadCloses = resultMap.get(InstrumentCheckController.MAP_ENTRY_BAD_CLOSES);
+		actualDaysTotal = resultMap.get(InstrumentCheckController.MAP_ENTRY_DAYS_TOTAL);
+		
+		assertEquals(expectedNumberOfGoodCloses, actualNumberOfGoodCloses);
+		assertEquals(expectedNumberOfBadCloses, actualNumberOfBadCloses);
+		assertEquals(expectedDaysTotal, actualDaysTotal);
+	}
 }

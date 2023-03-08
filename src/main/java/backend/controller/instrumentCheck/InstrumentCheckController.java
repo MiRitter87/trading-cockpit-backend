@@ -40,6 +40,16 @@ public class InstrumentCheckController {
 	public final static String MAP_ENTRY_DAYS_TOTAL = "DAYS_TOTAL";
 	
 	/**
+	 * Key of the Map entry containing the number of good closes.
+	 */
+	public final static String MAP_ENTRY_GOOD_CLOSES = "NUMBER_GOOD_CLOSES";
+	
+	/**
+	 * Key of the Map entry containing the number of bad closes.
+	 */
+	public final static String MAP_ENTRY_BAD_CLOSES = "NUMBER_BAD_CLOSES";
+	
+	/**
 	 * Access to localized application resources.
 	 */
 	private ResourceBundle resources = ResourceBundle.getBundle("backend");
@@ -234,6 +244,21 @@ public class InstrumentCheckController {
 	
 	
 	/**
+	 * Checks if there are more bad closes than good closes.
+	 * A close is 'bad' if it occurs in the lower half of the days trading range.
+	 * The check begins at the start date and goes up until the most recent Quotation.
+	 * 
+	 * @param startDate The date at which the check starts.
+	 * @param quotations The quotations that build the trading history.
+	 * @return List of ProtocolEntry, for each day on which the number of bad closes exceeds the number of good closes after the start date.
+	 * @throws Exception The check failed because data are not fully available or corrupt.
+	 */
+	public List<ProtocolEntry> checkMoreBadThanGoodCloses(final Date startDate, final List<Quotation> quotations) throws Exception {
+		return null;
+	}
+	
+	
+	/**
 	 * Gets the index of the Quotation with the given date.
 	 * If no Quotation exists on the given day, the index of the first Quotation coming afterwards is determined.
 	 * 
@@ -351,5 +376,22 @@ public class InstrumentCheckController {
 		resultMap.put(MAP_ENTRY_DAYS_TOTAL, numberOfDaysTotal);
 		
 		return resultMap;
+	}
+	
+	
+	/**
+	 * Counts the number of good and bad closes from startQuotation to endQuotation.
+	 * 
+	 * @param startQuotation The first Quotation used for counting.
+	 * @param endQuotation The last Quotation used for counting.
+	 * @param sortedQuotations The quotations that build the trading history.
+	 * @return A Map containing the number of good and bad closes.
+	 */
+	public Map<String, Integer> getNumberOfGoodAndBadCloses(final Quotation startQuotation, final Quotation endQuotation, 
+			final List<Quotation> sortedQuotations) {
+		
+		//A close exactly in the middle of the range is considered a bad close.
+		
+		return null;
 	}
 }
