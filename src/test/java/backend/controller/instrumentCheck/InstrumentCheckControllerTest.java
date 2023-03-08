@@ -289,6 +289,7 @@ public class InstrumentCheckControllerTest {
 	}
 	
 	
+	@Test
 	/**
 	 * Tests getting the number of good and bad closes in a range of the trading history.
 	 */

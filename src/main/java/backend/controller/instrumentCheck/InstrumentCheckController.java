@@ -1,5 +1,7 @@
 package backend.controller.instrumentCheck;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -350,7 +352,7 @@ public class InstrumentCheckController {
 		int numberOfUpDays = 0, numberOfDownDays = 0, numberOfDaysTotal = 0;
 		Quotation currentQuotation, previousQuotation;
 		float performance;
-		Map<String, Integer> resultMap = new HashMap<>(2);
+		Map<String, Integer> resultMap = new HashMap<>(3);
 		
 		indexOfStartQuotation = sortedQuotations.indexOf(startQuotation);
 		indexOfEndQuotation = sortedQuotations.indexOf(endQuotation);
@@ -390,8 +392,33 @@ public class InstrumentCheckController {
 	public Map<String, Integer> getNumberOfGoodAndBadCloses(final Quotation startQuotation, final Quotation endQuotation, 
 			final List<Quotation> sortedQuotations) {
 		
-		//A close exactly in the middle of the range is considered a bad close.
+		int indexOfStartQuotation, indexOfEndQuotation;
+		int numberOfGoodCloses = 0, numberOfBadCloses = 0, numberOfDaysTotal = 0;
+		Quotation currentQuotation;
+		BigDecimal medianPrice;
+		Map<String, Integer> resultMap = new HashMap<>(3);
 		
-		return null;
+		indexOfStartQuotation = sortedQuotations.indexOf(startQuotation);
+		indexOfEndQuotation = sortedQuotations.indexOf(endQuotation);
+		
+		for(int i = indexOfStartQuotation; i >= indexOfEndQuotation; i--) {
+			currentQuotation = sortedQuotations.get(i);
+						
+			medianPrice = currentQuotation.getLow().add(currentQuotation.getHigh()).divide(new BigDecimal(2), 3, RoundingMode.HALF_UP);
+			
+			//A close exactly in the middle of the range is considered a bad close.
+			if(currentQuotation.getClose().compareTo(medianPrice) == 1)
+				numberOfGoodCloses++;
+			else
+				numberOfBadCloses++;
+			
+			numberOfDaysTotal++;
+		}
+		
+		resultMap.put(MAP_ENTRY_GOOD_CLOSES, numberOfGoodCloses);
+		resultMap.put(MAP_ENTRY_BAD_CLOSES, numberOfBadCloses);
+		resultMap.put(MAP_ENTRY_DAYS_TOTAL, numberOfDaysTotal);
+		
+		return resultMap;
 	}
 }
