@@ -125,7 +125,7 @@ public class InstrumentCheckExtremumControllerTest {
 	
 	@Test
 	/**
-	 * Tests the check if Instrument had largest down day of the year.
+	 * Tests the check if Instrument had largest down-day of the year.
 	 */
 	public void testCheckLargestDownDay() {
 		ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
@@ -143,6 +143,39 @@ public class InstrumentCheckExtremumControllerTest {
 		calendar.set(2022, 4, 4);	//Begin check on 04.05.22
 		try {
 			protocolEntries = this.instrumentCheckExtremumController.checkLargestDownDay(calendar.getTime(), this.dmlQuotations);
+			
+			//Verify the check result.
+			assertEquals(1, protocolEntries.size());
+			
+			//Validate the protocol entry.
+			actualProtocolEntry = protocolEntries.get(0);
+			assertEquals(expectedProtocolEntry, actualProtocolEntry);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the check if Instrument had largest up-day of the year.
+	 */
+	public void testCheckLargestUpDay() {
+		ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
+		ProtocolEntry actualProtocolEntry;
+		List<ProtocolEntry> protocolEntries;
+		Calendar calendar = Calendar.getInstance();
+		
+		//Define the expected protocol entry.
+		calendar.set(2021, 9, 12);		//Largest down day is 12.10.21 (19,41%)
+		expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
+		expectedProtocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
+		expectedProtocolEntry.setText(MessageFormat.format(this.resources.getString("protocol.largestUpDay"), "19,41"));
+		
+		//Call controller to perform check.
+		calendar.set(2021, 9, 1);	//Begin check on 01.10.21
+		try {
+			protocolEntries = this.instrumentCheckExtremumController.checkLargestUpDay(calendar.getTime(), this.dmlQuotations);
 			
 			//Verify the check result.
 			assertEquals(1, protocolEntries.size());

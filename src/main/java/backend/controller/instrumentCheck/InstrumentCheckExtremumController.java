@@ -40,12 +40,12 @@ public class InstrumentCheckExtremumController {
 	
 	
 	/**
-	 * Checks for the largest down day of the year.
+	 * Checks for the largest down-day of the year.
 	 * The check begins at the start date and goes up until the most recent Quotation.
 	 * 
 	 * @param startDate The date at which the check starts.
 	 * @param quotations The quotations that build the trading history.
-	 * @return List of ProtocolEntry, for the day of the largest down day of the year after the start date.
+	 * @return List of ProtocolEntry, for the day of the largest down-day of the year after the start date.
 	 * @throws Exception The check failed because data are not fully available or corrupt.
 	 */
 	public List<ProtocolEntry> checkLargestDownDay(final Date startDate, final List<Quotation> quotations) throws Exception {
@@ -75,10 +75,45 @@ public class InstrumentCheckExtremumController {
 	
 	
 	/**
-	 * Determines the largest down day of the given trading history.
+	 * Checks for the largest up-day of the year.
+	 * The check begins at the start date and goes up until the most recent Quotation.
+	 * 
+	 * @param startDate The date at which the check starts.
+	 * @param quotations The quotations that build the trading history.
+	 * @return List of ProtocolEntry, for the day of the largest up-day of the year after the start date.
+	 * @throws Exception The check failed because data are not fully available or corrupt.
+	 */
+	public List<ProtocolEntry> checkLargestUpDay(final Date startDate, final List<Quotation> quotations) throws Exception {
+		Instrument instrument = new Instrument();
+		List<Quotation> quotationsSortedByDate;
+		Quotation largestUpQuotation;
+		List<ProtocolEntry> protocolEntries = new ArrayList<>();
+		ProtocolEntry protocolEntry;
+		float largestUpDayPerformance;
+		
+		instrument.setQuotations(quotations);
+		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
+		
+		largestUpQuotation = this.getLargestUpDay(quotationsSortedByDate);
+		largestUpDayPerformance = this.indicatorCalculator.getPricePerformanceForDays(1, largestUpQuotation, quotationsSortedByDate);
+		
+		if(largestUpQuotation.getDate().getTime() >= startDate.getTime()) {
+			protocolEntry = new ProtocolEntry();
+			protocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
+			protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(largestUpQuotation.getDate()));
+			protocolEntry.setText(MessageFormat.format(this.resources.getString("protocol.largestUpDay"), largestUpDayPerformance));
+			protocolEntries.add(protocolEntry);
+		}
+		
+		return protocolEntries;
+	}
+	
+	
+	/**
+	 * Determines the largest down-day of the given trading history.
 	 * 
 	 * @param quotations A list of quotations.
-	 * @return The largest down day.
+	 * @return The largest down-day.
 	 */
 	private Quotation getLargestDownDay(final List<Quotation> quotations) {
 		Instrument instrument = new Instrument();
@@ -105,5 +140,39 @@ public class InstrumentCheckExtremumController {
 		}
 		
 		return largestDownQuotation;
+	}
+	
+	
+	/**
+	 * Determines the largest up-day of the given trading history.
+	 * 
+	 * @param quotations A list of quotations.
+	 * @return The largest up-day.
+	 */
+	private Quotation getLargestUpDay(final List<Quotation> quotations) {
+		Instrument instrument = new Instrument();
+		float largestUpPerformance = 0, performance;
+		List<Quotation> quotationsSortedByDate;
+		Quotation largestUpQuotation = null;
+		Quotation currentQuotation, previousQuotation;
+		
+		//Sort the quotations by date for calculation of price performance.
+		instrument.setQuotations(quotations);
+		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
+		
+		//Determine the Quotation with the largest positive performance.
+		for(int i = 0; i < quotationsSortedByDate.size() - 1; i++) {
+			currentQuotation = quotationsSortedByDate.get(i);
+			previousQuotation = quotationsSortedByDate.get(i+1);
+			
+			performance = this.indicatorCalculator.getPerformance(currentQuotation, previousQuotation);
+			
+			if(performance > largestUpPerformance) {
+				largestUpPerformance = performance;
+				largestUpQuotation = currentQuotation;
+			}
+		}
+		
+		return largestUpQuotation;
 	}
 }
