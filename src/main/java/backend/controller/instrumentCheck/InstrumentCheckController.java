@@ -71,6 +71,7 @@ public class InstrumentCheckController {
 		
 		//Confirmations
 		protocol.getProtocolEntries().addAll(this.instrumentCheckCountingController.checkMoreUpThanDownDays(startDate, quotations));
+		protocol.getProtocolEntries().addAll(this.instrumentCheckCountingController.checkMoreGoodThanBadCloses(startDate, quotations));
 		
 		//Violations
 		protocol.getProtocolEntries().addAll(this.checkCloseBelowSma50(startDate, quotations));

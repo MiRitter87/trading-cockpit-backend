@@ -69,7 +69,7 @@ public class InstrumentCheckCountingController {
 	
 	/**
 	 * Checks if there are more bad closes than good closes.
-	 * A close is 'bad' if it occurs in the lower half of the days trading range.
+	 * A close is considered 'bad' if it occurs in the lower half of the days trading range.
 	 * The check begins at the start date and goes up until the most recent Quotation.
 	 * 
 	 * @param startDate The date at which the check starts.
@@ -112,6 +112,59 @@ public class InstrumentCheckCountingController {
 				protocolEntry.setCategory(ProtocolEntryCategory.VIOLATION);
 				protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(currentQuotation.getDate()));
 				protocolEntry.setText(MessageFormat.format(this.resources.getString("protocol.moreBadCloses"), numberOfBadCloses, numberOfDaysTotal));
+				protocolEntries.add(protocolEntry);
+			}
+		}
+		
+		return protocolEntries;
+	}
+	
+	
+	/**
+	 * Checks if there are more good closes than bad closes.
+	 * A close is considered 'good' if it occurs in the upper half of the days trading range.
+	 * The check begins at the start date and goes up until the most recent Quotation.
+	 * 
+	 * @param startDate The date at which the check starts.
+	 * @param quotations The quotations that build the trading history.
+	 * @return List of ProtocolEntry, for each day on which the number of good closes exceeds the number of bad closes after the start date.
+	 * @throws Exception The check failed because data are not fully available or corrupt.
+	 */
+	public List<ProtocolEntry> checkMoreGoodThanBadCloses(final Date startDate, final List<Quotation> quotations) throws Exception {
+		Instrument instrument = new Instrument();
+		List<Quotation> quotationsSortedByDate;
+		Quotation startQuotation, currentQuotation;
+		int startIndex, numberOfGoodCloses, numberOfBadCloses, numberOfDaysTotal;
+		List<ProtocolEntry> protocolEntries = new ArrayList<>();
+		ProtocolEntry protocolEntry;
+		Map<String, Integer> goodBadCloseSums;
+		
+		instrument.setQuotations(quotations);
+		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
+		startIndex = InstrumentCheckController.getIndexOfQuotationWithDate(quotationsSortedByDate, startDate);
+		
+		if(startIndex == -1)
+			throw new Exception("Could not find a quotation at or after the given start date.");
+		
+		startQuotation = quotationsSortedByDate.get(startIndex);
+		
+		for(int i = startIndex; i >= 0; i--) {
+			//Skip the first day, because more good than bad closes can only be calculated for at least two quotations.
+			if(i == startIndex)
+				continue;
+			
+			currentQuotation = quotationsSortedByDate.get(i);
+			
+			goodBadCloseSums = this.getNumberOfGoodAndBadCloses(startQuotation, currentQuotation, quotationsSortedByDate);
+			numberOfGoodCloses = goodBadCloseSums.get(MAP_ENTRY_GOOD_CLOSES);
+			numberOfBadCloses = goodBadCloseSums.get(MAP_ENTRY_BAD_CLOSES);
+			numberOfDaysTotal = goodBadCloseSums.get(MAP_ENTRY_DAYS_TOTAL);
+			
+			if(numberOfGoodCloses > numberOfBadCloses) {
+				protocolEntry = new ProtocolEntry();
+				protocolEntry.setCategory(ProtocolEntryCategory.CONFIRMATION);
+				protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(currentQuotation.getDate()));
+				protocolEntry.setText(MessageFormat.format(this.resources.getString("protocol.moreGoodCloses"), numberOfGoodCloses, numberOfDaysTotal));
 				protocolEntries.add(protocolEntry);
 			}
 		}
