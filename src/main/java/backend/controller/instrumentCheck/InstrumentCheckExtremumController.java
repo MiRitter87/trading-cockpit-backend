@@ -1,0 +1,109 @@
+package backend.controller.instrumentCheck;
+
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.ResourceBundle;
+
+import backend.controller.scan.IndicatorCalculator;
+import backend.model.instrument.Instrument;
+import backend.model.instrument.Quotation;
+import backend.model.protocol.ProtocolEntry;
+import backend.model.protocol.ProtocolEntryCategory;
+import backend.tools.DateTools;
+
+/**
+ * Controller that performs Instrument health checks that are based on extreme daily price and volume behavior.
+ * For example this can be the highest volume day of the year or the largest up- or down-day of the year.
+ * 
+ * @author Michael
+ */
+public class InstrumentCheckExtremumController {
+	/**
+	 * Access to localized application resources.
+	 */
+	private ResourceBundle resources = ResourceBundle.getBundle("backend");
+	
+	/**
+	 * Indicator calculator.
+	 */
+	private IndicatorCalculator indicatorCalculator;
+	
+	
+	/**
+	 * Default constructor.
+	 */
+	public InstrumentCheckExtremumController() {
+		this.indicatorCalculator = new IndicatorCalculator();
+	}
+	
+	
+	/**
+	 * Checks for the largest down day of the year.
+	 * The check begins at the start date and goes up until the most recent Quotation.
+	 * 
+	 * @param startDate The date at which the check starts.
+	 * @param quotations The quotations that build the trading history.
+	 * @return List of ProtocolEntry, for the day of the largest down day of the year after the start date.
+	 * @throws Exception The check failed because data are not fully available or corrupt.
+	 */
+	public List<ProtocolEntry> checkLargestDownDay(final Date startDate, final List<Quotation> quotations) throws Exception {
+		Instrument instrument = new Instrument();
+		List<Quotation> quotationsSortedByDate;
+		Quotation largestDownQuotation;
+		List<ProtocolEntry> protocolEntries = new ArrayList<>();
+		ProtocolEntry protocolEntry;
+		float largestDownDayPerformance;
+		
+		instrument.setQuotations(quotations);
+		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
+		
+		largestDownQuotation = this.getLargestDownDay(quotationsSortedByDate);
+		largestDownDayPerformance = this.indicatorCalculator.getPricePerformanceForDays(1, largestDownQuotation, quotationsSortedByDate);
+		
+		if(largestDownQuotation.getDate().getTime() >= startDate.getTime()) {
+			protocolEntry = new ProtocolEntry();
+			protocolEntry.setCategory(ProtocolEntryCategory.VIOLATION);
+			protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(largestDownQuotation.getDate()));
+			protocolEntry.setText(MessageFormat.format(this.resources.getString("protocol.largestDownDay"), largestDownDayPerformance));
+			protocolEntries.add(protocolEntry);
+		}
+		
+		return protocolEntries;
+	}
+	
+	
+	/**
+	 * Determines the largest down day of the given trading history.
+	 * 
+	 * @param quotations A list of quotations.
+	 * @return The largest down day.
+	 */
+	private Quotation getLargestDownDay(final List<Quotation> quotations) {
+		Instrument instrument = new Instrument();
+		float largestDownPerformance = 0, performance;
+		List<Quotation> quotationsSortedByDate;
+		Quotation largestDownQuotation = null;
+		Quotation currentQuotation, previousQuotation;
+		
+		//Sort the quotations by date for calculation of price performance.
+		instrument.setQuotations(quotations);
+		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
+		
+		//Determine the Quotation with the largest negative performance.
+		for(int i = 0; i < quotationsSortedByDate.size() - 1; i++) {
+			currentQuotation = quotationsSortedByDate.get(i);
+			previousQuotation = quotationsSortedByDate.get(i+1);
+			
+			performance = this.indicatorCalculator.getPerformance(currentQuotation, previousQuotation);
+			
+			if(performance < largestDownPerformance) {
+				largestDownPerformance = performance;
+				largestDownQuotation = currentQuotation;
+			}
+		}
+		
+		return largestDownQuotation;
+	}
+}

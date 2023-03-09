@@ -3,6 +3,7 @@ package backend.controller.instrumentCheck;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.text.MessageFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -25,11 +26,11 @@ import backend.model.protocol.ProtocolEntryCategory;
 import backend.tools.DateTools;
 
 /**
- * Tests the InstrumentCheckController.
+ * Tests the InstrumentCheckExtremumController.
  * 
  * @author Michael
  */
-public class InstrumentCheckControllerTest {
+public class InstrumentCheckExtremumControllerTest {
 	/**
 	 * Access to localized application resources.
 	 */
@@ -48,7 +49,7 @@ public class InstrumentCheckControllerTest {
 	/**
 	 * The controller for Instrument checks.
 	 */
-	private InstrumentCheckController instrumentCheckController;
+	private InstrumentCheckExtremumController instrumentCheckExtremumController;
 	
 	
 	@BeforeAll
@@ -74,7 +75,7 @@ public class InstrumentCheckControllerTest {
 	 * Tasks to be performed before each test is run.
 	 */
 	private void setUp() {
-		this.instrumentCheckController = new InstrumentCheckController();
+		this.instrumentCheckExtremumController = new InstrumentCheckExtremumController();
 		
 		this.initializeDMLQuotations();
 		this.initializeDMLIndicators();
@@ -86,7 +87,7 @@ public class InstrumentCheckControllerTest {
 	 * Tasks to be performed after each test has been run.
 	 */
 	private void tearDown() {
-		this.instrumentCheckController = null;
+		this.instrumentCheckExtremumController = null;
 		this.dmlQuotations = null;
 	}
 	
@@ -124,60 +125,33 @@ public class InstrumentCheckControllerTest {
 	
 	@Test
 	/**
-	 * Tests the check if Instrument closed below SMA(50).
+	 * Tests the check if Instrument had largest down day of the year.
 	 */
-	public void testCheckCloseBelowSma50() {
-		ProtocolEntry expectedProtocolEntry1 = new ProtocolEntry();
-		ProtocolEntry expectedProtocolEntry2 = new ProtocolEntry();
+	public void testCheckLargestDownDay() {
+		ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
 		ProtocolEntry actualProtocolEntry;
 		List<ProtocolEntry> protocolEntries;
 		Calendar calendar = Calendar.getInstance();
 		
-		//Define the expected protocol entries.
-		calendar.set(2022, 3, 21);		//The day on which the price closed below the SMA(50).
-		expectedProtocolEntry1.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
-		expectedProtocolEntry1.setCategory(ProtocolEntryCategory.VIOLATION);
-		expectedProtocolEntry1.setText(this.resources.getString("protocol.closeBelowSma50"));
-		
-		calendar.set(2022, 6, 22);		//The day on which the price closed below the SMA(50).
-		expectedProtocolEntry2.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
-		expectedProtocolEntry2.setCategory(ProtocolEntryCategory.VIOLATION);
-		expectedProtocolEntry2.setText(this.resources.getString("protocol.closeBelowSma50"));
+		//Define the expected protocol entry.
+		calendar.set(2022, 4, 9);		//Largest down day is 09.05.22 (-12,34%)
+		expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
+		expectedProtocolEntry.setCategory(ProtocolEntryCategory.VIOLATION);
+		expectedProtocolEntry.setText(MessageFormat.format(this.resources.getString("protocol.largestDownDay"), "-12,34"));
 		
 		//Call controller to perform check.
-		calendar.set(2022, 3, 7);	//Begin check on 07.04.22
+		calendar.set(2022, 4, 4);	//Begin check on 04.05.22
 		try {
-			protocolEntries = this.instrumentCheckController.checkCloseBelowSma50(calendar.getTime(), this.dmlQuotations);
+			protocolEntries = this.instrumentCheckExtremumController.checkLargestDownDay(calendar.getTime(), this.dmlQuotations);
 			
-			//Verify the check result
-			assertEquals(2, protocolEntries.size());
+			//Verify the check result.
+			assertEquals(1, protocolEntries.size());
 			
-			//Validate the protocol entries
+			//Validate the protocol entry.
 			actualProtocolEntry = protocolEntries.get(0);
-			assertEquals(expectedProtocolEntry1, actualProtocolEntry);
-			
-			actualProtocolEntry = protocolEntries.get(1);
-			assertEquals(expectedProtocolEntry2, actualProtocolEntry);
+			assertEquals(expectedProtocolEntry, actualProtocolEntry);
 		} catch (Exception e) {
 			fail(e.getMessage());
-		}
-	}
-	
-	
-	@Test
-	/**
-	 * Checks if a proper Exception is thrown if no quotations exist at or after the given start date.
-	 */
-	public void testCheckQuotationsExistAfterStartDate() {
-		Calendar calendar = Calendar.getInstance();
-		
-		calendar.set(2022, 6, 23);	//23.07.22 (The last Quotation is for the 22.07.22)
-		
-		try {
-			this.instrumentCheckController.checkQuotationsExistAfterStartDate(calendar.getTime(), this.dmlQuotations);
-			fail("The check should have failed because there is no Quotation at or after the given date.");
-		} catch (NoQuotationsExistException expected) {
-			//All is well.
 		}
 	}
 }
