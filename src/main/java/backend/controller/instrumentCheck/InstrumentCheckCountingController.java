@@ -121,7 +121,7 @@ public class InstrumentCheckCountingController {
 	
 	
 	/**
-	 * Checks if there are more down days than up days.
+	 * Checks if there are more down-days than up-days.
 	 * The check begins at the start date and goes up until the most recent Quotation.
 	 * 
 	 * @param startDate The date at which the check starts.
@@ -164,6 +164,58 @@ public class InstrumentCheckCountingController {
 				protocolEntry.setCategory(ProtocolEntryCategory.VIOLATION);
 				protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(currentQuotation.getDate()));
 				protocolEntry.setText(MessageFormat.format(this.resources.getString("protocol.moreDownDays"), numberOfDownDays, numberOfDaysTotal));
+				protocolEntries.add(protocolEntry);
+			}
+		}
+		
+		return protocolEntries;
+	}
+	
+	
+	/**
+	 * Checks if there are more up-days than down-days.
+	 * The check begins at the start date and goes up until the most recent Quotation.
+	 * 
+	 * @param startDate The date at which the check starts.
+	 * @param quotations The quotations that build the trading history.
+	 * @return List of ProtocolEntry, for each day on which the number of up-days exceeds the number of down-days after the start date.
+	 * @throws Exception The check failed because data are not fully available or corrupt.
+	 */
+	public List<ProtocolEntry> checkMoreUpThanDownDays(final Date startDate, final List<Quotation> quotations) throws Exception {
+		Instrument instrument = new Instrument();
+		List<Quotation> quotationsSortedByDate;
+		Quotation startQuotation, currentQuotation;
+		int startIndex, numberOfUpDays, numberOfDownDays, numberOfDaysTotal;
+		List<ProtocolEntry> protocolEntries = new ArrayList<>();
+		ProtocolEntry protocolEntry;
+		Map<String, Integer> upDownDaySums;
+		
+		instrument.setQuotations(quotations);
+		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
+		startIndex = InstrumentCheckController.getIndexOfQuotationWithDate(quotationsSortedByDate, startDate);
+		
+		if(startIndex == -1)
+			throw new Exception("Could not find a quotation at or after the given start date.");
+		
+		startQuotation = quotationsSortedByDate.get(startIndex);
+		
+		for(int i = startIndex; i >= 0; i--) {
+			//Skip the first day, because more up than down days can only be calculated for at least two quotations.
+			if(i == startIndex)
+				continue;
+			
+			currentQuotation = quotationsSortedByDate.get(i);			
+			
+			upDownDaySums = this.getNumberOfUpAndDownDays(startQuotation, currentQuotation, quotationsSortedByDate);
+			numberOfUpDays = upDownDaySums.get(MAP_ENTRY_UP_DAYS);
+			numberOfDownDays = upDownDaySums.get(MAP_ENTRY_DOWN_DAYS);
+			numberOfDaysTotal = upDownDaySums.get(MAP_ENTRY_DAYS_TOTAL);
+			
+			if(numberOfUpDays > numberOfDownDays) {
+				protocolEntry = new ProtocolEntry();
+				protocolEntry.setCategory(ProtocolEntryCategory.CONFIRMATION);
+				protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(currentQuotation.getDate()));
+				protocolEntry.setText(MessageFormat.format(this.resources.getString("protocol.moreUpDays"), numberOfUpDays, numberOfDaysTotal));
 				protocolEntries.add(protocolEntry);
 			}
 		}

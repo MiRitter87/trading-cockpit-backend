@@ -69,6 +69,10 @@ public class InstrumentCheckController {
 		quotations = this.quotationDAO.getQuotationsOfInstrument(instrumentId);
 		this.checkQuotationsExistAfterStartDate(startDate, quotations);
 		
+		//Confirmations
+		protocol.getProtocolEntries().addAll(this.instrumentCheckCountingController.checkMoreUpThanDownDays(startDate, quotations));
+		
+		//Violations
 		protocol.getProtocolEntries().addAll(this.checkCloseBelowSma50(startDate, quotations));
 		protocol.getProtocolEntries().addAll(this.checkLargestDownDay(startDate, quotations));
 		protocol.getProtocolEntries().addAll(this.instrumentCheckCountingController.checkMoreDownThanUpDays(startDate, quotations));

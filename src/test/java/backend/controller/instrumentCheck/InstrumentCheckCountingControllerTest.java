@@ -250,4 +250,49 @@ public class InstrumentCheckCountingControllerTest {
 			fail(e.getMessage());
 		}
 	}
+	
+	
+	@Test
+	/**
+	 * Tests the check if there are more up-days than down-days.
+	 */
+	public void testCheckMoreUpThanDownDays() {
+		ProtocolEntry expectedProtocolEntry1, expectedProtocolEntry2;
+		List<ProtocolEntry> protocolEntries;
+		Calendar calendar = Calendar.getInstance();
+		
+		//Define the expected protocol entries.
+		calendar.set(2022, 6, 20);		//The first day on which the number of down-days exceeds the number of up-days.
+		expectedProtocolEntry1 = new ProtocolEntry();
+		expectedProtocolEntry1.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
+		expectedProtocolEntry1.setCategory(ProtocolEntryCategory.CONFIRMATION);
+		expectedProtocolEntry1.setText(MessageFormat.format(this.resources.getString("protocol.moreUpDays"), "2", "2"));
+		
+		calendar.set(2022, 6, 21);		//The second day on which the number of down-days exceeds the number of up-days.
+		expectedProtocolEntry2 = new ProtocolEntry();
+		expectedProtocolEntry2.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
+		expectedProtocolEntry2.setCategory(ProtocolEntryCategory.CONFIRMATION);
+		expectedProtocolEntry2.setText(MessageFormat.format(this.resources.getString("protocol.moreUpDays"), "2", "3"));
+		
+		//Call controller to perform check.
+		calendar.set(2022, 6, 19);	//Begin check on 19.07.22.
+		try {
+			protocolEntries = this.instrumentCheckCountingController.checkMoreUpThanDownDays(calendar.getTime(), this.dmlQuotations);
+			
+			//Verify the check result.
+			assertEquals(2, protocolEntries.size());
+			
+			//Validate the protocol entries.
+			for(ProtocolEntry actualProtocolEntry: protocolEntries) {
+				if(actualProtocolEntry.getDate().getTime() == expectedProtocolEntry1.getDate().getTime())
+					assertEquals(expectedProtocolEntry1, actualProtocolEntry);
+				else if(actualProtocolEntry.getDate().getTime() == expectedProtocolEntry2.getDate().getTime())
+					assertEquals(expectedProtocolEntry2, actualProtocolEntry);
+				else
+					fail("The result of the check contains an unexpected protocol entry.");
+			}
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
 }
