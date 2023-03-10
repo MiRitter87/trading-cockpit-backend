@@ -220,4 +220,37 @@ public class InstrumentCheckExtremumControllerTest {
 			fail(e.getMessage());
 		}
 	}
+	
+	
+	@Test
+	/**
+	 * Tests the check if Instrument had largest daily volume of the year.
+	 */
+	public void testCheckLargestDailyVolume() {
+		ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
+		ProtocolEntry actualProtocolEntry;
+		List<ProtocolEntry> protocolEntries;
+		Calendar calendar = Calendar.getInstance();
+		
+		//Define the expected protocol entry.
+		calendar.set(2022, 1, 4);		//Largest daily volume is on 04.02.22.
+		expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
+		expectedProtocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
+		expectedProtocolEntry.setText(this.resources.getString("protocol.largestDailyVolume"));
+		
+		//Call controller to perform check.
+		calendar.set(2022, 0, 1);	//Begin check on 01.01.22.
+		try {
+			protocolEntries = this.instrumentCheckExtremumController.checkLargestDailyVolume(calendar.getTime(), this.dmlQuotations);
+			
+			//Verify the check result.
+			assertEquals(1, protocolEntries.size());
+			
+			//Validate the protocol entry.
+			actualProtocolEntry = protocolEntries.get(0);
+			assertEquals(expectedProtocolEntry, actualProtocolEntry);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
 }

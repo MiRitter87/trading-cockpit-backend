@@ -138,10 +138,38 @@ public class InstrumentCheckExtremumController {
 	
 	
 	/**
+	 * Checks for the largest daily volume of the year.
+	 * The check begins at the start date and goes up until the most recent Quotation.
+	 * 
+	 * @param startDate The date at which the check starts.
+	 * @param quotations The quotations that build the trading history.
+	 * @return List of ProtocolEntry, for the day of the largest volume of the year after the start date.
+	 * @throws Exception The check failed because data are not fully available or corrupt.
+	 */
+	public List<ProtocolEntry> checkLargestDailyVolume(final Date startDate, final List<Quotation> quotations) throws Exception {
+		Quotation largestVolumeQuotation;
+		List<ProtocolEntry> protocolEntries = new ArrayList<>();
+		ProtocolEntry protocolEntry;
+		
+		largestVolumeQuotation = this.getLargestDailyVolume(quotations);
+		
+		if(largestVolumeQuotation.getDate().getTime() >= startDate.getTime()) {
+			protocolEntry = new ProtocolEntry();
+			protocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
+			protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(largestVolumeQuotation.getDate()));
+			protocolEntry.setText(this.resources.getString("protocol.largestDailyVolume"));
+			protocolEntries.add(protocolEntry);
+		}
+		
+		return protocolEntries;
+	}
+	
+	
+	/**
 	 * Determines the largest down-day of the given trading history.
 	 * 
 	 * @param quotations A list of quotations.
-	 * @return The largest down-day.
+	 * @return The Quotation of the largest down-day.
 	 */
 	private Quotation getLargestDownDay(final List<Quotation> quotations) {
 		Instrument instrument = new Instrument();
@@ -175,7 +203,7 @@ public class InstrumentCheckExtremumController {
 	 * Determines the largest up-day of the given trading history.
 	 * 
 	 * @param quotations A list of quotations.
-	 * @return The largest up-day.
+	 * @return The Quotation of the largest up-day.
 	 */
 	private Quotation getLargestUpDay(final List<Quotation> quotations) {
 		Instrument instrument = new Instrument();
@@ -209,7 +237,7 @@ public class InstrumentCheckExtremumController {
 	 * Determines the largest daily high/low-spread of the given trading history.
 	 * 
 	 * @param quotations A list of quotations.
-	 * @return The largest daily high/low-spread.
+	 * @return The Quotation with the largest daily high/low-spread.
 	 */
 	private Quotation getLargestDailySpread(final List<Quotation> quotations) {
 		float largestDailySpread = 0, currentSpread;
@@ -226,5 +254,27 @@ public class InstrumentCheckExtremumController {
 		}
 		
 		return largestSpreadQuotation;
+	}
+	
+	
+	/**
+	 * Determines the largest daily volume of the given trading history.
+	 * 
+	 * @param quotations A list of quotations.
+	 * @return The Quotation with the largest daily volume.
+	 */
+	private Quotation getLargestDailyVolume(final List<Quotation> quotations) {
+		long largestDailyVolume = 0;
+		Quotation largestVolumeQuotation = null;
+		
+		//Determine the Quotation with the largest daily volume.
+		for(Quotation currentQuotation: quotations) {
+			if(currentQuotation.getVolume() > largestDailyVolume) {
+				largestDailyVolume = currentQuotation.getVolume();
+				largestVolumeQuotation = currentQuotation;
+			}
+		}
+		
+		return largestVolumeQuotation;
 	}
 }
