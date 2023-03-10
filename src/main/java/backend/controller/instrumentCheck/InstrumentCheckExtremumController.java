@@ -110,6 +110,34 @@ public class InstrumentCheckExtremumController {
 	
 	
 	/**
+	 * Checks for the largest daily high/low-spread of the year.
+	 * The check begins at the start date and goes up until the most recent Quotation.
+	 * 
+	 * @param startDate The date at which the check starts.
+	 * @param quotations The quotations that build the trading history.
+	 * @return List of ProtocolEntry, for the day of the largest high/low-spread of the year after the start date.
+	 * @throws Exception The check failed because data are not fully available or corrupt.
+	 */
+	public List<ProtocolEntry> checkLargestDailySpread(final Date startDate, final List<Quotation> quotations) throws Exception {
+		Quotation largestSpreadQuotation;
+		List<ProtocolEntry> protocolEntries = new ArrayList<>();
+		ProtocolEntry protocolEntry;
+		
+		largestSpreadQuotation = this.getLargestDailySpread(quotations);
+		
+		if(largestSpreadQuotation.getDate().getTime() >= startDate.getTime()) {
+			protocolEntry = new ProtocolEntry();
+			protocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
+			protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(largestSpreadQuotation.getDate()));
+			protocolEntry.setText(this.resources.getString("protocol.largestDailySpread"));
+			protocolEntries.add(protocolEntry);
+		}
+		
+		return protocolEntries;
+	}
+	
+	
+	/**
 	 * Determines the largest down-day of the given trading history.
 	 * 
 	 * @param quotations A list of quotations.
@@ -174,5 +202,29 @@ public class InstrumentCheckExtremumController {
 		}
 		
 		return largestUpQuotation;
+	}
+	
+	
+	/**
+	 * Determines the largest daily high/low-spread of the given trading history.
+	 * 
+	 * @param quotations A list of quotations.
+	 * @return The largest daily high/low-spread.
+	 */
+	private Quotation getLargestDailySpread(final List<Quotation> quotations) {
+		float largestDailySpread = 0, currentSpread;
+		Quotation largestSpreadQuotation = null;
+		
+		//Determine the Quotation with the largest daily high/low-spread.
+		for(Quotation currentQuotation: quotations) {
+			currentSpread = currentQuotation.getHigh().floatValue() - currentQuotation.getLow().floatValue();
+			
+			if(currentSpread > largestDailySpread) {
+				largestDailySpread = currentSpread;
+				largestSpreadQuotation = currentQuotation;
+			}
+		}
+		
+		return largestSpreadQuotation;
 	}
 }
