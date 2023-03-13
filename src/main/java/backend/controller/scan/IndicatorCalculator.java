@@ -55,6 +55,7 @@ public class IndicatorCalculator {
 			indicator.setUpDownVolumeRatio(this.getUpDownVolumeRatio(50, quotation, sortedQuotations));
 			indicator.setPerformance5Days(this.getPricePerformanceForDays(5, quotation, sortedQuotations));
 			indicator.setLiquidity20Days(this.getLiquidityForDays(20, quotation, sortedQuotations));
+			indicator.setSma30Volume(this.getSimpleMovingAverageVolume(30, quotation, sortedQuotations));
 		}
 		else {
 			//These indicators are calculated for historical quotations.

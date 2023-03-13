@@ -129,6 +129,7 @@ public class Indicator {
 	/**
 	 * The simple moving average volume of the last 30 trading days.
 	 */
+	@Column(name="SMA30_VOLUME")
 	private long sma30Volume;
 	
 	
