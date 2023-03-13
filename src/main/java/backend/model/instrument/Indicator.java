@@ -126,7 +126,10 @@ public class Indicator {
 	@Column(name="LIQUIDITY_20_DAYS")
 	private float liquidity20Days;
 	
-	
+	/**
+	 * The simple moving average volume of the last 30 trading days.
+	 */
+	private long sma30Volume;
 	
 	
 	/**
@@ -425,10 +428,27 @@ public class Indicator {
 	}
 
 
+	/**
+	 * @return the sma30Volume
+	 */
+	public long getSma30Volume() {
+		return sma30Volume;
+	}
+
+
+	/**
+	 * @param sma30Volume the sma30Volume to set
+	 */
+	public void setSma30Volume(long sma30Volume) {
+		this.sma30Volume = sma30Volume;
+	}
+
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(bollingerBandWidth, distanceTo52WeekHigh, distanceTo52WeekLow, id, rsNumber, rsPercentSum, sma150, sma200, sma50, 
-				stage, volumeDifferential5Days, volumeDifferential10Days, baseLengthWeeks, upDownVolumeRatio, performance5Days, liquidity20Days);
+				stage, volumeDifferential5Days, volumeDifferential10Days, baseLengthWeeks, upDownVolumeRatio, performance5Days, liquidity20Days,
+				sma30Volume);
 	}
 
 
@@ -453,6 +473,6 @@ public class Indicator {
 				&& Float.floatToIntBits(volumeDifferential10Days) == Float.floatToIntBits(other.volumeDifferential10Days)
 				&& stage == other.stage && baseLengthWeeks == other.baseLengthWeeks
 				&& upDownVolumeRatio == other.upDownVolumeRatio && performance5Days == other.performance5Days
-				&& liquidity20Days == other.liquidity20Days;
+				&& liquidity20Days == other.liquidity20Days && sma30Volume == other.sma30Volume;
 	}
 }
