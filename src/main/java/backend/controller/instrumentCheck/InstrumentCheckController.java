@@ -40,6 +40,11 @@ public class InstrumentCheckController {
 	 */
 	private InstrumentCheckExtremumController instrumentCheckExtremumController;
 	
+	/**
+	 * Controller used to detect price and volume patterns of an Instrument.
+	 */
+	private InstrumentCheckPatternController instrumentCheckPatternController;
+	
 	
 	/**
 	 * Default constructor.
@@ -48,6 +53,7 @@ public class InstrumentCheckController {
 		this.quotationDAO = DAOManager.getInstance().getQuotationDAO();
 		this.instrumentCheckCountingController = new InstrumentCheckCountingController();
 		this.instrumentCheckExtremumController = new InstrumentCheckExtremumController();
+		this.instrumentCheckPatternController = new InstrumentCheckPatternController();
 	}
 	
 	
@@ -70,6 +76,7 @@ public class InstrumentCheckController {
 		//Confirmations
 		protocol.getProtocolEntries().addAll(this.instrumentCheckCountingController.checkMoreUpThanDownDays(startDate, quotations));
 		protocol.getProtocolEntries().addAll(this.instrumentCheckCountingController.checkMoreGoodThanBadCloses(startDate, quotations));
+		protocol.getProtocolEntries().addAll(this.instrumentCheckPatternController.checkUpOnVolume(startDate, quotations));
 		
 		//Violations
 		protocol.getProtocolEntries().addAll(this.checkCloseBelowSma50(startDate, quotations));

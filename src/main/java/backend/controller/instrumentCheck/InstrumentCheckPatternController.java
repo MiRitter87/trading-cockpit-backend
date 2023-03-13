@@ -1,12 +1,16 @@
 package backend.controller.instrumentCheck;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
 import backend.controller.scan.IndicatorCalculator;
+import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
 import backend.model.protocol.ProtocolEntry;
+import backend.model.protocol.ProtocolEntryCategory;
+import backend.tools.DateTools;
 
 /**
  * Controller that performs Instrument health checks that are based on certain price and volume patterns.
@@ -15,6 +19,11 @@ import backend.model.protocol.ProtocolEntry;
  * @author Michael
  */
 public class InstrumentCheckPatternController {
+	/**
+	 * The performance threshold of an "Up on Volume"-day.
+	 */
+	private static final float UP_PERFORMANCE_THRESHOLD = (float) 3.0;
+	
 	/**
 	 * Access to localized application resources.
 	 */
@@ -44,6 +53,48 @@ public class InstrumentCheckPatternController {
 	 * @throws Exception The check failed because data are not fully available or corrupt.
 	 */
 	public List<ProtocolEntry> checkUpOnVolume(final Date startDate, final List<Quotation> quotations) throws Exception {
-		return null;
+		Instrument instrument = new Instrument();
+		List<Quotation> quotationsSortedByDate;
+		int startIndex;
+		Quotation currentQuotation, previousQuotation;
+		List<ProtocolEntry> protocolEntries = new ArrayList<>();
+		ProtocolEntry protocolEntry;
+		float performance;
+		
+		instrument.setQuotations(quotations);
+		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
+		startIndex = InstrumentCheckController.getIndexOfQuotationWithDate(quotationsSortedByDate, startDate);
+		
+		if(startIndex == -1)
+			throw new Exception("Could not find a quotation at or after the given start date.");
+		
+		for(int i = startIndex; i >= 0; i--) {
+			if((i+1) < quotationsSortedByDate.size()) {
+				previousQuotation = quotationsSortedByDate.get(i+1);
+			}
+			else {
+				continue;
+			}
+			
+			currentQuotation = quotationsSortedByDate.get(i);
+			
+			if(previousQuotation.getIndicator() == null)
+				throw new Exception("No indicator is defined for Quotation with ID: " +previousQuotation.getId());
+			
+			if(currentQuotation.getIndicator() == null)
+				throw new Exception("No indicator is defined for Quotation with ID: " +currentQuotation.getId());
+			
+			performance = this.indicatorCalculator.getPerformance(currentQuotation, previousQuotation);
+			
+			if(performance >= UP_PERFORMANCE_THRESHOLD && currentQuotation.getVolume() > currentQuotation.getIndicator().getSma30Volume()) {
+				protocolEntry = new ProtocolEntry();
+				protocolEntry.setCategory(ProtocolEntryCategory.CONFIRMATION);
+				protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(currentQuotation.getDate()));
+				protocolEntry.setText(this.resources.getString("protocol.upOnVolume"));
+				protocolEntries.add(protocolEntry);
+			}
+		}
+		
+		return protocolEntries;
 	}
 }

@@ -3,7 +3,6 @@ package backend.controller.instrumentCheck;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.text.MessageFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -123,7 +122,7 @@ public class InstrumentCheckPatternControllerTest {
 	}
 	
 	
-	//@Test
+	@Test
 	/**
 	 * Tests the check if Instrument had largest up-day of the year.
 	 */

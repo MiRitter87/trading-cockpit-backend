@@ -60,6 +60,7 @@ public class IndicatorCalculator {
 		else {
 			//These indicators are calculated for historical quotations.
 			indicator.setSma50(this.getSimpleMovingAverage(50, quotation, sortedQuotations));
+			indicator.setSma30Volume(this.getSimpleMovingAverageVolume(30, quotation, sortedQuotations));
 		}
 		
 		quotation.setIndicator(indicator);
