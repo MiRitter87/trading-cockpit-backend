@@ -1,7 +1,10 @@
 package backend.controller.instrumentCheck;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.text.MessageFormat;
+import java.util.Calendar;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -9,6 +12,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import backend.controller.scan.IndicatorCalculator;
 import backend.dao.quotation.QuotationProviderYahooDAO;
@@ -17,6 +21,9 @@ import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
+import backend.model.protocol.ProtocolEntry;
+import backend.model.protocol.ProtocolEntryCategory;
+import backend.tools.DateTools;
 
 /**
  * Tests the InstrumentCheckPatternController.
@@ -112,6 +119,39 @@ public class InstrumentCheckPatternControllerTest {
 		for(int i = 0; i < sortedQuotations.size(); i++) {
 			quotation = sortedQuotations.get(i);
 			quotation = indicatorCalculator.calculateIndicators(instrument, quotation, true);
+		}
+	}
+	
+	
+	//@Test
+	/**
+	 * Tests the check if Instrument had largest up-day of the year.
+	 */
+	public void testCheckUpOnVolume() {
+		ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
+		ProtocolEntry actualProtocolEntry;
+		List<ProtocolEntry> protocolEntries;
+		Calendar calendar = Calendar.getInstance();
+		
+		//Define the expected protocol entry.
+		calendar.set(2022, 6, 14);		//Up on Volume day is 14.07.22
+		expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
+		expectedProtocolEntry.setCategory(ProtocolEntryCategory.CONFIRMATION);
+		expectedProtocolEntry.setText(this.resources.getString("protocol.upOnVolume"));
+		
+		//Call controller to perform check.
+		calendar.set(2022, 6, 8);	//Begin check on 08.07.22
+		try {
+			protocolEntries = this.instrumentCheckPatternController.checkUpOnVolume(calendar.getTime(), this.dmlQuotations);
+			
+			//Verify the check result.
+			assertEquals(1, protocolEntries.size());
+			
+			//Validate the protocol entry.
+			actualProtocolEntry = protocolEntries.get(0);
+			assertEquals(expectedProtocolEntry, actualProtocolEntry);
+		} catch (Exception e) {
+			fail(e.getMessage());
 		}
 	}
 }
