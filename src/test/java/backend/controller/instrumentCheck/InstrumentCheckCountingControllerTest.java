@@ -120,7 +120,12 @@ public class InstrumentCheckCountingControllerTest {
 		
 		for(int i = 0; i < sortedQuotations.size(); i++) {
 			quotation = sortedQuotations.get(i);
-			quotation = indicatorCalculator.calculateIndicators(instrument, quotation, true);
+			
+			//Calculate all Indicators only for most recent Quotation like in the ScanThread.
+			if(i == 0)
+				quotation = indicatorCalculator.calculateIndicators(instrument, quotation, true);
+			else
+				quotation = indicatorCalculator.calculateIndicators(instrument, quotation, false);
 		}
 	}
 	
