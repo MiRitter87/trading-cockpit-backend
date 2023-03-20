@@ -83,6 +83,7 @@ public class InstrumentCheckController {
 		protocol.getProtocolEntries().addAll(this.instrumentCheckExtremumController.checkLargestDownDay(startDate, quotations));
 		protocol.getProtocolEntries().addAll(this.instrumentCheckCountingController.checkMoreDownThanUpDays(startDate, quotations));
 		protocol.getProtocolEntries().addAll(this.instrumentCheckCountingController.checkMoreBadThanGoodCloses(startDate, quotations));
+		protocol.getProtocolEntries().addAll(this.instrumentCheckPatternController.checkDownOnVolume(startDate, quotations));
 		
 		//Uncertain
 		protocol.getProtocolEntries().addAll(this.instrumentCheckExtremumController.checkLargestUpDay(startDate, quotations));

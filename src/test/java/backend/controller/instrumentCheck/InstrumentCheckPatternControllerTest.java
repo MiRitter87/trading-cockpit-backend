@@ -129,7 +129,7 @@ public class InstrumentCheckPatternControllerTest {
 	
 	@Test
 	/**
-	 * Tests the check if Instrument had largest up-day of the year.
+	 * Tests the check if Instrument has advanced a certain amount on above-average volume.
 	 */
 	public void testCheckUpOnVolume() {
 		ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
@@ -147,6 +147,39 @@ public class InstrumentCheckPatternControllerTest {
 		calendar.set(2022, 6, 8);	//Begin check on 08.07.22
 		try {
 			protocolEntries = this.instrumentCheckPatternController.checkUpOnVolume(calendar.getTime(), this.dmlQuotations);
+			
+			//Verify the check result.
+			assertEquals(1, protocolEntries.size());
+			
+			//Validate the protocol entry.
+			actualProtocolEntry = protocolEntries.get(0);
+			assertEquals(expectedProtocolEntry, actualProtocolEntry);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the check if Instrument has declined a certain amount on above-average volume.
+	 */
+	public void testCheckDownOnVolume() {
+		ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
+		ProtocolEntry actualProtocolEntry;
+		List<ProtocolEntry> protocolEntries;
+		Calendar calendar = Calendar.getInstance();
+		
+		//Define the expected protocol entry.
+		calendar.set(2022, 6, 22);		//Down on Volume day is 22.07.22
+		expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
+		expectedProtocolEntry.setCategory(ProtocolEntryCategory.VIOLATION);
+		expectedProtocolEntry.setText(this.resources.getString("protocol.downOnVolume"));
+		
+		//Call controller to perform check.
+		calendar.set(2022, 5, 9);	//Begin check on 09.06.22
+		try {
+			protocolEntries = this.instrumentCheckPatternController.checkDownOnVolume(calendar.getTime(), this.dmlQuotations);
 			
 			//Verify the check result.
 			assertEquals(1, protocolEntries.size());
