@@ -89,6 +89,7 @@ public class InstrumentCheckController {
 		protocol.getProtocolEntries().addAll(this.instrumentCheckExtremumController.checkLargestUpDay(startDate, quotations));
 		protocol.getProtocolEntries().addAll(this.instrumentCheckExtremumController.checkLargestDailySpread(startDate, quotations));
 		protocol.getProtocolEntries().addAll(this.instrumentCheckExtremumController.checkLargestDailyVolume(startDate, quotations));
+		protocol.getProtocolEntries().addAll(this.instrumentCheckPatternController.checkChurning(startDate, quotations));
 		
 		protocol.sortEntriesByDate();
 		

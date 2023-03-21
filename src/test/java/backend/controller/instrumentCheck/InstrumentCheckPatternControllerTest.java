@@ -169,17 +169,50 @@ public class InstrumentCheckPatternControllerTest {
 		ProtocolEntry actualProtocolEntry;
 		List<ProtocolEntry> protocolEntries;
 		Calendar calendar = Calendar.getInstance();
-		
+
 		//Define the expected protocol entry.
 		calendar.set(2022, 6, 22);		//Down on Volume day is 22.07.22
 		expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
 		expectedProtocolEntry.setCategory(ProtocolEntryCategory.VIOLATION);
 		expectedProtocolEntry.setText(this.resources.getString("protocol.downOnVolume"));
-		
+
 		//Call controller to perform check.
 		calendar.set(2022, 5, 9);	//Begin check on 09.06.22
 		try {
 			protocolEntries = this.instrumentCheckPatternController.checkDownOnVolume(calendar.getTime(), this.dmlQuotations);
+
+			//Verify the check result.
+			assertEquals(1, protocolEntries.size());
+
+			//Validate the protocol entry.
+			actualProtocolEntry = protocolEntries.get(0);
+			assertEquals(expectedProtocolEntry, actualProtocolEntry);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the check if Instrument is churning (price stalling on increased volume).
+	 */
+	public void testCheckChurning() {
+		ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
+		ProtocolEntry actualProtocolEntry;
+		List<ProtocolEntry> protocolEntries;
+		Calendar calendar = Calendar.getInstance();
+		
+		//Define the expected protocol entry.
+		calendar.set(2022, 2, 10);		//Churning on 10.03.22
+		expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
+		expectedProtocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
+		expectedProtocolEntry.setText(this.resources.getString("protocol.churning"));
+		
+		//Call controller to perform check.
+		calendar.set(2022, 2, 10);	//Begin check on 10.03.22
+		try {
+			protocolEntries = this.instrumentCheckPatternController.checkChurning(calendar.getTime(), this.dmlQuotations);
 			
 			//Verify the check result.
 			assertEquals(1, protocolEntries.size());
