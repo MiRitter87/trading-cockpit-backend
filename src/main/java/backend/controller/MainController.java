@@ -75,10 +75,10 @@ public class MainController {
 		DAOManager.getInstance();
 		
 		try {
+			this.okHttpClient = new OkHttpClient();
+
 			this.stockAlertController = new StockAlertController();
 			this.stockAlertController.start();
-			
-			this.okHttpClient = new OkHttpClient();
 		} catch (Exception e) {
 			logger.error("The query mechanism for stock alerts failed to start.", e);
 		}
