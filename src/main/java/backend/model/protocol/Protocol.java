@@ -1,5 +1,7 @@
 package backend.model.protocol;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -113,5 +115,29 @@ public class Protocol {
 	 */
 	public void sortEntriesByDate() {
 		Collections.sort(this.protocolEntries, new ProtocolEntryDateComparator());
+	}
+	
+	
+	/**
+	 * Calculates percentage values for confirmations, violations and uncertainties based on all protocol entries.
+	 */
+	public void calculatePercentages() {
+		int numberOfConfirmations = 0, numberOfViolations = 0, numberOfUncertainties = 0;
+		
+		for(ProtocolEntry entry : this.protocolEntries) {
+			if(entry.getCategory() == ProtocolEntryCategory.CONFIRMATION)
+				numberOfConfirmations++;
+			else if(entry.getCategory() == ProtocolEntryCategory.VIOLATION)
+				numberOfViolations++;
+			else if(entry.getCategory() == ProtocolEntryCategory.UNCERTAIN)
+				numberOfUncertainties++;
+		}
+		
+		this.confirmationPercentage = new BigDecimal(numberOfConfirmations).divide(
+				new BigDecimal(this.protocolEntries.size()), 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100)).intValue();
+		this.violationPercentage = new BigDecimal(numberOfViolations).divide(
+				new BigDecimal(this.protocolEntries.size()), 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100)).intValue();
+		this.uncertainPercentage = new BigDecimal(numberOfUncertainties).divide(
+				new BigDecimal(this.protocolEntries.size()), 2, RoundingMode.HALF_UP).multiply(new BigDecimal(100)).intValue();
 	}
 }

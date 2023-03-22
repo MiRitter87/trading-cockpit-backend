@@ -92,6 +92,7 @@ public class InstrumentCheckController {
 		protocol.getProtocolEntries().addAll(this.instrumentCheckPatternController.checkChurning(startDate, quotations));
 		
 		protocol.sortEntriesByDate();
+		protocol.calculatePercentages();
 		
 		return protocol;
 	}
