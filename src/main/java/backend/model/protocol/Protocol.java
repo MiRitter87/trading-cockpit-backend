@@ -18,6 +18,21 @@ public class Protocol {
 	 */
 	private List<ProtocolEntry> protocolEntries;
 	
+	/**
+	 * The percentage of protocol entries that constitute confirmations.
+	 */
+	private int confirmationPercentage;
+	
+	/**
+	 * The percentage of protocol entries that constitute uncertainty.
+	 */
+	private int uncertainPercentage;
+	
+	/**
+	 * The percentage of protocol entries that constitute violations.
+	 */
+	private int violationPercentage;
+	
 	
 	/**
 	 * Default constructor.
@@ -45,6 +60,54 @@ public class Protocol {
 	}
 	
 	
+	/**
+	 * @return the confirmationPercentage
+	 */
+	public int getConfirmationPercentage() {
+		return confirmationPercentage;
+	}
+
+
+	/**
+	 * @param confirmationPercentage the confirmationPercentage to set
+	 */
+	public void setConfirmationPercentage(int confirmationPercentage) {
+		this.confirmationPercentage = confirmationPercentage;
+	}
+
+
+	/**
+	 * @return the uncertainPercentage
+	 */
+	public int getUncertainPercentage() {
+		return uncertainPercentage;
+	}
+
+
+	/**
+	 * @param uncertainPercentage the uncertainPercentage to set
+	 */
+	public void setUncertainPercentage(int uncertainPercentage) {
+		this.uncertainPercentage = uncertainPercentage;
+	}
+
+
+	/**
+	 * @return the violationPercentage
+	 */
+	public int getViolationPercentage() {
+		return violationPercentage;
+	}
+
+
+	/**
+	 * @param violationPercentage the violationPercentage to set
+	 */
+	public void setViolationPercentage(int violationPercentage) {
+		this.violationPercentage = violationPercentage;
+	}
+
+
 	/**
 	 * Sorts the protocol entries by their date.
 	 */
