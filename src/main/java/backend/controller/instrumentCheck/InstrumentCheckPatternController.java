@@ -1,5 +1,6 @@
 package backend.controller.instrumentCheck;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -40,6 +41,11 @@ public class InstrumentCheckPatternController {
 	private static final float CHURNING_DOWN_THRESHOLD = (float) -1.0;
 	
 	/**
+	 * The threshold of the daily price range for reversal calculation.
+	 */
+	private static final float REVERSAL_THRESHOLD = (float) 0.4;
+	
+	/**
 	 * Access to localized application resources.
 	 */
 	private ResourceBundle resources = ResourceBundle.getBundle("backend");
@@ -59,7 +65,7 @@ public class InstrumentCheckPatternController {
 	
 	
 	/**
-	 * Checks for days on which the stock rises a certain amount on above-average volume.
+	 * Checks for days on which the Instrument rises a certain amount on above-average volume.
 	 * The check begins at the start date and goes up until the most recent Quotation.
 	 * 
 	 * @param startDate The date at which the check starts.
@@ -115,7 +121,7 @@ public class InstrumentCheckPatternController {
 	
 	
 	/**
-	 * Checks for days on which the stock declines a certain amount on above-average volume.
+	 * Checks for days on which the Instrument declines a certain amount on above-average volume.
 	 * The check begins at the start date and goes up until the most recent Quotation.
 	 * 
 	 * @param startDate The date at which the check starts.
@@ -171,7 +177,7 @@ public class InstrumentCheckPatternController {
 	
 	
 	/**
-	 * Checks for days on which the stock stalls in price on increased volume (churning).
+	 * Checks for days on which the Instrument stalls in price on increased volume (churning).
 	 * The check begins at the start date and goes up until the most recent Quotation.
 	 * 
 	 * @param startDate The date at which the check starts.
@@ -220,6 +226,56 @@ public class InstrumentCheckPatternController {
 				protocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
 				protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(currentQuotation.getDate()));
 				protocolEntry.setText(this.resources.getString("protocol.churning"));
+				protocolEntries.add(protocolEntry);
+			}
+		}
+		
+		return protocolEntries;
+	}
+	
+	
+	/**
+	 * Checks for days on which the Instrument builds a reversal (open and close in lower third of candle on above-average volume).
+	 * The check begins at the start date and goes up until the most recent Quotation.
+	 * 
+	 * @param startDate The date at which the check starts.
+	 * @param quotations The quotations that build the trading history.
+	 * @return List of ProtocolEntry, for each day on which the Instrument shows a reversal.
+	 * @throws Exception The check failed because data are not fully available or corrupt.
+	 */
+	public List<ProtocolEntry> checkHighVolumeReversal(final Date startDate, final List<Quotation> quotations) throws Exception {
+		Instrument instrument = new Instrument();
+		List<Quotation> quotationsSortedByDate;
+		int startIndex;
+		Quotation currentQuotation;
+		List<ProtocolEntry> protocolEntries = new ArrayList<>();
+		ProtocolEntry protocolEntry;
+		BigDecimal dailyPriceRange, reversalThresholdPrice;
+		
+		instrument.setQuotations(quotations);
+		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
+		startIndex = InstrumentCheckController.getIndexOfQuotationWithDate(quotationsSortedByDate, startDate);
+		
+		if(startIndex == -1)
+			throw new Exception("Could not find a quotation at or after the given start date.");
+		
+		for(int i = startIndex; i >= 0; i--) {
+			currentQuotation = quotationsSortedByDate.get(i);
+			
+			if(currentQuotation.getIndicator() == null)
+				throw new Exception("No indicator is defined for Quotation with ID: " +currentQuotation.getId());
+			
+			dailyPriceRange = currentQuotation.getHigh().subtract(currentQuotation.getLow());
+			reversalThresholdPrice = currentQuotation.getLow().add(dailyPriceRange.multiply(new BigDecimal(REVERSAL_THRESHOLD)));
+			
+			if(currentQuotation.getOpen().compareTo(reversalThresholdPrice) <= 0 && 
+					currentQuotation.getClose().compareTo(reversalThresholdPrice) <= 0 &&
+					currentQuotation.getVolume() > currentQuotation.getIndicator().getSma30Volume()) {
+				
+				protocolEntry = new ProtocolEntry();
+				protocolEntry.setCategory(ProtocolEntryCategory.VIOLATION);
+				protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(currentQuotation.getDate()));
+				protocolEntry.setText(this.resources.getString("protocol.reversal"));
 				protocolEntries.add(protocolEntry);
 			}
 		}

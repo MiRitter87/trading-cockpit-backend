@@ -224,4 +224,37 @@ public class InstrumentCheckPatternControllerTest {
 			fail(e.getMessage());
 		}
 	}
+	
+	
+	@Test
+	/**
+	 * Tests the check if Instrument is reversing (open and close in lower third of candle on above-average volume).
+	 */
+	public void testCheckHighVolumeReversal() {
+		ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
+		ProtocolEntry actualProtocolEntry;
+		List<ProtocolEntry> protocolEntries;
+		Calendar calendar = Calendar.getInstance();
+		
+		//Define the expected protocol entry.
+		calendar.set(2022, 4, 12);		//Reversal on 12.05.22
+		expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
+		expectedProtocolEntry.setCategory(ProtocolEntryCategory.VIOLATION);
+		expectedProtocolEntry.setText(this.resources.getString("protocol.reversal"));
+		
+		//Call controller to perform check.
+		calendar.set(2022, 3, 14);	//Begin check on 14.04.22
+		try {
+			protocolEntries = this.instrumentCheckPatternController.checkHighVolumeReversal(calendar.getTime(), this.dmlQuotations);
+			
+			//Verify the check result.
+			assertEquals(1, protocolEntries.size());
+			
+			//Validate the protocol entry.
+			actualProtocolEntry = protocolEntries.get(0);
+			assertEquals(expectedProtocolEntry, actualProtocolEntry);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
 }
