@@ -278,6 +278,29 @@ public class InstrumentCheckCountingController {
 	
 	
 	/**
+	 * Checks if there is a time-wise climax movement.
+	 * A time-wise climax move is given, if at least 7 of the last 10 trading days are up-days..
+	 * 
+	 * @param startDate The date at which the check starts.
+	 * @param quotations The quotations that build the trading history.
+	 * @return List of ProtocolEntry, for each day on which there is a time-wise climax movement.
+	 * @throws Exception The check failed because data are not fully available or corrupt.
+	 */
+	public List<ProtocolEntry> checkTimeClimax(final Date startDate, final List<Quotation> quotations) throws Exception {
+		
+		//Iterate over Quotations beginning at start date
+		
+		//Check if the last 10 quotations are available (if not, continue with the next Quotation)
+		
+		//Determine the number of up-days from startDate-10 to startDate using this.getNumberOfUpAndDownDays
+		
+		//If up-days >= 7, add protocol entry
+		
+		return null;
+	}
+	
+	
+	/**
 	 * Counts the number of good and bad closes from startQuotation to endQuotation.
 	 * 
 	 * @param startQuotation The first Quotation used for counting.
