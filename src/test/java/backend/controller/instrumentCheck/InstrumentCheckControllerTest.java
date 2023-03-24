@@ -142,12 +142,12 @@ public class InstrumentCheckControllerTest {
 		calendar.set(2022, 3, 21);		//The day on which the price closed below the SMA(50).
 		expectedProtocolEntry1.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
 		expectedProtocolEntry1.setCategory(ProtocolEntryCategory.VIOLATION);
-		expectedProtocolEntry1.setText(this.resources.getString("protocol.closeBelowSma50"));
+		expectedProtocolEntry1.setText(this.resources.getString("protocol.closeBelowSma50HighVolume"));
 		
 		calendar.set(2022, 6, 22);		//The day on which the price closed below the SMA(50).
 		expectedProtocolEntry2.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
 		expectedProtocolEntry2.setCategory(ProtocolEntryCategory.VIOLATION);
-		expectedProtocolEntry2.setText(this.resources.getString("protocol.closeBelowSma50"));
+		expectedProtocolEntry2.setText(this.resources.getString("protocol.closeBelowSma50HighVolume"));
 		
 		//Call controller to perform check.
 		calendar.set(2022, 3, 7);	//Begin check on 07.04.22

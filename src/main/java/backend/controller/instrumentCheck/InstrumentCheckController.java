@@ -148,7 +148,12 @@ public class InstrumentCheckController {
 				protocolEntry = new ProtocolEntry();
 				protocolEntry.setCategory(ProtocolEntryCategory.VIOLATION);
 				protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(currentDayQuotation.getDate()));
-				protocolEntry.setText(this.resources.getString("protocol.closeBelowSma50"));
+				
+				if(currentDayQuotation.getVolume() >= currentDayQuotation.getIndicator().getSma30Volume())
+					protocolEntry.setText(this.resources.getString("protocol.closeBelowSma50HighVolume"));
+				else
+					protocolEntry.setText(this.resources.getString("protocol.closeBelowSma50LowVolume"));
+				
 				protocolEntries.add(protocolEntry);
 			}
 		}
