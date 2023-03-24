@@ -257,7 +257,7 @@ public class InstrumentCheckCountingController {
 			if(i == startIndex)
 				continue;
 			
-			currentQuotation = quotationsSortedByDate.get(i);			
+			currentQuotation = quotationsSortedByDate.get(i);
 			
 			upDownDaySums = this.getNumberOfUpAndDownDays(startQuotation, currentQuotation, quotationsSortedByDate);
 			numberOfUpDays = upDownDaySums.get(MAP_ENTRY_UP_DAYS);
@@ -279,7 +279,7 @@ public class InstrumentCheckCountingController {
 	
 	/**
 	 * Checks if there is a time-wise climax movement.
-	 * A time-wise climax move is given, if at least 7 of the last 10 trading days are up-days..
+	 * A time-wise climax move is given, if at least 7 of the last 10 trading days are up-days.
 	 * 
 	 * @param startDate The date at which the check starts.
 	 * @param quotations The quotations that build the trading history.
@@ -287,16 +287,41 @@ public class InstrumentCheckCountingController {
 	 * @throws Exception The check failed because data are not fully available or corrupt.
 	 */
 	public List<ProtocolEntry> checkTimeClimax(final Date startDate, final List<Quotation> quotations) throws Exception {
+		Instrument instrument = new Instrument();
+		List<Quotation> quotationsSortedByDate;
+		Quotation currentQuotation;
+		int startIndex, numberOfUpDays;
+		List<ProtocolEntry> protocolEntries = new ArrayList<>();
+		ProtocolEntry protocolEntry;
+		Map<String, Integer> upDownDaySums;
 		
-		//Iterate over Quotations beginning at start date
+		instrument.setQuotations(quotations);
+		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
+		startIndex = InstrumentCheckController.getIndexOfQuotationWithDate(quotationsSortedByDate, startDate);
 		
-		//Check if the last 10 quotations are available (if not, continue with the next Quotation)
+		if(startIndex == -1)
+			throw new Exception("Could not find a quotation at or after the given start date.");
 		
-		//Determine the number of up-days from startDate-10 to startDate using this.getNumberOfUpAndDownDays
+		for(int i = startIndex; i >= 0; i--) {
+			//Skip this Quotation, if not at least 10 previous days of trading history exist.
+			if((i+10) >= quotationsSortedByDate.size())
+				continue;
+			
+			currentQuotation = quotationsSortedByDate.get(i);
+			
+			upDownDaySums = this.getNumberOfUpAndDownDays(quotationsSortedByDate.get(i+9), currentQuotation, quotationsSortedByDate);
+			numberOfUpDays = upDownDaySums.get(MAP_ENTRY_UP_DAYS);
+			
+			if(numberOfUpDays >= 7) {
+				protocolEntry = new ProtocolEntry();
+				protocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
+				protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(currentQuotation.getDate()));
+				protocolEntry.setText(this.resources.getString("protocol.timeClimax"));
+				protocolEntries.add(protocolEntry);
+			}
+		}
 		
-		//If up-days >= 7, add protocol entry
-		
-		return null;
+		return protocolEntries;
 	}
 	
 	

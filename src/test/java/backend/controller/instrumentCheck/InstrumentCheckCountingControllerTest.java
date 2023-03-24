@@ -335,7 +335,7 @@ public class InstrumentCheckCountingControllerTest {
 	}
 	
 	
-	//@Test
+	@Test
 	/**
 	 * Tests the check if there is a climax movement time-wise.
 	 * A time-wise climax move is given, if at least 7 of the last 10 trading days are up-days.
@@ -347,13 +347,13 @@ public class InstrumentCheckCountingControllerTest {
 		Calendar calendar = Calendar.getInstance();
 		
 		//Define the expected protocol entry.
-		calendar.set(2022, 2, 22);		//The day showing a climax movement (22.03.22).
+		calendar.set(2022, 5, 7);		//The day showing a climax movement (07.06.22).
 		expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
 		expectedProtocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
 		expectedProtocolEntry.setText(this.resources.getString("protocol.timeClimax"));
 		
 		//Call controller to perform check.
-		calendar.set(2022, 2, 22);	//Begin check on 22.03.22.
+		calendar.set(2022, 5, 03);	//Begin check on 03.06.22.
 		try {
 			protocolEntries = this.instrumentCheckCountingController.checkTimeClimax(calendar.getTime(), this.dmlQuotations);
 			
