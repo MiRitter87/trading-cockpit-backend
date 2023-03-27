@@ -317,6 +317,9 @@ public class QuotationHibernateDAO implements QuotationDAO {
 				case DOWN_ON_VOLUME:
 					query = this.getQueryForDownOnVolumeTemplate(entityManager);
 					break;
+				case NEAR_52_WEEK_HIGH:
+					query = this.getQueryForNear52WeekHighTemplate(entityManager);
+					break;
 				default:
 					entityManager.getTransaction().commit();
 					entityManager.close();
@@ -478,7 +481,7 @@ public class QuotationHibernateDAO implements QuotationDAO {
 	
 	
 	/**
-	 * Provides the Query for the Minervini Trend Template.
+	 * Provides the Query for the "Minervini Trend Template".
 	 * 
 	 * @param entityManager The EntityManager used for Query creation.
 	 * @return The Query.
@@ -497,7 +500,7 @@ public class QuotationHibernateDAO implements QuotationDAO {
 	
 	
 	/**
-	 * Provides the Query for the Volatility Contraction Template.
+	 * Provides the Query for the "Volatility Contraction" Template.
 	 * 
 	 * @param entityManager The EntityManager used for Query creation.
 	 * @return The Query.
@@ -512,7 +515,7 @@ public class QuotationHibernateDAO implements QuotationDAO {
 	
 	
 	/**
-	 * Provides the Query for the Breakout Candidates Template.
+	 * Provides the Query for the "Breakout Candidates" Template.
 	 * 
 	 * @param entityManager The EntityManager used for Query creation.
 	 * @return The Query.
@@ -529,7 +532,7 @@ public class QuotationHibernateDAO implements QuotationDAO {
 	
 	
 	/**
-	 * Provides the Query for the Up on Volume Template.
+	 * Provides the Query for the "Up on Volume" Template.
 	 * 
 	 * @param entityManager The EntityManager used for Query creation.
 	 * @return The Query.
@@ -544,7 +547,7 @@ public class QuotationHibernateDAO implements QuotationDAO {
 	
 	
 	/**
-	 * Provides the Query for the Down on Volume Template.
+	 * Provides the Query for the "Down on Volume" Template.
 	 * 
 	 * @param entityManager The EntityManager used for Query creation.
 	 * @return The Query.
@@ -555,6 +558,20 @@ public class QuotationHibernateDAO implements QuotationDAO {
 				+ "AND q.indicator IS NOT NULL "
 				+ "AND r.volumeDifferential5Days >= 25"
 				+ "AND r.performance5Days <= -10");
+	}
+	
+	
+	/**
+	 * Provides the Query for the "Near 52-week High" Template.
+	 * 
+	 * @param entityManager The EntityManager used for Query creation.
+	 * @return The Query.
+	 */
+	private Query getQueryForNear52WeekHighTemplate(final EntityManager entityManager) {
+		return entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i JOIN q.indicator r WHERE "
+				+ "quotation_id IN :quotationIds "
+				+ "AND q.indicator IS NOT NULL "
+				+ "AND r.distanceTo52WeekHigh >= -5 ");
 	}
 	
 	

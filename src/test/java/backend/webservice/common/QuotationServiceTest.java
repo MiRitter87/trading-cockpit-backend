@@ -564,7 +564,7 @@ public class QuotationServiceTest {
 		this.appleQuotation2Indicator.setSma50((float) 69.24);
 		this.appleQuotation2Indicator.setRsNumber(71);
 		this.appleQuotation2Indicator.setPerformance5Days((float) 12.44);
-		this.appleQuotation2Indicator.setDistanceTo52WeekHigh((float) -21.4);
+		this.appleQuotation2Indicator.setDistanceTo52WeekHigh((float) -4.4);
 		this.appleQuotation2Indicator.setDistanceTo52WeekLow((float) 78.81);
 		this.appleQuotation2Indicator.setBollingerBandWidth((float) 8.71);
 		this.appleQuotation2Indicator.setVolumeDifferential5Days((float) 47.18);
@@ -839,5 +839,33 @@ public class QuotationServiceTest {
 		//Check if the correct Quotation is returned.
 		quotation = quotations.getQuotations().get(0);
 		assertEquals(this.fordQuotation1, quotation);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of the most recent quotations that match the "Near 52-week High" template.
+	 * Only those quotations should be returned that have an Indicator associated with them.
+	 * Only instruments of InstrumentType stock are requested.
+	 */
+	public void testGetQuotationsNear52WeekHighStock() {
+		QuotationArray quotations;
+		WebServiceResult getQuotationsResult;
+		Quotation quotation;
+		
+		//Get the quotations.
+		QuotationService service = new QuotationService();
+		getQuotationsResult = service.getQuotations(ScanTemplate.NEAR_52_WEEK_HIGH, InstrumentType.STOCK);
+		quotations = (QuotationArray) getQuotationsResult.getData();
+		
+		//Assure no error message exists
+		assertTrue(WebServiceTools.resultContainsErrorMessage(getQuotationsResult) == false);
+		
+		//Check if one Quotation is returned.
+		assertEquals(1, quotations.getQuotations().size());
+		
+		//Check if the correct Quotation is returned.
+		quotation = quotations.getQuotations().get(0);
+		assertEquals(this.appleQuotation2, quotation);
 	}
 }

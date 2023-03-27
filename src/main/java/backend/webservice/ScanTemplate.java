@@ -29,5 +29,10 @@ public enum ScanTemplate {
 	/**
 	 * Instruments making a big price decline on increased volume.
 	 */
-	DOWN_ON_VOLUME
+	DOWN_ON_VOLUME,
+	
+	/**
+	 * Instruments trading near their 52-week high.
+	 */
+	NEAR_52_WEEK_HIGH
 }
