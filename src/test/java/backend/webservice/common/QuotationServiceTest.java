@@ -610,7 +610,7 @@ public class QuotationServiceTest {
 		this.xlbQuotation1Indicator.setRsNumber(71);
 		this.xlbQuotation1Indicator.setPerformance5Days((float) -6.70);
 		this.xlbQuotation1Indicator.setDistanceTo52WeekHigh((float) -9.41);
-		this.xlbQuotation1Indicator.setDistanceTo52WeekLow((float) 48.81);
+		this.xlbQuotation1Indicator.setDistanceTo52WeekLow((float) 0.81);
 		this.xlbQuotation1Indicator.setBollingerBandWidth((float) 4.11);
 		this.xlbQuotation1Indicator.setVolumeDifferential5Days((float) 21.89);
 		this.xlbQuotation1Indicator.setVolumeDifferential10Days((float) -9.67);
@@ -867,5 +867,33 @@ public class QuotationServiceTest {
 		//Check if the correct Quotation is returned.
 		quotation = quotations.getQuotations().get(0);
 		assertEquals(this.appleQuotation2, quotation);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of the most recent quotations that match the "Near 52-week Low" template.
+	 * Only those quotations should be returned that have an Indicator associated with them.
+	 * Only instruments of InstrumentType 'ETF' are requested.
+	 */
+	public void testGetQuotationsNear52WeekLowETF() {
+		QuotationArray quotations;
+		WebServiceResult getQuotationsResult;
+		Quotation quotation;
+		
+		//Get the quotations.
+		QuotationService service = new QuotationService();
+		getQuotationsResult = service.getQuotations(ScanTemplate.NEAR_52_WEEK_LOW, InstrumentType.ETF);
+		quotations = (QuotationArray) getQuotationsResult.getData();
+		
+		//Assure no error message exists
+		assertTrue(WebServiceTools.resultContainsErrorMessage(getQuotationsResult) == false);
+		
+		//Check if one Quotation is returned.
+		assertEquals(1, quotations.getQuotations().size());
+		
+		//Check if the correct Quotation is returned.
+		quotation = quotations.getQuotations().get(0);
+		assertEquals(this.xlbQuotation1, quotation);
 	}
 }

@@ -34,5 +34,10 @@ public enum ScanTemplate {
 	/**
 	 * Instruments trading near their 52-week high.
 	 */
-	NEAR_52_WEEK_HIGH
+	NEAR_52_WEEK_HIGH,
+	
+	/**
+	 * Instruments trading near their 52-week low.
+	 */
+	NEAR_52_WEEK_LOW
 }

@@ -320,6 +320,9 @@ public class QuotationHibernateDAO implements QuotationDAO {
 				case NEAR_52_WEEK_HIGH:
 					query = this.getQueryForNear52WeekHighTemplate(entityManager);
 					break;
+				case NEAR_52_WEEK_LOW:
+					query = this.getQueryForNear52WeekLowTemplate(entityManager);
+					break;
 				default:
 					entityManager.getTransaction().commit();
 					entityManager.close();
@@ -572,6 +575,20 @@ public class QuotationHibernateDAO implements QuotationDAO {
 				+ "quotation_id IN :quotationIds "
 				+ "AND q.indicator IS NOT NULL "
 				+ "AND r.distanceTo52WeekHigh >= -5 ");
+	}
+	
+	
+	/**
+	 * Provides the Query for the "Near 52-week Low" Template.
+	 * 
+	 * @param entityManager The EntityManager used for Query creation.
+	 * @return The Query.
+	 */
+	private Query getQueryForNear52WeekLowTemplate(final EntityManager entityManager) {
+		return entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i JOIN q.indicator r WHERE "
+				+ "quotation_id IN :quotationIds "
+				+ "AND q.indicator IS NOT NULL "
+				+ "AND r.distanceTo52WeekLow <= 5 ");
 	}
 	
 	
