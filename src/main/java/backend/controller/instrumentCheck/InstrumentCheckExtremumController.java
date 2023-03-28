@@ -9,6 +9,7 @@ import java.util.ResourceBundle;
 import backend.controller.scan.IndicatorCalculator;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
+import backend.model.instrument.QuotationArray;
 import backend.model.protocol.ProtocolEntry;
 import backend.model.protocol.ProtocolEntryCategory;
 import backend.tools.DateTools;
@@ -48,7 +49,7 @@ public class InstrumentCheckExtremumController {
 	 * @return List of ProtocolEntry, for the day of the largest down-day of the year after the start date.
 	 * @throws Exception The check failed because data are not fully available or corrupt.
 	 */
-	public List<ProtocolEntry> checkLargestDownDay(final Date startDate, final List<Quotation> quotations) throws Exception {
+	public List<ProtocolEntry> checkLargestDownDay(final Date startDate, final QuotationArray quotations) throws Exception {
 		Instrument instrument = new Instrument();
 		List<Quotation> quotationsSortedByDate;
 		Quotation largestDownQuotation;
@@ -56,7 +57,7 @@ public class InstrumentCheckExtremumController {
 		ProtocolEntry protocolEntry;
 		float largestDownDayPerformance;
 		
-		instrument.setQuotations(quotations);
+		instrument.setQuotations(quotations.getQuotations());
 		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
 		
 		largestDownQuotation = this.getLargestDownDay(quotationsSortedByDate);
@@ -83,7 +84,7 @@ public class InstrumentCheckExtremumController {
 	 * @return List of ProtocolEntry, for the day of the largest up-day of the year after the start date.
 	 * @throws Exception The check failed because data are not fully available or corrupt.
 	 */
-	public List<ProtocolEntry> checkLargestUpDay(final Date startDate, final List<Quotation> quotations) throws Exception {
+	public List<ProtocolEntry> checkLargestUpDay(final Date startDate, final QuotationArray quotations) throws Exception {
 		Instrument instrument = new Instrument();
 		List<Quotation> quotationsSortedByDate;
 		Quotation largestUpQuotation;
@@ -91,7 +92,7 @@ public class InstrumentCheckExtremumController {
 		ProtocolEntry protocolEntry;
 		float largestUpDayPerformance;
 		
-		instrument.setQuotations(quotations);
+		instrument.setQuotations(quotations.getQuotations());
 		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
 		
 		largestUpQuotation = this.getLargestUpDay(quotationsSortedByDate);
@@ -118,12 +119,12 @@ public class InstrumentCheckExtremumController {
 	 * @return List of ProtocolEntry, for the day of the largest high/low-spread of the year after the start date.
 	 * @throws Exception The check failed because data are not fully available or corrupt.
 	 */
-	public List<ProtocolEntry> checkLargestDailySpread(final Date startDate, final List<Quotation> quotations) throws Exception {
+	public List<ProtocolEntry> checkLargestDailySpread(final Date startDate, final QuotationArray quotations) throws Exception {
 		Quotation largestSpreadQuotation;
 		List<ProtocolEntry> protocolEntries = new ArrayList<>();
 		ProtocolEntry protocolEntry;
 		
-		largestSpreadQuotation = this.getLargestDailySpread(quotations);
+		largestSpreadQuotation = this.getLargestDailySpread(quotations.getQuotations());
 		
 		if(largestSpreadQuotation.getDate().getTime() >= startDate.getTime()) {
 			protocolEntry = new ProtocolEntry();
@@ -146,12 +147,12 @@ public class InstrumentCheckExtremumController {
 	 * @return List of ProtocolEntry, for the day of the largest volume of the year after the start date.
 	 * @throws Exception The check failed because data are not fully available or corrupt.
 	 */
-	public List<ProtocolEntry> checkLargestDailyVolume(final Date startDate, final List<Quotation> quotations) throws Exception {
+	public List<ProtocolEntry> checkLargestDailyVolume(final Date startDate, final QuotationArray quotations) throws Exception {
 		Quotation largestVolumeQuotation;
 		List<ProtocolEntry> protocolEntries = new ArrayList<>();
 		ProtocolEntry protocolEntry;
 		
-		largestVolumeQuotation = this.getLargestDailyVolume(quotations);
+		largestVolumeQuotation = this.getLargestDailyVolume(quotations.getQuotations());
 		
 		if(largestVolumeQuotation.getDate().getTime() >= startDate.getTime()) {
 			protocolEntry = new ProtocolEntry();

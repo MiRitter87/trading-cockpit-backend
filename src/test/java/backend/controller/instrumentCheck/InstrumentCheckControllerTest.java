@@ -20,6 +20,7 @@ import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
+import backend.model.instrument.QuotationArray;
 import backend.model.protocol.ProtocolEntry;
 import backend.model.protocol.ProtocolEntryCategory;
 import backend.tools.DateTools;
@@ -43,7 +44,7 @@ public class InstrumentCheckControllerTest {
 	/**
 	 * A list of quotations of the DML stock.
 	 */
-	private List<Quotation> dmlQuotations;
+	private QuotationArray dmlQuotations;
 	
 	/**
 	 * The controller for Instrument checks.
@@ -96,7 +97,8 @@ public class InstrumentCheckControllerTest {
 	 */
 	private void initializeDMLQuotations() {
 		try {
-			dmlQuotations = quotationProviderYahooDAO.getQuotationHistory("DML", StockExchange.TSX, InstrumentType.STOCK, 1);
+			this.dmlQuotations = new QuotationArray();
+			this.dmlQuotations.setQuotations(quotationProviderYahooDAO.getQuotationHistory("DML", StockExchange.TSX, InstrumentType.STOCK, 1));
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
@@ -112,7 +114,7 @@ public class InstrumentCheckControllerTest {
 		Instrument instrument = new Instrument();
 		Quotation quotation;
 
-		instrument.setQuotations(this.dmlQuotations);
+		instrument.setQuotations(this.dmlQuotations.getQuotations());
 		sortedQuotations = instrument.getQuotationsSortedByDate();
 		
 		for(int i = 0; i < sortedQuotations.size(); i++) {

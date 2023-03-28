@@ -23,6 +23,7 @@ import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
+import backend.model.instrument.QuotationArray;
 import backend.model.protocol.ProtocolEntry;
 import backend.model.protocol.ProtocolEntryCategory;
 import backend.tools.DateTools;
@@ -46,7 +47,7 @@ public class InstrumentCheckCountingControllerTest {
 	/**
 	 * A list of quotations of the DML stock.
 	 */
-	private List<Quotation> dmlQuotations;
+	private QuotationArray dmlQuotations;
 	
 	/**
 	 * The controller for counting related Instrument checks.
@@ -99,7 +100,8 @@ public class InstrumentCheckCountingControllerTest {
 	 */
 	private void initializeDMLQuotations() {
 		try {
-			dmlQuotations = quotationProviderYahooDAO.getQuotationHistory("DML", StockExchange.TSX, InstrumentType.STOCK, 1);
+			this.dmlQuotations = new QuotationArray();
+			this.dmlQuotations.setQuotations(quotationProviderYahooDAO.getQuotationHistory("DML", StockExchange.TSX, InstrumentType.STOCK, 1));
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
@@ -115,7 +117,7 @@ public class InstrumentCheckCountingControllerTest {
 		Instrument instrument = new Instrument();
 		Quotation quotation;
 
-		instrument.setQuotations(this.dmlQuotations);
+		instrument.setQuotations(this.dmlQuotations.getQuotations());
 		sortedQuotations = instrument.getQuotationsSortedByDate();
 		
 		for(int i = 0; i < sortedQuotations.size(); i++) {
@@ -141,7 +143,7 @@ public class InstrumentCheckCountingControllerTest {
 		int expectedDaysTotal, actualDaysTotal;
 		Map<String, Integer> resultMap;
 
-		instrument.setQuotations(this.dmlQuotations);
+		instrument.setQuotations(this.dmlQuotations.getQuotations());
 		sortedQuotations = instrument.getQuotationsSortedByDate();
 		
 		expectedNumberOfGoodCloses = 3;
@@ -204,7 +206,7 @@ public class InstrumentCheckCountingControllerTest {
 		int expectedNumberOfUpDays, actualNumberOfUpDays, expectedNumberOfDownDays, actualNumberOfDownDays, expectedDaysTotal, actualDaysTotal;
 		Map<String, Integer> resultMap;
 
-		instrument.setQuotations(this.dmlQuotations);
+		instrument.setQuotations(this.dmlQuotations.getQuotations());
 		sortedQuotations = instrument.getQuotationsSortedByDate();
 		
 		expectedNumberOfUpDays = 1;

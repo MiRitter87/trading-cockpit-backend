@@ -9,6 +9,7 @@ import java.util.ResourceBundle;
 import backend.controller.scan.IndicatorCalculator;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
+import backend.model.instrument.QuotationArray;
 import backend.model.protocol.ProtocolEntry;
 import backend.model.protocol.ProtocolEntryCategory;
 import backend.tools.DateTools;
@@ -73,7 +74,7 @@ public class InstrumentCheckPatternController {
 	 * @return List of ProtocolEntry, for each day on which the Instrument trades up on volume.
 	 * @throws Exception The check failed because data are not fully available or corrupt.
 	 */
-	public List<ProtocolEntry> checkUpOnVolume(final Date startDate, final List<Quotation> quotations) throws Exception {
+	public List<ProtocolEntry> checkUpOnVolume(final Date startDate, final QuotationArray quotations) throws Exception {
 		Instrument instrument = new Instrument();
 		List<Quotation> quotationsSortedByDate;
 		int startIndex;
@@ -82,9 +83,9 @@ public class InstrumentCheckPatternController {
 		ProtocolEntry protocolEntry;
 		float performance;
 		
-		instrument.setQuotations(quotations);
+		instrument.setQuotations(quotations.getQuotations());
 		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
-		startIndex = InstrumentCheckController.getIndexOfQuotationWithDate(quotationsSortedByDate, startDate);
+		startIndex = quotations.getIndexOfQuotationWithDate(startDate);
 		
 		if(startIndex == -1)
 			throw new Exception("Could not find a quotation at or after the given start date.");
@@ -129,7 +130,7 @@ public class InstrumentCheckPatternController {
 	 * @return List of ProtocolEntry, for each day on which the Instrument trades down on volume.
 	 * @throws Exception The check failed because data are not fully available or corrupt.
 	 */
-	public List<ProtocolEntry> checkDownOnVolume(final Date startDate, final List<Quotation> quotations) throws Exception {
+	public List<ProtocolEntry> checkDownOnVolume(final Date startDate, final QuotationArray quotations) throws Exception {
 		Instrument instrument = new Instrument();
 		List<Quotation> quotationsSortedByDate;
 		int startIndex;
@@ -138,9 +139,9 @@ public class InstrumentCheckPatternController {
 		ProtocolEntry protocolEntry;
 		float performance;
 		
-		instrument.setQuotations(quotations);
+		instrument.setQuotations(quotations.getQuotations());
 		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
-		startIndex = InstrumentCheckController.getIndexOfQuotationWithDate(quotationsSortedByDate, startDate);
+		startIndex = quotations.getIndexOfQuotationWithDate(startDate);
 		
 		if(startIndex == -1)
 			throw new Exception("Could not find a quotation at or after the given start date.");
@@ -185,7 +186,7 @@ public class InstrumentCheckPatternController {
 	 * @return List of ProtocolEntry, for each day on which the Instrument is churning.
 	 * @throws Exception The check failed because data are not fully available or corrupt.
 	 */
-	public List<ProtocolEntry> checkChurning(final Date startDate, final List<Quotation> quotations) throws Exception {
+	public List<ProtocolEntry> checkChurning(final Date startDate, final QuotationArray quotations) throws Exception {
 		Instrument instrument = new Instrument();
 		List<Quotation> quotationsSortedByDate;
 		int startIndex;
@@ -194,9 +195,9 @@ public class InstrumentCheckPatternController {
 		ProtocolEntry protocolEntry;
 		float performance;
 		
-		instrument.setQuotations(quotations);
+		instrument.setQuotations(quotations.getQuotations());
 		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
-		startIndex = InstrumentCheckController.getIndexOfQuotationWithDate(quotationsSortedByDate, startDate);
+		startIndex = quotations.getIndexOfQuotationWithDate(startDate);
 		
 		if(startIndex == -1)
 			throw new Exception("Could not find a quotation at or after the given start date.");
@@ -243,7 +244,7 @@ public class InstrumentCheckPatternController {
 	 * @return List of ProtocolEntry, for each day on which the Instrument shows a reversal.
 	 * @throws Exception The check failed because data are not fully available or corrupt.
 	 */
-	public List<ProtocolEntry> checkHighVolumeReversal(final Date startDate, final List<Quotation> quotations) throws Exception {
+	public List<ProtocolEntry> checkHighVolumeReversal(final Date startDate, final QuotationArray quotations) throws Exception {
 		Instrument instrument = new Instrument();
 		List<Quotation> quotationsSortedByDate;
 		int startIndex;
@@ -252,9 +253,9 @@ public class InstrumentCheckPatternController {
 		ProtocolEntry protocolEntry;
 		BigDecimal dailyPriceRange, reversalThresholdPrice;
 		
-		instrument.setQuotations(quotations);
+		instrument.setQuotations(quotations.getQuotations());
 		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
-		startIndex = InstrumentCheckController.getIndexOfQuotationWithDate(quotationsSortedByDate, startDate);
+		startIndex = quotations.getIndexOfQuotationWithDate(startDate);
 		
 		if(startIndex == -1)
 			throw new Exception("Could not find a quotation at or after the given start date.");

@@ -13,6 +13,7 @@ import java.util.ResourceBundle;
 import backend.controller.scan.IndicatorCalculator;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
+import backend.model.instrument.QuotationArray;
 import backend.model.protocol.ProtocolEntry;
 import backend.model.protocol.ProtocolEntryCategory;
 import backend.tools.DateTools;
@@ -77,7 +78,7 @@ public class InstrumentCheckCountingController {
 	 * @return List of ProtocolEntry, for each day on which the number of bad closes exceeds the number of good closes after the start date.
 	 * @throws Exception The check failed because data are not fully available or corrupt.
 	 */
-	public List<ProtocolEntry> checkMoreBadThanGoodCloses(final Date startDate, final List<Quotation> quotations) throws Exception {
+	public List<ProtocolEntry> checkMoreBadThanGoodCloses(final Date startDate, final QuotationArray quotations) throws Exception {
 		Instrument instrument = new Instrument();
 		List<Quotation> quotationsSortedByDate;
 		Quotation startQuotation, currentQuotation;
@@ -86,9 +87,9 @@ public class InstrumentCheckCountingController {
 		ProtocolEntry protocolEntry;
 		Map<String, Integer> goodBadCloseSums;
 		
-		instrument.setQuotations(quotations);
+		instrument.setQuotations(quotations.getQuotations());
 		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
-		startIndex = InstrumentCheckController.getIndexOfQuotationWithDate(quotationsSortedByDate, startDate);
+		startIndex = quotations.getIndexOfQuotationWithDate(startDate);
 		
 		if(startIndex == -1)
 			throw new Exception("Could not find a quotation at or after the given start date.");
@@ -130,7 +131,7 @@ public class InstrumentCheckCountingController {
 	 * @return List of ProtocolEntry, for each day on which the number of good closes exceeds the number of bad closes after the start date.
 	 * @throws Exception The check failed because data are not fully available or corrupt.
 	 */
-	public List<ProtocolEntry> checkMoreGoodThanBadCloses(final Date startDate, final List<Quotation> quotations) throws Exception {
+	public List<ProtocolEntry> checkMoreGoodThanBadCloses(final Date startDate, final QuotationArray quotations) throws Exception {
 		Instrument instrument = new Instrument();
 		List<Quotation> quotationsSortedByDate;
 		Quotation startQuotation, currentQuotation;
@@ -139,9 +140,9 @@ public class InstrumentCheckCountingController {
 		ProtocolEntry protocolEntry;
 		Map<String, Integer> goodBadCloseSums;
 		
-		instrument.setQuotations(quotations);
+		instrument.setQuotations(quotations.getQuotations());
 		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
-		startIndex = InstrumentCheckController.getIndexOfQuotationWithDate(quotationsSortedByDate, startDate);
+		startIndex = quotations.getIndexOfQuotationWithDate(startDate);
 		
 		if(startIndex == -1)
 			throw new Exception("Could not find a quotation at or after the given start date.");
@@ -182,7 +183,7 @@ public class InstrumentCheckCountingController {
 	 * @return List of ProtocolEntry, for each day on which the number of down-days exceeds the number of up-days after the start date.
 	 * @throws Exception The check failed because data are not fully available or corrupt.
 	 */
-	public List<ProtocolEntry> checkMoreDownThanUpDays(final Date startDate, final List<Quotation> quotations) throws Exception {
+	public List<ProtocolEntry> checkMoreDownThanUpDays(final Date startDate, final QuotationArray quotations) throws Exception {
 		Instrument instrument = new Instrument();
 		List<Quotation> quotationsSortedByDate;
 		Quotation startQuotation, currentQuotation;
@@ -191,9 +192,9 @@ public class InstrumentCheckCountingController {
 		ProtocolEntry protocolEntry;
 		Map<String, Integer> upDownDaySums;
 		
-		instrument.setQuotations(quotations);
+		instrument.setQuotations(quotations.getQuotations());
 		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
-		startIndex = InstrumentCheckController.getIndexOfQuotationWithDate(quotationsSortedByDate, startDate);
+		startIndex = quotations.getIndexOfQuotationWithDate(startDate);
 		
 		if(startIndex == -1)
 			throw new Exception("Could not find a quotation at or after the given start date.");
@@ -234,7 +235,7 @@ public class InstrumentCheckCountingController {
 	 * @return List of ProtocolEntry, for each day on which the number of up-days exceeds the number of down-days after the start date.
 	 * @throws Exception The check failed because data are not fully available or corrupt.
 	 */
-	public List<ProtocolEntry> checkMoreUpThanDownDays(final Date startDate, final List<Quotation> quotations) throws Exception {
+	public List<ProtocolEntry> checkMoreUpThanDownDays(final Date startDate, final QuotationArray quotations) throws Exception {
 		Instrument instrument = new Instrument();
 		List<Quotation> quotationsSortedByDate;
 		Quotation startQuotation, currentQuotation;
@@ -243,9 +244,9 @@ public class InstrumentCheckCountingController {
 		ProtocolEntry protocolEntry;
 		Map<String, Integer> upDownDaySums;
 		
-		instrument.setQuotations(quotations);
+		instrument.setQuotations(quotations.getQuotations());
 		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
-		startIndex = InstrumentCheckController.getIndexOfQuotationWithDate(quotationsSortedByDate, startDate);
+		startIndex = quotations.getIndexOfQuotationWithDate(startDate);
 		
 		if(startIndex == -1)
 			throw new Exception("Could not find a quotation at or after the given start date.");
@@ -286,7 +287,7 @@ public class InstrumentCheckCountingController {
 	 * @return List of ProtocolEntry, for each day on which there is a time-wise climax movement.
 	 * @throws Exception The check failed because data are not fully available or corrupt.
 	 */
-	public List<ProtocolEntry> checkTimeClimax(final Date startDate, final List<Quotation> quotations) throws Exception {
+	public List<ProtocolEntry> checkTimeClimax(final Date startDate, final QuotationArray quotations) throws Exception {
 		Instrument instrument = new Instrument();
 		List<Quotation> quotationsSortedByDate;
 		Quotation currentQuotation;
@@ -295,9 +296,9 @@ public class InstrumentCheckCountingController {
 		ProtocolEntry protocolEntry;
 		Map<String, Integer> upDownDaySums;
 		
-		instrument.setQuotations(quotations);
+		instrument.setQuotations(quotations.getQuotations());
 		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
-		startIndex = InstrumentCheckController.getIndexOfQuotationWithDate(quotationsSortedByDate, startDate);
+		startIndex = quotations.getIndexOfQuotationWithDate(startDate);
 		
 		if(startIndex == -1)
 			throw new Exception("Could not find a quotation at or after the given start date.");

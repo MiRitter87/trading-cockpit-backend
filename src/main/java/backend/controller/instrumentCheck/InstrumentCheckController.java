@@ -9,6 +9,7 @@ import backend.dao.DAOManager;
 import backend.dao.quotation.QuotationDAO;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
+import backend.model.instrument.QuotationArray;
 import backend.model.protocol.Protocol;
 import backend.model.protocol.ProtocolEntry;
 import backend.model.protocol.ProtocolEntryCategory;
@@ -67,10 +68,10 @@ public class InstrumentCheckController {
 	 * @throws Exception Health check failed.
 	 */
 	public Protocol checkInstrument(final Integer instrumentId, final Date startDate) throws NoQuotationsExistException, Exception {
-		List<Quotation> quotations;
+		QuotationArray quotations = new QuotationArray();
 		Protocol protocol = new Protocol();
 		
-		quotations = this.quotationDAO.getQuotationsOfInstrument(instrumentId);
+		quotations.setQuotations(this.quotationDAO.getQuotationsOfInstrument(instrumentId));
 		this.checkQuotationsExistAfterStartDate(startDate, quotations);
 		
 		//Confirmations
@@ -111,7 +112,7 @@ public class InstrumentCheckController {
 	 * @return List of ProtocolEntry, for all days on which the SMA(50) was breached.
 	 * @throws Exception The check failed because data are not fully available or corrupt.
 	 */
-	public List<ProtocolEntry> checkCloseBelowSma50(final Date startDate, final List<Quotation> quotations) throws Exception {
+	public List<ProtocolEntry> checkCloseBelowSma50(final Date startDate, final QuotationArray quotations) throws Exception {
 		Instrument instrument = new Instrument();
 		List<Quotation> quotationsSortedByDate;
 		int startIndex;
@@ -119,9 +120,9 @@ public class InstrumentCheckController {
 		List<ProtocolEntry> protocolEntries = new ArrayList<>();
 		ProtocolEntry protocolEntry;
 		
-		instrument.setQuotations(quotations);
+		instrument.setQuotations(quotations.getQuotations());
 		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
-		startIndex = getIndexOfQuotationWithDate(quotationsSortedByDate, startDate);
+		startIndex = quotations.getIndexOfQuotationWithDate(startDate);
 		
 		if(startIndex == -1)
 			throw new Exception("Could not find a quotation at or after the given start date.");
@@ -163,41 +164,14 @@ public class InstrumentCheckController {
 	
 	
 	/**
-	 * Gets the index of the Quotation with the given date.
-	 * If no Quotation exists on the given day, the index of the first Quotation coming afterwards is determined.
-	 * 
-	 * @param quotations A List of quotations.
-	 * @param date The date.
-	 * @return The index of the Quotation. -1, if no Quotation was found.
-	 */
-	public static int getIndexOfQuotationWithDate(final List<Quotation> quotations, final Date date) {
-		Quotation quotation;
-		Date quotationDate, inputDate;
-		int indexOfQuotation = -1;
-		
-		inputDate = DateTools.getDateWithoutIntradayAttributes(date);
-		
-		for(int i = 0; i < quotations.size(); i++) {
-			quotation = quotations.get(i);
-			quotationDate = DateTools.getDateWithoutIntradayAttributes(quotation.getDate());
-			
-			if(inputDate.getTime() <= quotationDate.getTime())
-				indexOfQuotation = i;
-		}
-		
-		return indexOfQuotation;
-	}
-	
-	
-	/**
 	 * Checks if quotations exist at and after the given start date.
 	 * 
 	 * @param startDate The start date.
 	 * @param quotations A list of quotations.
 	 * @throws NoQuotationsExistException Exception indicating no Quotations exist at and after given start date.
 	 */
-	public void checkQuotationsExistAfterStartDate(final Date startDate, final List<Quotation> quotations)  throws NoQuotationsExistException {
-		int indexOfQuotationWithDate = getIndexOfQuotationWithDate(quotations, startDate);
+	public void checkQuotationsExistAfterStartDate(final Date startDate, final QuotationArray quotations)  throws NoQuotationsExistException {
+		int indexOfQuotationWithDate = quotations.getIndexOfQuotationWithDate(startDate);
 		
 		if(indexOfQuotationWithDate == -1)
 			throw new NoQuotationsExistException(startDate);
