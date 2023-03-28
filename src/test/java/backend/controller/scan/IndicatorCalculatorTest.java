@@ -201,7 +201,7 @@ public class IndicatorCalculatorTest {
 	}
 	
 	
-	//@Test
+	@Test
 	/**
 	 * Tests the calculation of price performance since the given date.
 	 */

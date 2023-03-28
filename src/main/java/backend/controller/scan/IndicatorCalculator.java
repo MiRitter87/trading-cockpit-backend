@@ -10,6 +10,7 @@ import backend.model.Currency;
 import backend.model.instrument.Indicator;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
+import backend.model.instrument.QuotationArray;
 import backend.model.instrument.QuotationRsPercentSumComparator;
 
 /**
@@ -110,7 +111,23 @@ public class IndicatorCalculator {
 	 * @return The price performance since the given date.
 	 */
 	public float getRSPercentSinceDate(final Date date, final List<Quotation> quotations) {
-		return 0;
+		Instrument instrument = new Instrument();
+		QuotationArray sortedQuotations = new QuotationArray();
+		int indexOfQuotation = 0;
+		BigDecimal rsPercent;
+		
+		//Sort the quotations by date for determination of RS percent.
+		instrument.setQuotations(quotations);
+		sortedQuotations.setQuotations(instrument.getQuotationsSortedByDate());
+		
+		indexOfQuotation = sortedQuotations.getIndexOfQuotationWithDate(date);
+		if(indexOfQuotation == -1)
+			return 0;
+		
+		rsPercent = new BigDecimal(
+				this.getPerformance(sortedQuotations.getQuotations().get(0), sortedQuotations.getQuotations().get(indexOfQuotation)));
+		
+		return rsPercent.setScale(2, RoundingMode.HALF_UP).floatValue();
 	}
 	
 	
