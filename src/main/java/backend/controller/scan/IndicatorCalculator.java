@@ -3,6 +3,7 @@ package backend.controller.scan;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import backend.model.Currency;
@@ -98,6 +99,18 @@ public class IndicatorCalculator {
 		rsPercentSum.setScale(2);
 		
 		return rsPercentSum.floatValue();
+	}
+	
+	
+	/**
+	 * Calculates the price performance beginning at the given date up until the newest Quotation.
+	 * 
+	 * @param date The start date for price performance calculation.
+	 * @param quotations A list of quotations that build the trading history used for performance calculation.
+	 * @return The price performance since the given date.
+	 */
+	public float getRSPercentSinceDate(final Date date, final List<Quotation> quotations) {
+		return 0;
 	}
 	
 	

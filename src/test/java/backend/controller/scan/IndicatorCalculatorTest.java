@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
@@ -19,6 +20,7 @@ import backend.model.instrument.Indicator;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
+import backend.tools.DateTools;
 
 /**
  * Tests the IndicatorCalculator.
@@ -196,6 +198,27 @@ public class IndicatorCalculatorTest {
 		actualRSPercentSum = indicatorCalculator.getRSPercentSum(sortedQuotations.get(0), sortedQuotations);
 		
 		assertEquals(expectedRSPercentSum, actualRSPercentSum);
+	}
+	
+	
+	//@Test
+	/**
+	 * Tests the calculation of price performance since the given date.
+	 */
+	public void testGetRSPercentSinceDate() {
+		List<Quotation> sortedQuotations = this.dmlStock.getQuotationsSortedByDate();
+		float expectedRSPercent, actualRSPercent;
+		Calendar calendar = Calendar.getInstance();
+		
+		//Actual price: 1,36
+		//Price on 11.07.22: 1,30
+		//Expected RSPercentSinceDate = 4,62%
+		expectedRSPercent = (float) 4.62;
+		calendar.set(2022, 6, 11);
+		
+		actualRSPercent = indicatorCalculator.getRSPercentSinceDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()), sortedQuotations);
+		
+		assertEquals(expectedRSPercent, actualRSPercent);
 	}
 	
 	
