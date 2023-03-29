@@ -332,6 +332,8 @@ public class QuotationHibernateDAO implements QuotationDAO {
 			query.setParameter("quotationIds", quotationIdsWithMaxDate);
 			quotations = query.getResultList();
 			
+			this.fillTransientAttributes(instrumentType, quotations);
+			
 			entityManager.getTransaction().commit();			
 		}
 		catch(Exception exception) {
