@@ -222,7 +222,8 @@ public class QuotationHibernateDAO implements QuotationDAO {
 			quotationIdsWithMaxDate = query.getResultList();
 			
 			//Now select final data using JOIN FETCH based on the Quotation IDs selected before.
-			query = this.getQueryForQuotationsWithInstrument(entityManager, quotationIdsWithMaxDate, true);
+			query = this.getQueryForQuotationsWithInstrument(entityManager, true);
+			query.setParameter("quotationIds", quotationIdsWithMaxDate);
 			quotations = query.getResultList();
 			
 			this.fillTransientAttributes(instrumentType, quotations);
@@ -262,7 +263,8 @@ public class QuotationHibernateDAO implements QuotationDAO {
 			quotationIdsWithMaxDate = query.getResultList();
 			
 			//Now select final data using JOIN FETCH based on the Quotation IDs selected before.
-			query = this.getQueryForQuotationsWithInstrument(entityManager, quotationIdsWithMaxDate, false);
+			query = this.getQueryForQuotationsWithInstrument(entityManager, false);
+			query.setParameter("quotationIds", quotationIdsWithMaxDate);
 			quotations = query.getResultList();
 			
 			entityManager.getTransaction().commit();			
@@ -322,6 +324,9 @@ public class QuotationHibernateDAO implements QuotationDAO {
 					break;
 				case NEAR_52_WEEK_LOW:
 					query = this.getQueryForNear52WeekLowTemplate(entityManager);
+					break;
+				case ALL:
+					query = this.getQueryForQuotationsWithInstrument(entityManager, true);
 					break;
 				default:
 					entityManager.getTransaction().commit();
@@ -462,12 +467,10 @@ public class QuotationHibernateDAO implements QuotationDAO {
 	 * Provides a Query that determines all quotations with their referenced Instrument (and Indicator) based on the given Quotation IDs.
 	 * 
 	 * @param entityManager The EntityManager used for Query creation.
-	 * @param quotationIdsWithMaxDate A List of Quotation IDs that are queried.
 	 * @param withIndicatorNotNull Only those quotations are fetched that have Indicator data referenced, if set to true.
 	 * @return The Query.
 	 */
-	private Query getQueryForQuotationsWithInstrument(final EntityManager entityManager, final List<Object> quotationIdsWithMaxDate,
-			final boolean withIndicatorNotNull) {
+	private Query getQueryForQuotationsWithInstrument(final EntityManager entityManager, final boolean withIndicatorNotNull) {
 		Query query;
 		
 		if(withIndicatorNotNull) {
@@ -478,8 +481,6 @@ public class QuotationHibernateDAO implements QuotationDAO {
 			query = entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i "
 					+ "WHERE quotation_id IN :quotationIds");
 		}
-		
-		query.setParameter("quotationIds", quotationIdsWithMaxDate);
 		
 		return query;
 	}

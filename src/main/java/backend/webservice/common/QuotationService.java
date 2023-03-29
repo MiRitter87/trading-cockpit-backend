@@ -80,10 +80,10 @@ public class QuotationService {
 	 * @return A List of quotations that match the template.
 	 * @throws Exception Quotation determination failed.
 	 */
-	private List<Quotation> getQuotationsByTemplate(final ScanTemplate scanTemplate, final InstrumentType instrumentType) throws Exception {
+	private List<Quotation> getQuotationsByTemplate(ScanTemplate scanTemplate, final InstrumentType instrumentType) throws Exception {
 		if(scanTemplate == null)
-			return this.quotationDAO.getRecentQuotations(instrumentType);
-		else
-			return this.quotationDAO.getQuotationsByTemplate(scanTemplate, instrumentType);
+			scanTemplate = ScanTemplate.ALL;
+		
+		return this.quotationDAO.getQuotationsByTemplate(scanTemplate, instrumentType);
 	}
 }

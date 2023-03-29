@@ -7,6 +7,11 @@ package backend.webservice;
  */
 public enum ScanTemplate {
 	/**
+	 * All Instruments.
+	 */
+	ALL,
+	
+	/**
 	 * Minervini Trend Template.
 	 */
 	MINERVINI_TREND_TEMPLATE,
