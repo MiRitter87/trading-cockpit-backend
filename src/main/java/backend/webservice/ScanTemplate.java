@@ -44,5 +44,10 @@ public enum ScanTemplate {
 	/**
 	 * Instruments trading near their 52-week low.
 	 */
-	NEAR_52_WEEK_LOW
+	NEAR_52_WEEK_LOW,
+	
+	/**
+	 * Instruments with their RS number since the given date.
+	 */
+	RS_SINCE_DATE
 }

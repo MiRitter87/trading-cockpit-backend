@@ -2,6 +2,7 @@ package backend.dao.quotation;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -14,10 +15,12 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
+import backend.controller.scan.IndicatorCalculator;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
+import backend.tools.DateTools;
 import backend.webservice.ScanTemplate;
 
 /**
@@ -285,7 +288,9 @@ public class QuotationHibernateDAO implements QuotationDAO {
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Quotation> getQuotationsByTemplate(ScanTemplate scanTemplate, InstrumentType instrumentType, final String startDate) throws Exception {
+	public List<Quotation> getQuotationsByTemplate(final ScanTemplate scanTemplate, final InstrumentType instrumentType, 
+			final String startDate) throws Exception {
+		
 		EntityManager entityManager = this.sessionFactory.createEntityManager();
 		List<Quotation> quotations;
 		Query query;
@@ -326,6 +331,7 @@ public class QuotationHibernateDAO implements QuotationDAO {
 					query = this.getQueryForNear52WeekLowTemplate(entityManager);
 					break;
 				case ALL:
+				case RS_SINCE_DATE:
 					query = this.getQueryForQuotationsWithInstrument(entityManager, true);
 					break;
 				default:
@@ -338,6 +344,7 @@ public class QuotationHibernateDAO implements QuotationDAO {
 			quotations = query.getResultList();
 			
 			this.fillTransientAttributes(instrumentType, quotations);
+			this.templateBasedPostProcessing(scanTemplate, startDate, quotations);
 			
 			entityManager.getTransaction().commit();			
 		}
@@ -400,6 +407,40 @@ public class QuotationHibernateDAO implements QuotationDAO {
 					quotation.getIndicator().setRsNumberIndustryGroup(industryGroupQuotation.getIndicator().getRsNumber());
 			}
 		}
+	}
+	
+	
+	/**
+	 * Performs post processing tasks on the given quotations based on the scan template.
+	 * 
+	 * @param scanTemplate The scan template.
+	 * @param startDateAsString The start date for calculation of the RS number.
+	 * @param quotations The quotations on which the post processing is performed.
+	 * @throws Exception Post processing failed.
+	 */
+	private void templateBasedPostProcessing(final ScanTemplate scanTemplate, final String startDateAsString, List<Quotation> quotations) throws Exception {		
+		if(scanTemplate != ScanTemplate.RS_SINCE_DATE)
+			return;
+		
+		IndicatorCalculator indicatorCalculator = new IndicatorCalculator();
+		Date startDate = DateTools.convertStringToDate(startDateAsString);
+		QuotationArray quotationsOfInstrument = new QuotationArray();
+		Quotation quotationOfDate;
+		int quotationOfDateIndex;
+		float rsPercent;
+		
+		//Calculate the price performance from the start date to the current date.
+		for(Quotation currentQuotation: quotations) {
+			quotationsOfInstrument.setQuotations(this.getQuotationsOfInstrument(currentQuotation.getInstrument().getId()));
+			quotationOfDateIndex = quotationsOfInstrument.getIndexOfQuotationWithDate(startDate);
+			quotationOfDate = quotationsOfInstrument.getQuotations().get(quotationOfDateIndex);
+			
+			rsPercent = indicatorCalculator.getPerformance(currentQuotation, quotationOfDate);
+			currentQuotation.getIndicator().setRsPercentSum(rsPercent);
+		}
+		
+		//Calculate the RS numbers based on the newly calculated performance.
+		indicatorCalculator.calculateRsNumbers(quotations);
 	}
 	
 	
