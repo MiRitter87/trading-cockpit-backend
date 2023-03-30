@@ -1,8 +1,6 @@
 package backend.webservice.common;
 
 import java.text.MessageFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -30,6 +28,7 @@ import backend.model.protocol.Protocol;
 import backend.model.webservice.WebServiceMessage;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
+import backend.tools.DateTools;
 import backend.tools.WebServiceTools;
 
 /**
@@ -291,7 +290,7 @@ public class InstrumentService {
 		Date convertedStartDate;
 		
 		try {
-			convertedStartDate = this.convertStringToDate(startDate);
+			convertedStartDate = DateTools.convertStringToDate(startDate);
 			protocol = controller.checkInstrument(instrumentId, convertedStartDate);
 			getHealthProtocolResult.setData(protocol);
 		}
@@ -371,22 +370,5 @@ public class InstrumentService {
 		catch (Exception validationException) {
 			webServiceResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, validationException.getMessage()));
 		}
-	}
-	
-	
-	/**
-	 * Converts the given String into a Date object.
-	 * 
-	 * @param dateAsString A date in the format yyyy-MM-dd.
-	 * @return A Date object.
-	 * @throws ParseException Date formatting failed.
-	 */
-	private Date convertStringToDate(final String dateAsString) throws ParseException {
-		Date date;
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-		
-		date = formatter.parse(dateAsString);
-		
-		return date;
 	}
 }

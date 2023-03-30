@@ -1,5 +1,7 @@
 package backend.tools;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -25,5 +27,22 @@ public class DateTools {
 		calendar.set(Calendar.MILLISECOND, 0);
 		
 		return calendar.getTime();
+	}
+	
+	
+	/**
+	 * Converts the given String into a Date object.
+	 * 
+	 * @param dateAsString A date in the format yyyy-MM-dd.
+	 * @return A Date object.
+	 * @throws ParseException Date formatting failed.
+	 */
+	public static Date convertStringToDate(final String dateAsString) throws ParseException {
+		Date date;
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		
+		date = formatter.parse(dateAsString);
+		
+		return date;
 	}
 }
