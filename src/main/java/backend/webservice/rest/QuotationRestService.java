@@ -21,16 +21,18 @@ public class QuotationRestService {
 	/**
 	 * Provides a list of all quotations.
 	 * 
-	 * @param scanTemplate The template that defines the parameters applied to the Scan results.
+	 * @param scanTemplate The template that defines the parameters applied to the Scan results. Parameter can be omitted.
 	 * @param instrumentType The type of Instrument that is requested.
+	 * @param startDate The start date for the RS number determination. Format used: yyyy-MM-dd. Parameter can be omitted.
 	 * @return A list of all quotations.
 	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public WebServiceResult getQuotations(@QueryParam("scanTemplate") final ScanTemplate scanTemplate, 
-			@QueryParam("instrumentType") final InstrumentType instrumentType) {
+			@QueryParam("instrumentType") final InstrumentType instrumentType,
+			@QueryParam("startDate") final String startDate) {
 		
 		QuotationService quotationService = new QuotationService();
-		return quotationService.getQuotations(scanTemplate, instrumentType);
+		return quotationService.getQuotations(scanTemplate, instrumentType, startDate);
 	}
 }

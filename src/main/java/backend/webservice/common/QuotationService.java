@@ -52,14 +52,15 @@ public class QuotationService {
 	 * 
 	 * @param scanTemplate The template that defines the parameters applied to the Scan results.
 	 * @param instrumentType The InstrumentType.
+	 * @param startDate The start date for the RS number determination. Format used: yyyy-MM-dd
 	 * @return A list of the most recent Quotation of each Instrument.
 	 */
-	public WebServiceResult getQuotations(final ScanTemplate scanTemplate, final InstrumentType instrumentType) {
+	public WebServiceResult getQuotations(final ScanTemplate scanTemplate, final InstrumentType instrumentType, final String startDate) {
 		QuotationArray quotations = new QuotationArray();
 		WebServiceResult getRecentQuotationsResult = new WebServiceResult(null);
 		
 		try {
-			quotations.setQuotations(this.getQuotationsByTemplate(scanTemplate, instrumentType));
+			quotations.setQuotations(this.getQuotationsByTemplate(scanTemplate, instrumentType, startDate));
 			getRecentQuotationsResult.setData(quotations);
 		} catch (Exception e) {
 			getRecentQuotationsResult.addMessage(new WebServiceMessage(
@@ -75,15 +76,18 @@ public class QuotationService {
 	/**
 	 * Provides a list of quotations based on the given Scan template and InstrumentType.
 	 * 
-	 * @param scanTemplate The template that defines the parameters applied to the Scan results.
+	 * @param scanTemplate The template that defines the parameters applied to the Scan results. Parameter can be omitted.
 	 * @param instrumentType The InstrumentType.
+	 * startDate The start date for the RS number determination. Format used: yyyy-MM-dd. Parameter can be omitted.
 	 * @return A List of quotations that match the template.
 	 * @throws Exception Quotation determination failed.
 	 */
-	private List<Quotation> getQuotationsByTemplate(ScanTemplate scanTemplate, final InstrumentType instrumentType) throws Exception {
+	private List<Quotation> getQuotationsByTemplate(ScanTemplate scanTemplate, final InstrumentType instrumentType, 
+			final String startDate) throws Exception {
+		
 		if(scanTemplate == null)
 			scanTemplate = ScanTemplate.ALL;
 		
-		return this.quotationDAO.getQuotationsByTemplate(scanTemplate, instrumentType);
+		return this.quotationDAO.getQuotationsByTemplate(scanTemplate, instrumentType, startDate);
 	}
 }

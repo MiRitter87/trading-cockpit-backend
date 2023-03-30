@@ -86,8 +86,10 @@ public interface QuotationDAO {
 	 * 
 	 * @param scanTemplate The Template for Quotation query.
 	 * @param instrumentType The InstrumentType.
+	 * @param startDate The start date for the RS number determination. Format used: yyyy-MM-dd. Parameter can be omitted (null).
 	 * @return The most recent Quotation of each Instrument that matches the given Template.
 	 * @throws Exception Quotation determination failed.
 	 */
-	List<Quotation> getQuotationsByTemplate(final ScanTemplate scanTemplate, final InstrumentType instrumentType) throws Exception;
+	List<Quotation> getQuotationsByTemplate(final ScanTemplate scanTemplate, final InstrumentType instrumentType, 
+			final String startDate) throws Exception;
 }

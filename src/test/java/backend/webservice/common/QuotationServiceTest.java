@@ -642,7 +642,7 @@ public class QuotationServiceTest {
 		
 		//Get the quotations.
 		QuotationService service = new QuotationService();
-		getQuotationsResult = service.getQuotations(null, InstrumentType.STOCK);
+		getQuotationsResult = service.getQuotations(null, InstrumentType.STOCK, null);
 		quotations = (QuotationArray) getQuotationsResult.getData();
 		
 		//Assure no error message exists
@@ -678,7 +678,7 @@ public class QuotationServiceTest {
 		
 		//Get the quotations.
 		QuotationService service = new QuotationService();
-		getQuotationsResult = service.getQuotations(null, InstrumentType.ETF);
+		getQuotationsResult = service.getQuotations(null, InstrumentType.ETF, null);
 		quotations = (QuotationArray) getQuotationsResult.getData();
 		
 		//Assure no error message exists
@@ -715,7 +715,7 @@ public class QuotationServiceTest {
 		
 		//Get the quotations.
 		QuotationService service = new QuotationService();
-		getQuotationsResult = service.getQuotations(ScanTemplate.MINERVINI_TREND_TEMPLATE, InstrumentType.STOCK);
+		getQuotationsResult = service.getQuotations(ScanTemplate.MINERVINI_TREND_TEMPLATE, InstrumentType.STOCK, null);
 		quotations = (QuotationArray) getQuotationsResult.getData();
 		
 		//Assure no error message exists
@@ -743,7 +743,7 @@ public class QuotationServiceTest {
 		
 		//Get the quotations.
 		QuotationService service = new QuotationService();
-		getQuotationsResult = service.getQuotations(ScanTemplate.VOLATILITY_CONTRACTION_10_DAYS, InstrumentType.STOCK);
+		getQuotationsResult = service.getQuotations(ScanTemplate.VOLATILITY_CONTRACTION_10_DAYS, InstrumentType.STOCK, null);
 		quotations = (QuotationArray) getQuotationsResult.getData();
 		
 		//Assure no error message exists
@@ -771,7 +771,7 @@ public class QuotationServiceTest {
 		
 		//Get the quotations.
 		QuotationService service = new QuotationService();
-		getQuotationsResult = service.getQuotations(ScanTemplate.BREAKOUT_CANDIDATES, InstrumentType.STOCK);
+		getQuotationsResult = service.getQuotations(ScanTemplate.BREAKOUT_CANDIDATES, InstrumentType.STOCK, null);
 		quotations = (QuotationArray) getQuotationsResult.getData();
 		
 		//Assure no error message exists
@@ -799,7 +799,7 @@ public class QuotationServiceTest {
 		
 		//Get the quotations.
 		QuotationService service = new QuotationService();
-		getQuotationsResult = service.getQuotations(ScanTemplate.UP_ON_VOLUME, InstrumentType.STOCK);
+		getQuotationsResult = service.getQuotations(ScanTemplate.UP_ON_VOLUME, InstrumentType.STOCK, null);
 		quotations = (QuotationArray) getQuotationsResult.getData();
 		
 		//Assure no error message exists
@@ -827,7 +827,7 @@ public class QuotationServiceTest {
 		
 		//Get the quotations.
 		QuotationService service = new QuotationService();
-		getQuotationsResult = service.getQuotations(ScanTemplate.DOWN_ON_VOLUME, InstrumentType.STOCK);
+		getQuotationsResult = service.getQuotations(ScanTemplate.DOWN_ON_VOLUME, InstrumentType.STOCK, null);
 		quotations = (QuotationArray) getQuotationsResult.getData();
 		
 		//Assure no error message exists
@@ -855,7 +855,7 @@ public class QuotationServiceTest {
 		
 		//Get the quotations.
 		QuotationService service = new QuotationService();
-		getQuotationsResult = service.getQuotations(ScanTemplate.NEAR_52_WEEK_HIGH, InstrumentType.STOCK);
+		getQuotationsResult = service.getQuotations(ScanTemplate.NEAR_52_WEEK_HIGH, InstrumentType.STOCK, null);
 		quotations = (QuotationArray) getQuotationsResult.getData();
 		
 		//Assure no error message exists
@@ -883,7 +883,7 @@ public class QuotationServiceTest {
 		
 		//Get the quotations.
 		QuotationService service = new QuotationService();
-		getQuotationsResult = service.getQuotations(ScanTemplate.NEAR_52_WEEK_LOW, InstrumentType.ETF);
+		getQuotationsResult = service.getQuotations(ScanTemplate.NEAR_52_WEEK_LOW, InstrumentType.ETF, null);
 		quotations = (QuotationArray) getQuotationsResult.getData();
 		
 		//Assure no error message exists
