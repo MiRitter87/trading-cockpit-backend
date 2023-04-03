@@ -15,11 +15,11 @@ import backend.controller.MainController;
 import backend.model.StockExchange;
 
 /**
- * Controls the process, that cyclically queries stock quotes and updates the alerts accordingly.
+ * Controls the process, that cyclically queries Instrument quotes and updates the alerts accordingly.
  * 
  * @author Michael
  */
-public class StockAlertController {
+public class PriceAlertController {
 	/**
 	 * Property Key: Query interval.
 	 */
@@ -71,7 +71,7 @@ public class StockAlertController {
 	protected static final String PROPERTY_DATA_PROVIDER_LSE = "dataProvider.priceAlert.lse";
 	
 	/**
-	 * The interval in seconds between each stock quote query.
+	 * The interval in seconds between each Instrument quote query.
 	 */
 	private int queryInterval;
 	
@@ -98,7 +98,7 @@ public class StockAlertController {
 	/**
 	 * Application logging.
 	 */
-	public static final Logger logger = LogManager.getLogger(StockAlertController.class);
+	public static final Logger logger = LogManager.getLogger(PriceAlertController.class);
 	
 	
 	/**
@@ -106,7 +106,7 @@ public class StockAlertController {
 	 * 
 	 * @throws Exception In case the initialization failed.
 	 */
-	public StockAlertController() throws Exception {
+	public PriceAlertController() throws Exception {
 		this.initializeQueryInterval();
 		this.initializeStartTime();
 		this.initializeEndTime();
@@ -152,7 +152,7 @@ public class StockAlertController {
 	public void start() {
 		this.executorService = Executors.newSingleThreadScheduledExecutor();
 		
-		executorService.scheduleAtFixedRate(new StockAlertThread(this.startTime, this.endTime, this.dataProviders), 
+		executorService.scheduleAtFixedRate(new PriceAlertThread(this.startTime, this.endTime, this.dataProviders), 
 				0, this.getQueryInterval(), TimeUnit.SECONDS);
 	}
 	

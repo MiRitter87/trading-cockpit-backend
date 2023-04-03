@@ -14,15 +14,15 @@ import backend.controller.DataProvider;
 import backend.model.StockExchange;
 
 /**
- * Tests the functionality of the StockAlertController
+ * Tests the functionality of the PriceAlertController
  * 
  * @author Michael
  */
-public class StockAlertControllerTest {
+public class PriceAlertControllerTest {
 	/**
-	 * The StockAlertController under test.
+	 * The PriceAlertController under test.
 	 */
-	private StockAlertController stockAlertController;
+	private PriceAlertController priceAlertController;
 	
 	
 	@BeforeEach
@@ -31,7 +31,7 @@ public class StockAlertControllerTest {
 	 */
 	private void setUp() {
 		try {
-			this.stockAlertController = new StockAlertController();
+			this.priceAlertController = new PriceAlertController();
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
@@ -43,7 +43,7 @@ public class StockAlertControllerTest {
 	 * Tasks to be performed after each test has been run.
 	 */
 	private void tearDown() {
-		this.stockAlertController = null;
+		this.priceAlertController = null;
 	}
 	
 	
@@ -53,7 +53,7 @@ public class StockAlertControllerTest {
 	 */
 	public void testGetQueryInterval() {
 		final int expectedQueryInterval = 30;
-		final int actualQueryInterval = this.stockAlertController.getQueryInterval();
+		final int actualQueryInterval = this.priceAlertController.getQueryInterval();
 		
 		assertEquals(expectedQueryInterval, actualQueryInterval);
 	}
@@ -65,7 +65,7 @@ public class StockAlertControllerTest {
 	 */
 	public void testGetStartTime() {
 		final LocalTime expectedStartTime = LocalTime.of(15, 30);
-		final LocalTime actualStartTime = this.stockAlertController.getStartTime();
+		final LocalTime actualStartTime = this.priceAlertController.getStartTime();
 		
 		assertEquals(expectedStartTime, actualStartTime);		
 	}
@@ -77,7 +77,7 @@ public class StockAlertControllerTest {
 	 */
 	public void testGetEndTime() {
 		final LocalTime expectedEndTime = LocalTime.of(22, 0);
-		final LocalTime actualEndTime = this.stockAlertController.getEndTime();
+		final LocalTime actualEndTime = this.priceAlertController.getEndTime();
 		
 		assertEquals(expectedEndTime, actualEndTime);		
 	}
@@ -88,7 +88,7 @@ public class StockAlertControllerTest {
 	 * Tests getting the data providers.
 	 */
 	public void testGetDataProviders() {
-		final Map<StockExchange, DataProvider> dataProviders = this.stockAlertController.getDataProviders();
+		final Map<StockExchange, DataProvider> dataProviders = this.priceAlertController.getDataProviders();
 		DataProvider dataProvider;
 		
 		dataProvider = dataProviders.get(StockExchange.NYSE);

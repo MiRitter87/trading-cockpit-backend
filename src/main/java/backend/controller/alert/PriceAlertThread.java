@@ -31,11 +31,11 @@ import backend.model.priceAlert.TriggerStatus;
 import okhttp3.OkHttpClient;
 
 /**
- * Queries stock quote data and updates stock alerts if the trigger price has been reached.
+ * Queries Instrument quote data and updates price alerts if the trigger price has been reached.
  * 
  * @author Michael
  */
-public class StockAlertThread extends Thread {
+public class PriceAlertThread extends Thread {
 	/**
 	 * The start time of the trading session.
 	 */
@@ -79,17 +79,17 @@ public class StockAlertThread extends Thread {
 	/**
 	 * Application logging.
 	 */
-	public static final Logger logger = LogManager.getLogger(StockAlertThread.class);
+	public static final Logger logger = LogManager.getLogger(PriceAlertThread.class);
 	
 	
 	/**
-	 * Initializes the stock alert thread.
+	 * Initializes the price alert thread.
 	 * 
 	 * @param startTime The start time of the process.
 	 * @param endTime The end time of the process.
 	 * @param dataProviders Stock exchanges and their corresponding data providers.
 	 */
-	public StockAlertThread(final LocalTime startTime, final LocalTime endTime, final Map<StockExchange, DataProvider> dataProviders) {
+	public PriceAlertThread(final LocalTime startTime, final LocalTime endTime, final Map<StockExchange, DataProvider> dataProviders) {
 		OkHttpClient okHttpClient = MainController.getInstance().getOkHttpClient();	
 		
 		this.startTime = startTime;
@@ -123,7 +123,7 @@ public class StockAlertThread extends Thread {
 		if(priceAlert == null)
 			return;
 			
-		//Get the Quotation of the stock defined in the price alert.
+		//Get the Quotation of the Instrument defined in the price alert.
 		try {
 			quotation = this.getCurrentQuotationOfInstrument(priceAlert.getInstrument());
 		} catch (Exception e) {

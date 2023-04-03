@@ -8,7 +8,7 @@ import java.util.Properties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import backend.controller.alert.StockAlertController;
+import backend.controller.alert.PriceAlertController;
 import backend.dao.DAOManager;
 import okhttp3.OkHttpClient;
 
@@ -30,9 +30,9 @@ public class MainController {
 	private static MainController instance;
 	
 	/**
-	 * Queries stock quotes and triggers stock alerts.
+	 * Queries Instrument quotes and triggers price alerts.
 	 */
-	private StockAlertController stockAlertController;
+	private PriceAlertController priceAlertController;
 	
 	/**
 	 * Client that is used for HTTP queries of third-party WebServices.
@@ -77,10 +77,10 @@ public class MainController {
 		try {
 			this.okHttpClient = new OkHttpClient();
 
-			this.stockAlertController = new StockAlertController();
-			this.stockAlertController.start();
+			this.priceAlertController = new PriceAlertController();
+			this.priceAlertController.start();
 		} catch (Exception e) {
-			logger.error("The query mechanism for stock alerts failed to start.", e);
+			logger.error("The query mechanism for price alerts failed to start.", e);
 		}
 		
 		System.out.println("Application started.");
@@ -94,8 +94,8 @@ public class MainController {
 		try {
 			DAOManager.getInstance().close();
 			
-			if(this.stockAlertController != null)
-				this.stockAlertController.stop();
+			if(this.priceAlertController != null)
+				this.priceAlertController.stop();
 			
 			System.out.println("Application stopped");
 		} catch (IOException e) {
