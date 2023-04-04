@@ -642,7 +642,7 @@ public class QuotationServiceTest {
 		
 		//Get the quotations.
 		QuotationService service = new QuotationService();
-		getQuotationsResult = service.getQuotations(null, InstrumentType.STOCK, null);
+		getQuotationsResult = service.getQuotations(ScanTemplate.ALL, InstrumentType.STOCK, null);
 		quotations = (QuotationArray) getQuotationsResult.getData();
 		
 		//Assure no error message exists
@@ -678,7 +678,7 @@ public class QuotationServiceTest {
 		
 		//Get the quotations.
 		QuotationService service = new QuotationService();
-		getQuotationsResult = service.getQuotations(null, InstrumentType.ETF, null);
+		getQuotationsResult = service.getQuotations(ScanTemplate.ALL, InstrumentType.ETF, null);
 		quotations = (QuotationArray) getQuotationsResult.getData();
 		
 		//Assure no error message exists

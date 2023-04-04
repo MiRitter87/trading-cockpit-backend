@@ -1,6 +1,5 @@
 package backend.webservice.common;
 
-import java.util.List;
 import java.util.ResourceBundle;
 
 import org.apache.logging.log4j.LogManager;
@@ -9,7 +8,6 @@ import org.apache.logging.log4j.Logger;
 import backend.dao.DAOManager;
 import backend.dao.quotation.QuotationDAO;
 import backend.model.instrument.InstrumentType;
-import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
 import backend.model.webservice.WebServiceMessage;
 import backend.model.webservice.WebServiceMessageType;
@@ -59,8 +57,13 @@ public class QuotationService {
 		QuotationArray quotations = new QuotationArray();
 		WebServiceResult getRecentQuotationsResult = new WebServiceResult(null);
 		
+		if(scanTemplate == null) {
+			getRecentQuotationsResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, this.resources.getString("quotation.noTemplateError")));
+			return getRecentQuotationsResult;
+		}
+		
 		try {
-			quotations.setQuotations(this.getQuotationsByTemplate(scanTemplate, instrumentType, startDate));
+			quotations.setQuotations(this.quotationDAO.getQuotationsByTemplate(scanTemplate, instrumentType, startDate));
 			getRecentQuotationsResult.setData(quotations);
 		} catch (Exception e) {
 			getRecentQuotationsResult.addMessage(new WebServiceMessage(
@@ -70,24 +73,5 @@ public class QuotationService {
 		}
 		
 		return getRecentQuotationsResult;
-	}
-	
-	
-	/**
-	 * Provides a list of quotations based on the given Scan template and InstrumentType.
-	 * 
-	 * @param scanTemplate The template that defines the parameters applied to the Scan results. Parameter can be omitted.
-	 * @param instrumentType The InstrumentType.
-	 * startDate The start date for the RS number determination. Format used: yyyy-MM-dd. Parameter can be omitted.
-	 * @return A List of quotations that match the template.
-	 * @throws Exception Quotation determination failed.
-	 */
-	private List<Quotation> getQuotationsByTemplate(ScanTemplate scanTemplate, final InstrumentType instrumentType, 
-			final String startDate) throws Exception {
-		
-		if(scanTemplate == null)
-			scanTemplate = ScanTemplate.ALL;
-		
-		return this.quotationDAO.getQuotationsByTemplate(scanTemplate, instrumentType, startDate);
 	}
 }
