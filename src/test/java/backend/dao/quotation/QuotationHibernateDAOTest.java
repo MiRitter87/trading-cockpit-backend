@@ -28,6 +28,7 @@ import backend.model.instrument.Indicator;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
+import backend.webservice.ScanTemplate;
 
 /**
  * Tests the QuotationHibernateDAO.
@@ -554,10 +555,6 @@ public class QuotationHibernateDAOTest {
 			//Assure the correct Quotation is provided.
 			databaseQuotation = quotations.get(0);
 			assertEquals(this.appleQuotation2, databaseQuotation);
-			
-			//Assure the RS number of the sector and industry group is provided.
-			assertEquals(this.xliSectorQuotation1Indicator.getRsNumber(), databaseQuotation.getIndicator().getRsNumberSector());
-			assertEquals(this.copperIndustryGroupQuotation1Indicator.getRsNumber(), databaseQuotation.getIndicator().getRsNumberIndustryGroup());
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
@@ -581,6 +578,34 @@ public class QuotationHibernateDAOTest {
 			//Assure the correct Quotation is provided.
 			databaseQuotation = quotations.get(0);
 			assertEquals(this.xleQuotation1, databaseQuotation);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of the most recent Quotation of each Instrument of type STOCK.
+	 * Especially the filling of transient attributes is tested here.
+	 */
+	public void testGetQuotationsByTemplate() {
+		List<Quotation> quotations;
+		Quotation databaseQuotation;
+		
+		try {
+			quotations = quotationDAO.getQuotationsByTemplate(ScanTemplate.ALL, InstrumentType.STOCK, null);
+			
+			//Assure one Quotation is returned.
+			assertEquals(1, quotations.size());
+			
+			//Assure the correct Quotation is provided.
+			databaseQuotation = quotations.get(0);
+			assertEquals(this.appleQuotation2, databaseQuotation);
+			
+			//Assure the RS number of the sector and industry group is provided. These are transient attributes.
+			assertEquals(this.xliSectorQuotation1Indicator.getRsNumber(), databaseQuotation.getIndicator().getRsNumberSector());
+			assertEquals(this.copperIndustryGroupQuotation1Indicator.getRsNumber(), databaseQuotation.getIndicator().getRsNumberIndustryGroup());
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
