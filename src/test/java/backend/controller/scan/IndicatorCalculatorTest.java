@@ -20,6 +20,7 @@ import backend.model.instrument.Indicator;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
+import backend.model.instrument.QuotationArray;
 import backend.tools.DateTools;
 
 /**
@@ -183,8 +184,10 @@ public class IndicatorCalculatorTest {
 	 * Tests the calculation of the RS percentage sum.
 	 */
 	public void testGetRSPercentSum() {
-		List<Quotation> sortedQuotations = this.dmlStock.getQuotationsSortedByDate();
+		QuotationArray sortedQuotations = new QuotationArray();
 		float expectedRSPercentSum, actualRSPercentSum;
+		
+		sortedQuotations.setQuotations(this.dmlStock.getQuotationsSortedByDate());
 		
 		//Actual price: 1,36
 		//Three months ago price: 1,75
@@ -195,7 +198,7 @@ public class IndicatorCalculatorTest {
 		//= -22,29% -22,29% -8,72% -40,87% +4,62% = -89,55%
 		expectedRSPercentSum = (float) -89.55;
 		
-		actualRSPercentSum = indicatorCalculator.getRSPercentSum(sortedQuotations.get(0), sortedQuotations);
+		actualRSPercentSum = indicatorCalculator.getRSPercentSum(sortedQuotations.getQuotations().get(0), sortedQuotations);
 		
 		assertEquals(expectedRSPercentSum, actualRSPercentSum);
 	}
@@ -206,9 +209,11 @@ public class IndicatorCalculatorTest {
 	 * Tests the calculation of price performance since the given date.
 	 */
 	public void testGetRSPercentSinceDate() {
-		List<Quotation> sortedQuotations = this.dmlStock.getQuotationsSortedByDate();
+		QuotationArray sortedQuotations = new QuotationArray();
 		float expectedRSPercent, actualRSPercent;
 		Calendar calendar = Calendar.getInstance();
+		
+		sortedQuotations.setQuotations(this.dmlStock.getQuotationsSortedByDate());
 		
 		//Actual price: 1,36
 		//Price on 11.07.22: 1,30
@@ -227,12 +232,13 @@ public class IndicatorCalculatorTest {
 	 * Tests the calculation of the RS percentage sum, if the quotation history is smaller than a year.
 	 */
 	public void testGetRSPercentSumOfIncompleteHistory() {
-		List<Quotation> sortedQuotations = this.dmlStock.getQuotationsSortedByDate();
+		QuotationArray sortedQuotations = new QuotationArray();
 		float expectedRSPercentSum, actualRSPercentSum;
 		
+		sortedQuotations.setQuotations(this.dmlStock.getQuotationsSortedByDate());
+		
 		//Remove the last quote from the instrument. The 12 month performance can't be calculated then.
-		sortedQuotations.remove(sortedQuotations.size() - 1);
-		this.dmlStock.setQuotations(sortedQuotations);
+		sortedQuotations.getQuotations().remove(sortedQuotations.getQuotations().size() - 1);
 		
 		//Actual price: 1,36
 		//Three months ago price: 1,75
@@ -243,7 +249,7 @@ public class IndicatorCalculatorTest {
 		//= -22,29% -22,29% -8,72% -40,87% = -94,17%
 		expectedRSPercentSum = (float) -94.17;
 		
-		actualRSPercentSum = indicatorCalculator.getRSPercentSum(sortedQuotations.get(0), sortedQuotations);
+		actualRSPercentSum = indicatorCalculator.getRSPercentSum(sortedQuotations.getQuotations().get(0), sortedQuotations);
 		
 		assertEquals(expectedRSPercentSum, actualRSPercentSum);
 	}
@@ -276,10 +282,11 @@ public class IndicatorCalculatorTest {
 	 * Tests the calculation of the 50-day Simple Moving Average for the most recent Quotation.
 	 */
 	public void testGetSimpleMovingAverage50Days() {
-		List<Quotation> sortedQuotations = this.dmlStock.getQuotationsSortedByDate();
+		QuotationArray sortedQuotations = new QuotationArray();
 		float actualSma50, expectedSma50 = (float) 1.42;
 		
-		actualSma50 = this.indicatorCalculator.getSimpleMovingAverage(50, sortedQuotations.get(0), sortedQuotations);
+		sortedQuotations.setQuotations(this.dmlStock.getQuotationsSortedByDate());
+		actualSma50 = this.indicatorCalculator.getSimpleMovingAverage(50, sortedQuotations.getQuotations().get(0), sortedQuotations);
 		
 		assertEquals(expectedSma50, actualSma50);
 	}
@@ -290,10 +297,11 @@ public class IndicatorCalculatorTest {
 	 * Tests the calculation of the 50-day Simple Moving Average for a historical Quotation.
 	 */
 	public void testGetSimpleMovingAverage50DaysHistorical() {
-		List<Quotation> sortedQuotations = this.dmlStock.getQuotationsSortedByDate();
+		QuotationArray sortedQuotations = new QuotationArray();
 		float actualSma50, expectedSma50 = (float) 1.41;
 		
-		actualSma50 = this.indicatorCalculator.getSimpleMovingAverage(50, sortedQuotations.get(2), sortedQuotations);
+		sortedQuotations.setQuotations(this.dmlStock.getQuotationsSortedByDate());
+		actualSma50 = this.indicatorCalculator.getSimpleMovingAverage(50, sortedQuotations.getQuotations().get(2), sortedQuotations);
 		
 		assertEquals(expectedSma50, actualSma50);
 	}
@@ -304,10 +312,11 @@ public class IndicatorCalculatorTest {
 	 * Tests the calculation of the 150-day Simple Moving Average.
 	 */
 	public void testGetSimpleMovingAverage150Days() {
-		List<Quotation> sortedQuotations = this.dmlStock.getQuotationsSortedByDate();
+		QuotationArray sortedQuotations = new QuotationArray();
 		float actualSma150, expectedSma150 = (float) 1.67;
 		
-		actualSma150 = this.indicatorCalculator.getSimpleMovingAverage(150, sortedQuotations.get(0), sortedQuotations);
+		sortedQuotations.setQuotations(this.dmlStock.getQuotationsSortedByDate());
+		actualSma150 = this.indicatorCalculator.getSimpleMovingAverage(150, sortedQuotations.getQuotations().get(0), sortedQuotations);
 		
 		assertEquals(expectedSma150, actualSma150);
 	}
@@ -318,10 +327,11 @@ public class IndicatorCalculatorTest {
 	 * Tests the calculation of the 200-day Simple Moving Average.
 	 */
 	public void testGetSimpleMovingAverage200Days() {
-		List<Quotation> sortedQuotations = this.dmlStock.getQuotationsSortedByDate();
+		QuotationArray sortedQuotations = new QuotationArray();
 		float actualSma200, expectedSma200 = (float) 1.79;
 		
-		actualSma200 = this.indicatorCalculator.getSimpleMovingAverage(200, sortedQuotations.get(0), sortedQuotations);
+		sortedQuotations.setQuotations(this.dmlStock.getQuotationsSortedByDate());
+		actualSma200 = this.indicatorCalculator.getSimpleMovingAverage(200, sortedQuotations.getQuotations().get(0), sortedQuotations);
 		
 		assertEquals(expectedSma200, actualSma200);
 	}
@@ -332,10 +342,11 @@ public class IndicatorCalculatorTest {
 	 * Tests the calculation of the distance to the 52 week high.
 	 */
 	public void testGetDistanceTo52WeekHigh() {
-		List<Quotation> sortedQuotations = this.dmlStock.getQuotationsSortedByDate();
+		QuotationArray sortedQuotations = new QuotationArray();
 		float actualDistanceTo52WeekHigh, expectedDistanceTo52WeekHigh = (float) -48.09;
 		
-		actualDistanceTo52WeekHigh = this.indicatorCalculator.getDistanceTo52WeekHigh(sortedQuotations.get(0), sortedQuotations);
+		sortedQuotations.setQuotations(this.dmlStock.getQuotationsSortedByDate());
+		actualDistanceTo52WeekHigh = this.indicatorCalculator.getDistanceTo52WeekHigh(sortedQuotations.getQuotations().get(0), sortedQuotations);
 		
 		assertEquals(expectedDistanceTo52WeekHigh, actualDistanceTo52WeekHigh);
 	}
@@ -346,10 +357,11 @@ public class IndicatorCalculatorTest {
 	 * Tests the calculation of the distance to the 52 week low.
 	 */
 	public void testGetDistanceTo52WeekLow() {
-		List<Quotation> sortedQuotations = this.dmlStock.getQuotationsSortedByDate();
+		QuotationArray sortedQuotations = new QuotationArray();
 		float actualDistanceTo52WeekLow, expectedDistanceTo52WeekLow = (float) 10.57;
 		
-		actualDistanceTo52WeekLow = this.indicatorCalculator.getDistanceTo52WeekLow(sortedQuotations.get(0), sortedQuotations);
+		sortedQuotations.setQuotations(this.dmlStock.getQuotationsSortedByDate());
+		actualDistanceTo52WeekLow = this.indicatorCalculator.getDistanceTo52WeekLow(sortedQuotations.getQuotations().get(0), sortedQuotations);
 		
 		assertEquals(expectedDistanceTo52WeekLow, actualDistanceTo52WeekLow);
 	}
@@ -375,10 +387,11 @@ public class IndicatorCalculatorTest {
 	 * Tests the calculation of the Bollinger BandWidth.
 	 */
 	public void testGetBollingerBandWidth() {
-		List<Quotation> sortedQuotations = this.dmlStock.getQuotationsSortedByDate();
+		QuotationArray sortedQuotations = new QuotationArray();
 		float actualBollingerBandWidth, expectedBollingerBandWidth = (float) 24.7;
 		
-		actualBollingerBandWidth = this.indicatorCalculator.getBollingerBandWidth(10, 2, sortedQuotations.get(0), sortedQuotations);
+		sortedQuotations.setQuotations(this.dmlStock.getQuotationsSortedByDate());
+		actualBollingerBandWidth = this.indicatorCalculator.getBollingerBandWidth(10, 2, sortedQuotations.getQuotations().get(0), sortedQuotations);
 		
 		assertEquals(expectedBollingerBandWidth, actualBollingerBandWidth);
 	}
@@ -389,10 +402,11 @@ public class IndicatorCalculatorTest {
 	 * Tests the calculation of the 10-day Simple Moving Average Volume.
 	 */
 	public void testGetSimpleMovingAverageVolume() {
-		List<Quotation> sortedQuotations = this.dmlStock.getQuotationsSortedByDate();
+		QuotationArray sortedQuotations = new QuotationArray();
 		long expectedVolume = 1440500, actualVolume;
 		
-		actualVolume = this.indicatorCalculator.getSimpleMovingAverageVolume(10, sortedQuotations.get(0), sortedQuotations);
+		sortedQuotations.setQuotations(this.dmlStock.getQuotationsSortedByDate());
+		actualVolume = this.indicatorCalculator.getSimpleMovingAverageVolume(10, sortedQuotations.getQuotations().get(0), sortedQuotations);
 		
 		assertEquals(expectedVolume, actualVolume);
 	}
@@ -403,10 +417,11 @@ public class IndicatorCalculatorTest {
 	 * Tests the calculation of the volume differential between two moving averages of the volume.
 	 */
 	public void testGetVolumeDifferential() {
-		List<Quotation> sortedQuotations = this.dmlStock.getQuotationsSortedByDate();
+		QuotationArray sortedQuotations = new QuotationArray();
 		float expectedDifferential = (float) -17.58, actualDifferential;
 		
-		actualDifferential = this.indicatorCalculator.getVolumeDifferential(30, 10, sortedQuotations.get(0), sortedQuotations);
+		sortedQuotations.setQuotations(this.dmlStock.getQuotationsSortedByDate());
+		actualDifferential = this.indicatorCalculator.getVolumeDifferential(30, 10, sortedQuotations.getQuotations().get(0), sortedQuotations);
 		
 		assertEquals(expectedDifferential, actualDifferential);
 	}
@@ -417,17 +432,19 @@ public class IndicatorCalculatorTest {
 	 * Tests the calculation of the volume differential if too few quotations exist for calculation of the moving average volume.
 	 */
 	public void testGetVolumeDifferentialWithTooFewQuotations() {
-		List<Quotation> sortedQuotations = this.dmlStock.getQuotationsSortedByDate();
-		List<Quotation> reducedQuotationHistory = new ArrayList<>();
+		QuotationArray sortedQuotations = new QuotationArray();
+		QuotationArray reducedQuotationHistory = new QuotationArray();
 		float expectedDifferential = 0, actualDifferential;
 		
-		//Reduce the number of quotations below the number needed for moving average volume creation.
-		reducedQuotationHistory.add(sortedQuotations.get(0));
-		reducedQuotationHistory.add(sortedQuotations.get(1));
-		reducedQuotationHistory.add(sortedQuotations.get(2));
-		this.dmlStock.setQuotations(reducedQuotationHistory);
+		sortedQuotations.setQuotations(this.dmlStock.getQuotationsSortedByDate());
 		
-		actualDifferential = this.indicatorCalculator.getVolumeDifferential(30, 10, reducedQuotationHistory.get(0), reducedQuotationHistory);
+		//Reduce the number of quotations below the number needed for moving average volume creation.
+		reducedQuotationHistory.getQuotations().add(sortedQuotations.getQuotations().get(0));
+		reducedQuotationHistory.getQuotations().add(sortedQuotations.getQuotations().get(1));
+		reducedQuotationHistory.getQuotations().add(sortedQuotations.getQuotations().get(2));
+		
+		actualDifferential = this.indicatorCalculator.getVolumeDifferential(30, 10, reducedQuotationHistory.getQuotations().get(0), 
+				reducedQuotationHistory);
 		
 		assertEquals(expectedDifferential, actualDifferential);
 	}
@@ -438,10 +455,11 @@ public class IndicatorCalculatorTest {
 	 * Tests the calculation of the base length in weeks since the last 52 week high.
 	 */
 	public void testGetBaseLengthWeeks() {
-		List<Quotation> sortedQuotations = this.dmlStock.getQuotationsSortedByDate();
+		QuotationArray sortedQuotations = new QuotationArray();
 		int expectedBaseLength = 35, actualBaseLength;
 		
-		actualBaseLength = this.indicatorCalculator.getBaseLengthWeeks(sortedQuotations.get(0), sortedQuotations);
+		sortedQuotations.setQuotations(this.dmlStock.getQuotationsSortedByDate());
+		actualBaseLength = this.indicatorCalculator.getBaseLengthWeeks(sortedQuotations.getQuotations().get(0), sortedQuotations);
 		
 		assertEquals(expectedBaseLength, actualBaseLength);
 	}
@@ -452,10 +470,11 @@ public class IndicatorCalculatorTest {
 	 * Tests the calculation of the Up/Down Volume ratio.
 	 */
 	public void testGetUpDownVolumeRatio() {
-		List<Quotation> sortedQuotations = this.dmlStock.getQuotationsSortedByDate();
+		QuotationArray sortedQuotations = new QuotationArray();
 		float expectedUdVolRatio = (float) 0.95, actualUdVolRatio;
 		
-		actualUdVolRatio = this.indicatorCalculator.getUpDownVolumeRatio(50, sortedQuotations.get(0), sortedQuotations);
+		sortedQuotations.setQuotations(this.dmlStock.getQuotationsSortedByDate());
+		actualUdVolRatio = this.indicatorCalculator.getUpDownVolumeRatio(50, sortedQuotations.getQuotations().get(0), sortedQuotations);
 		
 		assertEquals(expectedUdVolRatio, actualUdVolRatio);
 	}
@@ -466,10 +485,11 @@ public class IndicatorCalculatorTest {
 	 * Tests the calculation of the price performance of the given daily interval.
 	 */
 	public void testGetPricePerformanceForDays() {
-		List<Quotation> sortedQuotations = this.dmlStock.getQuotationsSortedByDate();
+		QuotationArray sortedQuotations = new QuotationArray();
 		float expectedPerformance = (float) 6.25, actualPerformance;
 		
-		actualPerformance = this.indicatorCalculator.getPricePerformanceForDays(20, sortedQuotations.get(0), sortedQuotations);
+		sortedQuotations.setQuotations(this.dmlStock.getQuotationsSortedByDate());
+		actualPerformance = this.indicatorCalculator.getPricePerformanceForDays(20, sortedQuotations.getQuotations().get(0), sortedQuotations);
 		
 		assertEquals(expectedPerformance, actualPerformance);
 	}
@@ -480,10 +500,11 @@ public class IndicatorCalculatorTest {
 	 * Tests the calculation of the trading liquidity for the given daily interval.
 	 */
 	public void testGetLiquidityForDays() {
-		List<Quotation> sortedQuotations = this.dmlStock.getQuotationsSortedByDate();
+		QuotationArray sortedQuotations = new QuotationArray();
 		float expectedLiquidity = (float) 2036934, actualLiquidity;
 		
-		actualLiquidity = this.indicatorCalculator.getLiquidityForDays(20, sortedQuotations.get(0), sortedQuotations);
+		sortedQuotations.setQuotations(this.dmlStock.getQuotationsSortedByDate());
+		actualLiquidity = this.indicatorCalculator.getLiquidityForDays(20, sortedQuotations.getQuotations().get(0), sortedQuotations);
 		
 		assertEquals(expectedLiquidity, actualLiquidity);
 	}
@@ -496,10 +517,11 @@ public class IndicatorCalculatorTest {
 	 * because all data providers use pence instead of pounds.
 	 */
 	public void testGetLiquidityForDaysLse() {
-		List<Quotation> sortedQuotations = this.rioStock.getQuotationsSortedByDate();
+		QuotationArray sortedQuotations = new QuotationArray();
 		float expectedLiquidity = (float) 162189066, actualLiquidity;
 		
-		actualLiquidity = this.indicatorCalculator.getLiquidityForDays(20, sortedQuotations.get(0), sortedQuotations);
+		sortedQuotations.setQuotations(this.rioStock.getQuotationsSortedByDate());
+		actualLiquidity = this.indicatorCalculator.getLiquidityForDays(20, sortedQuotations.getQuotations().get(0), sortedQuotations);
 		
 		assertEquals(expectedLiquidity, actualLiquidity);
 	}

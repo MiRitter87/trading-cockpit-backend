@@ -55,7 +55,7 @@ public class InstrumentCheckExtremumController {
 		float largestDownDayPerformance;
 		
 		largestDownQuotation = this.getLargestDownDay(sortedQuotations);
-		largestDownDayPerformance = this.indicatorCalculator.getPricePerformanceForDays(1, largestDownQuotation, sortedQuotations.getQuotations());
+		largestDownDayPerformance = this.indicatorCalculator.getPricePerformanceForDays(1, largestDownQuotation, sortedQuotations);
 		
 		if(largestDownQuotation.getDate().getTime() >= startDate.getTime()) {
 			protocolEntry = new ProtocolEntry();
@@ -85,7 +85,7 @@ public class InstrumentCheckExtremumController {
 		float largestUpDayPerformance;
 		
 		largestUpQuotation = this.getLargestUpDay(sortedQuotations);
-		largestUpDayPerformance = this.indicatorCalculator.getPricePerformanceForDays(1, largestUpQuotation, sortedQuotations.getQuotations());
+		largestUpDayPerformance = this.indicatorCalculator.getPricePerformanceForDays(1, largestUpQuotation, sortedQuotations);
 		
 		if(largestUpQuotation.getDate().getTime() >= startDate.getTime()) {
 			protocolEntry = new ProtocolEntry();

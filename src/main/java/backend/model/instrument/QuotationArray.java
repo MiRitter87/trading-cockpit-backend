@@ -20,6 +20,14 @@ public class QuotationArray {
 	 * A list of quotations.
 	 */
 	private List<Quotation> quotations;
+	
+	
+	/**
+	 * Default constructor.
+	 */
+	public QuotationArray() {
+		this.quotations = new ArrayList<>();
+	}
 
 	
 	/**
