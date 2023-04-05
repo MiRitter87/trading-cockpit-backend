@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 import backend.controller.scan.IndicatorCalculator;
-import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
 import backend.model.protocol.ProtocolEntry;
@@ -74,36 +73,32 @@ public class InstrumentCheckCountingController {
 	 * The check begins at the start date and goes up until the most recent Quotation.
 	 * 
 	 * @param startDate The date at which the check starts.
-	 * @param quotations The quotations that build the trading history.
+	 * @param sortedQuotations The quotations sorted by date that build the trading history.
 	 * @return List of ProtocolEntry, for each day on which the number of bad closes exceeds the number of good closes after the start date.
 	 * @throws Exception The check failed because data are not fully available or corrupt.
 	 */
-	public List<ProtocolEntry> checkMoreBadThanGoodCloses(final Date startDate, final QuotationArray quotations) throws Exception {
-		Instrument instrument = new Instrument();
-		List<Quotation> quotationsSortedByDate;
+	public List<ProtocolEntry> checkMoreBadThanGoodCloses(final Date startDate, final QuotationArray sortedQuotations) throws Exception {
 		Quotation startQuotation, currentQuotation;
 		int startIndex, numberOfGoodCloses, numberOfBadCloses, numberOfDaysTotal;
 		List<ProtocolEntry> protocolEntries = new ArrayList<>();
 		ProtocolEntry protocolEntry;
 		Map<String, Integer> goodBadCloseSums;
 		
-		instrument.setQuotations(quotations.getQuotations());
-		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
-		startIndex = quotations.getIndexOfQuotationWithDate(startDate);
+		startIndex = sortedQuotations.getIndexOfQuotationWithDate(startDate);
 		
 		if(startIndex == -1)
 			throw new Exception("Could not find a quotation at or after the given start date.");
 		
-		startQuotation = quotationsSortedByDate.get(startIndex);
+		startQuotation = sortedQuotations.getQuotations().get(startIndex);
 		
 		for(int i = startIndex; i >= 0; i--) {
 			//Skip the first day, because more bad than good closes can only be calculated for at least two quotations.
 			if(i == startIndex)
 				continue;
 			
-			currentQuotation = quotationsSortedByDate.get(i);
+			currentQuotation = sortedQuotations.getQuotations().get(i);
 			
-			goodBadCloseSums = this.getNumberOfGoodAndBadCloses(startQuotation, currentQuotation, quotationsSortedByDate);
+			goodBadCloseSums = this.getNumberOfGoodAndBadCloses(startQuotation, currentQuotation, sortedQuotations);
 			numberOfGoodCloses = goodBadCloseSums.get(MAP_ENTRY_GOOD_CLOSES);
 			numberOfBadCloses = goodBadCloseSums.get(MAP_ENTRY_BAD_CLOSES);
 			numberOfDaysTotal = goodBadCloseSums.get(MAP_ENTRY_DAYS_TOTAL);
@@ -127,36 +122,32 @@ public class InstrumentCheckCountingController {
 	 * The check begins at the start date and goes up until the most recent Quotation.
 	 * 
 	 * @param startDate The date at which the check starts.
-	 * @param quotations The quotations that build the trading history.
+	 * @param sortedQuotations The quotations sorted by date that build the trading history.
 	 * @return List of ProtocolEntry, for each day on which the number of good closes exceeds the number of bad closes after the start date.
 	 * @throws Exception The check failed because data are not fully available or corrupt.
 	 */
-	public List<ProtocolEntry> checkMoreGoodThanBadCloses(final Date startDate, final QuotationArray quotations) throws Exception {
-		Instrument instrument = new Instrument();
-		List<Quotation> quotationsSortedByDate;
+	public List<ProtocolEntry> checkMoreGoodThanBadCloses(final Date startDate, final QuotationArray sortedQuotations) throws Exception {
 		Quotation startQuotation, currentQuotation;
 		int startIndex, numberOfGoodCloses, numberOfBadCloses, numberOfDaysTotal;
 		List<ProtocolEntry> protocolEntries = new ArrayList<>();
 		ProtocolEntry protocolEntry;
 		Map<String, Integer> goodBadCloseSums;
 		
-		instrument.setQuotations(quotations.getQuotations());
-		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
-		startIndex = quotations.getIndexOfQuotationWithDate(startDate);
+		startIndex = sortedQuotations.getIndexOfQuotationWithDate(startDate);
 		
 		if(startIndex == -1)
 			throw new Exception("Could not find a quotation at or after the given start date.");
 		
-		startQuotation = quotationsSortedByDate.get(startIndex);
+		startQuotation = sortedQuotations.getQuotations().get(startIndex);
 		
 		for(int i = startIndex; i >= 0; i--) {
 			//Skip the first day, because more good than bad closes can only be calculated for at least two quotations.
 			if(i == startIndex)
 				continue;
 			
-			currentQuotation = quotationsSortedByDate.get(i);
+			currentQuotation = sortedQuotations.getQuotations().get(i);
 			
-			goodBadCloseSums = this.getNumberOfGoodAndBadCloses(startQuotation, currentQuotation, quotationsSortedByDate);
+			goodBadCloseSums = this.getNumberOfGoodAndBadCloses(startQuotation, currentQuotation, sortedQuotations);
 			numberOfGoodCloses = goodBadCloseSums.get(MAP_ENTRY_GOOD_CLOSES);
 			numberOfBadCloses = goodBadCloseSums.get(MAP_ENTRY_BAD_CLOSES);
 			numberOfDaysTotal = goodBadCloseSums.get(MAP_ENTRY_DAYS_TOTAL);
@@ -179,36 +170,32 @@ public class InstrumentCheckCountingController {
 	 * The check begins at the start date and goes up until the most recent Quotation.
 	 * 
 	 * @param startDate The date at which the check starts.
-	 * @param quotations The quotations that build the trading history.
+	 * @param sortedQuotations The quotations sorted by date that build the trading history.
 	 * @return List of ProtocolEntry, for each day on which the number of down-days exceeds the number of up-days after the start date.
 	 * @throws Exception The check failed because data are not fully available or corrupt.
 	 */
-	public List<ProtocolEntry> checkMoreDownThanUpDays(final Date startDate, final QuotationArray quotations) throws Exception {
-		Instrument instrument = new Instrument();
-		List<Quotation> quotationsSortedByDate;
+	public List<ProtocolEntry> checkMoreDownThanUpDays(final Date startDate, final QuotationArray sortedQuotations) throws Exception {
 		Quotation startQuotation, currentQuotation;
 		int startIndex, numberOfUpDays, numberOfDownDays, numberOfDaysTotal;
 		List<ProtocolEntry> protocolEntries = new ArrayList<>();
 		ProtocolEntry protocolEntry;
 		Map<String, Integer> upDownDaySums;
 		
-		instrument.setQuotations(quotations.getQuotations());
-		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
-		startIndex = quotations.getIndexOfQuotationWithDate(startDate);
+		startIndex = sortedQuotations.getIndexOfQuotationWithDate(startDate);
 		
 		if(startIndex == -1)
 			throw new Exception("Could not find a quotation at or after the given start date.");
 		
-		startQuotation = quotationsSortedByDate.get(startIndex);
+		startQuotation = sortedQuotations.getQuotations().get(startIndex);
 		
 		for(int i = startIndex; i >= 0; i--) {
 			//Skip the first day, because more down than up days can only be calculated for at least two quotations.
 			if(i == startIndex)
 				continue;
 			
-			currentQuotation = quotationsSortedByDate.get(i);			
+			currentQuotation = sortedQuotations.getQuotations().get(i);			
 			
-			upDownDaySums = this.getNumberOfUpAndDownDays(startQuotation, currentQuotation, quotationsSortedByDate);
+			upDownDaySums = this.getNumberOfUpAndDownDays(startQuotation, currentQuotation, sortedQuotations);
 			numberOfUpDays = upDownDaySums.get(MAP_ENTRY_UP_DAYS);
 			numberOfDownDays = upDownDaySums.get(MAP_ENTRY_DOWN_DAYS);
 			numberOfDaysTotal = upDownDaySums.get(MAP_ENTRY_DAYS_TOTAL);
@@ -231,36 +218,32 @@ public class InstrumentCheckCountingController {
 	 * The check begins at the start date and goes up until the most recent Quotation.
 	 * 
 	 * @param startDate The date at which the check starts.
-	 * @param quotations The quotations that build the trading history.
+	 * @param sortedQuotations The quotations sorted by date that build the trading history.
 	 * @return List of ProtocolEntry, for each day on which the number of up-days exceeds the number of down-days after the start date.
 	 * @throws Exception The check failed because data are not fully available or corrupt.
 	 */
-	public List<ProtocolEntry> checkMoreUpThanDownDays(final Date startDate, final QuotationArray quotations) throws Exception {
-		Instrument instrument = new Instrument();
-		List<Quotation> quotationsSortedByDate;
+	public List<ProtocolEntry> checkMoreUpThanDownDays(final Date startDate, final QuotationArray sortedQuotations) throws Exception {
 		Quotation startQuotation, currentQuotation;
 		int startIndex, numberOfUpDays, numberOfDownDays, numberOfDaysTotal;
 		List<ProtocolEntry> protocolEntries = new ArrayList<>();
 		ProtocolEntry protocolEntry;
 		Map<String, Integer> upDownDaySums;
 		
-		instrument.setQuotations(quotations.getQuotations());
-		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
-		startIndex = quotations.getIndexOfQuotationWithDate(startDate);
+		startIndex = sortedQuotations.getIndexOfQuotationWithDate(startDate);
 		
 		if(startIndex == -1)
 			throw new Exception("Could not find a quotation at or after the given start date.");
 		
-		startQuotation = quotationsSortedByDate.get(startIndex);
+		startQuotation = sortedQuotations.getQuotations().get(startIndex);
 		
 		for(int i = startIndex; i >= 0; i--) {
 			//Skip the first day, because more up than down days can only be calculated for at least two quotations.
 			if(i == startIndex)
 				continue;
 			
-			currentQuotation = quotationsSortedByDate.get(i);
+			currentQuotation = sortedQuotations.getQuotations().get(i);
 			
-			upDownDaySums = this.getNumberOfUpAndDownDays(startQuotation, currentQuotation, quotationsSortedByDate);
+			upDownDaySums = this.getNumberOfUpAndDownDays(startQuotation, currentQuotation, sortedQuotations);
 			numberOfUpDays = upDownDaySums.get(MAP_ENTRY_UP_DAYS);
 			numberOfDownDays = upDownDaySums.get(MAP_ENTRY_DOWN_DAYS);
 			numberOfDaysTotal = upDownDaySums.get(MAP_ENTRY_DAYS_TOTAL);
@@ -283,34 +266,30 @@ public class InstrumentCheckCountingController {
 	 * A time-wise climax move is given, if at least 7 of the last 10 trading days are up-days.
 	 * 
 	 * @param startDate The date at which the check starts.
-	 * @param quotations The quotations that build the trading history.
+	 * @param sortedQuotations The quotations sorted by date that build the trading history.
 	 * @return List of ProtocolEntry, for each day on which there is a time-wise climax movement.
 	 * @throws Exception The check failed because data are not fully available or corrupt.
 	 */
-	public List<ProtocolEntry> checkTimeClimax(final Date startDate, final QuotationArray quotations) throws Exception {
-		Instrument instrument = new Instrument();
-		List<Quotation> quotationsSortedByDate;
+	public List<ProtocolEntry> checkTimeClimax(final Date startDate, final QuotationArray sortedQuotations) throws Exception {
 		Quotation currentQuotation;
 		int startIndex, numberOfUpDays;
 		List<ProtocolEntry> protocolEntries = new ArrayList<>();
 		ProtocolEntry protocolEntry;
 		Map<String, Integer> upDownDaySums;
 		
-		instrument.setQuotations(quotations.getQuotations());
-		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
-		startIndex = quotations.getIndexOfQuotationWithDate(startDate);
+		startIndex = sortedQuotations.getIndexOfQuotationWithDate(startDate);
 		
 		if(startIndex == -1)
 			throw new Exception("Could not find a quotation at or after the given start date.");
 		
 		for(int i = startIndex; i >= 0; i--) {
 			//Skip this Quotation, if not at least 10 previous days of trading history exist.
-			if((i+10) >= quotationsSortedByDate.size())
+			if((i+10) >= sortedQuotations.getQuotations().size())
 				continue;
 			
-			currentQuotation = quotationsSortedByDate.get(i);
+			currentQuotation = sortedQuotations.getQuotations().get(i);
 			
-			upDownDaySums = this.getNumberOfUpAndDownDays(quotationsSortedByDate.get(i+9), currentQuotation, quotationsSortedByDate);
+			upDownDaySums = this.getNumberOfUpAndDownDays(sortedQuotations.getQuotations().get(i+9), currentQuotation, sortedQuotations);
 			numberOfUpDays = upDownDaySums.get(MAP_ENTRY_UP_DAYS);
 			
 			if(numberOfUpDays >= 7) {
@@ -331,11 +310,11 @@ public class InstrumentCheckCountingController {
 	 * 
 	 * @param startQuotation The first Quotation used for counting.
 	 * @param endQuotation The last Quotation used for counting.
-	 * @param sortedQuotations The quotations that build the trading history.
+	 * @param sortedQuotations The quotations sorted by date that build the trading history.
 	 * @return A Map containing the number of good and bad closes.
 	 */
 	public Map<String, Integer> getNumberOfGoodAndBadCloses(final Quotation startQuotation, final Quotation endQuotation, 
-			final List<Quotation> sortedQuotations) {
+			final QuotationArray sortedQuotations) {
 		
 		int indexOfStartQuotation, indexOfEndQuotation;
 		int numberOfGoodCloses = 0, numberOfBadCloses = 0, numberOfDaysTotal = 0;
@@ -343,11 +322,11 @@ public class InstrumentCheckCountingController {
 		BigDecimal medianPrice;
 		Map<String, Integer> resultMap = new HashMap<>(3);
 		
-		indexOfStartQuotation = sortedQuotations.indexOf(startQuotation);
-		indexOfEndQuotation = sortedQuotations.indexOf(endQuotation);
+		indexOfStartQuotation = sortedQuotations.getQuotations().indexOf(startQuotation);
+		indexOfEndQuotation = sortedQuotations.getQuotations().indexOf(endQuotation);
 		
 		for(int i = indexOfStartQuotation; i >= indexOfEndQuotation; i--) {
-			currentQuotation = sortedQuotations.get(i);
+			currentQuotation = sortedQuotations.getQuotations().get(i);
 						
 			medianPrice = currentQuotation.getLow().add(currentQuotation.getHigh()).divide(new BigDecimal(2), 3, RoundingMode.HALF_UP);
 			
@@ -373,11 +352,11 @@ public class InstrumentCheckCountingController {
 	 * 
 	 * @param startQuotation The first Quotation used for counting.
 	 * @param endQuotation The last Quotation used for counting.
-	 * @param sortedQuotations The quotations that build the trading history.
+	 * @param sortedQuotations The quotations sorted by date that build the trading history.
 	 * @return A Map containing the number of up- and down-days.
 	 */
 	public Map<String, Integer> getNumberOfUpAndDownDays(final Quotation startQuotation, final Quotation endQuotation, 
-			final List<Quotation> sortedQuotations) {
+			final QuotationArray sortedQuotations) {
 		
 		int indexOfStartQuotation, indexOfEndQuotation;
 		int numberOfUpDays = 0, numberOfDownDays = 0, numberOfDaysTotal = 0;
@@ -385,15 +364,15 @@ public class InstrumentCheckCountingController {
 		float performance;
 		Map<String, Integer> resultMap = new HashMap<>(3);
 		
-		indexOfStartQuotation = sortedQuotations.indexOf(startQuotation);
-		indexOfEndQuotation = sortedQuotations.indexOf(endQuotation);
+		indexOfStartQuotation = sortedQuotations.getQuotations().indexOf(startQuotation);
+		indexOfEndQuotation = sortedQuotations.getQuotations().indexOf(endQuotation);
 		
 		for(int i = indexOfStartQuotation; i >= indexOfEndQuotation; i--) {
-			if(sortedQuotations.size() <= (i+1))
+			if(sortedQuotations.getQuotations().size() <= (i+1))
 				continue;	//Can't calculate performance for oldest Quotation because no previous Quotation exists for this one.
 			
-			previousQuotation = sortedQuotations.get(i+1);
-			currentQuotation = sortedQuotations.get(i);
+			previousQuotation = sortedQuotations.getQuotations().get(i+1);
+			currentQuotation = sortedQuotations.getQuotations().get(i);
 			performance = this.indicatorCalculator.getPerformance(currentQuotation, previousQuotation);
 			
 			if(performance > 0)

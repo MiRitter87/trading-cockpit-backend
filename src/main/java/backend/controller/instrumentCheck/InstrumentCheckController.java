@@ -7,7 +7,6 @@ import java.util.ResourceBundle;
 
 import backend.dao.DAOManager;
 import backend.dao.quotation.QuotationDAO;
-import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
 import backend.model.protocol.Protocol;
@@ -72,6 +71,7 @@ public class InstrumentCheckController {
 		Protocol protocol = new Protocol();
 		
 		quotations.setQuotations(this.quotationDAO.getQuotationsOfInstrument(instrumentId));
+		quotations.sortQuotationsByDate();
 		this.checkQuotationsExistAfterStartDate(startDate, quotations);
 		
 		//Confirmations
@@ -108,34 +108,30 @@ public class InstrumentCheckController {
 	 * For each day on which the SMA(50) has been breached, a ProtocolEntry is provided with further information.
 	 * 
 	 * @param startDate The date at which the check starts.
-	 * @param quotations The quotations that build the trading history.
+	 * @param sortedQuotations The quotations sorted by date that build the trading history.
 	 * @return List of ProtocolEntry, for all days on which the SMA(50) was breached.
 	 * @throws Exception The check failed because data are not fully available or corrupt.
 	 */
-	public List<ProtocolEntry> checkCloseBelowSma50(final Date startDate, final QuotationArray quotations) throws Exception {
-		Instrument instrument = new Instrument();
-		List<Quotation> quotationsSortedByDate;
+	public List<ProtocolEntry> checkCloseBelowSma50(final Date startDate, final QuotationArray sortedQuotations) throws Exception {
 		int startIndex;
 		Quotation currentDayQuotation, previousDayQuotation;
 		List<ProtocolEntry> protocolEntries = new ArrayList<>();
 		ProtocolEntry protocolEntry;
 		
-		instrument.setQuotations(quotations.getQuotations());
-		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
-		startIndex = quotations.getIndexOfQuotationWithDate(startDate);
+		startIndex = sortedQuotations.getIndexOfQuotationWithDate(startDate);
 		
 		if(startIndex == -1)
 			throw new Exception("Could not find a quotation at or after the given start date.");
 		
 		for(int i = startIndex; i >= 0; i--) {
-			if((i+1) < quotationsSortedByDate.size()) {
-				previousDayQuotation = quotationsSortedByDate.get(i+1);
+			if((i+1) < sortedQuotations.getQuotations().size()) {
+				previousDayQuotation = sortedQuotations.getQuotations().get(i+1);
 			}
 			else {
 				continue;
 			}
 			
-			currentDayQuotation = quotationsSortedByDate.get(i);
+			currentDayQuotation = sortedQuotations.getQuotations().get(i);
 			
 			if(previousDayQuotation.getIndicator() == null)
 				throw new Exception("No indicator is defined for Quotation with ID: " +previousDayQuotation.getId());

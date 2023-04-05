@@ -1,6 +1,7 @@
 package backend.model.instrument;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -84,5 +85,10 @@ public class QuotationArray {
 	}
 	
 	
-	//TODO getQuotationsSortedByDate may be better implemented here instead of Instrument model
+	/**
+	 * Sorts all quotations by date.
+	 */
+	public void sortQuotationsByDate() {
+		Collections.sort(this.quotations, new QuotationDateComparator());
+	}
 }

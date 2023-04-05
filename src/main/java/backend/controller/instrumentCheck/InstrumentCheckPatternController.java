@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import backend.controller.scan.IndicatorCalculator;
-import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
 import backend.model.protocol.ProtocolEntry;
@@ -70,35 +69,31 @@ public class InstrumentCheckPatternController {
 	 * The check begins at the start date and goes up until the most recent Quotation.
 	 * 
 	 * @param startDate The date at which the check starts.
-	 * @param quotations The quotations that build the trading history.
+	 * @param sortedQuotations The quotations sorted by date that build the trading history.
 	 * @return List of ProtocolEntry, for each day on which the Instrument trades up on volume.
 	 * @throws Exception The check failed because data are not fully available or corrupt.
 	 */
-	public List<ProtocolEntry> checkUpOnVolume(final Date startDate, final QuotationArray quotations) throws Exception {
-		Instrument instrument = new Instrument();
-		List<Quotation> quotationsSortedByDate;
+	public List<ProtocolEntry> checkUpOnVolume(final Date startDate, final QuotationArray sortedQuotations) throws Exception {
 		int startIndex;
 		Quotation currentQuotation, previousQuotation;
 		List<ProtocolEntry> protocolEntries = new ArrayList<>();
 		ProtocolEntry protocolEntry;
 		float performance;
-		
-		instrument.setQuotations(quotations.getQuotations());
-		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
-		startIndex = quotations.getIndexOfQuotationWithDate(startDate);
+
+		startIndex = sortedQuotations.getIndexOfQuotationWithDate(startDate);
 		
 		if(startIndex == -1)
 			throw new Exception("Could not find a quotation at or after the given start date.");
 		
 		for(int i = startIndex; i >= 0; i--) {
-			if((i+1) < quotationsSortedByDate.size()) {
-				previousQuotation = quotationsSortedByDate.get(i+1);
+			if((i+1) < sortedQuotations.getQuotations().size()) {
+				previousQuotation = sortedQuotations.getQuotations().get(i+1);
 			}
 			else {
 				continue;
 			}
 			
-			currentQuotation = quotationsSortedByDate.get(i);
+			currentQuotation = sortedQuotations.getQuotations().get(i);
 			
 			if(previousQuotation.getIndicator() == null)
 				throw new Exception("No indicator is defined for Quotation with ID: " +previousQuotation.getId());
@@ -126,35 +121,31 @@ public class InstrumentCheckPatternController {
 	 * The check begins at the start date and goes up until the most recent Quotation.
 	 * 
 	 * @param startDate The date at which the check starts.
-	 * @param quotations The quotations that build the trading history.
+	 * @param sortedQuotations The quotations sorted by date that build the trading history.
 	 * @return List of ProtocolEntry, for each day on which the Instrument trades down on volume.
 	 * @throws Exception The check failed because data are not fully available or corrupt.
 	 */
-	public List<ProtocolEntry> checkDownOnVolume(final Date startDate, final QuotationArray quotations) throws Exception {
-		Instrument instrument = new Instrument();
-		List<Quotation> quotationsSortedByDate;
+	public List<ProtocolEntry> checkDownOnVolume(final Date startDate, final QuotationArray sortedQuotations) throws Exception {
 		int startIndex;
 		Quotation currentQuotation, previousQuotation;
 		List<ProtocolEntry> protocolEntries = new ArrayList<>();
 		ProtocolEntry protocolEntry;
 		float performance;
 		
-		instrument.setQuotations(quotations.getQuotations());
-		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
-		startIndex = quotations.getIndexOfQuotationWithDate(startDate);
+		startIndex = sortedQuotations.getIndexOfQuotationWithDate(startDate);
 		
 		if(startIndex == -1)
 			throw new Exception("Could not find a quotation at or after the given start date.");
 		
 		for(int i = startIndex; i >= 0; i--) {
-			if((i+1) < quotationsSortedByDate.size()) {
-				previousQuotation = quotationsSortedByDate.get(i+1);
+			if((i+1) < sortedQuotations.getQuotations().size()) {
+				previousQuotation = sortedQuotations.getQuotations().get(i+1);
 			}
 			else {
 				continue;
 			}
 			
-			currentQuotation = quotationsSortedByDate.get(i);
+			currentQuotation = sortedQuotations.getQuotations().get(i);
 			
 			if(previousQuotation.getIndicator() == null)
 				throw new Exception("No indicator is defined for Quotation with ID: " +previousQuotation.getId());
@@ -182,35 +173,31 @@ public class InstrumentCheckPatternController {
 	 * The check begins at the start date and goes up until the most recent Quotation.
 	 * 
 	 * @param startDate The date at which the check starts.
-	 * @param quotations The quotations that build the trading history.
+	 * @param sortedQuotations The quotations sorted by date that build the trading history.
 	 * @return List of ProtocolEntry, for each day on which the Instrument is churning.
 	 * @throws Exception The check failed because data are not fully available or corrupt.
 	 */
-	public List<ProtocolEntry> checkChurning(final Date startDate, final QuotationArray quotations) throws Exception {
-		Instrument instrument = new Instrument();
-		List<Quotation> quotationsSortedByDate;
+	public List<ProtocolEntry> checkChurning(final Date startDate, final QuotationArray sortedQuotations) throws Exception {
 		int startIndex;
 		Quotation currentQuotation, previousQuotation;
 		List<ProtocolEntry> protocolEntries = new ArrayList<>();
 		ProtocolEntry protocolEntry;
 		float performance;
 		
-		instrument.setQuotations(quotations.getQuotations());
-		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
-		startIndex = quotations.getIndexOfQuotationWithDate(startDate);
+		startIndex = sortedQuotations.getIndexOfQuotationWithDate(startDate);
 		
 		if(startIndex == -1)
 			throw new Exception("Could not find a quotation at or after the given start date.");
 		
 		for(int i = startIndex; i >= 0; i--) {
-			if((i+1) < quotationsSortedByDate.size()) {
-				previousQuotation = quotationsSortedByDate.get(i+1);
+			if((i+1) < sortedQuotations.getQuotations().size()) {
+				previousQuotation = sortedQuotations.getQuotations().get(i+1);
 			}
 			else {
 				continue;
 			}
 			
-			currentQuotation = quotationsSortedByDate.get(i);
+			currentQuotation = sortedQuotations.getQuotations().get(i);
 			
 			if(previousQuotation.getIndicator() == null)
 				throw new Exception("No indicator is defined for Quotation with ID: " +previousQuotation.getId());
@@ -240,28 +227,24 @@ public class InstrumentCheckPatternController {
 	 * The check begins at the start date and goes up until the most recent Quotation.
 	 * 
 	 * @param startDate The date at which the check starts.
-	 * @param quotations The quotations that build the trading history.
+	 * @param sortedQuotations The quotations sorted by date that build the trading history.
 	 * @return List of ProtocolEntry, for each day on which the Instrument shows a reversal.
 	 * @throws Exception The check failed because data are not fully available or corrupt.
 	 */
-	public List<ProtocolEntry> checkHighVolumeReversal(final Date startDate, final QuotationArray quotations) throws Exception {
-		Instrument instrument = new Instrument();
-		List<Quotation> quotationsSortedByDate;
+	public List<ProtocolEntry> checkHighVolumeReversal(final Date startDate, final QuotationArray sortedQuotations) throws Exception {
 		int startIndex;
 		Quotation currentQuotation;
 		List<ProtocolEntry> protocolEntries = new ArrayList<>();
 		ProtocolEntry protocolEntry;
 		BigDecimal dailyPriceRange, reversalThresholdPrice;
-		
-		instrument.setQuotations(quotations.getQuotations());
-		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
-		startIndex = quotations.getIndexOfQuotationWithDate(startDate);
+
+		startIndex = sortedQuotations.getIndexOfQuotationWithDate(startDate);
 		
 		if(startIndex == -1)
 			throw new Exception("Could not find a quotation at or after the given start date.");
 		
 		for(int i = startIndex; i >= 0; i--) {
-			currentQuotation = quotationsSortedByDate.get(i);
+			currentQuotation = sortedQuotations.getQuotations().get(i);
 			
 			if(currentQuotation.getIndicator() == null)
 				throw new Exception("No indicator is defined for Quotation with ID: " +currentQuotation.getId());

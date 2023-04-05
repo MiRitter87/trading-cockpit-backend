@@ -137,20 +137,18 @@ public class InstrumentCheckCountingControllerTest {
 	 * Tests getting the number of good and bad closes in a range of the trading history.
 	 */
 	public void testGetNumberOfGoodAndBadCloses() {
-		List<Quotation> sortedQuotations;
-		Instrument instrument = new Instrument();
 		int expectedNumberOfGoodCloses, actualNumberOfGoodCloses, expectedNumberOfBadCloses, actualNumberOfBadCloses;
 		int expectedDaysTotal, actualDaysTotal;
 		Map<String, Integer> resultMap;
 
-		instrument.setQuotations(this.dmlQuotations.getQuotations());
-		sortedQuotations = instrument.getQuotationsSortedByDate();
+		this.dmlQuotations.sortQuotationsByDate();
 		
 		expectedNumberOfGoodCloses = 3;
 		expectedNumberOfBadCloses = 3;
 		expectedDaysTotal = 6;
 		
-		resultMap = this.instrumentCheckCountingController.getNumberOfGoodAndBadCloses(sortedQuotations.get(5), sortedQuotations.get(0), sortedQuotations);
+		resultMap = this.instrumentCheckCountingController.getNumberOfGoodAndBadCloses(
+				this.dmlQuotations.getQuotations().get(5), this.dmlQuotations.getQuotations().get(0), this.dmlQuotations);
 		assertNotNull(resultMap);		
 		
 		actualNumberOfGoodCloses = resultMap.get(InstrumentCheckCountingController.MAP_ENTRY_GOOD_CLOSES);
@@ -201,19 +199,17 @@ public class InstrumentCheckCountingControllerTest {
 	 * Tests getting the number of up- and down-days in a range of the trading history.
 	 */
 	public void testGetNumberOfUpAndDownDays() { 
-		List<Quotation> sortedQuotations;
-		Instrument instrument = new Instrument();
 		int expectedNumberOfUpDays, actualNumberOfUpDays, expectedNumberOfDownDays, actualNumberOfDownDays, expectedDaysTotal, actualDaysTotal;
 		Map<String, Integer> resultMap;
 
-		instrument.setQuotations(this.dmlQuotations.getQuotations());
-		sortedQuotations = instrument.getQuotationsSortedByDate();
+		this.dmlQuotations.sortQuotationsByDate();
 		
 		expectedNumberOfUpDays = 1;
 		expectedNumberOfDownDays = 2;
 		expectedDaysTotal = 3;
 		
-		resultMap = this.instrumentCheckCountingController.getNumberOfUpAndDownDays(sortedQuotations.get(2), sortedQuotations.get(0), sortedQuotations);
+		resultMap = this.instrumentCheckCountingController.getNumberOfUpAndDownDays(
+				this.dmlQuotations.getQuotations().get(2), this.dmlQuotations.getQuotations().get(0), this.dmlQuotations);
 		assertNotNull(resultMap);		
 		
 		actualNumberOfUpDays = resultMap.get(InstrumentCheckCountingController.MAP_ENTRY_UP_DAYS);

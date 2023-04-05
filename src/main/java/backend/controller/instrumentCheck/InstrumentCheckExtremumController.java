@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import backend.controller.scan.IndicatorCalculator;
-import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
 import backend.model.protocol.ProtocolEntry;
@@ -45,23 +44,18 @@ public class InstrumentCheckExtremumController {
 	 * The check begins at the start date and goes up until the most recent Quotation.
 	 * 
 	 * @param startDate The date at which the check starts.
-	 * @param quotations The quotations that build the trading history.
+	 * @param sortedQuotations The quotations sorted by date that build the trading history.
 	 * @return List of ProtocolEntry, for the day of the largest down-day of the year after the start date.
 	 * @throws Exception The check failed because data are not fully available or corrupt.
 	 */
-	public List<ProtocolEntry> checkLargestDownDay(final Date startDate, final QuotationArray quotations) throws Exception {
-		Instrument instrument = new Instrument();
-		List<Quotation> quotationsSortedByDate;
+	public List<ProtocolEntry> checkLargestDownDay(final Date startDate, final QuotationArray sortedQuotations) throws Exception {
 		Quotation largestDownQuotation;
 		List<ProtocolEntry> protocolEntries = new ArrayList<>();
 		ProtocolEntry protocolEntry;
 		float largestDownDayPerformance;
 		
-		instrument.setQuotations(quotations.getQuotations());
-		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
-		
-		largestDownQuotation = this.getLargestDownDay(quotationsSortedByDate);
-		largestDownDayPerformance = this.indicatorCalculator.getPricePerformanceForDays(1, largestDownQuotation, quotationsSortedByDate);
+		largestDownQuotation = this.getLargestDownDay(sortedQuotations);
+		largestDownDayPerformance = this.indicatorCalculator.getPricePerformanceForDays(1, largestDownQuotation, sortedQuotations.getQuotations());
 		
 		if(largestDownQuotation.getDate().getTime() >= startDate.getTime()) {
 			protocolEntry = new ProtocolEntry();
@@ -80,23 +74,18 @@ public class InstrumentCheckExtremumController {
 	 * The check begins at the start date and goes up until the most recent Quotation.
 	 * 
 	 * @param startDate The date at which the check starts.
-	 * @param quotations The quotations that build the trading history.
+	 * @param sortedQuotations The quotations sorted by date that build the trading history.
 	 * @return List of ProtocolEntry, for the day of the largest up-day of the year after the start date.
 	 * @throws Exception The check failed because data are not fully available or corrupt.
 	 */
-	public List<ProtocolEntry> checkLargestUpDay(final Date startDate, final QuotationArray quotations) throws Exception {
-		Instrument instrument = new Instrument();
-		List<Quotation> quotationsSortedByDate;
+	public List<ProtocolEntry> checkLargestUpDay(final Date startDate, final QuotationArray sortedQuotations) throws Exception {
 		Quotation largestUpQuotation;
 		List<ProtocolEntry> protocolEntries = new ArrayList<>();
 		ProtocolEntry protocolEntry;
 		float largestUpDayPerformance;
 		
-		instrument.setQuotations(quotations.getQuotations());
-		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
-		
-		largestUpQuotation = this.getLargestUpDay(quotationsSortedByDate);
-		largestUpDayPerformance = this.indicatorCalculator.getPricePerformanceForDays(1, largestUpQuotation, quotationsSortedByDate);
+		largestUpQuotation = this.getLargestUpDay(sortedQuotations);
+		largestUpDayPerformance = this.indicatorCalculator.getPricePerformanceForDays(1, largestUpQuotation, sortedQuotations.getQuotations());
 		
 		if(largestUpQuotation.getDate().getTime() >= startDate.getTime()) {
 			protocolEntry = new ProtocolEntry();
@@ -169,24 +158,18 @@ public class InstrumentCheckExtremumController {
 	/**
 	 * Determines the largest down-day of the given trading history.
 	 * 
-	 * @param quotations A list of quotations.
+	 * @param sortedQuotations The quotations sorted by date that build the trading history.
 	 * @return The Quotation of the largest down-day.
 	 */
-	private Quotation getLargestDownDay(final List<Quotation> quotations) {
-		Instrument instrument = new Instrument();
+	private Quotation getLargestDownDay(final QuotationArray sortedQuotations) {
 		float largestDownPerformance = 0, performance;
-		List<Quotation> quotationsSortedByDate;
 		Quotation largestDownQuotation = null;
 		Quotation currentQuotation, previousQuotation;
 		
-		//Sort the quotations by date for calculation of price performance.
-		instrument.setQuotations(quotations);
-		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
-		
 		//Determine the Quotation with the largest negative performance.
-		for(int i = 0; i < quotationsSortedByDate.size() - 1; i++) {
-			currentQuotation = quotationsSortedByDate.get(i);
-			previousQuotation = quotationsSortedByDate.get(i+1);
+		for(int i = 0; i < sortedQuotations.getQuotations().size() - 1; i++) {
+			currentQuotation = sortedQuotations.getQuotations().get(i);
+			previousQuotation = sortedQuotations.getQuotations().get(i+1);
 			
 			performance = this.indicatorCalculator.getPerformance(currentQuotation, previousQuotation);
 			
@@ -203,24 +186,18 @@ public class InstrumentCheckExtremumController {
 	/**
 	 * Determines the largest up-day of the given trading history.
 	 * 
-	 * @param quotations A list of quotations.
+	 * @param sortedQuotations The quotations sorted by date that build the trading history.
 	 * @return The Quotation of the largest up-day.
 	 */
-	private Quotation getLargestUpDay(final List<Quotation> quotations) {
-		Instrument instrument = new Instrument();
+	private Quotation getLargestUpDay(final QuotationArray sortedQuotations) {
 		float largestUpPerformance = 0, performance;
-		List<Quotation> quotationsSortedByDate;
 		Quotation largestUpQuotation = null;
 		Quotation currentQuotation, previousQuotation;
 		
-		//Sort the quotations by date for calculation of price performance.
-		instrument.setQuotations(quotations);
-		quotationsSortedByDate = instrument.getQuotationsSortedByDate();
-		
 		//Determine the Quotation with the largest positive performance.
-		for(int i = 0; i < quotationsSortedByDate.size() - 1; i++) {
-			currentQuotation = quotationsSortedByDate.get(i);
-			previousQuotation = quotationsSortedByDate.get(i+1);
+		for(int i = 0; i < sortedQuotations.getQuotations().size() - 1; i++) {
+			currentQuotation = sortedQuotations.getQuotations().get(i);
+			previousQuotation = sortedQuotations.getQuotations().get(i+1);
 			
 			performance = this.indicatorCalculator.getPerformance(currentQuotation, previousQuotation);
 			
