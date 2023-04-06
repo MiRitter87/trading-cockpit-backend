@@ -365,4 +365,37 @@ public class InstrumentCheckCountingControllerTest {
 			fail(e.getMessage());
 		}
 	}
+	
+	
+	@Test
+	/**
+	 * Tests the check if three lower closes have occurred.
+	 */
+	public void testCheckThreeLowerCloses() {
+		ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
+		ProtocolEntry actualProtocolEntry;
+		List<ProtocolEntry> protocolEntries;
+		Calendar calendar = Calendar.getInstance();
+		
+		//Define the expected protocol entry.
+		calendar.set(2022, 5, 14);		//The day on which threee lower lows occurred (14.06.22).
+		expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
+		expectedProtocolEntry.setCategory(ProtocolEntryCategory.VIOLATION);
+		expectedProtocolEntry.setText(this.resources.getString("protocol.threeLowerClosesLowVolume"));
+		
+		//Call controller to perform check.
+		calendar.set(2022, 5, 14);	//Begin check on 14.06.22.
+		try {
+			protocolEntries = this.instrumentCheckCountingController.checkThreeLowerCloses(calendar.getTime(), this.dmlQuotations);
+			
+			//Verify the check result.
+			assertEquals(1, protocolEntries.size());
+			
+			//Validate the protocol entry.
+			actualProtocolEntry = protocolEntries.get(0);
+			assertEquals(expectedProtocolEntry, actualProtocolEntry);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
 }

@@ -306,6 +306,63 @@ public class InstrumentCheckCountingController {
 	
 	
 	/**
+	 * Checks if three lower closes have occurred.
+	 * 
+	 * @param startDate The date at which the check starts.
+	 * @param sortedQuotations The quotations sorted by date that build the trading history.
+	 * @return List of ProtocolEntry, for each day on which at least three lower closes have occurred.
+	 * @throws Exception The check failed because data are not fully available or corrupt.
+	 */
+	public List<ProtocolEntry> checkThreeLowerCloses(final Date startDate, final QuotationArray sortedQuotations) throws Exception {
+		int startIndex, numberOfDownDays, numberOfDownDaysWithHighVolume;
+		List<ProtocolEntry> protocolEntries = new ArrayList<>();
+		ProtocolEntry protocolEntry;
+		float performance;
+		
+		startIndex = sortedQuotations.getIndexOfQuotationWithDate(startDate);
+		
+		if(startIndex == -1)
+			throw new Exception("Could not find a quotation at or after the given start date.");
+		
+		for(int i = startIndex; i >= 0; i--) {
+			//Skip this Quotation, if not at least 3 previous days of trading history exist.
+			if((i+3) >= sortedQuotations.getQuotations().size())
+				continue;
+			
+			numberOfDownDays = 0;
+			numberOfDownDaysWithHighVolume = 0;
+			
+			//Count the number of lower closes within the last three trading days.
+			for(int j = 0; j < 3; j++) {
+				performance = this.indicatorCalculator.getPerformance(
+						sortedQuotations.getQuotations().get(i+j), sortedQuotations.getQuotations().get(i+j+1));
+				
+				if(performance < 0)
+					numberOfDownDays++;
+				
+				if(sortedQuotations.getQuotations().get(i+j).getVolume() > sortedQuotations.getQuotations().get(i+j).getIndicator().getSma30Volume())
+					numberOfDownDaysWithHighVolume++;
+			}
+			
+			if(numberOfDownDays == 3) {
+				protocolEntry = new ProtocolEntry();
+				protocolEntry.setCategory(ProtocolEntryCategory.VIOLATION);
+				protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(sortedQuotations.getQuotations().get(i).getDate()));
+				
+				if(numberOfDownDaysWithHighVolume == 3)
+					protocolEntry.setText(this.resources.getString("protocol.threeLowerClosesHighVolume"));
+				else
+					protocolEntry.setText(this.resources.getString("protocol.threeLowerClosesLowVolume"));
+				
+				protocolEntries.add(protocolEntry);
+			}
+		}
+		
+		return protocolEntries;
+	}
+	
+	
+	/**
 	 * Counts the number of good and bad closes from startQuotation to endQuotation.
 	 * 
 	 * @param startQuotation The first Quotation used for counting.
