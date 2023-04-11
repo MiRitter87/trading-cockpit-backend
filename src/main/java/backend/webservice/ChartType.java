@@ -24,5 +24,10 @@ public enum ChartType {
 	/**
 	 * A chart of an Instrument marked with Follow-Through Days.
 	 */
-	FOLLOW_THROUGH_DAYS
+	FOLLOW_THROUGH_DAYS,
+	
+	/**
+	 * A chart of the Ritter Market Trend.
+	 */
+	RITTER_MARKET_TREND
 }

@@ -18,6 +18,7 @@ import backend.controller.statistic.AboveSma50ChartController;
 import backend.controller.statistic.AdvanceDeclineNumberChartController;
 import backend.controller.statistic.DistributionDaysChartController;
 import backend.controller.statistic.FollowThroughDaysChartController;
+import backend.controller.statistic.RitterMarketTrendChartController;
 import backend.dao.DAOManager;
 import backend.dao.statistic.StatisticDAO;
 import backend.model.instrument.InstrumentType;
@@ -100,6 +101,8 @@ public class StatisticService {
 				return this.getDistributionDaysChart(instrumentId);
 			case FOLLOW_THROUGH_DAYS:
 				return this.getFollowThroughDaysChart(instrumentId);
+			case RITTER_MARKET_TREND:
+				return this.getRitterMarketTrendChart(listId);
 			default:
 				return Response.status(404).build();				
 		}
@@ -222,6 +225,35 @@ public class StatisticService {
 			};
 		} catch (Exception exception) {
 			logger.error(this.resources.getString("statistic.chartFollowThroughDays.getError"), exception);
+			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+		}
+		
+		return Response.ok(streamingOutput).build();
+	}
+	
+	
+	/**
+	 * Provides a chart of the Ritter Market Trend.
+	 * 
+	 * @param listId The ID of the list defining the instruments used for Statistic chart creation.
+	 * @return A Response containing the generated chart.
+	 */
+	private Response getRitterMarketTrendChart(final Integer listId) {
+		RitterMarketTrendChartController rmtChartController = new RitterMarketTrendChartController();
+		JFreeChart chart;
+		StreamingOutput streamingOutput = null;
+		
+		try {
+			chart = rmtChartController.getRitterMarketTrendChart(InstrumentType.STOCK, listId);
+			
+			streamingOutput = new StreamingOutput() {
+				@Override
+				public void write(OutputStream output) throws IOException, WebApplicationException {
+					ChartUtils.writeChartAsPNG(output, chart, 800, 600);
+				}
+			};
+		} catch (Exception exception) {
+			logger.error(this.resources.getString("statistic.chartRitterMarketTrend.getError"), exception);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
 		}
 		

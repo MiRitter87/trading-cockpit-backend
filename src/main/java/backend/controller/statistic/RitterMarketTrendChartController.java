@@ -1,9 +1,15 @@
 package backend.controller.statistic;
 
 import java.util.List;
+import java.util.ListIterator;
+import java.util.TimeZone;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
+import org.jfree.data.time.Day;
+import org.jfree.data.time.TimePeriodAnchor;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 
 import backend.model.instrument.InstrumentType;
@@ -28,7 +34,7 @@ public class RitterMarketTrendChartController extends StatisticChartController {
 		XYDataset dataset = this.getRitterMarketTrendDataset(statistics);
 		
 		JFreeChart chart = ChartFactory.createTimeSeriesChart(
-			this.resources.getString("statistic.chartADNumber.titleName"),
+			this.resources.getString("statistic.chartRitterMarketTrend.titleName"),
 			null, null,	dataset, true, true, false
 		);
 		
@@ -44,6 +50,22 @@ public class RitterMarketTrendChartController extends StatisticChartController {
 	 * @throws Exception XYDataset creation failed.
 	 */
 	private XYDataset getRitterMarketTrendDataset(final List<Statistic> statistics) throws Exception {
-		return null;
+		Statistic statistic;
+		TimeSeries timeSeries = new TimeSeries(this.resources.getString("statistic.chartRitterMarketTrend.timeSeriesName"));
+		TimeZone timeZone = TimeZone.getDefault();
+		TimeSeriesCollection timeSeriesColleciton = new TimeSeriesCollection(timeZone);
+		ListIterator<Statistic> iterator;
+		
+		//Iterate statistics backwards because XYDatasets are constructed from oldest to newest value.
+		iterator = statistics.listIterator(statistics.size());
+		while(iterator.hasPrevious()) {
+			statistic = iterator.previous();
+			timeSeries.add(new Day(statistic.getDate()), statistic.getNumberRitterMarketTrend());
+		}
+		
+        timeSeriesColleciton.addSeries(timeSeries);
+        timeSeriesColleciton.setXPosition(TimePeriodAnchor.MIDDLE);
+        
+        return timeSeriesColleciton;
 	}
 }
