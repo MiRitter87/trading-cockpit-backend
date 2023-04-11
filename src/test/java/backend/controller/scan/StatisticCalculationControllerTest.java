@@ -279,11 +279,13 @@ public class StatisticCalculationControllerTest {
 		try {		
 			this.appleQuotation1Indicator = new Indicator();
 			this.appleQuotation1Indicator.setSma50((float) 78.54);
+			this.appleQuotation1Indicator.setSma30Volume(5000000);
 			this.appleQuotation1.setIndicator(this.appleQuotation1Indicator);
 			quotations.add(this.appleQuotation1);
 			
 			this.appleQuotation2Indicator = new Indicator();
 			this.appleQuotation2Indicator.setSma50((float) 80.54);
+			this.appleQuotation2Indicator.setSma30Volume(5000000);
 			this.appleQuotation2.setIndicator(this.appleQuotation2Indicator);
 			quotations.add(this.appleQuotation2);
 			
@@ -294,11 +296,13 @@ public class StatisticCalculationControllerTest {
 			
 			this.microsoftQuotation1Indicator = new Indicator();
 			this.microsoftQuotation1Indicator.setSma50((float) 247.54);
+			this.microsoftQuotation1Indicator.setSma30Volume(1200000);
 			this.microsoftQuotation1.setIndicator(this.microsoftQuotation1Indicator);
 			quotations.add(this.microsoftQuotation1);
 			
 			this.microsoftQuotation2Indicator = new Indicator();
 			this.microsoftQuotation2Indicator.setSma50((float) 246.54);
+			this.microsoftQuotation2Indicator.setSma30Volume(1200000);
 			this.microsoftQuotation2.setIndicator(this.microsoftQuotation2Indicator);
 			quotations.add(this.microsoftQuotation2);
 			
@@ -366,6 +370,7 @@ public class StatisticCalculationControllerTest {
 			assertEquals(1, statistic.getNumberAboveSma50());
 			assertEquals(1, statistic.getNumberAtOrBelowSma50());
 			assertEquals(50, statistic.getPercentAboveSma50());
+			assertEquals(0, statistic.getNumberRitterMarketTrend());
 			
 			//Check correct statistic of second day.
 			statistic = calculatedStatistics.getStatistics().get(1);
@@ -377,6 +382,7 @@ public class StatisticCalculationControllerTest {
 			assertEquals(0, statistic.getNumberAboveSma50());
 			assertEquals(2, statistic.getNumberAtOrBelowSma50());
 			assertEquals(0, statistic.getPercentAboveSma50());
+			assertEquals(0, statistic.getNumberRitterMarketTrend());
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}

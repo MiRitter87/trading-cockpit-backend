@@ -103,6 +103,8 @@ public class StatisticCalculationController {
 				statistic.setNumberDecline(statistic.getNumberDecline() + this.getNumberDecline(currentQuotation, previousQuotation));
 				statistic.setNumberAboveSma50(statistic.getNumberAboveSma50() + this.getNumberAboveSma50(currentQuotation));
 				statistic.setNumberAtOrBelowSma50(statistic.getNumberAtOrBelowSma50() + this.getNumberAtOrBelowSma50(currentQuotation));
+				statistic.setNumberRitterMarketTrend(
+						statistic.getNumberRitterMarketTrend() + this.getNumberRitterMarketTrend(currentQuotation, previousQuotation));
 			}
 		}
 		
@@ -179,6 +181,35 @@ public class StatisticCalculationController {
 			return 1;
 		else
 			return 0;
+	}
+	
+	
+	/**
+	 * Calculates the number of the Ritter Market Trend for the current Quotation.
+	 * 
+	 * @param currentQuotation The current Quotation.
+	 * @param previousQuotation The previous Quotation.
+	 * @return 1, if Quotation behaves bullish, -1 if it behaves bearish, 0 if behavior is neither bullish nor bearish..
+	 */
+	private int getNumberRitterMarketTrend(final Quotation currentQuotation, final Quotation previousQuotation) {
+		//Rising price.
+		if(currentQuotation.getClose().compareTo(previousQuotation.getClose()) == 1) {
+			if(currentQuotation.getVolume() >= currentQuotation.getIndicator().getSma30Volume())
+				return 1;
+			else
+				return -1;
+		}
+		
+		//Falling price.
+		if(currentQuotation.getClose().compareTo(previousQuotation.getClose()) == -1) {
+			if(currentQuotation.getVolume() >= currentQuotation.getIndicator().getSma30Volume())
+				return -1;
+			else
+				return 1;
+		}
+		
+		//Price unchanged.
+		return 0;
 	}
 	
 	
