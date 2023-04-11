@@ -83,6 +83,12 @@ public class Statistic {
 	@Column(name="PERCENT_ABOVE_SMA50")
 	private float percentAboveSma50;
 	
+	/**
+	 * The number of the "Ritter Market Trend" indicator.
+	 */
+	@Column(name="NUMBER_RITTER_MARKET_TREND")
+	private int numberRitterMarketTrend;
+	
 	
 	/**
 	 * Default constructor.
@@ -226,6 +232,22 @@ public class Statistic {
 	}
 	
 	
+	/**
+	 * @return the numberRitterMarketTrend
+	 */
+	public int getNumberRitterMarketTrend() {
+		return numberRitterMarketTrend;
+	}
+
+
+	/**
+	 * @param numberRitterMarketTrend the numberRitterMarketTrend to set
+	 */
+	public void setNumberRitterMarketTrend(int numberRitterMarketTrend) {
+		this.numberRitterMarketTrend = numberRitterMarketTrend;
+	}
+
+
 	/**
 	 * Updates the percentage above SMA(50).
 	 */
