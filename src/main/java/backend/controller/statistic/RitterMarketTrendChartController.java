@@ -1,7 +1,8 @@
 package backend.controller.statistic;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.TimeZone;
 
 import org.jfree.chart.ChartFactory;
@@ -47,25 +48,58 @@ public class RitterMarketTrendChartController extends StatisticChartController {
 	 * 
 	 * @param statistics The statistics for which the chart is calculated.
 	 * @return The XYDataset.
-	 * @throws Exception XYDataset creation failed.
 	 */
-	private XYDataset getRitterMarketTrendDataset(final List<Statistic> statistics) throws Exception {
+	private XYDataset getRitterMarketTrendDataset(final List<Statistic> statistics) {
 		Statistic statistic;
 		TimeSeries timeSeries = new TimeSeries(this.resources.getString("statistic.chartRitterMarketTrend.timeSeriesName"));
 		TimeZone timeZone = TimeZone.getDefault();
 		TimeSeriesCollection timeSeriesColleciton = new TimeSeriesCollection(timeZone);
-		ListIterator<Statistic> iterator;
+		float movingAverage;
 		
 		//Iterate statistics backwards because XYDatasets are constructed from oldest to newest value.
-		iterator = statistics.listIterator(statistics.size());
-		while(iterator.hasPrevious()) {
-			statistic = iterator.previous();
-			timeSeries.add(new Day(statistic.getDate()), statistic.getNumberRitterMarketTrend());
+		for(int i = statistics.size() - 1; i >= 0; i--) {
+			try {
+				statistic = statistics.get(i);
+				movingAverage = this.getMovingAverageOfRitterMarketTrend(statistics, 10, i);
+				timeSeries.add(new Day(statistic.getDate()), movingAverage);
+			}
+			catch(Exception exception) {
+				continue;
+			}
 		}
 		
         timeSeriesColleciton.addSeries(timeSeries);
         timeSeriesColleciton.setXPosition(TimePeriodAnchor.MIDDLE);
         
         return timeSeriesColleciton;
+	}
+	
+	
+	/**
+	 * Calculates the moving average of the Ritter Market Trend for the given number of days.
+	 * 
+	 * @param statistics A List of statistical values containing the raw values of the Ritter Market Trend for each day.
+	 * @param period The period in days for Moving Average calculation.
+	 * @param beginIndex The begin index for calculation.
+	 * @return The moving average of the Ritter Market Trend.
+	 * @throws Exception Calculation of Moving Average failed.
+	 */
+	private float getMovingAverageOfRitterMarketTrend(final List<Statistic> statistics, final int period, final int beginIndex) throws Exception {
+		int endIndex = beginIndex + period - 1;
+		int sum = 0;
+		Statistic statistic;
+		BigDecimal movingAverage;
+		
+		if(endIndex >= statistics.size())
+			throw new Exception("Not enough historical statistical values available to calculate moving average for the given period.");
+		
+		for(int i = beginIndex; i <= endIndex; i++) {
+			statistic = statistics.get(i);
+			sum += statistic.getNumberRitterMarketTrend();
+		}
+		
+		movingAverage = new BigDecimal(sum).divide(new BigDecimal(period), 1, RoundingMode.HALF_UP);
+		
+		return movingAverage.floatValue();
 	}
 }
