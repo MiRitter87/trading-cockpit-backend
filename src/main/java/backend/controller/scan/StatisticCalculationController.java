@@ -313,6 +313,9 @@ public class StatisticCalculationController {
 				databaseStatistic.setNumberAdvance(newStatistic.getNumberAdvance());
 				databaseStatistic.setNumberDecline(newStatistic.getNumberDecline());
 				statisticUpdate.add(databaseStatistic);
+				databaseStatistic.setNumberAboveSma50(newStatistic.getNumberAboveSma50());
+				databaseStatistic.setNumberAtOrBelowSma50(newStatistic.getNumberAtOrBelowSma50());
+				databaseStatistic.setNumberRitterMarketTrend(newStatistic.getNumberRitterMarketTrend());
 			}
 		}
 		

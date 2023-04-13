@@ -267,7 +267,7 @@ public class Statistic {
 	@Override
 	public int hashCode() {
 		return Objects.hash(advanceDeclineNumber, date, id, instrumentType, numberAboveSma50, numberAdvance,
-				numberAtOrBelowSma50, numberDecline, percentAboveSma50);
+				numberAtOrBelowSma50, numberDecline, numberRitterMarketTrend, percentAboveSma50);
 	}
 
 
@@ -293,6 +293,7 @@ public class Statistic {
 				&& Objects.equals(id, other.id) && instrumentType == other.instrumentType
 				&& numberAboveSma50 == other.numberAboveSma50 && numberAdvance == other.numberAdvance
 				&& numberAtOrBelowSma50 == other.numberAtOrBelowSma50 && numberDecline == other.numberDecline
+				&& numberRitterMarketTrend == other.numberRitterMarketTrend
 				&& Float.floatToIntBits(percentAboveSma50) == Float.floatToIntBits(other.percentAboveSma50);
 	}
 }
