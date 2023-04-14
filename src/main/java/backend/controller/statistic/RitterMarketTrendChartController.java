@@ -96,6 +96,9 @@ public class RitterMarketTrendChartController extends StatisticChartController {
 		Statistic statistic;
 		BigDecimal movingAverage;
 		
+		if((beginIndex + 29 - 1) >= statistics.size())
+			throw new Exception("The RMT is not available for the oldest 29 days of the statistic because SMA(30) of volume is not available.");
+		
 		if(endIndex >= statistics.size())
 			throw new Exception("Not enough historical statistical values available to calculate moving average for the given period.");
 		
