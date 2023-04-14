@@ -192,6 +192,10 @@ public class StatisticCalculationController {
 	 * @return 1, if Quotation behaves bullish, -1 if it behaves bearish, 0 if behavior is neither bullish nor bearish..
 	 */
 	private int getNumberRitterMarketTrend(final Quotation currentQuotation, final Quotation previousQuotation) {
+		//The indicator can't be calculated if these values are not available.
+		if(currentQuotation.getIndicator() == null || currentQuotation.getIndicator().getSma30Volume() == 0)
+			return 0;
+		
 		//Rising price.
 		if(currentQuotation.getClose().compareTo(previousQuotation.getClose()) == 1) {
 			if(currentQuotation.getVolume() >= currentQuotation.getIndicator().getSma30Volume())
