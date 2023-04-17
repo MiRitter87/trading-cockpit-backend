@@ -99,6 +99,7 @@ public class StatisticCalculationController {
 				}
 				
 				//Calculate statistical values.
+				statistic.setNumberOfInstruments(statistic.getNumberOfInstruments() + 1);
 				statistic.setNumberAdvance(statistic.getNumberAdvance() + this.getNumberAdvance(currentQuotation, previousQuotation));
 				statistic.setNumberDecline(statistic.getNumberDecline() + this.getNumberDecline(currentQuotation, previousQuotation));
 				statistic.setNumberAboveSma50(statistic.getNumberAboveSma50() + this.getNumberAboveSma50(currentQuotation));
@@ -314,12 +315,13 @@ public class StatisticCalculationController {
 			databaseStatistic = databaseStatisticArray.getStatisticOfDate(newStatistic.getDate());
 			
 			if(databaseStatistic != null) {
+				databaseStatistic.setNumberOfInstruments(newStatistic.getNumberOfInstruments());
 				databaseStatistic.setNumberAdvance(newStatistic.getNumberAdvance());
 				databaseStatistic.setNumberDecline(newStatistic.getNumberDecline());
-				statisticUpdate.add(databaseStatistic);
 				databaseStatistic.setNumberAboveSma50(newStatistic.getNumberAboveSma50());
 				databaseStatistic.setNumberAtOrBelowSma50(newStatistic.getNumberAtOrBelowSma50());
 				databaseStatistic.setNumberRitterMarketTrend(newStatistic.getNumberRitterMarketTrend());
+				statisticUpdate.add(databaseStatistic);
 			}
 		}
 		
