@@ -48,6 +48,12 @@ public class Statistic {
 	private InstrumentType instrumentType;
 	
 	/**
+	 * The total number of instruments the Statistic is based on.
+	 */
+	@Column(name="NUMBER_OF_INSTRUMENTS")
+	private int numberOfInstruments;
+	
+	/**
 	 * The number of instruments which advanced since the last data point.
 	 */
 	@Column(name="NUMBER_ADVANCE")
@@ -249,6 +255,22 @@ public class Statistic {
 
 
 	/**
+	 * @return the numberOfInstruments
+	 */
+	public int getNumberOfInstruments() {
+		return numberOfInstruments;
+	}
+
+
+	/**
+	 * @param numberOfInstruments the numberOfInstruments to set
+	 */
+	public void setNumberOfInstruments(int numberOfInstruments) {
+		this.numberOfInstruments = numberOfInstruments;
+	}
+
+
+	/**
 	 * Updates the percentage above SMA(50).
 	 */
 	private void updatePercentAboveSma50() {
@@ -267,7 +289,7 @@ public class Statistic {
 	@Override
 	public int hashCode() {
 		return Objects.hash(advanceDeclineNumber, date, id, instrumentType, numberAboveSma50, numberAdvance,
-				numberAtOrBelowSma50, numberDecline, numberRitterMarketTrend, percentAboveSma50);
+				numberAtOrBelowSma50, numberDecline, numberOfInstruments, numberRitterMarketTrend, percentAboveSma50);
 	}
 
 
@@ -293,7 +315,7 @@ public class Statistic {
 				&& Objects.equals(id, other.id) && instrumentType == other.instrumentType
 				&& numberAboveSma50 == other.numberAboveSma50 && numberAdvance == other.numberAdvance
 				&& numberAtOrBelowSma50 == other.numberAtOrBelowSma50 && numberDecline == other.numberDecline
-				&& numberRitterMarketTrend == other.numberRitterMarketTrend
+				&& numberOfInstruments == other.numberOfInstruments && numberRitterMarketTrend == other.numberRitterMarketTrend
 				&& Float.floatToIntBits(percentAboveSma50) == Float.floatToIntBits(other.percentAboveSma50);
 	}
 }
