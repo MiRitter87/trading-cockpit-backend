@@ -83,16 +83,17 @@ public class RitterMarketTrendChartController extends StatisticChartController {
 	
 	/**
 	 * Calculates the moving average of the Ritter Market Trend for the given number of days.
+	 * The moving average is normalized to a value between -100 and 100 based on the number of instruments.
 	 * 
 	 * @param statistics A List of statistical values containing the raw values of the Ritter Market Trend for each day.
 	 * @param period The period in days for Moving Average calculation.
 	 * @param beginIndex The begin index for calculation.
-	 * @return The moving average of the Ritter Market Trend.
+	 * @return The normalized moving average of the Ritter Market Trend.
 	 * @throws Exception Calculation of Moving Average failed.
 	 */
 	private float getMovingAverageOfRitterMarketTrend(final List<Statistic> statistics, final int period, final int beginIndex) throws Exception {
 		int endIndex = beginIndex + period - 1;
-		int sum = 0;
+		int sum = 0, normalizedDailyValue;
 		Statistic statistic;
 		BigDecimal movingAverage;
 		
@@ -104,7 +105,8 @@ public class RitterMarketTrendChartController extends StatisticChartController {
 		
 		for(int i = beginIndex; i <= endIndex; i++) {
 			statistic = statistics.get(i);
-			sum += statistic.getNumberRitterMarketTrend();
+			normalizedDailyValue = statistic.getNumberRitterMarketTrend() * 100 / statistic.getNumberOfInstruments();
+			sum += normalizedDailyValue;
 		}
 		
 		movingAverage = new BigDecimal(sum).divide(new BigDecimal(period), 1, RoundingMode.HALF_UP);
