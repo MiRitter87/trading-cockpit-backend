@@ -47,6 +47,7 @@ public class IndicatorCalculator {
 		if(mostRecent) {
 			//These indicators are calculated only for the most recent Quotation.
 			indicator.setRsPercentSum(this.getRSPercentSum(quotation, sortedQuotations));
+			indicator.setEma21(this.getExponentialMovingAverage(21, quotation, sortedQuotations));
 			indicator.setSma50(this.getSimpleMovingAverage(50, quotation, sortedQuotations));
 			indicator.setSma150(this.getSimpleMovingAverage(150, quotation, sortedQuotations));
 			indicator.setSma200(this.getSimpleMovingAverage(200, quotation, sortedQuotations));
@@ -62,8 +63,9 @@ public class IndicatorCalculator {
 			indicator.setSma30Volume(this.getSimpleMovingAverageVolume(30, quotation, sortedQuotations));
 		}
 		else {
-			//These indicators are calculated for historical quotations.
+			//These indicators are calculated for historical quotations too.
 			indicator.setSma50(this.getSimpleMovingAverage(50, quotation, sortedQuotations));
+			indicator.setEma21(this.getExponentialMovingAverage(21, quotation, sortedQuotations));
 			indicator.setSma30Volume(this.getSimpleMovingAverageVolume(30, quotation, sortedQuotations));
 		}
 		
@@ -161,7 +163,42 @@ public class IndicatorCalculator {
 	 * @return The Exponential Moving Average.
 	 */
 	public float getExponentialMovingAverage(final int days, final Quotation quotation, final QuotationArray sortedQuotations) {
-		return 0;
+		int indexOfQuotation = 0, indexForSmaCalculation;
+		float smoothingMultiplier, sma, previousEma, currentEma = 0;
+		Quotation currentQuotation;
+		BigDecimal roundedEma;
+		
+		//Get the index of the Quotation for which the EMA has to be calculated.
+		indexOfQuotation = sortedQuotations.getQuotations().indexOf(quotation);
+		
+		//Check if enough historical quotations exist for EMA calculation.
+		//days*2 is used because the SMA has to be calculated first as starting point for EMA calculation.
+		//Additional days are needed afterwards for the EMA approximation based on the SMA; therefore days*2 is used.
+		if((sortedQuotations.getQuotations().size() - days*2 - indexOfQuotation) < 0)
+			return 0;
+		
+		smoothingMultiplier = 2.0f / (days + 1);
+		
+		//Calculate the SMA as starting point for EMA calculation.
+		indexForSmaCalculation = indexOfQuotation + days;
+		sma = this.getSimpleMovingAverage(days, sortedQuotations.getQuotations().get(indexForSmaCalculation), sortedQuotations);
+		
+		//The initial EMA is initialized with the SMA.
+		previousEma = sma;
+		
+		//Calculate the EMA approximation for the number of days after the starting point as defined by the SMA.
+		//Start the day after the one for which the SMA has been calculated.
+		for(int i = indexForSmaCalculation - 1; i >= indexOfQuotation; i--) {
+			currentQuotation = sortedQuotations.getQuotations().get(i);
+			currentEma = smoothingMultiplier * (currentQuotation.getClose().floatValue() - previousEma) + previousEma;
+			previousEma = currentEma;
+		}
+		
+		//Round result to two decimal places.
+		roundedEma = new BigDecimal(currentEma);
+		roundedEma = roundedEma.setScale(2, RoundingMode.HALF_UP);
+		
+		return roundedEma.floatValue();
 	}
 	
 	
