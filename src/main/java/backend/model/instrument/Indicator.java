@@ -48,6 +48,12 @@ public class Indicator {
 	private float bollingerBandWidth;
 	
 	/**
+	 * The exponential moving average price of the last 21 trading days.
+	 */
+	@Column(name="EMA21")
+	private float ema21;
+	
+	/**
 	 * The simple moving average price of the last 50 trading days.
 	 */
 	@Column(name="SMA50")
@@ -445,9 +451,25 @@ public class Indicator {
 	}
 
 
+	/**
+	 * @return the ema21
+	 */
+	public float getEma21() {
+		return ema21;
+	}
+
+
+	/**
+	 * @param ema21 the ema21 to set
+	 */
+	public void setEma21(float ema21) {
+		this.ema21 = ema21;
+	}
+
+
 	@Override
 	public int hashCode() {
-		return Objects.hash(bollingerBandWidth, distanceTo52WeekHigh, distanceTo52WeekLow, id, rsNumber, rsPercentSum, sma150, sma200, sma50, 
+		return Objects.hash(bollingerBandWidth, distanceTo52WeekHigh, distanceTo52WeekLow, ema21, id, rsNumber, rsPercentSum, sma150, sma200, sma50, 
 				stage, volumeDifferential5Days, volumeDifferential10Days, baseLengthWeeks, upDownVolumeRatio, performance5Days, liquidity20Days,
 				sma30Volume);
 	}
@@ -470,6 +492,7 @@ public class Indicator {
 				&& Float.floatToIntBits(sma150) == Float.floatToIntBits(other.sma150)
 				&& Float.floatToIntBits(sma200) == Float.floatToIntBits(other.sma200)
 				&& Float.floatToIntBits(sma50) == Float.floatToIntBits(other.sma50)
+				&& Float.floatToIntBits(ema21) == Float.floatToIntBits(other.ema21)
 				&& Float.floatToIntBits(volumeDifferential5Days) == Float.floatToIntBits(other.volumeDifferential5Days)
 				&& Float.floatToIntBits(volumeDifferential10Days) == Float.floatToIntBits(other.volumeDifferential10Days)
 				&& stage == other.stage && baseLengthWeeks == other.baseLengthWeeks
