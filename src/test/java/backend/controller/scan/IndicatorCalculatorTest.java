@@ -337,6 +337,21 @@ public class IndicatorCalculatorTest {
 	}
 	
 	
+	//@Test
+	/**
+	 * Tests the calculation of the 21-day Exponential Moving Average for the most recent Quotation.
+	 */
+	public void testGetExponentialMovingAverage21Days() {
+		QuotationArray sortedQuotations = new QuotationArray();
+		float actualEma21, expectedEma21 = (float) 1.38;
+		
+		sortedQuotations.setQuotations(this.dmlStock.getQuotationsSortedByDate());
+		actualEma21 = this.indicatorCalculator.getExponentialMovingAverage(21, sortedQuotations.getQuotations().get(0), sortedQuotations);
+		
+		assertEquals(expectedEma21, actualEma21);
+	}
+	
+	
 	@Test
 	/**
 	 * Tests the calculation of the distance to the 52 week high.

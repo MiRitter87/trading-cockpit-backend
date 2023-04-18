@@ -153,6 +153,19 @@ public class IndicatorCalculator {
 	
 	
 	/**
+	 * Returns the Exponential Moving Average.
+	 * 
+	 * @param days The number of days on which the Exponential Moving Average is based.
+	 * @param quotation The Quotation for which the Exponential Moving Average is calculated.
+	 * @param sortedQuotations A list of quotations sorted by date that build the trading history.
+	 * @return The Exponential Moving Average.
+	 */
+	public float getExponentialMovingAverage(final int days, final Quotation quotation, final QuotationArray sortedQuotations) {
+		return 0;
+	}
+	
+	
+	/**
 	 * Returns the distance of the current Quotation to the 52 week high.
 	 * 
 	 * @param quotation The current Quotation for which the distance to the 52 week high is calculated.
