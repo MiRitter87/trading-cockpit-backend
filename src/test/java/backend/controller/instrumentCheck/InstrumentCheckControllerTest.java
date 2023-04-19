@@ -3,6 +3,7 @@ package backend.controller.instrumentCheck;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.text.MessageFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -191,6 +192,39 @@ public class InstrumentCheckControllerTest {
 		calendar.set(2022, 6, 15);	//Begin check on 15.07.22
 		try {
 			protocolEntries = this.instrumentCheckController.checkCloseBelowEma21(calendar.getTime(), this.dmlQuotations);
+			
+			//Verify the check result
+			assertEquals(1, protocolEntries.size());
+			
+			//Validate the protocol entry
+			actualProtocolEntry = protocolEntries.get(0);
+			assertEquals(expectedProtocolEntry, actualProtocolEntry);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the check if Instrument has a climax movement in a week.
+	 */
+	public void testCheckClimaxMoveOneWeek() {
+		ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
+		ProtocolEntry actualProtocolEntry;
+		List<ProtocolEntry> protocolEntries;
+		Calendar calendar = Calendar.getInstance();
+		
+		//Define the expected protocol entry.		
+		calendar.set(2022, 2, 2);		//The day on which a climax of at least 25% within a week occurred: 02.03.22.
+		expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
+		expectedProtocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
+		expectedProtocolEntry.setText(MessageFormat.format(this.resources.getString("protocol.climaxOneWeek"), "25,79"));
+		
+		//Call controller to perform check.
+		calendar.set(2022, 1, 29);	//Begin check on 29.02.22
+		try {
+			protocolEntries = this.instrumentCheckController.checkClimaxMove(calendar.getTime(), this.dmlQuotations);
 			
 			//Verify the check result
 			assertEquals(1, protocolEntries.size());
