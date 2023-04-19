@@ -173,6 +173,39 @@ public class InstrumentCheckControllerTest {
 	
 	@Test
 	/**
+	 * Tests the check if Instrument closed below EMA(21).
+	 */
+	public void testCheckCloseBelowEma21() {
+		ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
+		ProtocolEntry actualProtocolEntry;
+		List<ProtocolEntry> protocolEntries;
+		Calendar calendar = Calendar.getInstance();
+		
+		//Define the expected protocol entry.		
+		calendar.set(2022, 6, 22);		//The day on which the price closed below the EMA(21).
+		expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
+		expectedProtocolEntry.setCategory(ProtocolEntryCategory.VIOLATION);
+		expectedProtocolEntry.setText(this.resources.getString("protocol.closeBelowEma21"));
+		
+		//Call controller to perform check.
+		calendar.set(2022, 6, 15);	//Begin check on 15.07.22
+		try {
+			protocolEntries = this.instrumentCheckController.checkCloseBelowEma21(calendar.getTime(), this.dmlQuotations);
+			
+			//Verify the check result
+			assertEquals(1, protocolEntries.size());
+			
+			//Validate the protocol entry
+			actualProtocolEntry = protocolEntries.get(0);
+			assertEquals(expectedProtocolEntry, actualProtocolEntry);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	@Test
+	/**
 	 * Checks if a proper Exception is thrown if no quotations exist at or after the given start date.
 	 */
 	public void testCheckQuotationsExistAfterStartDate() {
