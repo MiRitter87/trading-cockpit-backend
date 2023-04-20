@@ -68,6 +68,7 @@ public class QuotationArray {
 	
 	/**
 	 * Gets the index of the Quotation with the given date.
+	 * Intraday attributes of the date (hours, minutes, ...) are not taken into account for lookup of matching Quotation.
 	 * If no Quotation exists on the given day, the index of the first Quotation coming afterwards is determined.
 	 * 
 	 * @param quotations A List of quotations.

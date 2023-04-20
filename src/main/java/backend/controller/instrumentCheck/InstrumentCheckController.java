@@ -28,6 +28,11 @@ public class InstrumentCheckController {
 	private static final float CLIMAX_ONE_WEEK_THRESHOLD = (float) 25;
 	
 	/**
+	 * The performance threshold of a climax move within three weeks.
+	 */
+	private static final float CLIMAX_THREE_WEEKS_THRESHOLD = (float) 50;
+	
+	/**
 	 * Access to localized application resources.
 	 */
 	private ResourceBundle resources = ResourceBundle.getBundle("backend");
@@ -110,7 +115,8 @@ public class InstrumentCheckController {
 		protocol.getProtocolEntries().addAll(this.instrumentCheckExtremumController.checkLargestDailyVolume(startDate, quotations));
 		protocol.getProtocolEntries().addAll(this.instrumentCheckPatternController.checkChurning(startDate, quotations));
 		protocol.getProtocolEntries().addAll(this.instrumentCheckCountingController.checkTimeClimax(startDate, quotations));
-		protocol.getProtocolEntries().addAll(this.checkClimaxMove(startDate, quotations));
+		protocol.getProtocolEntries().addAll(this.checkClimaxMoveOneWeek(startDate, quotations));
+		protocol.getProtocolEntries().addAll(this.checkClimaxMoveThreeWeeks(startDate, quotations));
 		
 		protocol.sortEntriesByDate();
 		protocol.calculatePercentages();
@@ -238,7 +244,7 @@ public class InstrumentCheckController {
 	 * @return List of ProtocolEntry, for all days on which a climactic advance is given.
 	 * @throws Exception The check failed because data are not fully available or corrupt.
 	 */
-	public List<ProtocolEntry> checkClimaxMove(final Date startDate, final QuotationArray sortedQuotations) throws Exception {
+	public List<ProtocolEntry> checkClimaxMoveOneWeek(final Date startDate, final QuotationArray sortedQuotations) throws Exception {
 		int startIndex;
 		Quotation currentDayQuotation;
 		List<ProtocolEntry> protocolEntries = new ArrayList<>();
@@ -258,13 +264,52 @@ public class InstrumentCheckController {
 			
 			performanceOneWeek = this.indicatorCalculator.getPricePerformanceForDays(5, currentDayQuotation, sortedQuotations);
 			
-			//TODO Check for Climax move within three weeks.
-			
 			if(performanceOneWeek >= CLIMAX_ONE_WEEK_THRESHOLD) {
 				protocolEntry = new ProtocolEntry();
 				protocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
 				protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(currentDayQuotation.getDate()));
 				protocolEntry.setText(MessageFormat.format(this.resources.getString("protocol.climaxOneWeek"), performanceOneWeek));
+				protocolEntries.add(protocolEntry);
+			}
+		}
+		
+		return protocolEntries;
+	}
+	
+	
+	/**
+	 * Checks if the Instrument has a climax movement advancing at least 50% within three weeks.
+	 * 
+	 * @param startDate The date at which the check starts.
+	 * @param sortedQuotations The quotations sorted by date that build the trading history.
+	 * @return List of ProtocolEntry, for all days on which a climactic advance is given.
+	 * @throws Exception The check failed because data are not fully available or corrupt.
+	 */
+	public List<ProtocolEntry> checkClimaxMoveThreeWeeks(final Date startDate, final QuotationArray sortedQuotations) throws Exception {
+		int startIndex;
+		Quotation currentDayQuotation;
+		List<ProtocolEntry> protocolEntries = new ArrayList<>();
+		ProtocolEntry protocolEntry;
+		float performanceThreeWeeks = 0;
+		
+		startIndex = sortedQuotations.getIndexOfQuotationWithDate(startDate);
+		
+		if(startIndex == -1)
+			throw new Exception("Could not find a quotation at or after the given start date.");
+		
+		for(int i = startIndex; i >= 0; i--) {
+			currentDayQuotation = sortedQuotations.getQuotations().get(i);
+						
+			if(currentDayQuotation.getIndicator() == null)
+				throw new Exception("No indicator is defined for Quotation with ID: " +currentDayQuotation.getId());
+			
+			performanceThreeWeeks = this.indicatorCalculator.getPricePerformanceForDays(15, currentDayQuotation, sortedQuotations);
+			
+			if(performanceThreeWeeks >= CLIMAX_THREE_WEEKS_THRESHOLD) {
+				protocolEntry = new ProtocolEntry();
+				protocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
+				protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(currentDayQuotation.getDate()));
+				protocolEntry.setText(MessageFormat.format(this.resources.getString("protocol.climaxThreeWeeks"), performanceThreeWeeks));
 				protocolEntries.add(protocolEntry);
 			}
 		}
