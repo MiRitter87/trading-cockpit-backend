@@ -9,14 +9,6 @@ The backend provides WebServices to create, read, update and delete the followin
 - Lists
 - Scans
 
-Quotation data are retrieved using the following third-party WebServices and Interfaces.
-
-- Yahoo.com for retrieval of current and historical instrument prices
-- MarketWatch.com for retrieval of historical instrument prices
-- investing.com for retrieval of current instrument prices
-- TheGlobeAndMail.com for retrieval of current instrument prices
-- CNBC.com for retrieval of current instrument prices
-
 ### Price Alerts
 A price alert notifies you if the price of an instrument reaches a certain threshold. There are two types of alerts. One alert informs you if a price is equal or higher than your defined price. The other type informs you if the price is equal of lower your defined price. The backend queries stock quotes cyclically to check if the defined threshold has been triggered.
 
@@ -33,7 +25,7 @@ The backend offers multiple templates to filter the scan results by different ch
 ### Dashboard
 The Dashboard aims to provide a meta overview of the current state of the market.
 
-At the end of the scan process, statistical data of the instruments are calculated. Those statistical are exposed either as tabular data or as charts using WebServices.
+At the end of the scan process, statistical data of the instruments are calculated. Those statistics are exposed either as tabular data or as charts using WebServices.
 
 ## Technology
 
