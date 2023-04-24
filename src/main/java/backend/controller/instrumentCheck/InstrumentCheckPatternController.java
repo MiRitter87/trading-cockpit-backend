@@ -41,9 +41,14 @@ public class InstrumentCheckPatternController {
 	private static final float CHURNING_DOWN_THRESHOLD = (float) -1.0;
 	
 	/**
-	 * The threshold of the daily price range for reversal calculation.
+	 * The threshold of the daily price range for bearish reversal calculation.
 	 */
-	private static final float REVERSAL_THRESHOLD = (float) 0.4;
+	private static final float REVERSAL_THRESHOLD_BEARISH = (float) 0.4;
+	
+	/**
+	 * The threshold of the daily price range for bullish reversal calculation.
+	 */
+	private static final float REVERSAL_THRESHOLD_BULLISH = (float) 0.6;
 	
 	/**
 	 * Access to localized application resources.
@@ -306,10 +311,37 @@ public class InstrumentCheckPatternController {
 			throw new Exception("No indicator is defined for Quotation with ID: " +currentQuotation.getId());
 		
 		dailyPriceRange = currentQuotation.getHigh().subtract(currentQuotation.getLow());
-		reversalThresholdPrice = currentQuotation.getLow().add(dailyPriceRange.multiply(new BigDecimal(REVERSAL_THRESHOLD)));
+		reversalThresholdPrice = currentQuotation.getLow().add(dailyPriceRange.multiply(new BigDecimal(REVERSAL_THRESHOLD_BEARISH)));
 		
 		if(currentQuotation.getOpen().compareTo(reversalThresholdPrice) <= 0 && 
 				currentQuotation.getClose().compareTo(reversalThresholdPrice) <= 0 &&
+				currentQuotation.getVolume() > currentQuotation.getIndicator().getSma30Volume()) {
+			return true;
+		}
+		else {
+			return false;			
+		}
+	}
+	
+	
+	/**
+	 * Checks if the current Quotation constitutes a bullish high-volume reversal.
+	 * 
+	 * @param currentQuotation The current Quotation.
+	 * @return true, if currentQuotation constitutes a bullish high-volume reversal; false, if not.
+	 * @throws Exception Determination failed.
+	 */
+	public boolean isBullishHighVolumeReversal(final Quotation currentQuotation) throws Exception {
+		BigDecimal dailyPriceRange, reversalThresholdPrice;
+		
+		if(currentQuotation.getIndicator() == null)
+			throw new Exception("No indicator is defined for Quotation with ID: " +currentQuotation.getId());
+		
+		dailyPriceRange = currentQuotation.getHigh().subtract(currentQuotation.getLow());
+		reversalThresholdPrice = currentQuotation.getLow().add(dailyPriceRange.multiply(new BigDecimal(REVERSAL_THRESHOLD_BULLISH)));
+		
+		if(currentQuotation.getOpen().compareTo(reversalThresholdPrice) >= 0 && 
+				currentQuotation.getClose().compareTo(reversalThresholdPrice) >= 0 &&
 				currentQuotation.getVolume() > currentQuotation.getIndicator().getSma30Volume()) {
 			return true;
 		}
