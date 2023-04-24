@@ -1,12 +1,17 @@
 package backend.controller.statistic;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.jfree.chart.JFreeChart;
 
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
+import backend.model.instrument.Quotation;
+import backend.tools.DateTools;
 
 /**
  * Controller for the creation of a chart displaying the Ritter Pattern Indicator.
@@ -24,6 +29,7 @@ public class RitterPatternIndicatorChartController extends StatisticChartControl
 	 */
 	public JFreeChart getRitterPatternIndicatorChart(final InstrumentType instrumentType, final Integer listId) throws Exception {
 		List<Instrument> instruments = this.getAllInstrumentsWithQuotations(instrumentType, listId);
+		Map<Date, Float> patternIndicatorValues = this.getPatternIndicatorValues(instruments);
 		
 		return null;
 	}
@@ -56,5 +62,49 @@ public class RitterPatternIndicatorChartController extends StatisticChartControl
 		}
 			
 		return instruments;
+	}
+	
+	
+	/**
+	 * Determines the pattern indicator values for the given instruments.
+	 * 
+	 * @param instruments The instruments on which the pattern indicator values are calculated.
+	 * @return The pattern indicator values.
+	 */
+	private Map<Date, Float> getPatternIndicatorValues(final List<Instrument> instruments) {
+		List<Quotation> quotationsSortedByDate;
+		Map<Date, Float> patternIndicatorValues = new HashMap<>(252);	//252 trading days per year.
+		Quotation previousQuotation;
+		int currentQuotationIndex;
+		Float patternIndicatorValue;
+		Date currentQuotationDate;
+		
+		for(Instrument instrument: instruments) {
+			quotationsSortedByDate = instrument.getQuotationsSortedByDate();
+			
+			for(Quotation currentQuotation: quotationsSortedByDate) {
+				currentQuotationIndex = quotationsSortedByDate.indexOf(currentQuotation);
+				
+				//Stop pattern indicator calculation for the current Instrument if no previous Quotation exists.
+				if(currentQuotationIndex == (quotationsSortedByDate.size() - 1))
+					break;
+				
+				previousQuotation = quotationsSortedByDate.get(currentQuotationIndex + 1);
+				currentQuotationDate = DateTools.getDateWithoutIntradayAttributes(currentQuotation.getDate());
+				
+				//Check if pattern indicator of given day already exists.
+				patternIndicatorValue = patternIndicatorValues.get(currentQuotationDate);
+				
+				if(patternIndicatorValue == null) {
+					patternIndicatorValue = 0f;
+				}
+				
+				//TODO Apply check-up methods to get value of pattern indicator.
+				
+				patternIndicatorValues.put(currentQuotationDate, patternIndicatorValue);
+			}
+		}
+		
+		return patternIndicatorValues;
 	}
 }
