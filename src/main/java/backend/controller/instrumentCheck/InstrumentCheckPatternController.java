@@ -78,7 +78,7 @@ public class InstrumentCheckPatternController {
 		Quotation currentQuotation, previousQuotation;
 		List<ProtocolEntry> protocolEntries = new ArrayList<>();
 		ProtocolEntry protocolEntry;
-		float performance;
+		boolean isUpOnVolume;
 
 		startIndex = sortedQuotations.getIndexOfQuotationWithDate(startDate);
 		
@@ -94,16 +94,9 @@ public class InstrumentCheckPatternController {
 			}
 			
 			currentQuotation = sortedQuotations.getQuotations().get(i);
+			isUpOnVolume = this.isUpOnVolume(currentQuotation, previousQuotation);
 			
-			if(previousQuotation.getIndicator() == null)
-				throw new Exception("No indicator is defined for Quotation with ID: " +previousQuotation.getId());
-			
-			if(currentQuotation.getIndicator() == null)
-				throw new Exception("No indicator is defined for Quotation with ID: " +currentQuotation.getId());
-			
-			performance = this.indicatorCalculator.getPerformance(currentQuotation, previousQuotation);
-			
-			if(performance >= UP_PERFORMANCE_THRESHOLD && currentQuotation.getVolume() > currentQuotation.getIndicator().getSma30Volume()) {
+			if(isUpOnVolume) {
 				protocolEntry = new ProtocolEntry();
 				protocolEntry.setCategory(ProtocolEntryCategory.CONFIRMATION);
 				protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(currentQuotation.getDate()));
@@ -130,7 +123,7 @@ public class InstrumentCheckPatternController {
 		Quotation currentQuotation, previousQuotation;
 		List<ProtocolEntry> protocolEntries = new ArrayList<>();
 		ProtocolEntry protocolEntry;
-		float performance;
+		boolean isDownOnVolume;
 		
 		startIndex = sortedQuotations.getIndexOfQuotationWithDate(startDate);
 		
@@ -146,16 +139,9 @@ public class InstrumentCheckPatternController {
 			}
 			
 			currentQuotation = sortedQuotations.getQuotations().get(i);
+			isDownOnVolume = this.isDownOnVolume(currentQuotation, previousQuotation);
 			
-			if(previousQuotation.getIndicator() == null)
-				throw new Exception("No indicator is defined for Quotation with ID: " +previousQuotation.getId());
-			
-			if(currentQuotation.getIndicator() == null)
-				throw new Exception("No indicator is defined for Quotation with ID: " +currentQuotation.getId());
-			
-			performance = this.indicatorCalculator.getPerformance(currentQuotation, previousQuotation);
-			
-			if(performance <= DOWN_PERFORMANCE_THRESHOLD && currentQuotation.getVolume() > currentQuotation.getIndicator().getSma30Volume()) {
+			if(isDownOnVolume) {
 				protocolEntry = new ProtocolEntry();
 				protocolEntry.setCategory(ProtocolEntryCategory.VIOLATION);
 				protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(currentQuotation.getDate()));
@@ -236,7 +222,7 @@ public class InstrumentCheckPatternController {
 		Quotation currentQuotation;
 		List<ProtocolEntry> protocolEntries = new ArrayList<>();
 		ProtocolEntry protocolEntry;
-		BigDecimal dailyPriceRange, reversalThresholdPrice;
+		boolean isBearishHighVolumeReversal;
 
 		startIndex = sortedQuotations.getIndexOfQuotationWithDate(startDate);
 		
@@ -245,17 +231,9 @@ public class InstrumentCheckPatternController {
 		
 		for(int i = startIndex; i >= 0; i--) {
 			currentQuotation = sortedQuotations.getQuotations().get(i);
+			isBearishHighVolumeReversal = this.isBearishHighVolumeReversal(currentQuotation);
 			
-			if(currentQuotation.getIndicator() == null)
-				throw new Exception("No indicator is defined for Quotation with ID: " +currentQuotation.getId());
-			
-			dailyPriceRange = currentQuotation.getHigh().subtract(currentQuotation.getLow());
-			reversalThresholdPrice = currentQuotation.getLow().add(dailyPriceRange.multiply(new BigDecimal(REVERSAL_THRESHOLD)));
-			
-			if(currentQuotation.getOpen().compareTo(reversalThresholdPrice) <= 0 && 
-					currentQuotation.getClose().compareTo(reversalThresholdPrice) <= 0 &&
-					currentQuotation.getVolume() > currentQuotation.getIndicator().getSma30Volume()) {
-				
+			if(isBearishHighVolumeReversal) {
 				protocolEntry = new ProtocolEntry();
 				protocolEntry.setCategory(ProtocolEntryCategory.VIOLATION);
 				protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(currentQuotation.getDate()));
@@ -265,5 +243,78 @@ public class InstrumentCheckPatternController {
 		}
 		
 		return protocolEntries;
+	}
+	
+	
+	/**
+	 * Checks if the current Quotation has traded up on volume against the previous Quotation.
+	 * 
+	 * @param currentQuotation The current Quotation.
+	 * @param previousQuotation The previous Quotation.
+	 * @return true, if currentQuotation traded up on volume; false, if not.
+	 * @throws Exception Determination failed.
+	 */
+	public boolean isUpOnVolume(final Quotation currentQuotation, final Quotation previousQuotation) throws Exception {
+		float performance;
+		
+		if(currentQuotation.getIndicator() == null)
+			throw new Exception("No indicator is defined for Quotation with ID: " +currentQuotation.getId());
+		
+		performance = this.indicatorCalculator.getPerformance(currentQuotation, previousQuotation);
+		
+		if(performance >= UP_PERFORMANCE_THRESHOLD && currentQuotation.getVolume() > currentQuotation.getIndicator().getSma30Volume())
+			return true;
+		else
+			return false;
+	}
+	
+	
+	/**
+	 * Checks if the current Quotation has traded down on volume against the previous Quotation.
+	 * 
+	 * @param currentQuotation The current Quotation.
+	 * @param previousQuotation The previous Quotation.
+	 * @return true, if currentQuotation traded down on volume; false, if not.
+	 * @throws Exception Determination failed.
+	 */
+	public boolean isDownOnVolume(final Quotation currentQuotation, final Quotation previousQuotation) throws Exception {
+		float performance;
+		
+		if(currentQuotation.getIndicator() == null)
+			throw new Exception("No indicator is defined for Quotation with ID: " +currentQuotation.getId());
+		
+		performance = this.indicatorCalculator.getPerformance(currentQuotation, previousQuotation);
+		
+		if(performance <= DOWN_PERFORMANCE_THRESHOLD && currentQuotation.getVolume() > currentQuotation.getIndicator().getSma30Volume())
+			return true;
+		else
+			return false;
+	}
+	
+	
+	/**
+	 * Checks if the current Quotation constitutes a bearish high-volume reversal.
+	 * 
+	 * @param currentQuotation The current Quotation.
+	 * @return true, if currentQuotation constitutes a bearish high-volume reversal; false, if not.
+	 * @throws Exception Determination failed.
+	 */
+	public boolean isBearishHighVolumeReversal(final Quotation currentQuotation) throws Exception {
+		BigDecimal dailyPriceRange, reversalThresholdPrice;
+		
+		if(currentQuotation.getIndicator() == null)
+			throw new Exception("No indicator is defined for Quotation with ID: " +currentQuotation.getId());
+		
+		dailyPriceRange = currentQuotation.getHigh().subtract(currentQuotation.getLow());
+		reversalThresholdPrice = currentQuotation.getLow().add(dailyPriceRange.multiply(new BigDecimal(REVERSAL_THRESHOLD)));
+		
+		if(currentQuotation.getOpen().compareTo(reversalThresholdPrice) <= 0 && 
+				currentQuotation.getClose().compareTo(reversalThresholdPrice) <= 0 &&
+				currentQuotation.getVolume() > currentQuotation.getIndicator().getSma30Volume()) {
+			return true;
+		}
+		else {
+			return false;			
+		}
 	}
 }
