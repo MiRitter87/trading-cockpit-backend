@@ -56,6 +56,11 @@ public abstract class StatisticChartController {
 	protected QuotationDAO quotationDAO;
 	
 	/**
+	 * DAO to access List data.
+	 */
+	protected ListDAO listDAO;
+	
+	/**
 	 * Indicator calculator.
 	 */
 	protected IndicatorCalculator indicatorCalculator;
@@ -73,6 +78,7 @@ public abstract class StatisticChartController {
 		this.statisticDAO = DAOManager.getInstance().getStatisticDAO();
 		this.instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
 		this.quotationDAO = DAOManager.getInstance().getQuotationDAO();
+		this.listDAO = DAOManager.getInstance().getListDAO();
 		
 		this.indicatorCalculator = new IndicatorCalculator();
 	}
@@ -87,14 +93,13 @@ public abstract class StatisticChartController {
 	 * @throws Exception Determination of statistics failed.
 	 */
 	protected List<Statistic> getStatistics(final InstrumentType instrumentType, final Integer listId) throws Exception {
-		ListDAO listDAO = DAOManager.getInstance().getListDAO();
 		backend.model.list.List list;
 		List<Instrument> instruments = new ArrayList<>();
 		List<Statistic> statistics = new ArrayList<>();
 		StatisticCalculationController statisticCalculationController = new StatisticCalculationController();
 		
 		if(listId != null) {
-			list = listDAO.getList(listId);
+			list = this.listDAO.getList(listId);
 			instruments.addAll(list.getInstruments());
 			statistics = statisticCalculationController.calculateStatistics(instruments);
 		}
