@@ -376,19 +376,17 @@ public class InstrumentCheckCountingController {
 		int indexOfStartQuotation, indexOfEndQuotation;
 		int numberOfGoodCloses = 0, numberOfBadCloses = 0, numberOfDaysTotal = 0;
 		Quotation currentQuotation;
-		BigDecimal medianPrice;
 		Map<String, Integer> resultMap = new HashMap<>(3);
+		boolean isGoodClose;
 		
 		indexOfStartQuotation = sortedQuotations.getQuotations().indexOf(startQuotation);
 		indexOfEndQuotation = sortedQuotations.getQuotations().indexOf(endQuotation);
 		
 		for(int i = indexOfStartQuotation; i >= indexOfEndQuotation; i--) {
 			currentQuotation = sortedQuotations.getQuotations().get(i);
+			isGoodClose = this.isGoodClose(currentQuotation);
 						
-			medianPrice = currentQuotation.getLow().add(currentQuotation.getHigh()).divide(new BigDecimal(2), 3, RoundingMode.HALF_UP);
-			
-			//A close exactly in the middle of the range is considered a bad close.
-			if(currentQuotation.getClose().compareTo(medianPrice) == 1)
+			if(isGoodClose)
 				numberOfGoodCloses++;
 			else
 				numberOfBadCloses++;
@@ -445,5 +443,24 @@ public class InstrumentCheckCountingController {
 		resultMap.put(MAP_ENTRY_DAYS_TOTAL, numberOfDaysTotal);
 		
 		return resultMap;
+	}
+	
+	
+	/**
+	 * Checks if the current Quotation constitutes a good close (close in the upper half of the daily trading range).
+	 * 
+	 * @param currentQuotation The current Quotation.
+	 * @return true, if currentQuotation constitutes a good close; false, if not.
+	 */
+	public boolean isGoodClose(final Quotation currentQuotation) {
+		BigDecimal medianPrice;
+		
+		medianPrice = currentQuotation.getLow().add(currentQuotation.getHigh()).divide(new BigDecimal(2), 3, RoundingMode.HALF_UP);
+		
+		//A close exactly in the middle of the range is considered a bad close.
+		if(currentQuotation.getClose().compareTo(medianPrice) == 1)
+			return true;
+		else
+			return false;
 	}
 }
