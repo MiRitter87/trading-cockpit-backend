@@ -29,5 +29,10 @@ public enum ChartType {
 	/**
 	 * A chart of the Ritter Market Trend.
 	 */
-	RITTER_MARKET_TREND
+	RITTER_MARKET_TREND,
+	
+	/**
+	 * A chart of the Ritter Pattern Indicator.
+	 */
+	RITTER_PATTERN_INDICATOR
 }

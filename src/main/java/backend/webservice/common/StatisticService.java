@@ -19,6 +19,7 @@ import backend.controller.statistic.AdvanceDeclineNumberChartController;
 import backend.controller.statistic.DistributionDaysChartController;
 import backend.controller.statistic.FollowThroughDaysChartController;
 import backend.controller.statistic.RitterMarketTrendChartController;
+import backend.controller.statistic.RitterPatternIndicatorChartController;
 import backend.dao.DAOManager;
 import backend.dao.statistic.StatisticDAO;
 import backend.model.instrument.InstrumentType;
@@ -103,6 +104,8 @@ public class StatisticService {
 				return this.getFollowThroughDaysChart(instrumentId);
 			case RITTER_MARKET_TREND:
 				return this.getRitterMarketTrendChart(listId);
+			case RITTER_PATTERN_INDICATOR:
+				return this.getRitterPatternIndicatorChart(listId);
 			default:
 				return Response.status(404).build();				
 		}
@@ -254,6 +257,35 @@ public class StatisticService {
 			};
 		} catch (Exception exception) {
 			logger.error(this.resources.getString("statistic.chartRitterMarketTrend.getError"), exception);
+			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+		}
+		
+		return Response.ok(streamingOutput).build();
+	}
+	
+	
+	/**
+	 * Provides a chart of the Ritter Pattern Indicator.
+	 * 
+	 * @param listId The ID of the list defining the instruments used for chart creation.
+	 * @return A Response containing the generated chart.
+	 */
+	private Response getRitterPatternIndicatorChart(final Integer listId) {
+		RitterPatternIndicatorChartController rpiChartController = new RitterPatternIndicatorChartController();
+		JFreeChart chart;
+		StreamingOutput streamingOutput = null;
+		
+		try {
+			chart = rpiChartController.getRitterPatternIndicatorChart(InstrumentType.STOCK, listId);
+			
+			streamingOutput = new StreamingOutput() {
+				@Override
+				public void write(OutputStream output) throws IOException, WebApplicationException {
+					ChartUtils.writeChartAsPNG(output, chart, 800, 600);
+				}
+			};
+		} catch (Exception exception) {
+			logger.error(this.resources.getString("statistic.chartRitterPatternIndicator.getError"), exception);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
 		}
 		
