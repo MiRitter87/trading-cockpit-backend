@@ -3,6 +3,7 @@ package backend.controller.statistic;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -192,6 +193,9 @@ public class RitterPatternIndicatorChartController extends StatisticChartControl
 		ArrayList<Entry<Date, Integer>> valueList = new ArrayList<>(patternIndicatorValues.entrySet());
 		Map.Entry<Date, Integer> mapEntry;
 		float movingAverage;
+		
+		//The values have to be sorted from newest to oldest.
+		Collections.reverse(valueList);
 		
 		//Iterate patternIndicatorValues backwards because XYDatasets are constructed from oldest to newest value.
 		for(int i = valueList.size() - 1; i >= 0; i--) {
