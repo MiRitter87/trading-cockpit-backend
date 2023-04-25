@@ -2,12 +2,14 @@ package backend.controller.statistic;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.TreeMap;
 
 import org.jfree.chart.JFreeChart;
 
+import backend.controller.instrumentCheck.InstrumentCheckCountingController;
+import backend.controller.instrumentCheck.InstrumentCheckPatternController;
+import backend.controller.scan.IndicatorCalculator;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
@@ -29,7 +31,7 @@ public class RitterPatternIndicatorChartController extends StatisticChartControl
 	 */
 	public JFreeChart getRitterPatternIndicatorChart(final InstrumentType instrumentType, final Integer listId) throws Exception {
 		List<Instrument> instruments = this.getAllInstrumentsWithQuotations(instrumentType, listId);
-		Map<Date, Float> patternIndicatorValues = this.getPatternIndicatorValues(instruments);
+		TreeMap<Date, Float> patternIndicatorValues = this.getPatternIndicatorValues(instruments);
 		
 		return null;
 	}
@@ -70,10 +72,11 @@ public class RitterPatternIndicatorChartController extends StatisticChartControl
 	 * 
 	 * @param instruments The instruments on which the pattern indicator values are calculated.
 	 * @return The pattern indicator values.
+	 * @throws Exception Indicator value determination failed.
 	 */
-	private Map<Date, Float> getPatternIndicatorValues(final List<Instrument> instruments) {
+	private TreeMap<Date, Float> getPatternIndicatorValues(final List<Instrument> instruments) throws Exception {
 		List<Quotation> quotationsSortedByDate;
-		Map<Date, Float> patternIndicatorValues = new HashMap<>(252);	//252 trading days per year.
+		TreeMap<Date, Float> patternIndicatorValues = new TreeMap<>();
 		Quotation previousQuotation;
 		int currentQuotationIndex;
 		Float patternIndicatorValue;
@@ -99,12 +102,59 @@ public class RitterPatternIndicatorChartController extends StatisticChartControl
 					patternIndicatorValue = 0f;
 				}
 				
-				//TODO Apply check-up methods to get value of pattern indicator.
-				
+				patternIndicatorValue += this.getPatternIndicatorValue(currentQuotation, previousQuotation);
 				patternIndicatorValues.put(currentQuotationDate, patternIndicatorValue);
 			}
 		}
 		
 		return patternIndicatorValues;
+	}
+	
+	
+	/**
+	 * Calculates the value of the pattern indicator based on the given quotations.
+	 * 
+	 * @param currentQuotation The current Quotation.
+	 * @param previousQuotation The previous Quotation.
+	 * @return The value of the pattern indicator.
+	 * @throws Exception Value determination failed.
+	 */
+	private float getPatternIndicatorValue(final Quotation currentQuotation, final Quotation previousQuotation) throws Exception {
+		InstrumentCheckPatternController patternController = new InstrumentCheckPatternController();
+		InstrumentCheckCountingController countingController = new InstrumentCheckCountingController();
+		IndicatorCalculator indicatorCalculator = new IndicatorCalculator();
+		float patternIndicatorValue = 0, performance;
+		boolean isGoodClose;
+		
+		performance = indicatorCalculator.getPerformance(currentQuotation, previousQuotation);
+		isGoodClose = countingController.isGoodClose(currentQuotation);
+		
+		//Bullish patterns
+		if(patternController.isUpOnVolume(currentQuotation, previousQuotation))
+			patternIndicatorValue++;
+		
+		if(patternController.isBullishHighVolumeReversal(currentQuotation))
+			patternIndicatorValue++;
+		
+		if(isGoodClose)
+			patternIndicatorValue++;
+		
+		if(performance > 0)
+			patternIndicatorValue++;
+		
+		//Bearish patterns
+		if(patternController.isDownOnVolume(currentQuotation, previousQuotation))
+			patternIndicatorValue--;
+		
+		if(patternController.isBearishHighVolumeReversal(currentQuotation))
+			patternIndicatorValue--;
+		
+		if(!isGoodClose)
+			patternIndicatorValue--;
+		
+		if(performance < 0)
+			patternIndicatorValue--;
+		
+		return patternIndicatorValue;
 	}
 }
