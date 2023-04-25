@@ -1,7 +1,5 @@
 package backend.controller.statistic;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
@@ -9,8 +7,6 @@ import java.util.TimeZone;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.ValueMarker;
-import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.TimePeriodAnchor;
 import org.jfree.data.time.TimeSeries;
@@ -112,17 +108,5 @@ public class RitterMarketTrendChartController extends StatisticChartController {
 		movingAverage = new BigDecimal(sum).divide(new BigDecimal(period), 1, RoundingMode.HALF_UP);
 		
 		return movingAverage.floatValue();
-	}
-	
-	
-	/**
-	 * Adds a horizontal line to the given XYPlot.
-	 * 
-	 * @param plot The XYPlot to which the horizontal line is added.
-	 * @param double horizontalLinePosition The value on the y-axis at which the horizontal line is being drawn.
-	 */
-	private void addHorizontalLine(XYPlot plot, final double horizontalLinePosition) {
-		ValueMarker valueMarker = new ValueMarker(horizontalLinePosition, Color.BLACK, new BasicStroke(2), null, null, 1.0f);
-		plot.addRangeMarker(valueMarker);
 	}
 }

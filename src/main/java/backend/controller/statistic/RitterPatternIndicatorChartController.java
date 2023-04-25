@@ -3,9 +3,17 @@ package backend.controller.statistic;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 import java.util.TreeMap;
 
+import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
+import org.jfree.data.time.Day;
+import org.jfree.data.time.TimePeriodAnchor;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesCollection;
+import org.jfree.data.xy.XYDataset;
 
 import backend.controller.instrumentCheck.InstrumentCheckCountingController;
 import backend.controller.instrumentCheck.InstrumentCheckPatternController;
@@ -32,8 +40,16 @@ public class RitterPatternIndicatorChartController extends StatisticChartControl
 	public JFreeChart getRitterPatternIndicatorChart(final InstrumentType instrumentType, final Integer listId) throws Exception {
 		List<Instrument> instruments = this.getAllInstrumentsWithQuotations(instrumentType, listId);
 		TreeMap<Date, Float> patternIndicatorValues = this.getPatternIndicatorValues(instruments);
+		XYDataset dataset = this.getRitterPatternIndicatorDataset(patternIndicatorValues);
 		
-		return null;
+		JFreeChart chart = ChartFactory.createTimeSeriesChart(
+				this.resources.getString("statistic.chartRitterPatternIndicator.titleName"),
+				null, null,	dataset, true, true, false
+		);
+			
+		this.addHorizontalLine(chart.getXYPlot(), 0);
+			
+		return chart;
 	}
 	
 	
@@ -156,5 +172,35 @@ public class RitterPatternIndicatorChartController extends StatisticChartControl
 			patternIndicatorValue--;
 		
 		return patternIndicatorValue;
+	}
+	
+	
+	/**
+	 * Constructs a XYDataset for the Ritter Pattern Indicator chart.
+	 * 
+	 * @param patternIndicatorValues The pattern indicator values for which the chart is calculated.
+	 * @return The XYDataset.
+	 */
+	private XYDataset getRitterPatternIndicatorDataset(final TreeMap<Date, Float> patternIndicatorValues) {
+		TimeSeries timeSeries = new TimeSeries(this.resources.getString("statistic.chartRitterPatternIndicator.timeSeriesName"));
+		TimeZone timeZone = TimeZone.getDefault();
+		TimeSeriesCollection timeSeriesColleciton = new TimeSeriesCollection(timeZone);
+		float movingAverage;
+		
+		//Iterate patternIndicatorValues backwards because XYDatasets are constructed from oldest to newest value.
+		for(Map.Entry<Date, Float> entry : patternIndicatorValues.entrySet()) {
+			try {
+				//movingAverage = this.getMovingAverageOfRitterMarketTrend(statistics, 10, i);
+				timeSeries.add(new Day(entry.getKey()), entry.getValue());
+			}
+			catch(Exception exception) {
+				continue;
+			}
+		}
+		
+        timeSeriesColleciton.addSeries(timeSeries);
+        timeSeriesColleciton.setXPosition(TimePeriodAnchor.MIDDLE);
+        
+        return timeSeriesColleciton;
 	}
 }

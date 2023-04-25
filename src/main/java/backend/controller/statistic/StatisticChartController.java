@@ -1,5 +1,7 @@
 package backend.controller.statistic;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -7,6 +9,7 @@ import java.util.ResourceBundle;
 
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.CandlestickRenderer;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
@@ -229,5 +232,17 @@ public abstract class StatisticChartController {
 			return true;
 		else
 			return false;
+	}
+	
+	
+	/**
+	 * Adds a horizontal line to the given XYPlot.
+	 * 
+	 * @param plot The XYPlot to which the horizontal line is added.
+	 * @param double horizontalLinePosition The value on the y-axis at which the horizontal line is being drawn.
+	 */
+	protected void addHorizontalLine(XYPlot plot, final double horizontalLinePosition) {
+		ValueMarker valueMarker = new ValueMarker(horizontalLinePosition, Color.BLACK, new BasicStroke(2), null, null, 1.0f);
+		plot.addRangeMarker(valueMarker);
 	}
 }
