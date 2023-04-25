@@ -1,9 +1,12 @@
 package backend.controller.statistic;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TimeZone;
 import java.util.TreeMap;
 
@@ -39,7 +42,7 @@ public class RitterPatternIndicatorChartController extends StatisticChartControl
 	 */
 	public JFreeChart getRitterPatternIndicatorChart(final InstrumentType instrumentType, final Integer listId) throws Exception {
 		List<Instrument> instruments = this.getAllInstrumentsWithQuotations(instrumentType, listId);
-		TreeMap<Date, Float> patternIndicatorValues = this.getPatternIndicatorValues(instruments);
+		TreeMap<Date, Integer> patternIndicatorValues = this.getPatternIndicatorValues(instruments);
 		XYDataset dataset = this.getRitterPatternIndicatorDataset(patternIndicatorValues);
 		
 		JFreeChart chart = ChartFactory.createTimeSeriesChart(
@@ -90,12 +93,12 @@ public class RitterPatternIndicatorChartController extends StatisticChartControl
 	 * @return The pattern indicator values.
 	 * @throws Exception Indicator value determination failed.
 	 */
-	private TreeMap<Date, Float> getPatternIndicatorValues(final List<Instrument> instruments) throws Exception {
+	private TreeMap<Date, Integer> getPatternIndicatorValues(final List<Instrument> instruments) throws Exception {
 		List<Quotation> quotationsSortedByDate;
-		TreeMap<Date, Float> patternIndicatorValues = new TreeMap<>();
+		TreeMap<Date, Integer> patternIndicatorValues = new TreeMap<>();
 		Quotation previousQuotation;
 		int currentQuotationIndex;
-		Float patternIndicatorValue;
+		Integer patternIndicatorValue;
 		Date currentQuotationDate;
 		
 		for(Instrument instrument: instruments) {
@@ -115,7 +118,7 @@ public class RitterPatternIndicatorChartController extends StatisticChartControl
 				patternIndicatorValue = patternIndicatorValues.get(currentQuotationDate);
 				
 				if(patternIndicatorValue == null) {
-					patternIndicatorValue = 0f;
+					patternIndicatorValue = 0;
 				}
 				
 				patternIndicatorValue += this.getPatternIndicatorValue(currentQuotation, previousQuotation);
@@ -135,11 +138,12 @@ public class RitterPatternIndicatorChartController extends StatisticChartControl
 	 * @return The value of the pattern indicator.
 	 * @throws Exception Value determination failed.
 	 */
-	private float getPatternIndicatorValue(final Quotation currentQuotation, final Quotation previousQuotation) throws Exception {
+	private int getPatternIndicatorValue(final Quotation currentQuotation, final Quotation previousQuotation) throws Exception {
 		InstrumentCheckPatternController patternController = new InstrumentCheckPatternController();
 		InstrumentCheckCountingController countingController = new InstrumentCheckCountingController();
 		IndicatorCalculator indicatorCalculator = new IndicatorCalculator();
-		float patternIndicatorValue = 0, performance;
+		float performance;
+		int patternIndicatorValue = 0;
 		boolean isGoodClose;
 		
 		performance = indicatorCalculator.getPerformance(currentQuotation, previousQuotation);
@@ -181,17 +185,20 @@ public class RitterPatternIndicatorChartController extends StatisticChartControl
 	 * @param patternIndicatorValues The pattern indicator values for which the chart is calculated.
 	 * @return The XYDataset.
 	 */
-	private XYDataset getRitterPatternIndicatorDataset(final TreeMap<Date, Float> patternIndicatorValues) {
+	private XYDataset getRitterPatternIndicatorDataset(final TreeMap<Date, Integer> patternIndicatorValues) {
 		TimeSeries timeSeries = new TimeSeries(this.resources.getString("statistic.chartRitterPatternIndicator.timeSeriesName"));
 		TimeZone timeZone = TimeZone.getDefault();
 		TimeSeriesCollection timeSeriesColleciton = new TimeSeriesCollection(timeZone);
+		ArrayList<Entry<Date, Integer>> valueList = new ArrayList<>(patternIndicatorValues.entrySet());
+		Map.Entry<Date, Integer> mapEntry;
 		float movingAverage;
 		
 		//Iterate patternIndicatorValues backwards because XYDatasets are constructed from oldest to newest value.
-		for(Map.Entry<Date, Float> entry : patternIndicatorValues.entrySet()) {
+		for(int i = valueList.size() - 1; i >= 0; i--) {
 			try {
-				//movingAverage = this.getMovingAverageOfRitterMarketTrend(statistics, 10, i);
-				timeSeries.add(new Day(entry.getKey()), entry.getValue());
+				mapEntry = valueList.get(i);
+				movingAverage = this.getMovingAverageOfRitterPatternIndicator(valueList, 10, i);
+				timeSeries.add(new Day(mapEntry.getKey()), movingAverage);
 			}
 			catch(Exception exception) {
 				continue;
@@ -202,5 +209,40 @@ public class RitterPatternIndicatorChartController extends StatisticChartControl
         timeSeriesColleciton.setXPosition(TimePeriodAnchor.MIDDLE);
         
         return timeSeriesColleciton;
+	}
+	
+	
+	/**
+	 * Calculates the moving average of the Ritter Pattern Indicator for the given number of days.
+	 * 
+	 * @param patternIndicatorValues The pattern indicator values for which the chart is calculated.
+	 * @param period The period in days for Moving Average calculation.
+	 * @param beginIndex The begin index for calculation.
+	 * @return The moving average of the Ritter Pattern Indicator.
+	 * @throws Exception Calculation of Moving Average failed.
+	 */
+	private float getMovingAverageOfRitterPatternIndicator(final ArrayList<Entry<Date, Integer>> patternIndicatorValues, 
+			final int period, final int beginIndex) throws Exception {
+		
+		int endIndex = beginIndex + period - 1;
+		int sum = 0, normalizedDailyValue;
+		Map.Entry<Date, Integer> patternIndicatorValue;
+		BigDecimal movingAverage;
+		
+		if((beginIndex + 29 - 1) >= patternIndicatorValues.size())
+			throw new Exception("The RPI is not available for the oldest 29 days because SMA(30) of volume is not available.");
+		
+		if(endIndex >= patternIndicatorValues.size())
+			throw new Exception("Not enough historical values available to calculate moving average for the given period.");
+		
+		for(int i = beginIndex; i <= endIndex; i++) {
+			patternIndicatorValue = patternIndicatorValues.get(i);
+			//normalizedDailyValue = statistic.getNumberRitterMarketTrend() * 100 / statistic.getNumberOfInstruments();
+			sum += patternIndicatorValue.getValue();
+		}
+		
+		movingAverage = new BigDecimal(sum).divide(new BigDecimal(period), 1, RoundingMode.HALF_UP);
+		
+		return movingAverage.floatValue();
 	}
 }
