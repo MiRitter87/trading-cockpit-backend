@@ -19,9 +19,7 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 
-import backend.controller.instrumentCheck.InstrumentCheckCountingController;
 import backend.controller.instrumentCheck.InstrumentCheckPatternController;
-import backend.controller.scan.IndicatorCalculator;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
