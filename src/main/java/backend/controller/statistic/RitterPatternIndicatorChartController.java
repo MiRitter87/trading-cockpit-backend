@@ -159,39 +159,12 @@ public class RitterPatternIndicatorChartController extends StatisticChartControl
 	 */
 	private int getPatternIndicatorValue(final Quotation currentQuotation, final Quotation previousQuotation) throws Exception {
 		InstrumentCheckPatternController patternController = new InstrumentCheckPatternController();
-		InstrumentCheckCountingController countingController = new InstrumentCheckCountingController();
-		IndicatorCalculator indicatorCalculator = new IndicatorCalculator();
-		float performance;
 		int patternIndicatorValue = 0;
-		boolean isGoodClose;
-		
-		performance = indicatorCalculator.getPerformance(currentQuotation, previousQuotation);
-		isGoodClose = countingController.isGoodClose(currentQuotation);
-		
-		//Bullish patterns
+
 		if(patternController.isUpOnVolume(currentQuotation, previousQuotation))
 			patternIndicatorValue++;
-		
-		if(patternController.isBullishHighVolumeReversal(currentQuotation))
-			patternIndicatorValue++;
-		
-		if(isGoodClose)
-			patternIndicatorValue++;
-		
-		if(performance > 0)
-			patternIndicatorValue++;
-		
-		//Bearish patterns
+
 		if(patternController.isDownOnVolume(currentQuotation, previousQuotation))
-			patternIndicatorValue--;
-		
-		if(patternController.isBearishHighVolumeReversal(currentQuotation))
-			patternIndicatorValue--;
-		
-		if(!isGoodClose)
-			patternIndicatorValue--;
-		
-		if(performance < 0)
 			patternIndicatorValue--;
 		
 		return patternIndicatorValue;
@@ -266,8 +239,8 @@ public class RitterPatternIndicatorChartController extends StatisticChartControl
 			if(numberOfInstrumentsPerDate == null)
 				continue;
 			
-			//25 = 100 / Maximum points per Insturment and day = 100 / 4 = 25
-			normalizedDailyValue = patternIndicatorValue.getValue() * 25 / numberOfInstrumentsPerDate;
+			//100 = 100 / Maximum points per Insturment and day = 100 / 1 = 100
+			normalizedDailyValue = patternIndicatorValue.getValue() * 100 / numberOfInstrumentsPerDate;
 			sum += normalizedDailyValue;
 		}
 		
