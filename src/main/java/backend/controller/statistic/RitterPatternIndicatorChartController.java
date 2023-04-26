@@ -34,6 +34,12 @@ import backend.tools.DateTools;
  */
 public class RitterPatternIndicatorChartController extends StatisticChartController {
 	/**
+	 * The number of instruments per date the pattern indicator is based on.
+	 */
+	private TreeMap<Date, Integer> numberOfInstrumentsPerDate;
+	
+	
+	/**
 	 * Gets a chart of the Ritter Pattern Indicator.
 	 * 
 	 * @param instrumentType The InstrumentType for which the chart is created.
@@ -99,8 +105,10 @@ public class RitterPatternIndicatorChartController extends StatisticChartControl
 		TreeMap<Date, Integer> patternIndicatorValues = new TreeMap<>();
 		Quotation previousQuotation;
 		int currentQuotationIndex;
-		Integer patternIndicatorValue;
+		Integer patternIndicatorValue, numberOfInstrumentsOfDate;
 		Date currentQuotationDate;
+		
+		this.numberOfInstrumentsPerDate = new TreeMap<>();
 		
 		for(Instrument instrument: instruments) {
 			quotationsSortedByDate = instrument.getQuotationsSortedByDate();
@@ -124,6 +132,16 @@ public class RitterPatternIndicatorChartController extends StatisticChartControl
 				
 				patternIndicatorValue += this.getPatternIndicatorValue(currentQuotation, previousQuotation);
 				patternIndicatorValues.put(currentQuotationDate, patternIndicatorValue);
+				
+				//Check if instrument count of current date already exists.
+				numberOfInstrumentsOfDate = this.numberOfInstrumentsPerDate.get(currentQuotationDate);
+				
+				if(numberOfInstrumentsOfDate == null) {
+					numberOfInstrumentsOfDate = 0;
+				}
+				
+				numberOfInstrumentsOfDate++;
+				this.numberOfInstrumentsPerDate.put(currentQuotationDate, numberOfInstrumentsOfDate);
 			}
 		}
 		
@@ -218,11 +236,12 @@ public class RitterPatternIndicatorChartController extends StatisticChartControl
 	
 	/**
 	 * Calculates the moving average of the Ritter Pattern Indicator for the given number of days.
+	 * The moving average is normalized to a value between -100 and 100 based on the number of instruments.
 	 * 
 	 * @param patternIndicatorValues The pattern indicator values for which the chart is calculated.
 	 * @param period The period in days for Moving Average calculation.
 	 * @param beginIndex The begin index for calculation.
-	 * @return The moving average of the Ritter Pattern Indicator.
+	 * @return Then normalized moving average of the Ritter Pattern Indicator.
 	 * @throws Exception Calculation of Moving Average failed.
 	 */
 	private float getMovingAverageOfRitterPatternIndicator(final ArrayList<Entry<Date, Integer>> patternIndicatorValues, 
@@ -230,6 +249,7 @@ public class RitterPatternIndicatorChartController extends StatisticChartControl
 		
 		int endIndex = beginIndex + period - 1;
 		int sum = 0, normalizedDailyValue;
+		Integer numberOfInstrumentsPerDate;
 		Map.Entry<Date, Integer> patternIndicatorValue;
 		BigDecimal movingAverage;
 		
@@ -241,8 +261,14 @@ public class RitterPatternIndicatorChartController extends StatisticChartControl
 		
 		for(int i = beginIndex; i <= endIndex; i++) {
 			patternIndicatorValue = patternIndicatorValues.get(i);
-			//normalizedDailyValue = statistic.getNumberRitterMarketTrend() * 100 / statistic.getNumberOfInstruments();
-			sum += patternIndicatorValue.getValue();
+			numberOfInstrumentsPerDate = this.numberOfInstrumentsPerDate.get(patternIndicatorValue.getKey());
+			
+			if(numberOfInstrumentsPerDate == null)
+				continue;
+			
+			//25 = 100 / Maximum points per Insturment and day = 100 / 4 = 25
+			normalizedDailyValue = patternIndicatorValue.getValue() * 25 / numberOfInstrumentsPerDate;
+			sum += normalizedDailyValue;
 		}
 		
 		movingAverage = new BigDecimal(sum).divide(new BigDecimal(period), 1, RoundingMode.HALF_UP);
