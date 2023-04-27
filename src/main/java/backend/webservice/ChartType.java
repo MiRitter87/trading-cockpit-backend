@@ -34,5 +34,10 @@ public enum ChartType {
 	/**
 	 * A chart of the Ritter Pattern Indicator.
 	 */
-	RITTER_PATTERN_INDICATOR
+	RITTER_PATTERN_INDICATOR,
+	
+	/**
+	 * A chart of an Instrument marked with Pocket Pivots.
+	 */
+	POCKET_PIVOTS
 }

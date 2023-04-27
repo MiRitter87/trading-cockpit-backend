@@ -18,6 +18,7 @@ import backend.controller.statistic.AboveSma50ChartController;
 import backend.controller.statistic.AdvanceDeclineNumberChartController;
 import backend.controller.statistic.DistributionDaysChartController;
 import backend.controller.statistic.FollowThroughDaysChartController;
+import backend.controller.statistic.PocketPivotChartController;
 import backend.controller.statistic.RitterMarketTrendChartController;
 import backend.controller.statistic.RitterPatternIndicatorChartController;
 import backend.dao.DAOManager;
@@ -106,6 +107,8 @@ public class StatisticService {
 				return this.getRitterMarketTrendChart(listId);
 			case RITTER_PATTERN_INDICATOR:
 				return this.getRitterPatternIndicatorChart(listId);
+			case POCKET_PIVOTS:
+				return this.getPocketPivotsChart(instrumentId);
 			default:
 				return Response.status(404).build();				
 		}
@@ -286,6 +289,35 @@ public class StatisticService {
 			};
 		} catch (Exception exception) {
 			logger.error(this.resources.getString("statistic.chartRitterPatternIndicator.getError"), exception);
+			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+		}
+		
+		return Response.ok(streamingOutput).build();
+	}
+	
+	
+	/**
+	 * Provides a chart of an Instrument marked with Pocket Pivots.
+	 * 
+	 * @param instrumentId The ID of the Instrument used for Statistic chart creation.
+	 * @return A Response containing the generated chart.
+	 */
+	private Response getPocketPivotsChart(final Integer instrumentId) {
+		PocketPivotChartController pocketPivotChartController = new PocketPivotChartController();
+		JFreeChart chart;
+		StreamingOutput streamingOutput = null;
+		
+		try {
+			chart = pocketPivotChartController.getPocketPivotsChart(instrumentId);
+			
+			streamingOutput = new StreamingOutput() {
+				@Override
+				public void write(OutputStream output) throws IOException, WebApplicationException {
+					ChartUtils.writeChartAsPNG(output, chart, 1600, 600);
+				}
+			};
+		} catch (Exception exception) {
+			logger.error(this.resources.getString("statistic.chartPocketPivots.getError"), exception);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
 		}
 		
