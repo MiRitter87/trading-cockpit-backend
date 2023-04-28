@@ -20,6 +20,7 @@ import org.jfree.data.xy.DefaultHighLowDataset;
 import org.jfree.data.xy.IntervalXYDataset;
 import org.jfree.data.xy.OHLCDataset;
 
+import backend.controller.instrumentCheck.NoQuotationsExistException;
 import backend.controller.scan.IndicatorCalculator;
 import backend.controller.scan.StatisticCalculationController;
 import backend.dao.DAOManager;
@@ -244,5 +245,26 @@ public abstract class StatisticChartController {
 	protected void addHorizontalLine(XYPlot plot, final double horizontalLinePosition) {
 		ValueMarker valueMarker = new ValueMarker(horizontalLinePosition, Color.BLACK, new BasicStroke(2), null, null, 1.0f);
 		plot.addRangeMarker(valueMarker);
+	}
+	
+	
+	/**
+	 * Returns the Instrument with its quotations based on the given Instrument ID.
+	 * 
+	 * @param instrumentId The ID of the Instrument.
+	 * @return The Instrument with its quotations.
+	 * @throws NoQuotationsExistException No Quotations exist.
+	 * @throws Exception Error during data retrieval.
+	 */
+	protected Instrument getInstrumentWithQuotations(final Integer instrumentId) throws NoQuotationsExistException, Exception {
+		Instrument instrument;
+		
+		instrument = this.instrumentDAO.getInstrument(instrumentId);
+		instrument.setQuotations(this.quotationDAO.getQuotationsOfInstrument(instrumentId));
+		
+		if(instrument.getQuotations().size() == 0)
+			throw new NoQuotationsExistException();
+		
+		return instrument;
 	}
 }

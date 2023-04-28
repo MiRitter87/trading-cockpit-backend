@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
 
+import backend.controller.instrumentCheck.NoQuotationsExistException;
 import backend.controller.statistic.AboveSma50ChartController;
 import backend.controller.statistic.AdvanceDeclineNumberChartController;
 import backend.controller.statistic.DistributionDaysChartController;
@@ -197,7 +198,12 @@ public class StatisticService {
 					ChartUtils.writeChartAsPNG(output, chart, 1600, 600);
 				}
 			};
-		} catch (Exception exception) {
+		} 
+		catch(NoQuotationsExistException noQuotationsExistException) {
+			return Response.status(404, 	//No data found.
+					this.resources.getString("statistic.chartDistributionDays.noQuotationsError")).build();
+		}
+		catch (Exception exception) {
 			logger.error(this.resources.getString("statistic.chartDistributionDays.getError"), exception);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
 		}

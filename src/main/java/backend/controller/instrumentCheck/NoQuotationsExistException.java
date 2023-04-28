@@ -3,7 +3,8 @@ package backend.controller.instrumentCheck;
 import java.util.Date;
 
 /**
- * Exception indicating that no quotations exist at and after the given date.
+ * Exception indicating that no quotations exist.
+ * Optionally a date can be defined after which no quotations exist.
  * 
  * @author Michael
  *
@@ -21,7 +22,15 @@ public class NoQuotationsExistException extends Exception {
 	
 	
 	/**
-	 * Initializes the Exception
+	 * Default constructor.
+	 */
+	public NoQuotationsExistException() {
+		
+	}
+	
+	
+	/**
+	 * Initializes the Exception with the given date.
 	 * 
 	 * @param date The date.
 	 */
