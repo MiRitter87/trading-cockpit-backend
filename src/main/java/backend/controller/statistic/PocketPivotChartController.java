@@ -13,6 +13,7 @@ import org.jfree.chart.plot.CombinedDomainXYPlot;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.xy.OHLCDataset;
 
+import backend.controller.instrumentCheck.NoQuotationsExistException;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
 
@@ -27,11 +28,11 @@ public class PocketPivotChartController extends StatisticChartController {
 	 * 
 	 * @param instrumentId The ID of the Instrument used for chart creation.
 	 * @return The chart.
+	 * @throws NoQuotationsExistException No quotations exist for the Quotation with the given ID.
 	 * @throws Exception Chart generation failed.
 	 */
-	public JFreeChart getPocketPivotsChart(final Integer instrumentId) throws Exception {
-		Instrument instrument = this.instrumentDAO.getInstrument(instrumentId);
-		instrument.setQuotations(this.quotationDAO.getQuotationsOfInstrument(instrumentId));
+	public JFreeChart getPocketPivotsChart(final Integer instrumentId) throws NoQuotationsExistException, Exception {
+		Instrument instrument = this.getInstrumentWithQuotations(instrumentId);
 		JFreeChart chart;
 		ValueAxis timeAxis = new DateAxis();	//The shared time axis of all subplots.
         ChartTheme currentTheme = new StandardChartTheme("JFree");

@@ -235,7 +235,12 @@ public class StatisticService {
 					ChartUtils.writeChartAsPNG(output, chart, 1600, 600);
 				}
 			};
-		} catch (Exception exception) {
+		} 
+		catch(NoQuotationsExistException noQuotationsExistException) {
+			return Response.status(404, 	//No data found.
+					this.resources.getString("statistic.chartFollowThroughDays.noQuotationsError")).build();
+		}
+		catch (Exception exception) {
 			logger.error(this.resources.getString("statistic.chartFollowThroughDays.getError"), exception);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
 		}
@@ -322,7 +327,12 @@ public class StatisticService {
 					ChartUtils.writeChartAsPNG(output, chart, 1600, 600);
 				}
 			};
-		} catch (Exception exception) {
+		}
+		catch(NoQuotationsExistException noQuotationsExistException) {
+			return Response.status(404, 	//No data found.
+					this.resources.getString("statistic.chartPocketPivots.noQuotationsError")).build();
+		}
+		catch (Exception exception) {
 			logger.error(this.resources.getString("statistic.chartPocketPivots.getError"), exception);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
 		}
