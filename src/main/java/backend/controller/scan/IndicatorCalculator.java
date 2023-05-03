@@ -438,9 +438,10 @@ public class IndicatorCalculator {
 	 * @return The base length in weeks.
 	 */
 	public int getBaseLengthWeeks(final Quotation quotation, final QuotationArray sortedQuotations) {
-		Quotation tempQuotation;
+		Quotation tempQuotation, quotation52WeekHigh;
 		BigDecimal highPrice52Weeks = new BigDecimal(0), baseLengthWeeks = new BigDecimal(0);
 		int indexOfQuotation = 0, indexOf52WeekHigh = 0, baseLengthDays;
+		float performance;
 		
 		//Get the starting point of 52 week high calculation.
 		indexOfQuotation = sortedQuotations.getQuotations().indexOf(quotation);
@@ -456,7 +457,19 @@ public class IndicatorCalculator {
 			}
 		}
 		
-		//Count number of days between quotation and 52 week high.
+		quotation52WeekHigh = sortedQuotations.getQuotations().get(indexOf52WeekHigh);
+		
+		//Now check the days before the 52-week high. 
+		//Any day that closes within 5% of the absolute 52-week high is considered for calculation of base length, too.
+		for(int i = indexOf52WeekHigh + 1; i < (252 + indexOfQuotation) && i < sortedQuotations.getQuotations().size(); i++) {
+			tempQuotation = sortedQuotations.getQuotations().get(i);
+			performance = this.getPerformance(tempQuotation, quotation52WeekHigh);
+			
+			if(performance >= -5)
+				indexOf52WeekHigh = i;
+		}
+		
+		//Count number of days between quotation and extended 52-week high.
 		baseLengthDays = indexOf52WeekHigh - indexOfQuotation;
 		
 		//Divide result by 5 to get number in weeks.
