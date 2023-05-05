@@ -12,12 +12,14 @@ import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import backend.model.Currency;
+import backend.model.LocalizedException;
 import backend.model.StockExchange;
 import backend.tools.test.ValidationMessageProvider;
 
@@ -27,6 +29,11 @@ import backend.tools.test.ValidationMessageProvider;
  * @author Michael
  */
 public class InstrumentTest {
+	/**
+	 * Access to localized application resources.
+	 */
+	private ResourceBundle resources = ResourceBundle.getBundle("backend");
+	
 	/**
 	 * The instrument under test.
 	 */
@@ -518,5 +525,30 @@ public class InstrumentTest {
 		
 		assertEquals(expectedNumberDays, actualNumberDays);
 	}
-}
 	
+	
+	@Test
+	/**
+	 * Tests if the stock exchange is null, if the instrument type is set to 'RATIO'.
+	 */
+	public void testExchangeNullOnTypeRatio() {
+		String expectedErrorMessage;
+		
+		expectedErrorMessage = this.resources.getString("instrument.exchangeDefinedOnTypeRatio");
+		this.instrument.setType(InstrumentType.RATIO);
+		
+		try {
+			this.instrument.validate();
+			fail("Validation should have failed because Instrument is of type 'RATIO' and stock exchange is not null.");
+		} catch (LocalizedException expected) {
+			assertEquals(expectedErrorMessage, expected.getLocalizedMessage());
+		} catch (InstrumentReferenceException e) {
+			fail(e.getMessage());
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	//TODO Test of exchange validation if type is not RATIO: Then exchange has to be not null.
+}

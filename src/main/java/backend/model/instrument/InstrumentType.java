@@ -24,5 +24,10 @@ public enum InstrumentType {
 	/**
 	 * An industry group.
 	 */
-	IND_GROUP
+	IND_GROUP,
+	
+	/**
+	 * A ratio in price between two instruments.
+	 */
+	RATIO
 }

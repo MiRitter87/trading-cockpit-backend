@@ -35,6 +35,7 @@ import org.hibernate.validator.messageinterpolation.ExpressionLanguageFeatureLev
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import backend.model.LocalizedException;
 import backend.model.StockExchange;
 
 /**
@@ -482,9 +483,10 @@ public class Instrument {
 	 * Validates the instrument.
 	 * 
 	 * @throws InstrumentReferenceException In case the Instrument is associated with another Instrument of the wrong type.
+	 * @throws A general exception containing a localized message.
 	 * @throws Exception In case a general validation error occurred.
 	 */
-	public void validate() throws InstrumentReferenceException, Exception {
+	public void validate() throws InstrumentReferenceException, LocalizedException, Exception {
 		this.validateAnnotations();
 		this.validateAdditionalCharacteristics();
 	}
@@ -513,10 +515,12 @@ public class Instrument {
 	 * Validates additional characteristics of the Instrument besides annotations.
 	 * 
 	 * @throws InstrumentReferenceException In case the validation failed.
+	 * @throws A general exception containing a localized message.
 	 */
-	private void validateAdditionalCharacteristics() throws InstrumentReferenceException {
+	private void validateAdditionalCharacteristics() throws InstrumentReferenceException, LocalizedException {
 		this.validateSectorReference();
 		this.validateIndustryGroupReference();
+		this.validateStockExchange();
 	}
 	
 	
@@ -553,5 +557,18 @@ public class Instrument {
 		if(this.industryGroup.getType() != InstrumentType.IND_GROUP) {
 			throw new InstrumentReferenceException(InstrumentType.IND_GROUP, this.industryGroup.getType());
 		}
+	}
+	
+	
+	/**
+	 * Validates the stock exchange attribute.
+	 * 
+	 * @throws LocalizedException If validation failed.
+	 */
+	private void validateStockExchange() throws LocalizedException {
+		if(this.type == InstrumentType.RATIO && this.stockExchange != null)
+			throw new LocalizedException("instrument.exchangeDefinedOnTypeRatio");
+		
+		//TODO Remove bean validation at attribute level of stockExchange and implement here.
 	}
 }
