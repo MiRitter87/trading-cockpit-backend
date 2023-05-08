@@ -529,14 +529,37 @@ public class InstrumentTest {
 	 * Tests if the stock exchange is null, if the instrument type is set to 'RATIO'.
 	 */
 	public void testExchangeNullOnTypeRatio() {
-		String expectedErrorMessage;
+		String expectedErrorMessage = this.resources.getString("instrument.exchangeDefinedOnTypeRatio");;
 		
-		expectedErrorMessage = this.resources.getString("instrument.exchangeDefinedOnTypeRatio");
 		this.instrument.setType(InstrumentType.RATIO);
+		this.instrument.setSymbol(null);
 		
 		try {
 			this.instrument.validate();
 			fail("Validation should have failed because Instrument is of type 'RATIO' and stock exchange is not null.");
+		} catch (LocalizedException expected) {
+			assertEquals(expectedErrorMessage, expected.getLocalizedMessage());
+		} catch (InstrumentReferenceException e) {
+			fail(e.getMessage());
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests if the symbol is null, if the instrument type is set to 'RATIO'.
+	 */
+	public void testSymbolNullOnTypeRatio() {
+		String expectedErrorMessage = this.resources.getString("instrument.symbolDefinedOnTypeRatio");
+		
+		this.instrument.setType(InstrumentType.RATIO);
+		this.instrument.setStockExchange(null);
+		
+		try {
+			this.instrument.validate();
+			fail("Validation should have failed because Instrument is of type 'RATIO' and symbol is not null.");
 		} catch (LocalizedException expected) {
 			assertEquals(expectedErrorMessage, expected.getLocalizedMessage());
 		} catch (InstrumentReferenceException e) {

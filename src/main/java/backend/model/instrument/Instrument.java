@@ -578,6 +578,9 @@ public class Instrument {
 	 * @throws LocalizedException If validation failed.
 	 */
 	private void validateSymbol() throws LocalizedException {
+		if(this.type == InstrumentType.RATIO && this.symbol != null)
+			throw new LocalizedException("instrument.symbolDefinedOnTypeRatio");
+		
 		if(this.type != InstrumentType.RATIO && this.symbol == null)
 			throw new LocalizedException("instrument.symbol.notNull.message");
 		

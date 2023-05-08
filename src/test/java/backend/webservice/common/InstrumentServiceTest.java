@@ -37,7 +37,6 @@ import backend.model.priceAlert.PriceAlertType;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
 import backend.tools.WebServiceTools;
-import backend.tools.test.ValidationMessageProvider;
 
 /**
  * Tests the instrument service.
@@ -774,7 +773,6 @@ public class InstrumentServiceTest {
 	public void testUpdateInvalidInstrument() {
 		WebServiceResult updateInstrumentResult;
 		InstrumentService service = new InstrumentService();
-		ValidationMessageProvider messageProvider = new ValidationMessageProvider();
 		String actualErrorMessage, expectedErrorMessage;
 		
 		//Remove the symbol.
@@ -786,7 +784,8 @@ public class InstrumentServiceTest {
 		assertTrue(updateInstrumentResult.getMessages().get(0).getType() == WebServiceMessageType.E);
 		
 		//A proper message should be provided.
-		expectedErrorMessage = messageProvider.getSizeValidationMessage("instrument", "symbol", String.valueOf(this.microsoftStock.getSymbol().length()), "1", "6");
+		expectedErrorMessage = MessageFormat.format(this.resources.getString("instrument.symbol.size.message"), 
+				this.microsoftStock.getSymbol().length(), "1", "6");
 		actualErrorMessage = updateInstrumentResult.getMessages().get(0).getText();
 		assertEquals(expectedErrorMessage, actualErrorMessage);
 	}
