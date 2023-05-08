@@ -1,5 +1,6 @@
 package backend.model;
 
+import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
 /**
@@ -22,6 +23,11 @@ public class LocalizedException extends Exception {
 	 * The key of the localized resource.
 	 */
 	private String messageKey;
+
+	/**
+	 * Arguments of the message.
+	 */
+	private Object[] arguments;
 	
 	
 	/**
@@ -34,8 +40,23 @@ public class LocalizedException extends Exception {
 	}
 	
 	
+	/**
+	 * Constructor.
+	 * 
+	 * @param messageKey The key of the exception message.
+	 * @param arguments Message arguments.
+	 */
+	public LocalizedException(final String messageKey, final Object ... arguments) {
+		this.messageKey = messageKey;
+		this.arguments = arguments;
+	}
+	
+	
 	@Override
 	public String getLocalizedMessage() {
-		return this.resources.getString(this.messageKey);
+		if(this.arguments == null)
+			return this.resources.getString(this.messageKey);
+		else
+			return MessageFormat.format(this.resources.getString(this.messageKey), this.arguments);
 	}
 }

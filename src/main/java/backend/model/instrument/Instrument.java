@@ -60,8 +60,6 @@ public class Instrument {
 	 * The symbol.
 	 */
 	@Column(name="SYMBOL", length = 6)
-	@NotNull(message = "{instrument.symbol.notNull.message}")
-	@Size(min = 1, max = 6, message = "{instrument.symbol.size.message}")
 	private String symbol;
 	
 	/**
@@ -520,6 +518,7 @@ public class Instrument {
 		this.validateSectorReference();
 		this.validateIndustryGroupReference();
 		this.validateStockExchange();
+		this.validateSymbol();
 	}
 	
 	
@@ -570,5 +569,19 @@ public class Instrument {
 		
 		if(this.type != InstrumentType.RATIO && this.stockExchange == null)
 			throw new LocalizedException("instrument.stockExchange.notNull.message");
+	}
+	
+	
+	/**
+	 * Validates the symbol attribute.
+	 * 
+	 * @throws LocalizedException If validation failed.
+	 */
+	private void validateSymbol() throws LocalizedException {
+		if(this.type != InstrumentType.RATIO && this.symbol == null)
+			throw new LocalizedException("instrument.symbol.notNull.message");
+		
+		if(this.type != InstrumentType.RATIO && this.symbol != null && (this.symbol.length() < 1 || this.symbol.length() > 6))
+			throw new LocalizedException("instrument.symbol.size.message", this.symbol.length(), "1", "6");
 	}
 }

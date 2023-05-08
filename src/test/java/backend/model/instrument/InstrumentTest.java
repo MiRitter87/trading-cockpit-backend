@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
@@ -169,10 +170,9 @@ public class InstrumentTest {
 	 * Tests validation of an instrument whose symbol is null.
 	 */
 	public void testSymbolIsNull() {
-		ValidationMessageProvider messageProvider = new ValidationMessageProvider();		
 		this.instrument.setSymbol(null);
 		
-		String expectedErrorMessage = messageProvider.getNotNullValidationMessage("instrument", "symbol");
+		String expectedErrorMessage = this.resources.getString("instrument.symbol.notNull.message");
 		String errorMessage = "";
 		
 		try {
@@ -180,7 +180,7 @@ public class InstrumentTest {
 			fail("Validation should have failed because symbol is null.");
 		} 
 		catch (Exception expected) {
-			errorMessage = expected.getMessage();
+			errorMessage = expected.getLocalizedMessage();
 		}
 		
 		assertEquals(expectedErrorMessage, errorMessage);
@@ -191,12 +191,11 @@ public class InstrumentTest {
 	/**
 	 * Tests validation of an instrument whose symbol is not given.
 	 */
-	public void testSymbolNotGiven() {
-		ValidationMessageProvider messageProvider = new ValidationMessageProvider();		
+	public void testSymbolNotGiven() {	
 		this.instrument.setSymbol("");
 		
-		String expectedErrorMessage = messageProvider.getSizeValidationMessage("instrument", "symbol", 
-				String.valueOf(this.instrument.getSymbol().length()), "1", "6");
+		String expectedErrorMessage = MessageFormat.format(this.resources.getString("instrument.symbol.size.message"),
+				this.instrument.getSymbol().length(), "1", "6");
 		String errorMessage = "";
 		
 		try {
@@ -204,7 +203,7 @@ public class InstrumentTest {
 			fail("Validation should have failed because symbol is not given.");
 		} 
 		catch (Exception expected) {
-			errorMessage = expected.getMessage();
+			errorMessage = expected.getLocalizedMessage();
 		}
 		
 		assertEquals(expectedErrorMessage, errorMessage);
@@ -215,12 +214,11 @@ public class InstrumentTest {
 	/**
 	 * Tests validation of an instrument whose symbol is too long.
 	 */
-	public void testSymbolTooLong() {
-		ValidationMessageProvider messageProvider = new ValidationMessageProvider();		
+	public void testSymbolTooLong() {		
 		this.instrument.setSymbol("ABCDEFG");
 		
-		String expectedErrorMessage = messageProvider.getSizeValidationMessage("instrument", "symbol", 
-				String.valueOf(this.instrument.getSymbol().length()), "1", "6");
+		String expectedErrorMessage = MessageFormat.format(this.resources.getString("instrument.symbol.size.message"),
+				this.instrument.getSymbol().length(), "1", "6");
 		String errorMessage = "";
 		
 		try {
@@ -228,7 +226,7 @@ public class InstrumentTest {
 			fail("Validation should have failed because symbol is too long.");
 		} 
 		catch (Exception expected) {
-			errorMessage = expected.getMessage();
+			errorMessage = expected.getLocalizedMessage();
 		}
 		
 		assertEquals(expectedErrorMessage, errorMessage);
