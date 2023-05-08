@@ -16,6 +16,7 @@ import backend.dao.ObjectUnchangedException;
 import backend.dao.instrument.DuplicateInstrumentException;
 import backend.dao.instrument.InstrumentDAO;
 import backend.dao.quotation.QuotationDAO;
+import backend.model.LocalizedException;
 import backend.model.ObjectInUseException;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentArray;
@@ -367,7 +368,10 @@ public class InstrumentService {
 						this.resources.getString("instrument.igIgReference")));
 			}
 		}
-		catch (Exception validationException) {
+		catch(LocalizedException localizedException) {
+			webServiceResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, localizedException.getLocalizedMessage()));
+		}
+		catch(Exception validationException) {
 			webServiceResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, validationException.getMessage()));
 		}
 	}

@@ -77,7 +77,6 @@ public class Instrument {
 	 */
 	@Column(name="STOCK_EXCHANGE", length = 4)
 	@Enumerated(EnumType.STRING)
-	@NotNull(message = "{instrument.stockExchange.notNull.message}")
 	private StockExchange stockExchange;
 	
 	/**
@@ -569,6 +568,7 @@ public class Instrument {
 		if(this.type == InstrumentType.RATIO && this.stockExchange != null)
 			throw new LocalizedException("instrument.exchangeDefinedOnTypeRatio");
 		
-		//TODO Remove bean validation at attribute level of stockExchange and implement here.
+		if(this.type != InstrumentType.RATIO && this.stockExchange == null)
+			throw new LocalizedException("instrument.stockExchange.notNull.message");
 	}
 }

@@ -262,11 +262,10 @@ public class InstrumentTest {
 	/**
 	 * Tests validation of an instrument whose stock exchange is null.
 	 */
-	public void testStockExchangeIsNull() {
-		ValidationMessageProvider messageProvider = new ValidationMessageProvider();		
+	public void testStockExchangeIsNull() {	
 		this.instrument.setStockExchange(null);
 		
-		String expectedErrorMessage = messageProvider.getNotNullValidationMessage("instrument", "stockExchange");
+		String expectedErrorMessage = this.resources.getString("instrument.stockExchange.notNull.message");
 		String errorMessage = "";
 		
 		try {
@@ -274,7 +273,7 @@ public class InstrumentTest {
 			fail("Validation should have failed because stock exchange is null.");
 		} 
 		catch (Exception expected) {
-			errorMessage = expected.getMessage();
+			errorMessage = expected.getLocalizedMessage();
 		}
 		
 		assertEquals(expectedErrorMessage, errorMessage);
@@ -548,7 +547,4 @@ public class InstrumentTest {
 			fail(e.getMessage());
 		}
 	}
-	
-	
-	//TODO Test of exchange validation if type is not RATIO: Then exchange has to be not null.
 }
