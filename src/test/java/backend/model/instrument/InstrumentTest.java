@@ -70,6 +70,11 @@ public class InstrumentTest {
 	 */
 	private Instrument industryGroup;
 	
+	/**
+	 * A sector/industry group ratio.
+	 */
+	private Instrument sectorIgRatio;
+	
 	
 	@BeforeEach
 	/**
@@ -130,6 +135,13 @@ public class InstrumentTest {
 		this.industryGroup.setType(InstrumentType.IND_GROUP);
 		this.industryGroup.setStockExchange(StockExchange.NYSE);
 		this.industryGroup.setName("Global X Copper Miners ETF");
+		
+		this.sectorIgRatio = new Instrument();
+		this.sectorIgRatio.setId(Integer.valueOf(5));
+		this.sectorIgRatio.setType(InstrumentType.RATIO);
+		this.sectorIgRatio.setName("Sector/Industry Group");
+		this.sectorIgRatio.setDividend(this.sector);
+		this.sectorIgRatio.setDivisor(this.industryGroup);
 	}
 	
 	
@@ -139,6 +151,7 @@ public class InstrumentTest {
 	 */
 	private void tearDown() {
 		this.instrument = null;
+		this.sectorIgRatio = null;
 	}
 	
 	
@@ -531,11 +544,10 @@ public class InstrumentTest {
 	public void testExchangeNullOnTypeRatio() {
 		String expectedErrorMessage = this.resources.getString("instrument.exchangeDefinedOnTypeRatio");;
 		
-		this.instrument.setType(InstrumentType.RATIO);
-		this.instrument.setSymbol(null);
+		this.sectorIgRatio.setStockExchange(StockExchange.NYSE);
 		
 		try {
-			this.instrument.validate();
+			this.sectorIgRatio.validate();
 			fail("Validation should have failed because Instrument is of type 'RATIO' and stock exchange is not null.");
 		} catch (LocalizedException expected) {
 			assertEquals(expectedErrorMessage, expected.getLocalizedMessage());
@@ -554,12 +566,99 @@ public class InstrumentTest {
 	public void testSymbolNullOnTypeRatio() {
 		String expectedErrorMessage = this.resources.getString("instrument.symbolDefinedOnTypeRatio");
 		
-		this.instrument.setType(InstrumentType.RATIO);
-		this.instrument.setStockExchange(null);
+		this.sectorIgRatio.setSymbol("ABC");
+		
+		try {
+			this.sectorIgRatio.validate();
+			fail("Validation should have failed because Instrument is of type 'RATIO' and symbol is not null.");
+		} catch (LocalizedException expected) {
+			assertEquals(expectedErrorMessage, expected.getLocalizedMessage());
+		} catch (InstrumentReferenceException e) {
+			fail(e.getMessage());
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests if the dividend is null, if the instrument type is set to 'RATIO'.
+	 */
+	public void testDividendNullOnTypeRatio() {
+		String expectedErrorMessage = this.resources.getString("instrument.dividend.notNull.message");
+		
+		this.sectorIgRatio.setDividend(null);
+		
+		try {
+			this.sectorIgRatio.validate();
+			fail("Validation should have failed because Instrument is of type 'RATIO' and dividend is null.");
+		} catch (LocalizedException expected) {
+			assertEquals(expectedErrorMessage, expected.getLocalizedMessage());
+		} catch (InstrumentReferenceException e) {
+			fail(e.getMessage());
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests if the dividend is not null, if the instrument type is set to any other than 'RATIO'.
+	 */
+	public void testDividendNotNullOnTypeNotRatio() {
+		String expectedErrorMessage = this.resources.getString("instrument.dividendDefinedOnTypeNotRatio");
+		
+		this.instrument.setDividend(this.sector);
 		
 		try {
 			this.instrument.validate();
-			fail("Validation should have failed because Instrument is of type 'RATIO' and symbol is not null.");
+			fail("Validation should have failed because Instrument is not of type 'RATIO' but dividend is defined.");
+		} catch (LocalizedException expected) {
+			assertEquals(expectedErrorMessage, expected.getLocalizedMessage());
+		} catch (InstrumentReferenceException e) {
+			fail(e.getMessage());
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests if the divisor is null, if the instrument type is set to 'RATIO'.
+	 */
+	public void testDivisorNullOnTypeRatio() {
+		String expectedErrorMessage = this.resources.getString("instrument.divisor.notNull.message");
+		
+		this.sectorIgRatio.setDivisor(null);
+		
+		try {
+			this.sectorIgRatio.validate();
+			fail("Validation should have failed because Instrument is of type 'RATIO' and divisor is null.");
+		} catch (LocalizedException expected) {
+			assertEquals(expectedErrorMessage, expected.getLocalizedMessage());
+		} catch (InstrumentReferenceException e) {
+			fail(e.getMessage());
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests if the divisor is not null, if the instrument type is set to any other than 'RATIO'.
+	 */
+	public void testDivisorNotNullOnTypeNotRatio() {
+		String expectedErrorMessage = this.resources.getString("instrument.divisorDefinedOnTypeNotRatio");
+		
+		this.instrument.setDivisor(this.industryGroup);
+		
+		try {
+			this.instrument.validate();
+			fail("Validation should have failed because Instrument is not of type 'RATIO' but divisor is defined.");
 		} catch (LocalizedException expected) {
 			assertEquals(expectedErrorMessage, expected.getLocalizedMessage());
 		} catch (InstrumentReferenceException e) {

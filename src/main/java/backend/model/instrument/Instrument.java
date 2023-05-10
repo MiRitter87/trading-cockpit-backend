@@ -108,6 +108,20 @@ public class Instrument {
 	private String companyPathInvestingCom;
 	
 	/**
+	 * The dividend of a ratio.
+	 */
+	@OneToOne(targetEntity = Instrument.class)
+	@JoinColumn(name="DIVIDEND_ID")
+	private Instrument dividend;
+	
+	/**
+	 * The divisor of a ratio.
+	 */
+	@OneToOne(targetEntity = Instrument.class)
+	@JoinColumn(name="DIVISOR_ID")
+	private Instrument divisor;
+	
+	/**
 	 * The quotations.
 	 */
 	@Transient
@@ -277,6 +291,38 @@ public class Instrument {
 	 */
 	public void setCompanyPathInvestingCom(String companyPathInvestingCom) {
 		this.companyPathInvestingCom = companyPathInvestingCom;
+	}
+
+
+	/**
+	 * @return the dividend
+	 */
+	public Instrument getDividend() {
+		return dividend;
+	}
+
+
+	/**
+	 * @param dividend the dividend to set
+	 */
+	public void setDividend(Instrument dividend) {
+		this.dividend = dividend;
+	}
+
+
+	/**
+	 * @return the divisor
+	 */
+	public Instrument getDivisor() {
+		return divisor;
+	}
+
+
+	/**
+	 * @param divisor the divisor to set
+	 */
+	public void setDivisor(Instrument divisor) {
+		this.divisor = divisor;
 	}
 
 
@@ -519,6 +565,8 @@ public class Instrument {
 		this.validateIndustryGroupReference();
 		this.validateStockExchange();
 		this.validateSymbol();
+		this.validateDividend();
+		this.validateDivisor();
 	}
 	
 	
@@ -586,5 +634,33 @@ public class Instrument {
 		
 		if(this.type != InstrumentType.RATIO && this.symbol != null && (this.symbol.length() < 1 || this.symbol.length() > 6))
 			throw new LocalizedException("instrument.symbol.size.message", this.symbol.length(), "1", "6");
+	}
+	
+	
+	/**
+	 * Validates the dividend attribute. 
+	 * 
+	 * @throws LocalizedException If validation failed.
+	 */
+	private void validateDividend() throws LocalizedException {
+		if(this.type == InstrumentType.RATIO && this.dividend == null)
+			throw new LocalizedException("instrument.dividend.notNull.message");
+		
+		if(this.type != InstrumentType.RATIO && this.dividend != null)
+			throw new LocalizedException("instrument.dividendDefinedOnTypeNotRatio");
+	}
+	
+	
+	/**
+	 * Validates the divisor attribute. 
+	 * 
+	 * @throws LocalizedException If validation failed.
+	 */
+	private void validateDivisor() throws LocalizedException {
+		if(this.type == InstrumentType.RATIO && this.divisor == null)
+			throw new LocalizedException("instrument.divisor.notNull.message");
+		
+		if(this.type != InstrumentType.RATIO && this.divisor != null)
+			throw new LocalizedException("instrument.divisorDefinedOnTypeNotRatio");
 	}
 }
