@@ -333,6 +333,12 @@ public class InstrumentService {
 		if(instrumentWS.getIndustryGroupId() != null)
 			instrument.setIndustryGroup(this.instrumentDAO.getInstrument(instrumentWS.getIndustryGroupId()));
 		
+		if(instrumentWS.getDividendId() != null)
+			instrument.setDividend(this.instrumentDAO.getInstrument(instrumentWS.getDividendId()));
+		
+		if(instrumentWS.getDivisorId() != null)
+			instrument.setDivisor(this.instrumentDAO.getInstrument(instrumentWS.getDivisorId()));
+		
 		return instrument;
 	}
 	

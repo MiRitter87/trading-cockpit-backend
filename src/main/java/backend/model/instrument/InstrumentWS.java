@@ -45,6 +45,16 @@ public class InstrumentWS {
 	private Integer industryGroupId;
 	
 	/**
+	 * The dividend of a ratio.
+	 */
+	private Integer dividendId;
+	
+	/**
+	 * The divisor of a ratio.
+	 */
+	private Integer divisorId;
+	
+	/**
 	 * The path of the URL that specifies the company at investing.com.
 	 * 
 	 * Example: In the URL "https://www.investing.com/equities/apple-computer-inc" the company path would be "apple-computer-inc".
@@ -185,5 +195,37 @@ public class InstrumentWS {
 	 */
 	public void setCompanyPathInvestingCom(String companyPathInvestingCom) {
 		this.companyPathInvestingCom = companyPathInvestingCom;
+	}
+
+
+	/**
+	 * @return the dividendId
+	 */
+	public Integer getDividendId() {
+		return dividendId;
+	}
+
+
+	/**
+	 * @param dividendId the dividendId to set
+	 */
+	public void setDividendId(Integer dividendId) {
+		this.dividendId = dividendId;
+	}
+
+
+	/**
+	 * @return the divisorId
+	 */
+	public Integer getDivisorId() {
+		return divisorId;
+	}
+
+
+	/**
+	 * @param divisorId the divisorId to set
+	 */
+	public void setDivisorId(Integer divisorId) {
+		this.divisorId = divisorId;
 	}
 }
