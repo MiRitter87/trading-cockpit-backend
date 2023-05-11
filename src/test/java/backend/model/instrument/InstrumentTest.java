@@ -583,6 +583,25 @@ public class InstrumentTest {
 	
 	@Test
 	/**
+	 * Tests if the symbol is an empty string, if the instrument type is set to 'RATIO'.
+	 */
+	public void testSymbolEmptyOnTypeRatio() {
+		this.sectorIgRatio.setSymbol("");
+		
+		try {
+			this.sectorIgRatio.validate();
+		} catch (LocalizedException e) {
+			fail(e.getLocalizedMessage());
+		} catch (InstrumentReferenceException e) {
+			fail(e.getMessage());
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	@Test
+	/**
 	 * Tests if the dividend is null, if the instrument type is set to 'RATIO'.
 	 */
 	public void testDividendNullOnTypeRatio() {
