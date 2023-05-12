@@ -184,12 +184,37 @@ public class ScanThread extends Thread {
 	
 	
 	/**
-	 * Queries a third party WebService to get historical quotations of the given instrument.
+	 * Updates the quotations of the given Instrument.
 	 * Persists new quotations.
 	 * 
 	 * @param instrument The Instrument to be updated.
 	 */
 	private void updateQuotationsOfInstrument(Instrument instrument) {
+		if(instrument.getType() == InstrumentType.RATIO)
+			this.updateQuotationsRatio(instrument);
+		else
+			this.updateQuotationsNonRatio(instrument);
+	}
+	
+	
+	/**
+	 * Uses existing quotations of instruments to calculate quotations for a ratio.
+	 * Persists new quotations.
+	 * 
+	 * @param instrument The Instrument to be updated.
+	 */
+	private void updateQuotationsRatio(Instrument instrument) {
+		
+	}
+	
+	
+	/**
+	 * Queries a third party WebService to get historical quotations of the given Instrument.
+	 * Persists new quotations.
+	 * 
+	 * @param instrument The Instrument to be updated.
+	 */
+	private void updateQuotationsNonRatio(Instrument instrument) {
 		Quotation databaseQuotation;
 		java.util.List<Quotation> databaseQuotations = new ArrayList<>();
 		java.util.List<Quotation> newQuotations = new ArrayList<>();
