@@ -20,7 +20,6 @@ import backend.model.LocalizedException;
 import backend.model.ObjectInUseException;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentArray;
-import backend.model.instrument.InstrumentReferenceException;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.InstrumentWS;
 import backend.model.instrument.Quotation;
@@ -352,27 +351,6 @@ public class InstrumentService {
 	private void validateInstrument(final Instrument instrument, WebServiceResult webServiceResult) {
 		try {
 			instrument.validate();
-		}
-		catch(InstrumentReferenceException refException) {
-			if(refException.getExpectedType() == InstrumentType.SECTOR) {
-				webServiceResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
-						this.resources.getString("instrument.wrongSectorReference")));
-			}
-			
-			if(refException.getExpectedType() == InstrumentType.IND_GROUP) {
-				webServiceResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
-						this.resources.getString("instrument.wrongIndustryGroupReference")));
-			}
-			
-			if(refException.getActualType() == InstrumentType.SECTOR && refException.getExpectedType() == null) {
-				webServiceResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
-						this.resources.getString("instrument.sectorSectorReference")));
-			}
-			
-			if(refException.getActualType() == InstrumentType.IND_GROUP && refException.getExpectedType() == null) {
-				webServiceResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
-						this.resources.getString("instrument.igIgReference")));
-			}
 		}
 		catch(LocalizedException localizedException) {
 			webServiceResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, localizedException.getLocalizedMessage()));

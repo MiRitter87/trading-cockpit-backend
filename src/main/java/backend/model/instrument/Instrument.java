@@ -525,11 +525,10 @@ public class Instrument {
 	/**
 	 * Validates the instrument.
 	 * 
-	 * @throws InstrumentReferenceException In case the Instrument is associated with another Instrument of the wrong type.
 	 * @throws A general exception containing a localized message.
 	 * @throws Exception In case a general validation error occurred.
 	 */
-	public void validate() throws InstrumentReferenceException, LocalizedException, Exception {
+	public void validate() throws LocalizedException, Exception {
 		this.validateAnnotations();
 		this.validateAdditionalCharacteristics();
 	}
@@ -557,10 +556,9 @@ public class Instrument {
 	/**
 	 * Validates additional characteristics of the Instrument besides annotations.
 	 * 
-	 * @throws InstrumentReferenceException In case the validation failed.
-	 * @throws A general exception containing a localized message.
+	 * @throws LocalizedException A general exception containing a localized message.
 	 */
-	private void validateAdditionalCharacteristics() throws InstrumentReferenceException, LocalizedException {
+	private void validateAdditionalCharacteristics() throws LocalizedException {
 		this.validateSectorReference();
 		this.validateIndustryGroupReference();
 		this.validateStockExchange();
@@ -573,17 +571,17 @@ public class Instrument {
 	/**
 	 * Validates the sector reference.
 	 * 
-	 * @throws InstrumentReferenceException In case the sector is associated with an Instrument of the wrong type.
+	 * @throws LocalizedException In case the sector is associated with an Instrument of the wrong type.
 	 */
-	private void validateSectorReference() throws InstrumentReferenceException {
+	private void validateSectorReference() throws LocalizedException {
 		if(this.sector == null)
 			return;
 		
 		if(this.type == InstrumentType.SECTOR)
-			throw new InstrumentReferenceException(null, InstrumentType.SECTOR);
+			throw new LocalizedException("instrument.sectorSectorReference");
 		
 		if(this.sector.getType() != InstrumentType.SECTOR) {
-			throw new InstrumentReferenceException(InstrumentType.SECTOR, this.sector.getType());
+			throw new LocalizedException("instrument.wrongSectorReference");
 		}
 	}
 	
@@ -591,17 +589,17 @@ public class Instrument {
 	/**
 	 * Validates the industry group reference.
 	 * 
-	 * @throws InstrumentReferenceException In case the industry group is associated with an Instrument of the wrong type.
+	 * @throws LocalizedException In case the industry group is associated with an Instrument of the wrong type.
 	 */
-	private void validateIndustryGroupReference() throws InstrumentReferenceException {
+	private void validateIndustryGroupReference() throws LocalizedException {
 		if(this.industryGroup == null)
 			return;
 		
 		if(this.type == InstrumentType.IND_GROUP)
-			throw new InstrumentReferenceException(null, InstrumentType.IND_GROUP);
+			throw new LocalizedException("instrument.igIgReference");
 		
 		if(this.industryGroup.getType() != InstrumentType.IND_GROUP) {
-			throw new InstrumentReferenceException(InstrumentType.IND_GROUP, this.industryGroup.getType());
+			throw new LocalizedException("instrument.wrongIndustryGroupReference");
 		}
 	}
 	

@@ -448,16 +448,17 @@ public class InstrumentTest {
 	 * Tests referencing the sector of an Instrument with another Instrument of type stock.
 	 */
 	public void testReferenceSectorWithStock() {
+		String expectedErrorMessage = this.resources.getString("instrument.wrongSectorReference");
+		
 		this.instrument.setSector(this.microsoftStock);
 		
 		try {
 			this.instrument.validate();
 			fail("Validation should have failed because the sector is referenced with an Instrument that is not of type 'SECTOR'.");
-		} catch (InstrumentReferenceException expected) {
-			assertEquals(expected.getExpectedType(), InstrumentType.SECTOR);
-			assertEquals(expected.getActualType(), InstrumentType.STOCK);
+		} catch (LocalizedException expected) {
+			assertEquals(expectedErrorMessage, expected.getLocalizedMessage());
 		} catch (Exception e) {
-			fail("No general exception should have occurred. Just the InstrumentReferenceException.");
+			fail("No general exception should have occurred. Just the LocalizedException.");
 		}
 	}
 	
@@ -467,16 +468,17 @@ public class InstrumentTest {
 	 * Tests referencing the industry group of an Instrument with another Instrument of type stock.
 	 */
 	public void testReferenceIndustryGroupWithStock() {
+		String expectedErrorMessage = this.resources.getString("instrument.wrongIndustryGroupReference");
+		
 		this.instrument.setIndustryGroup(this.microsoftStock);
 		
 		try {
 			this.instrument.validate();
 			fail("Validation should have failed because the industry group is referenced with an Instrument that is not of type 'INDUSTRY_GROUP'.");
-		} catch (InstrumentReferenceException expected) {
-			assertEquals(expected.getExpectedType(), InstrumentType.IND_GROUP);
-			assertEquals(expected.getActualType(), InstrumentType.STOCK);
+		} catch (LocalizedException expected) {
+			assertEquals(expectedErrorMessage, expected.getLocalizedMessage());
 		} catch (Exception e) {
-			fail("No general exception should have occurred. Just the InstrumentReferenceException.");
+			fail("No general exception should have occurred. Just the LocalizedException.");
 		}
 	}
 	
@@ -486,17 +488,18 @@ public class InstrumentTest {
 	 * Tests referencing an Instrument of type sector with another sector.
 	 */
 	public void testReferenceSectorWithSector() {
+		String expectedErrorMessage = this.resources.getString("instrument.sectorSectorReference");
+		
 		this.instrument.setType(InstrumentType.SECTOR);
 		this.instrument.setSector(this.sector);
 		
 		try {
 			this.instrument.validate();
 			fail("Validation should have failed because the sector is referenced with an Instrument that is of type 'SECTOR'.");
-		} catch (InstrumentReferenceException expected) {
-			assertEquals(expected.getExpectedType(), null);
-			assertEquals(expected.getActualType(), InstrumentType.SECTOR);
+		} catch (LocalizedException expected) {
+			assertEquals(expectedErrorMessage, expected.getLocalizedMessage());
 		} catch (Exception e) {
-			fail("No general exception should have occurred. Just the InstrumentReferenceException.");
+			fail("No general exception should have occurred. Just the LocalizedException.");
 		}
 	}
 	
@@ -506,17 +509,18 @@ public class InstrumentTest {
 	 * Tests referencing an Instrument of type industry group with another industry group.
 	 */
 	public void testReferenceIgWithIg() {
+		String expectedErrorMessage = this.resources.getString("instrument.igIgReference");
+		
 		this.instrument.setType(InstrumentType.IND_GROUP);
 		this.instrument.setIndustryGroup(this.industryGroup);
 		
 		try {
 			this.instrument.validate();
 			fail("Validation should have failed because the industry group is referenced with an Instrument that is of type 'IND_GROUP'.");
-		} catch (InstrumentReferenceException expected) {
-			assertEquals(expected.getExpectedType(), null);
-			assertEquals(expected.getActualType(), InstrumentType.IND_GROUP);
+		} catch (LocalizedException expected) {
+			assertEquals(expectedErrorMessage, expected.getLocalizedMessage());
 		} catch (Exception e) {
-			fail("No general exception should have occurred. Just the InstrumentReferenceException.");
+			fail("No general exception should have occurred. Just the LocalizedException.");
 		}
 	}
 	
@@ -551,8 +555,6 @@ public class InstrumentTest {
 			fail("Validation should have failed because Instrument is of type 'RATIO' and stock exchange is not null.");
 		} catch (LocalizedException expected) {
 			assertEquals(expectedErrorMessage, expected.getLocalizedMessage());
-		} catch (InstrumentReferenceException e) {
-			fail(e.getMessage());
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
@@ -573,8 +575,6 @@ public class InstrumentTest {
 			fail("Validation should have failed because Instrument is of type 'RATIO' and symbol is not null.");
 		} catch (LocalizedException expected) {
 			assertEquals(expectedErrorMessage, expected.getLocalizedMessage());
-		} catch (InstrumentReferenceException e) {
-			fail(e.getMessage());
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
@@ -592,8 +592,6 @@ public class InstrumentTest {
 			this.sectorIgRatio.validate();
 		} catch (LocalizedException e) {
 			fail(e.getLocalizedMessage());
-		} catch (InstrumentReferenceException e) {
-			fail(e.getMessage());
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
@@ -614,8 +612,6 @@ public class InstrumentTest {
 			fail("Validation should have failed because Instrument is of type 'RATIO' and dividend is null.");
 		} catch (LocalizedException expected) {
 			assertEquals(expectedErrorMessage, expected.getLocalizedMessage());
-		} catch (InstrumentReferenceException e) {
-			fail(e.getMessage());
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
@@ -636,8 +632,6 @@ public class InstrumentTest {
 			fail("Validation should have failed because Instrument is not of type 'RATIO' but dividend is defined.");
 		} catch (LocalizedException expected) {
 			assertEquals(expectedErrorMessage, expected.getLocalizedMessage());
-		} catch (InstrumentReferenceException e) {
-			fail(e.getMessage());
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
@@ -658,8 +652,6 @@ public class InstrumentTest {
 			fail("Validation should have failed because Instrument is of type 'RATIO' and divisor is null.");
 		} catch (LocalizedException expected) {
 			assertEquals(expectedErrorMessage, expected.getLocalizedMessage());
-		} catch (InstrumentReferenceException e) {
-			fail(e.getMessage());
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
@@ -680,8 +672,6 @@ public class InstrumentTest {
 			fail("Validation should have failed because Instrument is not of type 'RATIO' but divisor is defined.");
 		} catch (LocalizedException expected) {
 			assertEquals(expectedErrorMessage, expected.getLocalizedMessage());
-		} catch (InstrumentReferenceException e) {
-			fail(e.getMessage());
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
