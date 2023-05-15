@@ -198,23 +198,6 @@ public class ScanThread extends Thread {
 	
 	
 	/**
-	 * Uses existing quotations of instruments to calculate quotations for a ratio.
-	 * Persists new quotations.
-	 * 
-	 * @param instrument The Instrument to be updated.
-	 */
-	private void updateQuotationsRatio(Instrument instrument) {
-		try {
-			this.checkQuotationsExistForRatio(instrument);
-		} catch (Exception e) {
-			this.scan.addIncompleteInstrument(instrument);
-			logger.warn("Could not calculate ratio for instrument with ID " +instrument.getId() + ". " +e.getMessage());
-			return;
-		}
-	}
-	
-	
-	/**
 	 * Queries a third party WebService to get historical quotations of the given Instrument.
 	 * Persists new quotations.
 	 * 
@@ -252,6 +235,58 @@ public class ScanThread extends Thread {
 			
 			this.scan.getIncompleteInstruments().remove(instrument);
 		} catch (Exception e) {
+			this.scan.addIncompleteInstrument(instrument);			
+			logger.error("Failed to update quotations of instrument with ID " +instrument.getId(), e);
+		}
+	}
+	
+	
+	/**
+	 * Uses existing quotations of instruments to calculate quotations for a ratio.
+	 * Persists new quotations.
+	 * 
+	 * @param instrument The Instrument to be updated.
+	 */
+	private void updateQuotationsRatio(Instrument instrument) {
+		Quotation divisorQuotation, existingQuotation, newQuotation;
+		java.util.List<Quotation> newQuotations = new ArrayList<>();
+		
+		//1. Verify existing quotations of dividend and divisor.
+		try {
+			instrument.getDividend().setQuotations(this.quotationDAO.getQuotationsOfInstrument(instrument.getDividend().getId()));
+			instrument.getDivisor().setQuotations(this.quotationDAO.getQuotationsOfInstrument(instrument.getDivisor().getId()));
+			this.checkQuotationsExistForRatio(instrument);
+		} 
+		catch (Exception e) {
+			this.scan.addIncompleteInstrument(instrument);
+			logger.warn("Could not calculate ratio for instrument with ID " +instrument.getId() + ". " +e.getMessage());
+			return;
+		}
+		
+		//2. Calculate ratio quotations based on dividend and divisor quotations.
+		try {
+			instrument.setQuotations(this.quotationDAO.getQuotationsOfInstrument(instrument.getId()));
+			
+			for(Quotation dividendQuotation: instrument.getDividend().getQuotationsSortedByDate()) {
+				divisorQuotation = instrument.getDivisor().getQuotationByDate(dividendQuotation.getDate());
+				
+				if(divisorQuotation == null)
+					continue;
+				
+				existingQuotation = instrument.getQuotationByDate(dividendQuotation.getDate());
+				
+				if(existingQuotation == null) {
+					newQuotation = this.getRatioQuotation(instrument, dividendQuotation, divisorQuotation);
+					newQuotations.add(newQuotation);
+				}
+			}
+			
+			if(newQuotations.size() > 0) 
+				this.quotationDAO.insertQuotations(newQuotations);
+			
+			this.scan.getIncompleteInstruments().remove(instrument);
+		}
+		catch(Exception e) {
 			this.scan.addIncompleteInstrument(instrument);			
 			logger.error("Failed to update quotations of instrument with ID " +instrument.getId(), e);
 		}
@@ -419,16 +454,25 @@ public class ScanThread extends Thread {
 	 * @throws Exception In case no quotations exist for at least one Instrument.
 	 */
 	private void checkQuotationsExistForRatio(final Instrument instrument) throws Exception {
-		java.util.List<Quotation> quotationsDividend = new ArrayList<>();
-		java.util.List<Quotation> quotationsDivisor = new ArrayList<>();
-		
-		quotationsDividend = this.quotationDAO.getQuotationsOfInstrument(instrument.getDividend().getId());
-		quotationsDivisor = this.quotationDAO.getQuotationsOfInstrument(instrument.getDivisor().getId());
-		
-		if(quotationsDividend.size() == 0)
+		if(instrument.getDividend().getQuotations().size() == 0)
 			throw new Exception("No quotations exist for Instrument with ID " +instrument.getDividend().getId());
 		
-		if(quotationsDivisor.size() == 0)
+		if(instrument.getDivisor().getQuotations().size() == 0)
 			throw new Exception("No quotations exist for Instrument with ID " +instrument.getDivisor().getId());
+	}
+	
+	
+	/**
+	 * Calculates a Quotation as ratio between two quotation.s
+	 * 
+	 * @param Instrument The Instrument for which the Quotation is being calculated.
+	 * @param dividendQuotation The dividend.
+	 * @param divisorQuotation The divisor.
+	 * @return The Quotation as ratio between dividend and divisor.
+	 */
+	private Quotation getRatioQuotation(final Instrument instrument, final Quotation dividendQuotation, final Quotation divisorQuotation) {
+		//TODO Implement method
+		
+		return null;
 	}
 }
