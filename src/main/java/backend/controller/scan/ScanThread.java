@@ -204,7 +204,13 @@ public class ScanThread extends Thread {
 	 * @param instrument The Instrument to be updated.
 	 */
 	private void updateQuotationsRatio(Instrument instrument) {
-		
+		try {
+			this.checkQuotationsExistForRatio(instrument);
+		} catch (Exception e) {
+			this.scan.addIncompleteInstrument(instrument);
+			logger.warn("Could not calculate ratio for instrument with ID " +instrument.getId() + ". " +e.getMessage());
+			return;
+		}
 	}
 	
 	
@@ -402,5 +408,27 @@ public class ScanThread extends Thread {
 		
 		if(quotationAgeDays >= dayThreshold)
 			logger.warn(MessageFormat.format("The newest Quotation data of symbol {0} are {1} days old.", symbol, quotationAgeDays));
+	}
+	
+	
+	/**
+	 * Checks if quotations exist for both instruments of a ratio.
+	 * Logs a message if at least one Instrument of the ratio does not have any quotations defined.
+	 * 
+	 * @param instrument The Instrument that is the ratio.
+	 * @throws Exception In case no quotations exist for at least one Instrument.
+	 */
+	private void checkQuotationsExistForRatio(final Instrument instrument) throws Exception {
+		java.util.List<Quotation> quotationsDividend = new ArrayList<>();
+		java.util.List<Quotation> quotationsDivisor = new ArrayList<>();
+		
+		quotationsDividend = this.quotationDAO.getQuotationsOfInstrument(instrument.getDividend().getId());
+		quotationsDivisor = this.quotationDAO.getQuotationsOfInstrument(instrument.getDivisor().getId());
+		
+		if(quotationsDividend.size() == 0)
+			throw new Exception("No quotations exist for Instrument with ID " +instrument.getDividend().getId());
+		
+		if(quotationsDivisor.size() == 0)
+			throw new Exception("No quotations exist for Instrument with ID " +instrument.getDivisor().getId());
 	}
 }
