@@ -51,7 +51,7 @@ public class InstrumentArray {
 	 */
 	public Instrument getInstrumentById(final Integer id) {
 		for(Instrument instrument:this.instruments) {
-			if(instrument.getId() == id)
+			if(instrument.getId().equals(id))
 				return instrument;
 		}
 		
