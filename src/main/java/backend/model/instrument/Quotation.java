@@ -47,25 +47,25 @@ public class Quotation {
 	/**
 	 * The opening price.
 	 */
-	@Column(name="OPEN")
+	@Column(name="OPEN", precision = 10, scale = 3)
 	private BigDecimal open;
 	
 	/**
 	 * The high price.
 	 */
-	@Column(name="HIGH")
+	@Column(name="HIGH", precision = 10, scale = 3)
 	private BigDecimal high;
 	
 	/**
 	 * The low price.
 	 */
-	@Column(name="LOW")
+	@Column(name="LOW", precision = 10, scale = 3)
 	private BigDecimal low;
 	
 	/**
 	 * The closing price.
 	 */
-	@Column(name="CLOSE")
+	@Column(name="CLOSE", precision = 10, scale = 3)
 	private BigDecimal close;
 	
 	/**
