@@ -471,8 +471,27 @@ public class ScanThread extends Thread {
 	 * @return The Quotation as ratio between dividend and divisor.
 	 */
 	private Quotation getRatioQuotation(final Instrument instrument, final Quotation dividendQuotation, final Quotation divisorQuotation) {
-		//TODO Implement method
+		Quotation ratioQuotation = new Quotation();
+		BigDecimal ratioPrice;
 		
-		return null;
+		ratioQuotation.setInstrument(instrument);
+		ratioQuotation.setDate(dividendQuotation.getDate());
+		ratioQuotation.setCurrency(dividendQuotation.getCurrency());
+		
+		//A calculated ratio can consist of lot of values below 1.
+		//In this case rounding to two decimal places is not enough.
+		ratioPrice = dividendQuotation.getOpen().divide(divisorQuotation.getOpen(), 3, RoundingMode.HALF_UP);
+		ratioQuotation.setOpen(ratioPrice);
+		
+		ratioPrice = dividendQuotation.getHigh().divide(divisorQuotation.getHigh(), 3, RoundingMode.HALF_UP);
+		ratioQuotation.setHigh(ratioPrice);
+		
+		ratioPrice = dividendQuotation.getLow().divide(divisorQuotation.getLow(), 3, RoundingMode.HALF_UP);
+		ratioQuotation.setLow(ratioPrice);
+		
+		ratioPrice = dividendQuotation.getClose().divide(divisorQuotation.getClose(), 3, RoundingMode.HALF_UP);
+		ratioQuotation.setClose(ratioPrice);
+		
+		return ratioQuotation;
 	}
 }
