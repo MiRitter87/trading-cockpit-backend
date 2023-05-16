@@ -511,6 +511,9 @@ public class IndicatorCalculator {
 				downVolumeSum = downVolumeSum + currentDayQuotation.getVolume();
 		}
 		
+		if(downVolumeSum == 0)
+			return 0;	//Prevent division by zero.
+		
 		//Build the ratio.
 		upDownVolumeRatio = new BigDecimal(upVolumeSum).divide(new BigDecimal(downVolumeSum), 2, RoundingMode.HALF_UP);
 		
