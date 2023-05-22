@@ -53,7 +53,7 @@ public class ChartRestService {
 	 * @return The chart.
 	 */
     @GET
-    @Path("/distributionDays/{id}")
+    @Path("/distributionDays/{instrumentId}")
     @Produces("image/png")
 	public Response getDistributionDaysChart(@PathParam("instrumentId") final Integer instrumentId) {
     	ChartService chartService = new ChartService();
@@ -68,7 +68,7 @@ public class ChartRestService {
 	 * @return The chart.
 	 */
     @GET
-    @Path("/followThroughDays/{id}")
+    @Path("/followThroughDays/{instrumentId}")
     @Produces("image/png")
 	public Response getFollowThroughDaysChart(@PathParam("instrumentId") final Integer instrumentId) {
     	ChartService chartService = new ChartService();
@@ -113,7 +113,7 @@ public class ChartRestService {
    	 * @return The chart.
    	 */
        @GET
-       @Path("/pocketPivots/{id}")
+       @Path("/pocketPivots/{instrumentId}")
        @Produces("image/png")
    	public Response getPocketPivotsChart(@PathParam("instrumentId") final Integer instrumentId) {
        	ChartService chartService = new ChartService();
