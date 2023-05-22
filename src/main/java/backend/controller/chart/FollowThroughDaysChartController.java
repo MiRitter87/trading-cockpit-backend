@@ -1,4 +1,4 @@
-package backend.controller.statistic;
+package backend.controller.chart;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ import backend.model.instrument.Quotation;
  * 
  * @author Michael
  */
-public class FollowThroughDaysChartController extends StatisticChartController {
+public class FollowThroughDaysChartController extends ChartController {
 	/**
 	 * The performance threshold that defines a Follow-Through Day.
 	 */

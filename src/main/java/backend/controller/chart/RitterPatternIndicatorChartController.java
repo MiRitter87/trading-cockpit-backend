@@ -1,4 +1,4 @@
-package backend.controller.statistic;
+package backend.controller.chart;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -30,7 +30,7 @@ import backend.tools.DateTools;
  * 
  * @author Michael
  */
-public class RitterPatternIndicatorChartController extends StatisticChartController {
+public class RitterPatternIndicatorChartController extends ChartController {
 	/**
 	 * The number of instruments per date the pattern indicator is based on.
 	 */

@@ -14,14 +14,14 @@ import org.apache.logging.log4j.Logger;
 import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
 
+import backend.controller.chart.AboveSma50ChartController;
+import backend.controller.chart.AdvanceDeclineNumberChartController;
+import backend.controller.chart.DistributionDaysChartController;
+import backend.controller.chart.FollowThroughDaysChartController;
+import backend.controller.chart.PocketPivotChartController;
+import backend.controller.chart.RitterMarketTrendChartController;
+import backend.controller.chart.RitterPatternIndicatorChartController;
 import backend.controller.instrumentCheck.NoQuotationsExistException;
-import backend.controller.statistic.AboveSma50ChartController;
-import backend.controller.statistic.AdvanceDeclineNumberChartController;
-import backend.controller.statistic.DistributionDaysChartController;
-import backend.controller.statistic.FollowThroughDaysChartController;
-import backend.controller.statistic.PocketPivotChartController;
-import backend.controller.statistic.RitterMarketTrendChartController;
-import backend.controller.statistic.RitterPatternIndicatorChartController;
 import backend.model.instrument.InstrumentType;
 
 /**

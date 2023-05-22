@@ -1,4 +1,4 @@
-package backend.controller.statistic;
+package backend.controller.chart;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +22,7 @@ import backend.model.instrument.Quotation;
  * 
  * @author Michael
  */
-public class PocketPivotChartController extends StatisticChartController {
+public class PocketPivotChartController extends ChartController {
 	/**
 	 * Gets a chart of an Instrument marked with Pocket Pivots.
 	 * 

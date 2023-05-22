@@ -1,8 +1,7 @@
-package backend.controller.statistic;
+package backend.controller.chart;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -22,32 +21,23 @@ import org.jfree.data.xy.OHLCDataset;
 
 import backend.controller.instrumentCheck.NoQuotationsExistException;
 import backend.controller.scan.IndicatorCalculator;
-import backend.controller.scan.StatisticCalculationController;
 import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
 import backend.dao.list.ListDAO;
 import backend.dao.quotation.QuotationDAO;
-import backend.dao.statistic.StatisticDAO;
 import backend.model.instrument.Instrument;
-import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
-import backend.model.statistic.Statistic;
 
 /**
  * Provides methods that are collectively used for chart generation.
  * 
  * @author Michael
  */
-public abstract class StatisticChartController {
+public abstract class ChartController {
 	/**
 	 * The performance threshold that defines a Distribution Day.
 	 */
 	private static final float DD_PERCENT_THRESHOLD = (float) -0.2;
-	
-	/**
-	 * DAO to access Statistic data.
-	 */
-	private StatisticDAO statisticDAO;
 	
 	/**
 	 * DAO to access Instrument data.
@@ -76,42 +66,14 @@ public abstract class StatisticChartController {
 	
 	
 	/**
-	 * Initializes the StatisticChartController.
+	 * Initializes the ChartController.
 	 */
-	public StatisticChartController() {
-		this.statisticDAO = DAOManager.getInstance().getStatisticDAO();
+	public ChartController() {
 		this.instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
 		this.quotationDAO = DAOManager.getInstance().getQuotationDAO();
 		this.listDAO = DAOManager.getInstance().getListDAO();
 		
 		this.indicatorCalculator = new IndicatorCalculator();
-	}
-	
-	
-	/**
-	 * Get the statistics for the given parameters.
-	 * 
-	 * @param instrumentType The InstrumentType.
-	 * @param listId The ID of the list.
-	 * @return Statistics for the given parameters.
-	 * @throws Exception Determination of statistics failed.
-	 */
-	protected List<Statistic> getStatistics(final InstrumentType instrumentType, final Integer listId) throws Exception {
-		backend.model.list.List list;
-		List<Instrument> instruments = new ArrayList<>();
-		List<Statistic> statistics = new ArrayList<>();
-		StatisticCalculationController statisticCalculationController = new StatisticCalculationController();
-		
-		if(listId != null) {
-			list = this.listDAO.getList(listId);
-			instruments.addAll(list.getInstruments());
-			statistics = statisticCalculationController.calculateStatistics(instruments);
-		}
-		else {			
-			statistics = statisticDAO.getStatistics(instrumentType);
-		}
-		
-		return statistics;
 	}
 	
 	

@@ -1,4 +1,4 @@
-package backend.controller.statistic;
+package backend.controller.chart;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
