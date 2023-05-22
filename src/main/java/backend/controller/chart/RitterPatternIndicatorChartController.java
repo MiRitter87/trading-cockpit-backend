@@ -51,7 +51,7 @@ public class RitterPatternIndicatorChartController extends ChartController {
 		XYDataset dataset = this.getRitterPatternIndicatorDataset(patternIndicatorValues);
 		
 		JFreeChart chart = ChartFactory.createTimeSeriesChart(
-				this.resources.getString("statistic.chartRitterPatternIndicator.titleName"),
+				this.resources.getString("chart.ritterPatternIndicator.titleName"),
 				null, null,	dataset, true, true, false
 		);
 			
@@ -176,7 +176,7 @@ public class RitterPatternIndicatorChartController extends ChartController {
 	 * @return The XYDataset.
 	 */
 	private XYDataset getRitterPatternIndicatorDataset(final TreeMap<Date, Integer> patternIndicatorValues) {
-		TimeSeries timeSeries = new TimeSeries(this.resources.getString("statistic.chartRitterPatternIndicator.timeSeriesName"));
+		TimeSeries timeSeries = new TimeSeries(this.resources.getString("chart.ritterPatternIndicator.timeSeriesName"));
 		TimeZone timeZone = TimeZone.getDefault();
 		TimeSeriesCollection timeSeriesColleciton = new TimeSeriesCollection(timeZone);
 		ArrayList<Entry<Date, Integer>> valueList = new ArrayList<>(patternIndicatorValues.entrySet());

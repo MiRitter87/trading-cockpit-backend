@@ -188,7 +188,7 @@ public class FollowThroughDaysChartController extends ChartController {
 		List<Quotation> quotationsSortedByDate = instrument.getQuotationsSortedByDate();
 		List<Integer> indexOfFollowThroughDays, indexOfFailedFollowThroughDays;
 		TimeSeriesCollection dataset = new TimeSeriesCollection();
-		TimeSeries failedFTDTimeSeries = new TimeSeries(this.resources.getString("statistic.chartFollowThroughDays.timeSeriesFailedFTDName"));
+		TimeSeries failedFTDTimeSeries = new TimeSeries(this.resources.getString("chart.followThroughDays.timeSeriesFailedFTDName"));
 		Quotation currentQuotation;
 		
 		indexOfFollowThroughDays = this.getIndexOfFollowThroughDays(quotationsSortedByDate);

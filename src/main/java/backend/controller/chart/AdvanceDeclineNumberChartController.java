@@ -34,7 +34,7 @@ public class AdvanceDeclineNumberChartController extends StatisticChartControlle
 		XYDataset dataset = this.getAdvanceDeclineNumberDataset(statistics);
 		
 		JFreeChart chart = ChartFactory.createTimeSeriesChart(
-			this.resources.getString("statistic.chartADNumber.titleName"),
+			this.resources.getString("chart.adNumber.titleName"),
 			null, null,	dataset, true, true, false
 		);
 		
@@ -51,7 +51,7 @@ public class AdvanceDeclineNumberChartController extends StatisticChartControlle
 	 */
 	private XYDataset getAdvanceDeclineNumberDataset(final List<Statistic> statistics) throws Exception {
 		Statistic statistic;
-		TimeSeries timeSeries = new TimeSeries(this.resources.getString("statistic.chartADNumber.timeSeriesName"));
+		TimeSeries timeSeries = new TimeSeries(this.resources.getString("chart.adNumber.timeSeriesName"));
 		TimeZone timeZone = TimeZone.getDefault();
 		TimeSeriesCollection timeSeriesColleciton = new TimeSeriesCollection(timeZone);
 		ListIterator<Statistic> iterator;

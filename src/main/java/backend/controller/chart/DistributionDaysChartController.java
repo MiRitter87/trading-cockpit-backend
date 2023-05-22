@@ -95,7 +95,7 @@ public class DistributionDaysChartController extends ChartController {
 		List<Integer> indexOfDistributionDays = new ArrayList<>();
 		int indexStart, indexEnd, numberOfDistributionDays;
 		TimeSeriesCollection dataset = new TimeSeriesCollection();
-		TimeSeries distributionDaysTimeSeries = new TimeSeries(this.resources.getString("statistic.chartDistributionDays.timeSeriesDDSumName"));
+		TimeSeries distributionDaysTimeSeries = new TimeSeries(this.resources.getString("chart.distributionDays.timeSeriesDDSumName"));
 		
         indexOfDistributionDays = this.getIndexOfDistributionDays(quotationsSortedByDate);
         

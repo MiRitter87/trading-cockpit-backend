@@ -35,7 +35,7 @@ public class RitterMarketTrendChartController extends StatisticChartController {
 		XYDataset dataset = this.getRitterMarketTrendDataset(statistics);
 		
 		JFreeChart chart = ChartFactory.createTimeSeriesChart(
-			this.resources.getString("statistic.chartRitterMarketTrend.titleName"),
+			this.resources.getString("chart.ritterMarketTrend.titleName"),
 			null, null,	dataset, true, true, false
 		);
 		
@@ -53,7 +53,7 @@ public class RitterMarketTrendChartController extends StatisticChartController {
 	 */
 	private XYDataset getRitterMarketTrendDataset(final List<Statistic> statistics) {
 		Statistic statistic;
-		TimeSeries timeSeries = new TimeSeries(this.resources.getString("statistic.chartRitterMarketTrend.timeSeriesName"));
+		TimeSeries timeSeries = new TimeSeries(this.resources.getString("chart.ritterMarketTrend.timeSeriesName"));
 		TimeZone timeZone = TimeZone.getDefault();
 		TimeSeriesCollection timeSeriesColleciton = new TimeSeriesCollection(timeZone);
 		float movingAverage;

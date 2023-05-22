@@ -34,7 +34,7 @@ public class AboveSma50ChartController extends StatisticChartController {
 		XYDataset dataset = this.getInstrumentsAboveSma50Dataset(statistics);
 		
 		JFreeChart chart = ChartFactory.createTimeSeriesChart(
-			this.resources.getString("statistic.chartAboveSma50.titleName"),
+			this.resources.getString("chart.aboveSma50.titleName"),
 			null, null,	dataset, true, true, false
 		);
 		
@@ -51,7 +51,7 @@ public class AboveSma50ChartController extends StatisticChartController {
 	 */
 	private XYDataset getInstrumentsAboveSma50Dataset(final List<Statistic> statistics) throws Exception {
 		Statistic statistic;
-		TimeSeries timeSeries = new TimeSeries(this.resources.getString("statistic.chartAboveSma50.timeSeriesName"));
+		TimeSeries timeSeries = new TimeSeries(this.resources.getString("chart.aboveSma50.timeSeriesName"));
 		TimeZone timeZone = TimeZone.getDefault();
 		TimeSeriesCollection timeSeriesColleciton = new TimeSeriesCollection(timeZone);
 		ListIterator<Statistic> iterator;
