@@ -62,7 +62,7 @@ public class ChartService {
 				}
 			};
 		} catch (Exception exception) {
-			logger.error(this.resources.getString("statistic.chartADNumber.getError"), exception);
+			logger.error(this.resources.getString("chart.adNumber.getError"), exception);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
 		}
 		
@@ -91,7 +91,7 @@ public class ChartService {
 				}
 			};
 		} catch (Exception exception) {
-			logger.error(this.resources.getString("statistic.chartAboveSma50.getError"), exception);
+			logger.error(this.resources.getString("chart.aboveSma50.getError"), exception);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
 		}
 		
@@ -125,10 +125,10 @@ public class ChartService {
 		} 
 		catch(NoQuotationsExistException noQuotationsExistException) {
 			return Response.status(404, 	//No data found.
-					this.resources.getString("statistic.chartDistributionDays.noQuotationsError")).build();
+					this.resources.getString("chart.distributionDays.noQuotationsError")).build();
 		}
 		catch (Exception exception) {
-			logger.error(this.resources.getString("statistic.chartDistributionDays.getError"), exception);
+			logger.error(this.resources.getString("chart.distributionDays.getError"), exception);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
 		}
 		
@@ -162,10 +162,10 @@ public class ChartService {
 		} 
 		catch(NoQuotationsExistException noQuotationsExistException) {
 			return Response.status(404, 	//No data found.
-					this.resources.getString("statistic.chartFollowThroughDays.noQuotationsError")).build();
+					this.resources.getString("chart.followThroughDays.noQuotationsError")).build();
 		}
 		catch (Exception exception) {
-			logger.error(this.resources.getString("statistic.chartFollowThroughDays.getError"), exception);
+			logger.error(this.resources.getString("chart.followThroughDays.getError"), exception);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
 		}
 		
@@ -194,7 +194,7 @@ public class ChartService {
 				}
 			};
 		} catch (Exception exception) {
-			logger.error(this.resources.getString("statistic.chartRitterMarketTrend.getError"), exception);
+			logger.error(this.resources.getString("chart.ritterMarketTrend.getError"), exception);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
 		}
 		
@@ -223,7 +223,7 @@ public class ChartService {
 				}
 			};
 		} catch (Exception exception) {
-			logger.error(this.resources.getString("statistic.chartRitterPatternIndicator.getError"), exception);
+			logger.error(this.resources.getString("chart.ritterPatternIndicator.getError"), exception);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
 		}
 		
@@ -254,10 +254,10 @@ public class ChartService {
 		}
 		catch(NoQuotationsExistException noQuotationsExistException) {
 			return Response.status(404, 	//No data found.
-					this.resources.getString("statistic.chartPocketPivots.noQuotationsError")).build();
+					this.resources.getString("chart.pocketPivots.noQuotationsError")).build();
 		}
 		catch (Exception exception) {
-			logger.error(this.resources.getString("statistic.chartPocketPivots.getError"), exception);
+			logger.error(this.resources.getString("chart.pocketPivots.getError"), exception);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
 		}
 		
