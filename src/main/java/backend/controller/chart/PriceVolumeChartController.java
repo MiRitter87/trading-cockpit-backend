@@ -1,10 +1,9 @@
 package backend.controller.chart;
 
+import java.awt.Color;
 import java.util.List;
 
-import org.jfree.chart.ChartTheme;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.StandardChartTheme;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.CombinedDomainXYPlot;
@@ -40,7 +39,6 @@ public class PriceVolumeChartController extends ChartController {
 		Instrument instrument = this.getInstrumentWithQuotations(instrumentId);
 		JFreeChart chart;
 		ValueAxis timeAxis = new DateAxis();	//The shared time axis of all subplots.
-        ChartTheme currentTheme = new StandardChartTheme("JFree");
         
         XYPlot candleStickSubplot = this.getCandlestickPlot(instrument, timeAxis);
 		XYPlot volumeSubplot = this.getVolumePlot(instrument, timeAxis);
@@ -56,7 +54,6 @@ public class PriceVolumeChartController extends ChartController {
 		
 		//Build chart based on combined Plot.
 		chart = new JFreeChart(instrument.getName(), JFreeChart.DEFAULT_TITLE_FONT, combinedPlot, true);
-		currentTheme.apply(chart);
 		
 		return chart;
 	}
@@ -72,6 +69,7 @@ public class PriceVolumeChartController extends ChartController {
 		List<Quotation> quotationsSortedByDate = instrument.getQuotationsSortedByDate();
 		TimeSeriesCollection timeSeriesCollection = new TimeSeriesCollection();
 		TimeSeries sma50TimeSeries = new TimeSeries("!SMA(50)");
+		int index = 1;
 		
 		for(Quotation tempQuotation : quotationsSortedByDate) {
 			if(tempQuotation.getIndicator().getSma50() == 0)
@@ -82,11 +80,11 @@ public class PriceVolumeChartController extends ChartController {
 		
 		timeSeriesCollection.addSeries(sma50TimeSeries);
 		
-		int index = 1;
 		candleStickSubplot.setDataset(index, timeSeriesCollection);
 		candleStickSubplot.mapDatasetToRangeAxis(index, 0);
 		
-		XYItemRenderer smaRenderer = new XYLineAndShapeRenderer();
+		XYItemRenderer smaRenderer = new XYLineAndShapeRenderer(true, false);
+		smaRenderer.setSeriesPaint(0, Color.BLUE);
 		candleStickSubplot.setRenderer(1, smaRenderer);
 		candleStickSubplot.setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
 	}
