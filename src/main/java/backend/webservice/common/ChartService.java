@@ -271,15 +271,16 @@ public class ChartService {
 	 * Additional overalys and subplots can be added to the chart on demand.
 	 * 
 	 * @param instrumentId The ID of the Instrument used for chart creation.
+	 * @param withSma50 Show SMA(50) as overlay.
 	 * @return A Response containing the generated chart.
 	 */
-	public Response getPriceVolumeChart(final Integer instrumentId) {
+	public Response getPriceVolumeChart(final Integer instrumentId, final boolean withSma50) {
 		PriceVolumeChartController priceVolumeChartController = new PriceVolumeChartController();
 		JFreeChart chart;
 		StreamingOutput streamingOutput = null;
 		
 		try {
-			chart = priceVolumeChartController.getPriceVolumeChart(instrumentId);
+			chart = priceVolumeChartController.getPriceVolumeChart(instrumentId, withSma50);
 			
 			streamingOutput = new StreamingOutput() {
 				@Override
