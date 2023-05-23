@@ -43,8 +43,7 @@ public class PriceVolumeChartController extends ChartController {
         XYPlot candleStickSubplot = this.getCandlestickPlot(instrument, timeAxis);
 		XYPlot volumeSubplot = this.getVolumePlot(instrument, timeAxis);
 		
-		if(withSma50)
-			this.addSma50(instrument, candleStickSubplot);
+		this.addMovingAveragesPrice(instrument, withSma50, candleStickSubplot);
 		
 		//Build combined plot based on subplots.
 		CombinedDomainXYPlot combinedPlot = new CombinedDomainXYPlot();
@@ -60,6 +59,19 @@ public class PriceVolumeChartController extends ChartController {
 	
 	
 	/**
+	 * Adds moving averages of the price to the chart.
+	 * 
+	 * @param instrument The Instrument whose price and volume data are displayed.
+	 * @param withSma50 Show SMA(50) as overlay.
+	 * @param candleStickSubplot The Plot to which moving averages are added.
+	 */
+	private void addMovingAveragesPrice(final Instrument instrument, final boolean withSma50, XYPlot candleStickSubplot) {
+		if(withSma50)
+			this.addSma50(instrument, candleStickSubplot);
+	}
+	
+	
+	/**
 	 * Adds the SMA(50) to the chart.
 	 * 
 	 * @param instrument The Instrument whose price and volume data are displayed.
@@ -68,8 +80,8 @@ public class PriceVolumeChartController extends ChartController {
 	private void addSma50(final Instrument instrument, XYPlot candleStickSubplot) {
 		List<Quotation> quotationsSortedByDate = instrument.getQuotationsSortedByDate();
 		TimeSeriesCollection timeSeriesCollection = new TimeSeriesCollection();
-		TimeSeries sma50TimeSeries = new TimeSeries("!SMA(50)");
-		int index = 1;
+		TimeSeries sma50TimeSeries = new TimeSeries(this.resources.getString("chart.priceVolume.timeSeriesSma50Name"));
+		int index = candleStickSubplot.getDatasetCount();
 		
 		for(Quotation tempQuotation : quotationsSortedByDate) {
 			if(tempQuotation.getIndicator().getSma50() == 0)
@@ -85,7 +97,7 @@ public class PriceVolumeChartController extends ChartController {
 		
 		XYItemRenderer smaRenderer = new XYLineAndShapeRenderer(true, false);
 		smaRenderer.setSeriesPaint(0, Color.BLUE);
-		candleStickSubplot.setRenderer(1, smaRenderer);
+		candleStickSubplot.setRenderer(index, smaRenderer);
 		candleStickSubplot.setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
 	}
 }
