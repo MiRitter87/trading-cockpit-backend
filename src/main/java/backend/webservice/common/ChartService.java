@@ -19,6 +19,7 @@ import backend.controller.chart.AdvanceDeclineNumberChartController;
 import backend.controller.chart.DistributionDaysChartController;
 import backend.controller.chart.FollowThroughDaysChartController;
 import backend.controller.chart.PocketPivotChartController;
+import backend.controller.chart.PriceVolumeChartController;
 import backend.controller.chart.RitterMarketTrendChartController;
 import backend.controller.chart.RitterPatternIndicatorChartController;
 import backend.controller.instrumentCheck.NoQuotationsExistException;
@@ -258,6 +259,41 @@ public class ChartService {
 		}
 		catch (Exception exception) {
 			logger.error(this.resources.getString("chart.pocketPivots.getError"), exception);
+			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+		}
+		
+		return Response.ok(streamingOutput).build();
+	}
+	
+	
+	/**
+	 * Provides a chart of an Instrument with price and volume.
+	 * Additional overalys and subplots can be added to the chart on demand.
+	 * 
+	 * @param instrumentId The ID of the Instrument used for chart creation.
+	 * @return A Response containing the generated chart.
+	 */
+	public Response getPriceVolumeChart(final Integer instrumentId) {
+		PriceVolumeChartController priceVolumeChartController = new PriceVolumeChartController();
+		JFreeChart chart;
+		StreamingOutput streamingOutput = null;
+		
+		try {
+			chart = priceVolumeChartController.getPriceVolumeChart(instrumentId);
+			
+			streamingOutput = new StreamingOutput() {
+				@Override
+				public void write(OutputStream output) throws IOException, WebApplicationException {
+					ChartUtils.writeChartAsPNG(output, chart, 1600, 600);
+				}
+			};
+		}
+		catch(NoQuotationsExistException noQuotationsExistException) {
+			return Response.status(404, 	//No data found.
+					this.resources.getString("chart.priceVolume.noQuotationsError")).build();
+		}
+		catch (Exception exception) {
+			logger.error(this.resources.getString("chart.priceVolume.getError"), exception);
 			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
 		}
 		
