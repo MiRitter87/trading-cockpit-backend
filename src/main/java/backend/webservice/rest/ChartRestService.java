@@ -126,6 +126,7 @@ public class ChartRestService {
 	 * Provides a chart of an Instrument marked with Pocket Pivots.
 	 * 
 	 * @param instrumentId The ID of the Instrument used for chart creation.
+	 * @param withEma21 Show EMA(21) as overlay.
 	 * @param withSma50 Show SMA(50) as overlay.
 	 * @param withSma30Volume Show SMA(30) of volume.
 	 * @return The chart.
@@ -133,10 +134,10 @@ public class ChartRestService {
 	@GET
 	@Path("/priceVolume/{instrumentId}")
 	@Produces("image/png")
-	public Response getPriceVolumeChart(@PathParam("instrumentId") final Integer instrumentId, 
+	public Response getPriceVolumeChart(@PathParam("instrumentId") final Integer instrumentId, @QueryParam("withEma21") final boolean withEma21, 
 			@QueryParam("withSma50") final boolean withSma50, @QueryParam("withSma30Volume") final boolean withSma30Volume) {
 		
 		ChartService chartService = new ChartService();
-		return chartService.getPriceVolumeChart(instrumentId, withSma50, withSma30Volume);
+		return chartService.getPriceVolumeChart(instrumentId, withEma21, withSma50, withSma30Volume);
 	}
 }

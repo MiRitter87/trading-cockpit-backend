@@ -30,14 +30,15 @@ public class PriceVolumeChartController extends ChartController {
 	 * Gets a chart of an Instrument with volume information.
 	 * 
 	 * @param instrumentId The ID of the Instrument used for chart creation.
+	 * @param withEma21 Show EMA(21) as overlay.
 	 * @param withSma50 Show SMA(50) as overlay.
 	 * @param withSma30Volume Show SMA(30) of volume.
 	 * @return The chart.
 	 * @throws NoQuotationsExistException No quotations exist for the Quotation with the given ID.
 	 * @throws Exception Chart generation failed.
 	 */
-	public JFreeChart getPriceVolumeChart(final Integer instrumentId, final boolean withSma50, final boolean withSma30Volume) 
-			throws NoQuotationsExistException, Exception {
+	public JFreeChart getPriceVolumeChart(final Integer instrumentId, final boolean withEma21, final boolean withSma50, 
+			final boolean withSma30Volume) throws NoQuotationsExistException, Exception {
 		
 		Instrument instrument = this.getInstrumentWithQuotations(instrumentId);
 		JFreeChart chart;
@@ -46,7 +47,7 @@ public class PriceVolumeChartController extends ChartController {
         XYPlot candleStickSubplot = this.getCandlestickPlot(instrument, timeAxis);
 		XYPlot volumeSubplot = this.getVolumePlot(instrument, timeAxis);
 		
-		this.addMovingAveragesPrice(instrument, withSma50, candleStickSubplot);
+		this.addMovingAveragesPrice(instrument, withEma21, withSma50, candleStickSubplot);
 		this.addMovingAverageVolume(instrument, withSma30Volume, volumeSubplot);
 		
 		//Build combined plot based on subplots.
@@ -66,12 +67,47 @@ public class PriceVolumeChartController extends ChartController {
 	 * Adds moving averages of the price to the chart.
 	 * 
 	 * @param instrument The Instrument whose price and volume data are displayed.
+	 * @param withEma21 Show EMA(21) as overlay.
 	 * @param withSma50 Show SMA(50) as overlay.
 	 * @param candleStickSubplot The Plot to which moving averages are added.
 	 */
-	private void addMovingAveragesPrice(final Instrument instrument, final boolean withSma50, XYPlot candleStickSubplot) {
+	private void addMovingAveragesPrice(final Instrument instrument, final boolean withEma21, final boolean withSma50, XYPlot candleStickSubplot) {
+		if(withEma21)
+			this.addEma21(instrument, candleStickSubplot);
+		
 		if(withSma50)
 			this.addSma50(instrument, candleStickSubplot);
+	}
+	
+	
+	/**
+	 * Adds the EMA(21) to the chart.
+	 * 
+	 * @param instrument The Instrument whose price and volume data are displayed.
+	 * @param candleStickSubplot The Plot to which the EMA(21) is added.
+	 */
+	private void addEma21(final Instrument instrument, XYPlot candleStickSubplot) {
+		List<Quotation> quotationsSortedByDate = instrument.getQuotationsSortedByDate();
+		TimeSeriesCollection timeSeriesCollection = new TimeSeriesCollection();
+		TimeSeries ema21TimeSeries = new TimeSeries(this.resources.getString("chart.priceVolume.timeSeriesEma21Name"));
+		int index = candleStickSubplot.getDatasetCount();
+		
+		for(Quotation tempQuotation : quotationsSortedByDate) {
+			if(tempQuotation.getIndicator().getEma21() == 0)
+				continue;
+			
+			ema21TimeSeries.add(new Day(tempQuotation.getDate()), tempQuotation.getIndicator().getEma21());
+		}
+		
+		timeSeriesCollection.addSeries(ema21TimeSeries);
+		
+		candleStickSubplot.setDataset(index, timeSeriesCollection);
+		candleStickSubplot.mapDatasetToRangeAxis(index, 0);
+		
+		XYItemRenderer smaRenderer = new XYLineAndShapeRenderer(true, false);
+		smaRenderer.setSeriesPaint(0, Color.ORANGE);
+		candleStickSubplot.setRenderer(index, smaRenderer);
+		candleStickSubplot.setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
 	}
 	
 	

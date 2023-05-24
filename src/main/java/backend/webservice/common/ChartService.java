@@ -268,20 +268,21 @@ public class ChartService {
 	
 	/**
 	 * Provides a chart of an Instrument with price and volume.
-	 * Additional overalys and subplots can be added to the chart on demand.
+	 * Additional overlays and subplots can be added to the chart on demand.
 	 * 
 	 * @param instrumentId The ID of the Instrument used for chart creation.
+	 * @param withEma21 Show EMA(21) as overlay.
 	 * @param withSma50 Show SMA(50) as overlay.
 	 * @param withSma30Volume Show SMA(30) of volume.
 	 * @return A Response containing the generated chart.
 	 */
-	public Response getPriceVolumeChart(final Integer instrumentId, final boolean withSma50, final boolean withSma30Volume) {
+	public Response getPriceVolumeChart(final Integer instrumentId, final boolean withEma21, final boolean withSma50, final boolean withSma30Volume) {
 		PriceVolumeChartController priceVolumeChartController = new PriceVolumeChartController();
 		JFreeChart chart;
 		StreamingOutput streamingOutput = null;
 		
 		try {
-			chart = priceVolumeChartController.getPriceVolumeChart(instrumentId, withSma50, withSma30Volume);
+			chart = priceVolumeChartController.getPriceVolumeChart(instrumentId, withEma21, withSma50, withSma30Volume);
 			
 			streamingOutput = new StreamingOutput() {
 				@Override
