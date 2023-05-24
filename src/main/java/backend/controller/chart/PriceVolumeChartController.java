@@ -33,13 +33,14 @@ public class PriceVolumeChartController extends ChartController {
 	 * @param withEma21 Show EMA(21) as overlay.
 	 * @param withSma50 Show SMA(50) as overlay.
 	 * @param withSma150 Show SMA(150) as overlay.
+	 * @param withSma200 Show SMA(200) as overlay.
 	 * @param withSma30Volume Show SMA(30) of volume.
 	 * @return The chart.
 	 * @throws NoQuotationsExistException No quotations exist for the Quotation with the given ID.
 	 * @throws Exception Chart generation failed.
 	 */
 	public JFreeChart getPriceVolumeChart(final Integer instrumentId, final boolean withEma21, final boolean withSma50, 
-			final boolean withSma150, final boolean withSma30Volume) throws NoQuotationsExistException, Exception {
+			final boolean withSma150, final boolean withSma200, final boolean withSma30Volume) throws NoQuotationsExistException, Exception {
 		
 		Instrument instrument = this.getInstrumentWithQuotations(instrumentId);
 		JFreeChart chart;
@@ -48,7 +49,7 @@ public class PriceVolumeChartController extends ChartController {
         XYPlot candleStickSubplot = this.getCandlestickPlot(instrument, timeAxis);
 		XYPlot volumeSubplot = this.getVolumePlot(instrument, timeAxis);
 		
-		this.addMovingAveragesPrice(instrument, withEma21, withSma50, withSma150, candleStickSubplot);
+		this.addMovingAveragesPrice(instrument, withEma21, withSma50, withSma150, withSma200, candleStickSubplot);
 		this.addMovingAverageVolume(instrument, withSma30Volume, volumeSubplot);
 		
 		//Build combined plot based on subplots.
@@ -71,10 +72,12 @@ public class PriceVolumeChartController extends ChartController {
 	 * @param withEma21 Show EMA(21) as overlay.
 	 * @param withSma50 Show SMA(50) as overlay.
 	 * @param withSma150 Show SMA(150) as overlay.
+	 * @param withSma200 Show SMA(200) as overlay.
 	 * @param candleStickSubplot The Plot to which moving averages are added.
 	 */
 	private void addMovingAveragesPrice(final Instrument instrument, final boolean withEma21, final boolean withSma50, 
-			final boolean withSma150, XYPlot candleStickSubplot) {
+			final boolean withSma150, final boolean withSma200, XYPlot candleStickSubplot) {
+		
 		if(withEma21)
 			this.addEma21(instrument, candleStickSubplot);
 		
@@ -83,6 +86,9 @@ public class PriceVolumeChartController extends ChartController {
 		
 		if(withSma150)
 			this.addSma150(instrument, candleStickSubplot);
+		
+		if(withSma200)
+			this.addSma200(instrument, candleStickSubplot);
 	}
 	
 	
@@ -174,6 +180,37 @@ public class PriceVolumeChartController extends ChartController {
 		
 		XYItemRenderer smaRenderer = new XYLineAndShapeRenderer(true, false);
 		smaRenderer.setSeriesPaint(0, Color.RED);
+		candleStickSubplot.setRenderer(index, smaRenderer);
+		candleStickSubplot.setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
+	}
+	
+	
+	/**
+	 * Adds the SMA(200) to the chart.
+	 * 
+	 * @param instrument The Instrument whose price and volume data are displayed.
+	 * @param candleStickSubplot The Plot to which the SMA(200) is added.
+	 */
+	private void addSma200(final Instrument instrument, XYPlot candleStickSubplot) {
+		List<Quotation> quotationsSortedByDate = instrument.getQuotationsSortedByDate();
+		TimeSeriesCollection timeSeriesCollection = new TimeSeriesCollection();
+		TimeSeries sma200TimeSeries = new TimeSeries(this.resources.getString("chart.priceVolume.timeSeriesSma200Name"));
+		int index = candleStickSubplot.getDatasetCount();
+		
+		for(Quotation tempQuotation : quotationsSortedByDate) {
+			if(tempQuotation.getIndicator().getSma200() == 0)
+				continue;
+			
+			sma200TimeSeries.add(new Day(tempQuotation.getDate()), tempQuotation.getIndicator().getSma200());
+		}
+		
+		timeSeriesCollection.addSeries(sma200TimeSeries);
+		
+		candleStickSubplot.setDataset(index, timeSeriesCollection);
+		candleStickSubplot.mapDatasetToRangeAxis(index, 0);
+		
+		XYItemRenderer smaRenderer = new XYLineAndShapeRenderer(true, false);
+		smaRenderer.setSeriesPaint(0, Color.GREEN);
 		candleStickSubplot.setRenderer(index, smaRenderer);
 		candleStickSubplot.setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
 	}
