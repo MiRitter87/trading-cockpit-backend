@@ -31,11 +31,14 @@ public class PriceVolumeChartController extends ChartController {
 	 * 
 	 * @param instrumentId The ID of the Instrument used for chart creation.
 	 * @param withSma50 Show SMA(50) as overlay.
+	 * @param withSma30Volume Show SMA(30) of volume.
 	 * @return The chart.
 	 * @throws NoQuotationsExistException No quotations exist for the Quotation with the given ID.
 	 * @throws Exception Chart generation failed.
 	 */
-	public JFreeChart getPriceVolumeChart(final Integer instrumentId, final boolean withSma50) throws NoQuotationsExistException, Exception {
+	public JFreeChart getPriceVolumeChart(final Integer instrumentId, final boolean withSma50, final boolean withSma30Volume) 
+			throws NoQuotationsExistException, Exception {
+		
 		Instrument instrument = this.getInstrumentWithQuotations(instrumentId);
 		JFreeChart chart;
 		ValueAxis timeAxis = new DateAxis();	//The shared time axis of all subplots.
@@ -44,6 +47,7 @@ public class PriceVolumeChartController extends ChartController {
 		XYPlot volumeSubplot = this.getVolumePlot(instrument, timeAxis);
 		
 		this.addMovingAveragesPrice(instrument, withSma50, candleStickSubplot);
+		this.addMovingAverageVolume(instrument, withSma30Volume, volumeSubplot);
 		
 		//Build combined plot based on subplots.
 		CombinedDomainXYPlot combinedPlot = new CombinedDomainXYPlot();
@@ -99,5 +103,40 @@ public class PriceVolumeChartController extends ChartController {
 		smaRenderer.setSeriesPaint(0, Color.BLUE);
 		candleStickSubplot.setRenderer(index, smaRenderer);
 		candleStickSubplot.setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
+	}
+	
+	
+	/**
+	 * Adds the SMA(30) of the volume to the chart.
+	 * 
+	 * @param instrument The Instrument whose price and volume data are displayed.
+	 * @param @param withSma30Volume Show SMA(30) of volume.
+	 * @param volumeSubplot The Plot to which the SMA(30) of the volume is added.
+	 */
+	private void addMovingAverageVolume(final Instrument instrument, final boolean withSma30Volume, XYPlot volumeSubplot) {
+		List<Quotation> quotationsSortedByDate = instrument.getQuotationsSortedByDate();
+		TimeSeriesCollection timeSeriesCollection = new TimeSeriesCollection();
+		TimeSeries sma30VolumeTimeSeries = new TimeSeries(this.resources.getString("chart.priceVolume.timeSeriesSma30VolumeName"));
+		int index = volumeSubplot.getDatasetCount();
+		
+		if(!withSma30Volume)
+			return;
+		
+		for(Quotation tempQuotation : quotationsSortedByDate) {
+			if(tempQuotation.getIndicator().getSma30Volume() == 0)
+				continue;
+			
+			sma30VolumeTimeSeries.add(new Day(tempQuotation.getDate()), tempQuotation.getIndicator().getSma30Volume());
+		}
+		
+		timeSeriesCollection.addSeries(sma30VolumeTimeSeries);
+		
+		volumeSubplot.setDataset(index, timeSeriesCollection);
+		volumeSubplot.mapDatasetToRangeAxis(index, 0);
+		
+		XYItemRenderer smaRenderer = new XYLineAndShapeRenderer(true, false);
+		smaRenderer.setSeriesPaint(0, Color.BLACK);
+		volumeSubplot.setRenderer(index, smaRenderer);
+		volumeSubplot.setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
 	}
 }

@@ -150,6 +150,7 @@ public abstract class ChartController {
 		XYBarRenderer volumeRenderer = new XYBarRenderer();
         NumberAxis volumeAxis = new NumberAxis();
 		
+        volumeRenderer.setShadowVisible(false);
 		XYPlot volumeSubplot = new XYPlot(volumeData, timeAxis, volumeAxis, volumeRenderer);
 		
 		return volumeSubplot;

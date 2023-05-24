@@ -272,15 +272,16 @@ public class ChartService {
 	 * 
 	 * @param instrumentId The ID of the Instrument used for chart creation.
 	 * @param withSma50 Show SMA(50) as overlay.
+	 * @param withSma30Volume Show SMA(30) of volume.
 	 * @return A Response containing the generated chart.
 	 */
-	public Response getPriceVolumeChart(final Integer instrumentId, final boolean withSma50) {
+	public Response getPriceVolumeChart(final Integer instrumentId, final boolean withSma50, final boolean withSma30Volume) {
 		PriceVolumeChartController priceVolumeChartController = new PriceVolumeChartController();
 		JFreeChart chart;
 		StreamingOutput streamingOutput = null;
 		
 		try {
-			chart = priceVolumeChartController.getPriceVolumeChart(instrumentId, withSma50);
+			chart = priceVolumeChartController.getPriceVolumeChart(instrumentId, withSma50, withSma30Volume);
 			
 			streamingOutput = new StreamingOutput() {
 				@Override
