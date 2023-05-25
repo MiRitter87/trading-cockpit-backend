@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
-import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.CombinedDomainXYPlot;
 import org.jfree.chart.plot.DatasetRenderingOrder;
 import org.jfree.chart.plot.XYPlot;
@@ -44,10 +43,12 @@ public class PriceVolumeChartController extends ChartController {
 		
 		Instrument instrument = this.getInstrumentWithQuotations(instrumentId);
 		JFreeChart chart;
-		ValueAxis timeAxis = new DateAxis();	//The shared time axis of all subplots.
+		DateAxis dateAxis = new DateAxis();	//The shared time axis of all subplots.
+		
+		dateAxis.setTimeline(SegmentedTimeline.newMondayThroughFridayTimeline());
         
-        XYPlot candleStickSubplot = this.getCandlestickPlot(instrument, timeAxis);
-		XYPlot volumeSubplot = this.getVolumePlot(instrument, timeAxis);
+        XYPlot candleStickSubplot = this.getCandlestickPlot(instrument, dateAxis);
+		XYPlot volumeSubplot = this.getVolumePlot(instrument, dateAxis);
 		
 		this.addMovingAveragesPrice(instrument, withEma21, withSma50, withSma150, withSma200, candleStickSubplot);
 		this.addMovingAverageVolume(instrument, withSma30Volume, volumeSubplot);
@@ -56,7 +57,7 @@ public class PriceVolumeChartController extends ChartController {
 		CombinedDomainXYPlot combinedPlot = new CombinedDomainXYPlot();
 		combinedPlot.add(candleStickSubplot, 4);			//Price Plot takes 4 vertical size units.
 		combinedPlot.add(volumeSubplot, 1);					//Volume Plot takes 1 vertical size unit.
-		combinedPlot.setDomainAxis(timeAxis);
+		combinedPlot.setDomainAxis(dateAxis);
 		
 		//Build chart based on combined Plot.
 		chart = new JFreeChart(instrument.getName(), JFreeChart.DEFAULT_TITLE_FONT, combinedPlot, true);
