@@ -43,9 +43,7 @@ public class PriceVolumeChartController extends ChartController {
 		
 		Instrument instrument = this.getInstrumentWithQuotations(instrumentId);
 		JFreeChart chart;
-		DateAxis dateAxis = new DateAxis();	//The shared time axis of all subplots.
-		
-		dateAxis.setTimeline(SegmentedTimeline.newMondayThroughFridayTimeline());
+		DateAxis dateAxis = this.getDateAxis(instrument);	//The shared time axis of all subplots.
         
         XYPlot candleStickSubplot = this.getCandlestickPlot(instrument, dateAxis);
 		XYPlot volumeSubplot = this.getVolumePlot(instrument, dateAxis);

@@ -2,10 +2,13 @@ package backend.controller.chart;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.ValueMarker;
@@ -229,5 +232,26 @@ public abstract class ChartController {
 			throw new NoQuotationsExistException();
 		
 		return instrument;
+	}
+	
+	
+	/**
+	 * Gets the DateAxis for the given Instrument.
+	 * 
+	 * @param instrument The Instrument.
+	 * @return The DateAxis.
+	 */
+	protected DateAxis getDateAxis(final Instrument instrument) {
+		DateAxis dateAxis = new DateAxis();
+		SegmentedTimeline timeline = SegmentedTimeline.newMondayThroughFridayTimeline();
+		
+		//Just remove Good Friday from the Timeline for testing purpose.
+		Calendar calendar = new GregorianCalendar();
+		calendar.set(2023, 3, 7);
+		timeline.addException(calendar.getTime());
+		
+		dateAxis.setTimeline(timeline);		
+		
+		return dateAxis;
 	}
 }
