@@ -8,7 +8,6 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.StandardChartTheme;
 import org.jfree.chart.annotations.XYTextAnnotation;
 import org.jfree.chart.axis.DateAxis;
-import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.CombinedDomainXYPlot;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.xy.OHLCDataset;
@@ -34,11 +33,11 @@ public class PocketPivotChartController extends ChartController {
 	public JFreeChart getPocketPivotsChart(final Integer instrumentId) throws NoQuotationsExistException, Exception {
 		Instrument instrument = this.getInstrumentWithQuotations(instrumentId);
 		JFreeChart chart;
-		ValueAxis timeAxis = new DateAxis();	//The shared time axis of all subplots.
+		DateAxis dateAxis = this.getDateAxis(instrument);	//The shared time axis of all subplots.
         ChartTheme currentTheme = new StandardChartTheme("JFree");
         
-        XYPlot candleStickSubplot = this.getCandlestickPlot(instrument, timeAxis);
-		XYPlot volumeSubplot = this.getVolumePlot(instrument, timeAxis);
+        XYPlot candleStickSubplot = this.getCandlestickPlot(instrument, dateAxis);
+		XYPlot volumeSubplot = this.getVolumePlot(instrument, dateAxis);
 		
 		this.addAnnotationsToCandlestickPlot(candleStickSubplot, instrument);
 		
@@ -46,7 +45,7 @@ public class PocketPivotChartController extends ChartController {
 		CombinedDomainXYPlot combinedPlot = new CombinedDomainXYPlot();
 		combinedPlot.add(candleStickSubplot, 4);			//Price Plot takes 4 vertical size units.
 		combinedPlot.add(volumeSubplot, 1);					//Volume Plot takes 1 vertical size unit.
-		combinedPlot.setDomainAxis(timeAxis);
+		combinedPlot.setDomainAxis(dateAxis);
 		
 		//Build chart based on combined Plot.
 		chart = new JFreeChart(instrument.getName(), JFreeChart.DEFAULT_TITLE_FONT, combinedPlot, true);

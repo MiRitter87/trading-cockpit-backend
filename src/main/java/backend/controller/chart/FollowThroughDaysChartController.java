@@ -47,12 +47,12 @@ public class FollowThroughDaysChartController extends ChartController {
 	public JFreeChart getFollowThroughDaysChart(final Integer instrumentId) throws NoQuotationsExistException, Exception {
 		Instrument instrument = this.getInstrumentWithQuotations(instrumentId);
 		JFreeChart chart;
-		ValueAxis timeAxis = new DateAxis();	//The shared time axis of all subplots.
+		DateAxis dateAxis = this.getDateAxis(instrument);	//The shared time axis of all subplots.
         ChartTheme currentTheme = new StandardChartTheme("JFree");
         
-		XYPlot candleStickSubplot = this.getCandlestickPlot(instrument, timeAxis);
-		XYPlot volumeSubplot = this.getVolumePlot(instrument, timeAxis);
-		XYPlot failedFTDSubplot = this.getFailedFTDPlot(instrument, timeAxis);
+		XYPlot candleStickSubplot = this.getCandlestickPlot(instrument, dateAxis);
+		XYPlot volumeSubplot = this.getVolumePlot(instrument, dateAxis);
+		XYPlot failedFTDSubplot = this.getFailedFTDPlot(instrument, dateAxis);
 		
 		this.addAnnotationsToCandlestickPlot(candleStickSubplot, instrument);
 		
@@ -61,7 +61,7 @@ public class FollowThroughDaysChartController extends ChartController {
 		combinedPlot.add(failedFTDSubplot, 1);				//Failed FTD Plot takes 1 vertical size unit.
 		combinedPlot.add(candleStickSubplot, 4);			//Price Plot takes 4 vertical size units.
 		combinedPlot.add(volumeSubplot, 1);					//Volume Plot takes 1 vertical size unit.
-		combinedPlot.setDomainAxis(timeAxis);
+		combinedPlot.setDomainAxis(dateAxis);
 		
 		//Build chart based on combined Plot.
 		chart = new JFreeChart(instrument.getName(), JFreeChart.DEFAULT_TITLE_FONT, combinedPlot, true);

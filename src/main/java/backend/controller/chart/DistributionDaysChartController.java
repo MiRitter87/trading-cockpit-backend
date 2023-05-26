@@ -40,12 +40,12 @@ public class DistributionDaysChartController extends ChartController {
 	public JFreeChart getDistributionDaysChart(final Integer instrumentId) throws NoQuotationsExistException, Exception {
 		Instrument instrument = this.getInstrumentWithQuotations(instrumentId);
 		JFreeChart chart;
-		ValueAxis timeAxis = new DateAxis();	//The shared time axis of all subplots.
+		DateAxis dateAxis = this.getDateAxis(instrument);	//The shared time axis of all subplots.
         ChartTheme currentTheme = new StandardChartTheme("JFree");
         
-		XYPlot candleStickSubplot = this.getCandlestickPlot(instrument, timeAxis);
-		XYPlot volumeSubplot = this.getVolumePlot(instrument, timeAxis);
-		XYPlot distributionDaySumSubplot = this.getDistributionDaySumPlot(instrument, timeAxis);
+		XYPlot candleStickSubplot = this.getCandlestickPlot(instrument, dateAxis);
+		XYPlot volumeSubplot = this.getVolumePlot(instrument, dateAxis);
+		XYPlot distributionDaySumSubplot = this.getDistributionDaySumPlot(instrument, dateAxis);
 		
 		this.addAnnotationsToCandlestickPlot(candleStickSubplot, instrument);
 		
@@ -54,7 +54,7 @@ public class DistributionDaysChartController extends ChartController {
 		combinedPlot.add(distributionDaySumSubplot, 1);		//Distribution Day Sum Plot takes 1 vertical size unit.
 		combinedPlot.add(candleStickSubplot, 4);			//Price Plot takes 4 vertical size units.
 		combinedPlot.add(volumeSubplot, 1);					//Volume Plot takes 1 vertical size unit.
-		combinedPlot.setDomainAxis(timeAxis);
+		combinedPlot.setDomainAxis(dateAxis);
 		
 		//Build chart based on combined Plot.
 		chart = new JFreeChart(instrument.getName(), JFreeChart.DEFAULT_TITLE_FONT, combinedPlot, true);
