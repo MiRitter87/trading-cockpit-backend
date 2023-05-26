@@ -2,9 +2,11 @@ package backend.controller.chart;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.util.Calendar;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -30,6 +32,7 @@ import backend.dao.list.ListDAO;
 import backend.dao.quotation.QuotationDAO;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
+import backend.model.instrument.QuotationArray;
 
 /**
  * Provides methods that are collectively used for chart generation.
@@ -244,14 +247,47 @@ public abstract class ChartController {
 	protected DateAxis getDateAxis(final Instrument instrument) {
 		DateAxis dateAxis = new DateAxis();
 		SegmentedTimeline timeline = SegmentedTimeline.newMondayThroughFridayTimeline();
+		List<Date> exclusionDates = this.getTimelineExclusionDates(instrument);
 		
-		//Just remove Good Friday from the Timeline for testing purpose.
-		Calendar calendar = new GregorianCalendar();
-		calendar.set(2023, 3, 7);
-		timeline.addException(calendar.getTime());
+		timeline.setAdjustForDaylightSaving(true);
+		
+		for(Date exclusionDate: exclusionDates)
+			timeline.addException(exclusionDate);
 		
 		dateAxis.setTimeline(timeline);		
 		
 		return dateAxis;
+	}
+	
+	
+	/**
+	 * Determines all weekdays on which no trading took place.
+	 * 
+	 * @param instrument The Instrument.
+	 * @return A list of dates.
+	 */
+	protected List<Date> getTimelineExclusionDates(final Instrument instrument) {
+		List<Date> exclusionDates = new ArrayList<>();
+		QuotationArray quotations = new QuotationArray();		
+		Date oldestDate, newestDate;
+		LocalDate startDate, endDate;
+		
+		quotations.setQuotations(instrument.getQuotations());
+		quotations.sortQuotationsByDate();
+		
+		oldestDate = quotations.getQuotations().get(quotations.getQuotations().size() - 1).getDate();
+		newestDate = quotations.getQuotations().get(0).getDate();
+		startDate = oldestDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		endDate = newestDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		
+		for(LocalDate currentDate = startDate; currentDate.isBefore(endDate); currentDate = currentDate.plusDays(1)) {
+		    if(currentDate.getDayOfWeek() == DayOfWeek.SATURDAY || currentDate.getDayOfWeek() == DayOfWeek.SUNDAY)
+		    	continue;
+		    
+		    if(!quotations.isQuotationOfDateExisting(Date.from(currentDate.atStartOfDay(ZoneId.systemDefault()).toInstant())))
+		    	exclusionDates.add(Date.from(currentDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+		}
+		
+		return exclusionDates;
 	}
 }

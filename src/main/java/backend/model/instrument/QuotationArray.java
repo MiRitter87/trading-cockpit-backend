@@ -95,6 +95,31 @@ public class QuotationArray {
 	
 	
 	/**
+	 * Checks if a Quotation with the given date exists.
+	 * Intraday attributes of the date (hours, minutes, ...) are not taken into account for lookup of matching Quotation.
+	 * 
+	 * @param date The date.
+	 * @return true, if Quotation exists; false if not.
+	 */
+	public boolean isQuotationOfDateExisting(final Date date) {
+		Quotation quotation;
+		Date quotationDate, inputDate;
+		
+		inputDate = DateTools.getDateWithoutIntradayAttributes(date);
+		
+		for(int i = 0; i < this.quotations.size(); i++) {
+			quotation = this.quotations.get(i);
+			quotationDate = DateTools.getDateWithoutIntradayAttributes(quotation.getDate());
+			
+			if(inputDate.getTime() == quotationDate.getTime())
+				return true;
+		}
+		
+		return false;
+	}
+	
+	
+	/**
 	 * Sorts all quotations by date.
 	 */
 	public void sortQuotationsByDate() {
