@@ -125,4 +125,12 @@ public class QuotationArray {
 	public void sortQuotationsByDate() {
 		Collections.sort(this.quotations, new QuotationDateComparator());
 	}
+	
+	
+	/**
+	 * Sorts all quotations by the symbol of their Instrument.
+	 */
+	public void sortQuotationsBySymbol() {
+		Collections.sort(this.quotations, new QuotationSymbolComparator());
+	}
 }

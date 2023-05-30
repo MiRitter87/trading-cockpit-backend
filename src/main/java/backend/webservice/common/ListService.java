@@ -24,7 +24,7 @@ import backend.dao.quotation.QuotationDAO;
 import backend.dao.scan.ScanDAO;
 import backend.model.ObjectInUseException;
 import backend.model.instrument.Instrument;
-import backend.model.instrument.Quotation;
+import backend.model.instrument.QuotationArray;
 import backend.model.list.List;
 import backend.model.list.ListArray;
 import backend.model.list.ListWS;
@@ -264,14 +264,16 @@ public class ListService {
 		ExcelExportController excelExportController = new ExcelExportController();
 		Workbook workbook;
 		StreamingOutput streamingOutput;
+		QuotationArray quotationsOfList = new QuotationArray();
 		
 		try {
 			//Get the List with the given ID and get the most recent Quotation of each Instrument.
 			list = listDAO.getList(id);
-			java.util.List<Quotation> quotationsOfList = quotationDAO.getRecentQuotationsForList(list);
+			quotationsOfList.setQuotations(quotationDAO.getRecentQuotationsForList(list));
+			quotationsOfList.sortQuotationsBySymbol();
 			
 			//Generate the Excel workbook with price data.
-			workbook = excelExportController.getPriceDataOfQuotations(quotationsOfList);
+			workbook = excelExportController.getPriceDataOfQuotations(quotationsOfList.getQuotations());
 			
 			streamingOutput = new StreamingOutput() {
 				@Override
