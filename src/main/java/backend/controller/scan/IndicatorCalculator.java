@@ -150,7 +150,7 @@ public class IndicatorCalculator {
 		}
 		
 		//Build the average.
-		average = sum.divide(BigDecimal.valueOf(days), 2, RoundingMode.HALF_UP);
+		average = sum.divide(BigDecimal.valueOf(days), 3, RoundingMode.HALF_UP);
 		
 		return average.floatValue();
 	}
@@ -196,9 +196,9 @@ public class IndicatorCalculator {
 			previousEma = currentEma;
 		}
 		
-		//Round result to two decimal places.
+		//Round result to three decimal places.
 		roundedEma = new BigDecimal(currentEma);
-		roundedEma = roundedEma.setScale(2, RoundingMode.HALF_UP);
+		roundedEma = roundedEma.setScale(3, RoundingMode.HALF_UP);
 		
 		return roundedEma.floatValue();
 	}

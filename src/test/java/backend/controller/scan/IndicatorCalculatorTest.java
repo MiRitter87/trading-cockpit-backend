@@ -283,7 +283,7 @@ public class IndicatorCalculatorTest {
 	 */
 	public void testGetSimpleMovingAverage50Days() {
 		QuotationArray sortedQuotations = new QuotationArray();
-		float actualSma50, expectedSma50 = (float) 1.42;
+		float actualSma50, expectedSma50 = (float) 1.416;
 		
 		sortedQuotations.setQuotations(this.dmlStock.getQuotationsSortedByDate());
 		actualSma50 = this.indicatorCalculator.getSimpleMovingAverage(50, sortedQuotations.getQuotations().get(0), sortedQuotations);
@@ -298,7 +298,7 @@ public class IndicatorCalculatorTest {
 	 */
 	public void testGetSimpleMovingAverage50DaysHistorical() {
 		QuotationArray sortedQuotations = new QuotationArray();
-		float actualSma50, expectedSma50 = (float) 1.41;
+		float actualSma50, expectedSma50 = (float) 1.414;
 		
 		sortedQuotations.setQuotations(this.dmlStock.getQuotationsSortedByDate());
 		actualSma50 = this.indicatorCalculator.getSimpleMovingAverage(50, sortedQuotations.getQuotations().get(2), sortedQuotations);
@@ -313,7 +313,7 @@ public class IndicatorCalculatorTest {
 	 */
 	public void testGetSimpleMovingAverage150Days() {
 		QuotationArray sortedQuotations = new QuotationArray();
-		float actualSma150, expectedSma150 = (float) 1.67;
+		float actualSma150, expectedSma150 = (float) 1.673;
 		
 		sortedQuotations.setQuotations(this.dmlStock.getQuotationsSortedByDate());
 		actualSma150 = this.indicatorCalculator.getSimpleMovingAverage(150, sortedQuotations.getQuotations().get(0), sortedQuotations);
@@ -328,7 +328,7 @@ public class IndicatorCalculatorTest {
 	 */
 	public void testGetSimpleMovingAverage200Days() {
 		QuotationArray sortedQuotations = new QuotationArray();
-		float actualSma200, expectedSma200 = (float) 1.79;
+		float actualSma200, expectedSma200 = (float) 1.788;
 		
 		sortedQuotations.setQuotations(this.dmlStock.getQuotationsSortedByDate());
 		actualSma200 = this.indicatorCalculator.getSimpleMovingAverage(200, sortedQuotations.getQuotations().get(0), sortedQuotations);
@@ -343,7 +343,7 @@ public class IndicatorCalculatorTest {
 	 */
 	public void testGetExponentialMovingAverage21Days() {
 		QuotationArray sortedQuotations = new QuotationArray();
-		float actualEma21, expectedEma21 = (float) 1.39;
+		float actualEma21, expectedEma21 = (float) 1.385;
 		
 		sortedQuotations.setQuotations(this.dmlStock.getQuotationsSortedByDate());
 		actualEma21 = this.indicatorCalculator.getExponentialMovingAverage(21, sortedQuotations.getQuotations().get(0), sortedQuotations);
@@ -403,7 +403,7 @@ public class IndicatorCalculatorTest {
 	 */
 	public void testGetBollingerBandWidth() {
 		QuotationArray sortedQuotations = new QuotationArray();
-		float actualBollingerBandWidth, expectedBollingerBandWidth = (float) 24.7;
+		float actualBollingerBandWidth, expectedBollingerBandWidth = (float) 24.75;
 		
 		sortedQuotations.setQuotations(this.dmlStock.getQuotationsSortedByDate());
 		actualBollingerBandWidth = this.indicatorCalculator.getBollingerBandWidth(10, 2, sortedQuotations.getQuotations().get(0), sortedQuotations);
@@ -516,7 +516,7 @@ public class IndicatorCalculatorTest {
 	 */
 	public void testGetLiquidityForDays() {
 		QuotationArray sortedQuotations = new QuotationArray();
-		float expectedLiquidity = (float) 2036934, actualLiquidity;
+		float expectedLiquidity = (float) 2035425.1, actualLiquidity;
 		
 		sortedQuotations.setQuotations(this.dmlStock.getQuotationsSortedByDate());
 		actualLiquidity = this.indicatorCalculator.getLiquidityForDays(20, sortedQuotations.getQuotations().get(0), sortedQuotations);
