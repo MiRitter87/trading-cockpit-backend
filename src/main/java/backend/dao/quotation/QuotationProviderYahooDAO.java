@@ -50,8 +50,9 @@ public class QuotationProviderYahooDAO extends AbstractQuotationProviderDAO impl
 	
 	/**
 	 * URL to quote API of Yahoo finance: Current quotation.
+	 * The quote-API is used to retrieve real-time data.
 	 */
-	private static final String BASE_URL_CURRENT_QUOTATION = "https://query1.finance.yahoo.com/v7/finance/quote?symbols=";
+	private static final String BASE_URL_CURRENT_QUOTATION_QUOTE = "https://query1.finance.yahoo.com/v7/finance/quote?symbols=";
 	
 	/**
 	 * The HTTP client used for data queries.
@@ -85,7 +86,7 @@ public class QuotationProviderYahooDAO extends AbstractQuotationProviderDAO impl
 	@Override
 	public Quotation getCurrentQuotation(final Instrument instrument) throws Exception {
 		String jsonQuotation = this.getCurrentQuotationJSON(instrument.getSymbol(), instrument.getStockExchange());
-		Quotation quotation = this.convertJSONToQuotation(jsonQuotation);
+		Quotation quotation = this.convertQuoteJSONToQuotation(jsonQuotation);
 		
 		return quotation;
 	}
@@ -211,7 +212,7 @@ public class QuotationProviderYahooDAO extends AbstractQuotationProviderDAO impl
 	 * @throws Exception Quotation data determination failed.
 	 */
 	protected String getCurrentQuotationJSON(final String symbol, final StockExchange stockExchange) throws Exception {
-		String queryUrl = this.getQueryUrlCurrentQuotation(symbol, stockExchange);
+		String queryUrl = this.getQueryUrlCurrentQuotationQuote(symbol, stockExchange);
 		String jsonResult = this.getCurrentQuotationJSON(queryUrl, this.httpClient);
 		
 		return jsonResult;
@@ -221,11 +222,15 @@ public class QuotationProviderYahooDAO extends AbstractQuotationProviderDAO impl
 	/**
 	 * Converts the quotation data from Yahoo provided as JSON String to a Quotation object.
 	 * 
+	 * The method converts the JSON provided by the quote API of Yahoo.
+	 * Since the quote API has been discontinued, this method is marked as deprecated.
+	 * 
 	 * @param quotationDataAsJSON The quotation data as JSON String.
 	 * @return The Quotation.
 	 * @throws Exception Quotation conversion failed.
 	 */
-	protected Quotation convertJSONToQuotation(final String quotationDataAsJSON) throws Exception {
+	@Deprecated
+	protected Quotation convertQuoteJSONToQuotation(final String quotationDataAsJSON) throws Exception {
 		Quotation quotation = new Quotation();
 		ObjectMapper mapper = new ObjectMapper();
 		Map<?, ?> map;
@@ -276,12 +281,15 @@ public class QuotationProviderYahooDAO extends AbstractQuotationProviderDAO impl
 	/**
 	 * Gets the query URL for the current quotation of the given symbol and stock exchange.
 	 * 
+	 * The quote API is used. This API is no longer available, therefore it is marked as deprecated.
+	 * 
 	 * @param symbol The symbol to be queried.
 	 * @param stockExchange The stock exchange where the symbol is listed.
 	 * @return The query URL.
 	 */
-	protected String getQueryUrlCurrentQuotation(final String symbol, final StockExchange stockExchange) {
-		StringBuilder urlBuilder = new StringBuilder(BASE_URL_CURRENT_QUOTATION);
+	@Deprecated
+	protected String getQueryUrlCurrentQuotationQuote(final String symbol, final StockExchange stockExchange) {
+		StringBuilder urlBuilder = new StringBuilder(BASE_URL_CURRENT_QUOTATION_QUOTE);
 		
 		urlBuilder.append(symbol);
 		urlBuilder.append(this.getExchangeForQueryURL(stockExchange));

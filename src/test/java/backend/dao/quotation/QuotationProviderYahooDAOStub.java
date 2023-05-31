@@ -51,6 +51,6 @@ public class QuotationProviderYahooDAOStub extends QuotationProviderYahooDAO {
 		
 		String currentQuotationJSON = Files.readString(Paths.get(jsonPath));
 		
-		return this.convertJSONToQuotation(currentQuotationJSON);
+		return this.convertQuoteJSONToQuotation(currentQuotationJSON);
 	}
 }
