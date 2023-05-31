@@ -152,7 +152,7 @@ public class QuotationProviderYahooDAOTest {
 	private Quotation getDenisonMinesQuotation() {
 		Quotation quotation = new Quotation();
 		
-		quotation.setClose(BigDecimal.valueOf(1.88));
+		quotation.setClose(BigDecimal.valueOf(1.39));
 		quotation.setCurrency(Currency.CAD);
 		
 		return quotation;
@@ -167,7 +167,7 @@ public class QuotationProviderYahooDAOTest {
 	private Quotation getRioTintoQuotation() {
 		Quotation quotation = new Quotation();
 		
-		quotation.setClose(BigDecimal.valueOf(5743));
+		quotation.setClose(BigDecimal.valueOf(4821.5));
 		quotation.setCurrency(Currency.GBP);
 		
 		return quotation;

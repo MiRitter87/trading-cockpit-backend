@@ -90,7 +90,7 @@ public class QuotationProviderYahooDAO extends AbstractQuotationProviderDAO impl
 	@Override
 	public Quotation getCurrentQuotation(final Instrument instrument) throws Exception {
 		String jsonQuotation = this.getCurrentQuotationJSON(instrument.getSymbol(), instrument.getStockExchange());
-		Quotation quotation = this.convertQuoteJSONToQuotation(jsonQuotation);
+		Quotation quotation = this.convertChartJSONToQuotation(jsonQuotation);
 		
 		return quotation;
 	}
@@ -216,7 +216,7 @@ public class QuotationProviderYahooDAO extends AbstractQuotationProviderDAO impl
 	 * @throws Exception Quotation data determination failed.
 	 */
 	protected String getCurrentQuotationJSON(final String symbol, final StockExchange stockExchange) throws Exception {
-		String queryUrl = this.getQueryUrlCurrentQuotationQuote(symbol, stockExchange);
+		String queryUrl = this.getQueryUrlCurrentQuotationChart(symbol, stockExchange);
 		String jsonResult = this.getCurrentQuotationJSON(queryUrl, this.httpClient);
 		
 		return jsonResult;
@@ -250,6 +250,43 @@ public class QuotationProviderYahooDAO extends AbstractQuotationProviderDAO impl
 			
 			quotation.setCurrency(this.getCurrency((String) resultAttributes.get("currency")));
 			quotation.setClose(this.getPrice((double) resultAttributes.get("regularMarketPrice"), quotation.getCurrency()));
+		} catch (JsonMappingException e) {
+			throw new Exception(e);
+		} catch (JsonProcessingException e) {
+			throw new Exception(e);
+		}
+		
+		return quotation;
+	}
+	
+	
+	/**
+	 * Converts the quotation data from Yahoo provided as JSON String to a Quotation object.
+	 * 
+	 * The method converts the JSON provided by the chart API of Yahoo.
+	 * 
+	 * @param quotationDataAsJSON The quotation data as JSON String.
+	 * @return The Quotation.
+	 * @throws Exception Quotation conversion failed.
+	 */
+	protected Quotation convertChartJSONToQuotation(final String quotationDataAsJSON) throws Exception {
+		Quotation quotation = new Quotation();
+		ObjectMapper mapper = new ObjectMapper();
+		Map<?, ?> map;
+		LinkedHashMap<?, ?> quoteResponse;
+		ArrayList<?> result;
+		LinkedHashMap<?, ?> resultAttributes;
+		LinkedHashMap<?, ?> meta;
+		
+		try {
+			map = mapper.readValue(quotationDataAsJSON, Map.class);
+			quoteResponse = (LinkedHashMap<?, ?>) map.get("chart");
+			result = (ArrayList<?>) quoteResponse.get("result");
+			resultAttributes = (LinkedHashMap<?, ?>) result.get(0);
+			meta = (LinkedHashMap<?, ?>) resultAttributes.get("meta");
+			
+			quotation.setCurrency(this.getCurrency((String) meta.get("currency")));
+			quotation.setClose(this.getPrice((double) meta.get("regularMarketPrice"), quotation.getCurrency()));
 		} catch (JsonMappingException e) {
 			throw new Exception(e);
 		} catch (JsonProcessingException e) {

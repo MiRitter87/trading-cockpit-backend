@@ -40,17 +40,45 @@ public class QuotationProviderYahooDAOStub extends QuotationProviderYahooDAO {
 	
 	@Override
 	public Quotation getCurrentQuotation(final Instrument instrument) throws Exception {
-		String jsonPath = "";
-		
-		if(instrument.getSymbol().equals("DML") && instrument.getStockExchange().equals(StockExchange.TSX))
-			jsonPath = "src/test/resources/Yahoo/yahooTSEQuoteDML.json";
-		else if(instrument.getSymbol().equals("RIO") && instrument.getStockExchange().equals(StockExchange.LSE))
-			jsonPath = "src/test/resources/Yahoo/yahooLSEQuoteRIO.json";
-		else
-			return null;
-		
+		String jsonPath = this.getJsonPathChart(instrument);
 		String currentQuotationJSON = Files.readString(Paths.get(jsonPath));
 		
-		return this.convertQuoteJSONToQuotation(currentQuotationJSON);
+		return this.convertChartJSONToQuotation(currentQuotationJSON);
+	}
+	
+	
+	/**
+	 * Gets the path to the JSON file containing data of the quote API.
+	 * 
+	 * These files are currently not used because Yahoo has discontinued the quote API.
+	 * Instead the chart API is used now.
+	 * 
+	 * @param instrument The Instrument.
+	 * @return The path.
+	 */
+	@SuppressWarnings("unused")
+	private String getJsonPathQuote(final Instrument instrument) {
+		if(instrument.getSymbol().equals("DML") && instrument.getStockExchange().equals(StockExchange.TSX))
+			return "src/test/resources/Yahoo/yahooTSEQuoteDML.json";
+		else if(instrument.getSymbol().equals("RIO") && instrument.getStockExchange().equals(StockExchange.LSE))
+			return "src/test/resources/Yahoo/yahooLSEQuoteRIO.json";
+		else
+			return null;
+	}
+	
+	
+	/**
+	 * Gets the path to the JSON file containing data of the chart API.
+	 * 
+	 * @param instrument The Instrument.
+	 * @return The path.
+	 */
+	private String getJsonPathChart(final Instrument instrument) {
+		if(instrument.getSymbol().equals("DML") && instrument.getStockExchange().equals(StockExchange.TSX))
+			return "src/test/resources/Yahoo/yahooTSEChartDML.json";
+		else if(instrument.getSymbol().equals("RIO") && instrument.getStockExchange().equals(StockExchange.LSE))
+			return "src/test/resources/Yahoo/yahooLSEChartRIO.json";
+		else
+			return null;
 	}
 }
