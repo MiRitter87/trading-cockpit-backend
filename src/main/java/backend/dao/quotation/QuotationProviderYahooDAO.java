@@ -50,9 +50,13 @@ public class QuotationProviderYahooDAO extends AbstractQuotationProviderDAO impl
 	
 	/**
 	 * URL to quote API of Yahoo finance: Current quotation.
-	 * The quote-API is used to retrieve real-time data.
 	 */
 	private static final String BASE_URL_CURRENT_QUOTATION_QUOTE = "https://query1.finance.yahoo.com/v7/finance/quote?symbols=";
+	
+	/**
+	 * URL to chart API of Yahoo finance: Current quotation.
+	 */
+	private static final String BASE_URL_CURRENT_QUOTATION_CHART = "https://query1.finance.yahoo.com/v8/finance/chart/";
 	
 	/**
 	 * The HTTP client used for data queries.
@@ -290,6 +294,25 @@ public class QuotationProviderYahooDAO extends AbstractQuotationProviderDAO impl
 	@Deprecated
 	protected String getQueryUrlCurrentQuotationQuote(final String symbol, final StockExchange stockExchange) {
 		StringBuilder urlBuilder = new StringBuilder(BASE_URL_CURRENT_QUOTATION_QUOTE);
+		
+		urlBuilder.append(symbol);
+		urlBuilder.append(this.getExchangeForQueryURL(stockExchange));
+		
+		return urlBuilder.toString();
+	}
+	
+	
+	/**
+	 * Gets the query URL for the current quotation of the given symbol and stock exchange.
+	 *
+	 * The chart API is used. This API provides the real-time quote like the now deprecated quote API.
+	 * 
+	 * @param symbol The symbol to be queried.
+	 * @param stockExchange The stock exchange where the symbol is listed.
+	 * @return The query URL.
+	 */
+	protected String getQueryUrlCurrentQuotationChart(final String symbol, final StockExchange stockExchange) {
+		StringBuilder urlBuilder = new StringBuilder(BASE_URL_CURRENT_QUOTATION_CHART);
 		
 		urlBuilder.append(symbol);
 		urlBuilder.append(this.getExchangeForQueryURL(stockExchange));

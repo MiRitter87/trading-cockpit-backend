@@ -429,6 +429,81 @@ public class QuotationProviderYahooDAOTest {
 	
 	@Test
 	/**
+	 * Tests the retrieval of the query URL for the current quotation of a stock listed at the TSX.
+	 */
+	public void testGetQueryUrlCurrentQuotationChartTSX() {
+		final String symbol = "DML";
+		final StockExchange stockExchange = StockExchange.TSX;
+		final String expectedURL = "https://query1.finance.yahoo.com/v8/finance/chart/DML.TO";
+		String actualURL = "";
+		
+		actualURL = quotationProviderYahooDAO.getQueryUrlCurrentQuotationChart(symbol, stockExchange);
+		assertEquals(expectedURL, actualURL);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of the query URL for the current quotation of a stock listed at the TSXV.
+	 */
+	public void testGetQueryUrlCurrentQuotationChartTSXV() {
+		final String symbol = "RCK";
+		final StockExchange stockExchange = StockExchange.TSXV;
+		final String expectedURL = "https://query1.finance.yahoo.com/v8/finance/chart/RCK.V";
+		String actualURL = "";
+		
+		actualURL = quotationProviderYahooDAO.getQueryUrlCurrentQuotationChart(symbol, stockExchange);
+		assertEquals(expectedURL, actualURL);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of the query URL for the current quotation of a stock listed at the CSE.
+	 */
+	public void testGetQueryUrlCurrentQuotationChartCSE() {
+		final String symbol = "AGN";
+		final StockExchange stockExchange = StockExchange.CSE;
+		final String expectedURL = "https://query1.finance.yahoo.com/v8/finance/chart/AGN.CN";
+		String actualURL = "";
+		
+		actualURL = quotationProviderYahooDAO.getQueryUrlCurrentQuotationChart(symbol, stockExchange);
+		assertEquals(expectedURL, actualURL);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of the query URL for the current quotation of a stock listed at the NYSE.
+	 */
+	public void testGetQueryUrlCurrentQuotationChartNYSE() {
+		final String symbol = "F";
+		final StockExchange stockExchange = StockExchange.NYSE;
+		final String expectedURL = "https://query1.finance.yahoo.com/v8/finance/chart/F";
+		String actualURL = "";
+		
+		actualURL = quotationProviderYahooDAO.getQueryUrlCurrentQuotationChart(symbol, stockExchange);
+		assertEquals(expectedURL, actualURL);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of the query URL for the current quotation of a stock listed at the LSE.
+	 */
+	public void testGetQueryUrlCurrentQuotationChartLSE() {
+		final String symbol = "RIO";
+		final StockExchange stockExchange = StockExchange.LSE;
+		final String expectedURL = "https://query1.finance.yahoo.com/v8/finance/chart/RIO.L";
+		String actualURL = "";
+		
+		actualURL = quotationProviderYahooDAO.getQueryUrlCurrentQuotationChart(symbol, stockExchange);
+		assertEquals(expectedURL, actualURL);
+	}
+	
+	
+	@Test
+	/**
 	 * Tests getting current Quotation data from a stock listed at the TSE.
 	 */
 	public void testGetCurrentQuotationTSE() {
