@@ -22,8 +22,16 @@ public class QuotationProviderInvestingDAOStub extends QuotationProviderInvestin
 		HtmlPage htmlPage;
 		Quotation quotation;
 		
-		if(instrument.getSymbol().equals("AMZN") && instrument.getStockExchange().equals(StockExchange.NYSE))
-			htmlPath = htmlPath + "\\src\\test\\resources\\investingNYSEQuoteAMZN.htm";
+		if(instrument.getSymbol().equals("AMZN") && instrument.getStockExchange().equals(StockExchange.NYSE) && 
+				!instrument.getCompanyPathInvestingCom().equals("fallback")) {
+			
+			htmlPath = htmlPath + "\\src\\test\\resources\\Investing\\investingNYSEQuoteAMZN.htm";			
+		}
+		else if(instrument.getSymbol().equals("AMZN") && instrument.getStockExchange().equals(StockExchange.NYSE) && 
+				instrument.getCompanyPathInvestingCom().equals("fallback")) {
+			
+			htmlPath = htmlPath + "\\src\\test\\resources\\Investing\\investingNYSEQuoteAMZNFallback.htm";
+		}
 		
 		try {
 			webClient.getOptions().setUseInsecureSSL(true);
