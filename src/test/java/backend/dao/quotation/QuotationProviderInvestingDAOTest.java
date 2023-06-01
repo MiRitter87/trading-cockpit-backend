@@ -116,6 +116,29 @@ public class QuotationProviderInvestingDAOTest {
 	
 	@Test
 	/**
+	 * Tests getting current Quotation data from a stock listed at the NYSE.
+	 * The fallback scenario is tested where the Investing server returns a different HTML document.
+	 */
+	public void testGetCurrentQuotationNYSEFallback() {
+		Quotation actualQuotation, expectedQuotation;
+		Instrument amazonInstrument = this.getAmazonInstrument();
+		
+		try {
+			amazonInstrument.setCompanyPathInvestingCom("fallback");	//Let the DAO stub use the fallback HTML document.
+			
+			actualQuotation = quotationProviderInvestingDAO.getCurrentQuotation(amazonInstrument);
+			expectedQuotation = this.getAmazonQuotation();
+			
+			assertTrue(expectedQuotation.getClose().compareTo(actualQuotation.getClose()) == 0);
+			assertEquals(expectedQuotation.getCurrency(), actualQuotation.getCurrency());
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	@Test
+	/**
 	 * Tests the retrieval of the query URL for the current quotation of a stock.
 	 */
 	public void testGetQueryUrlCurrentQuotationStock() {

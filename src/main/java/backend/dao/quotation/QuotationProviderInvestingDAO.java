@@ -84,23 +84,17 @@ public class QuotationProviderInvestingDAO extends AbstractQuotationProviderDAO 
 	 * @throws Exception Failed to extract Quotation data from given HTML page.
 	 */
 	protected Quotation getQuotationFromHtmlPage(final HtmlPage htmlPage, final Instrument instrument) throws Exception {
-		Quotation quotation = new Quotation();
-		String currentPrice = "";
+		Quotation quotation;
 		
-		final List<DomElement> spans = htmlPage.getElementsByTagName("span");
-		for (DomElement element : spans) {
-
-		    if (element.getAttribute("data-test").equals("instrument-price-last") && element.getAttribute("class").equals("text-2xl")) {
-		    	currentPrice = element.getFirstChild().asNormalizedText();
-		    	quotation.setCurrency(this.getCurrencyForStockExchange(instrument.getStockExchange()));
-		    }
-		}
+		quotation = this.getQuotationUsingSpans(htmlPage, instrument);
 		
-		if("".equals(currentPrice))
+		//Fallback scenario in case the HTML page is returned in a different format. This happens during subsequent calls of the URL.
+		if(quotation == null)
+			quotation = this.getQuotationUsingDivs(htmlPage, instrument);	
+		
+		if(quotation == null)
 			throw new Exception("The price could not be determined.");
-		
-		quotation.setClose(new BigDecimal(currentPrice));
-		
+				
 		return quotation;
 	}
 	
@@ -142,5 +136,55 @@ public class QuotationProviderInvestingDAO extends AbstractQuotationProviderDAO 
 			default:
 				return "";
 		}
+	}
+	
+	
+	/**
+	 * Extract Quotation data from HtmlPage using 'span' element.
+	 * 
+	 * @param htmlPage The HTML page containing the Quotation information.
+	 * @param instrument The Instrument for which Quotation data are extracted.
+	 * @return The current Quotation.
+	 */
+	private Quotation getQuotationUsingSpans(final HtmlPage htmlPage, final Instrument instrument) {
+		Quotation quotation = null;
+		String currentPrice = "";
+		
+		final List<DomElement> spans = htmlPage.getElementsByTagName("span");
+		for (DomElement element : spans) {
+		    if (element.getAttribute("data-test").equals("instrument-price-last") && element.getAttribute("class").equals("text-2xl")) {
+		    	quotation = new Quotation();
+		    	quotation.setCurrency(this.getCurrencyForStockExchange(instrument.getStockExchange()));
+		    	currentPrice = element.getFirstChild().asNormalizedText();
+		    	quotation.setClose(new BigDecimal(currentPrice));
+		    }
+		}
+		
+		return quotation;
+	}
+	
+	
+	/**
+	 * Extract Quotation data from HtmlPage using 'div' element.
+	 * 
+	 * @param htmlPage The HTML page containing the Quotation information.
+	 * @param instrument The Instrument for which Quotation data are extracted.
+	 * @return The current Quotation.
+	 */
+	private Quotation getQuotationUsingDivs(final HtmlPage htmlPage, final Instrument instrument) {
+		Quotation quotation = null;
+		String currentPrice = "";
+		
+		final List<DomElement> divs = htmlPage.getElementsByTagName("div");
+		for (DomElement element : divs) {
+		    if (element.getAttribute("class").equals("text-5xl font-bold leading-9 md:text-[42px] md:leading-[60px] text-[#232526]")) {
+		    	quotation = new Quotation();
+		    	quotation.setCurrency(this.getCurrencyForStockExchange(instrument.getStockExchange()));
+		    	currentPrice = element.getFirstChild().asNormalizedText();
+		    	quotation.setClose(new BigDecimal(currentPrice));
+		    }
+		}
+		
+		return quotation;
 	}
 }
