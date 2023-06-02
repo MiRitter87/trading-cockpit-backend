@@ -65,20 +65,24 @@ The Trading Cockpit is based on the following technologies and frameworks
 ## Configuration
 The configuration file "tradingCockpitBackend.properties" has multiple properties that control the applications behavior.
 
-| Property   					|      Description      											|  Example |
-|-------------------------------|:-----------------------------------------------------------------:|---------:|
-| queryInterval.priceAlert 		|  Number of seconds between stock quote queries for the price alert| 30       |
-| queryInterval.scan			|  Number of seconds between stock quote queries for the scanner	| 5		   |
-| startTime.hour 				|  Application starts stock quote queries at this time 				| 15       |
-| startTime.minute 				|  Application starts stock quote queries at this time 				| 30       |
-| endTime.hour 					|  Application ends stock quote queries at this time 				| 22       |
-| endTime.minute 				|  Application ends stock quote queries at this time 				| 0        |
-| dataProvider.scan				|  Data provider for historical quotation data						| YAHOO	   |
-| dataProvider.priceAlert.nyse	|  Data provider for current quotations of exchange NYSE			| YAHOO	   |
-| dataProvider.priceAlert.tsx	|  Data provider for current quotations of exchange TSX				| YAHOO    |
-| dataProvider.priceAlert.tsxv	|  Data provider for current quotations of exchange TSX/V			| YAHOO	   |
-| dataProvider.priceAlert.cse	|  Data provider for current quotations of exchange CSE				| YAHOO    |
-| dataProvider.priceAlert.lse	|  Data provider for current quotaitons of exchange LSE				| CNBC	   |
+| Property   					|      Description      											|  Example 		|
+|-------------------------------|:-----------------------------------------------------------------:|--------------:|
+| queryInterval.priceAlert 		|  Number of seconds between stock quote queries for the price alert| 30       		|
+| queryInterval.scan			|  Number of seconds between stock quote queries for the scanner	| 5		   		|
+| startTime.hour 				|  Application starts stock quote queries at this time 				| 15       		|
+| startTime.minute 				|  Application starts stock quote queries at this time 				| 30       		|
+| endTime.hour 					|  Application ends stock quote queries at this time 				| 22       		|
+| endTime.minute 				|  Application ends stock quote queries at this time 				| 0        		|
+| dataProvider.scan				|  Data provider for historical quotation data						| YAHOO	   		|
+| dataProvider.priceAlert.nyse	|  Data provider for current quotations of exchange NYSE			| YAHOO	   		|
+| dataProvider.priceAlert.tsx	|  Data provider for current quotations of exchange TSX				| YAHOO    		|
+| dataProvider.priceAlert.tsxv	|  Data provider for current quotations of exchange TSX/V			| YAHOO	   		|
+| dataProvider.priceAlert.cse	|  Data provider for current quotations of exchange CSE				| YAHOO    		|
+| dataProvider.priceAlert.lse	|  Data provider for current quotations of exchange LSE				| CNBC	   		|
+| mail.smtp.server				|  The SMTP server that is used to send an E-Mail					| mail.gmx.net	|
+| mail.smtp.port				|  The Port of the SMTP server										| 587			|
+| mail.sender.username			|  The E-Mail address of the account from which the mails are sent	| max@gmx.de	|
+| mail.sender.password			|  The password of the account										| mypassword	|
 
 ## License
 
