@@ -46,6 +46,11 @@ public class MailController {
 	 */
 	private Session session;
 	
+	/**
+	 * The E-Mail address from which the message is sent.
+	 */
+	private String mailAdressFrom;
+	
 	
 	/**
 	 * Initializes the MailController.
@@ -55,23 +60,22 @@ public class MailController {
 	public MailController() throws Exception {
 		Properties properties = this.getProperties();
 		this.session = this.getSession(properties);
+		
+		this.mailAdressFrom = MainController.getInstance().getConfigurationProperty(PROPERTY_MAIL_SENDER_USERNAME);
 	}
 	
 	
 	/**
 	 * Sends an E-Mail.
 	 * 
-	 * @param mailAddressFrom The mail address of the sender.
 	 * @param mailAddressTo The mail address of the receiver.
 	 * @param subject The subject of the mail.
 	 * @param body The body text of the mail.
 	 */
-	public void sendMail(final String mailAddressFrom, final String mailAddressTo, 
-			final String subject, final String body) throws AddressException, MessagingException {
-		
+	public void sendMail(final String mailAddressTo, final String subject, final String body) throws AddressException, MessagingException {
 		Message message = new MimeMessage(this.session);
 		
-		message.setFrom(new InternetAddress(mailAddressFrom));
+		message.setFrom(new InternetAddress(this.mailAdressFrom));
 		message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(mailAddressTo));
 		message.setSubject(subject);
 	
