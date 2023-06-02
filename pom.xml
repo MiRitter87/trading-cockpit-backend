@@ -31,6 +31,7 @@
 		<opencsv.version>5.7.1</opencsv.version>
 		<jfreechart.version>1.5.3</jfreechart.version>
 		<htmlunit.version>2.70.0</htmlunit.version>
+		<angus.mail.version>2.0.2</angus.mail.version>
 	</properties>
 	
 	<dependencies>
@@ -162,11 +163,18 @@
 			<version>${jfreechart.version}</version>
 		</dependency>
 		
-		<!-- HTMLUnit is used to extract information from Websites-->
+		<!-- HTMLUnit is used to extract information from Websites. -->
 		<dependency>
 			<groupId>net.sourceforge.htmlunit</groupId>
 			<artifactId>htmlunit</artifactId>
 			<version>${htmlunit.version}</version>
+		</dependency>
+		
+		<!-- Angus Mail is used to send E-Mails. -->
+		<dependency>
+			<groupId>org.eclipse.angus</groupId>
+			<artifactId>angus-mail</artifactId>
+			<version>${angus.mail.version}</version>
 		</dependency>
 	</dependencies>
   
