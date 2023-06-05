@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.math.BigDecimal;
+import java.text.MessageFormat;
+import java.util.ResourceBundle;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,6 +23,11 @@ import backend.tools.test.ValidationMessageProvider;
  * @author Michael
  */
 public class PriceAlertTest {
+	/**
+	 * Access to localized application resources.
+	 */
+	private ResourceBundle resources = ResourceBundle.getBundle("backend");
+	
 	/**
 	 * The price alert under test.
 	 */
@@ -50,6 +57,7 @@ public class PriceAlertTest {
 		this.priceAlert.setAlertType(PriceAlertType.GREATER_OR_EQUAL);
 		this.priceAlert.setPrice(BigDecimal.valueOf(185.50));
 		this.priceAlert.setCurrency(Currency.USD);
+		this.priceAlert.setSendMail(false);
 	}
 	
 	
@@ -217,6 +225,53 @@ public class PriceAlertTest {
 		} 
 		catch (Exception expected) {
 			errorMessage = expected.getMessage();
+		}
+		
+		assertEquals(expectedErrorMessage, errorMessage);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests validation of a price alert if mail should be send but mail address is null.
+	 */
+	public void testMailAddressNullIfSendMailTrue() {
+		this.priceAlert.setSendMail(true);
+		this.priceAlert.setAlertMailAddress(null);
+		
+		String expectedErrorMessage = this.resources.getString("priceAlert.alertMailAddress.notNull.message");
+		String errorMessage = "";
+		
+		try {
+			this.priceAlert.validate();
+			fail("Validation should have failed because 'alertMailAddress' is null while 'sendMail' is true.");
+		} 
+		catch (Exception expected) {
+			errorMessage = expected.getLocalizedMessage();
+		}
+		
+		assertEquals(expectedErrorMessage, errorMessage);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests validation of a price alert if the mail address has the wrong length.
+	 */
+	public void testMailAddressWrongLength() {
+		this.priceAlert.setSendMail(true);
+		this.priceAlert.setAlertMailAddress("a@bc");
+		
+		String expectedErrorMessage = MessageFormat.format(this.resources.getString("priceAlert.alertMailAddress.size.message"),
+				this.priceAlert.getAlertMailAddress().length(), "5", "254");
+		String errorMessage = "";
+		
+		try {
+			this.priceAlert.validate();
+			fail("Validation should have failed because 'alertMailAddress' is too short.");
+		} 
+		catch (Exception expected) {
+			errorMessage = expected.getLocalizedMessage();
 		}
 		
 		assertEquals(expectedErrorMessage, errorMessage);

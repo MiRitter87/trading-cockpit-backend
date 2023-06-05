@@ -29,6 +29,7 @@ import org.hibernate.validator.HibernateValidator;
 import org.hibernate.validator.messageinterpolation.ExpressionLanguageFeatureLevel;
 
 import backend.model.Currency;
+import backend.model.LocalizedException;
 import backend.model.instrument.Instrument;
 
 /**
@@ -129,7 +130,7 @@ public class PriceAlert {
 	 * Default constructor.
 	 */
 	public PriceAlert() {
-		
+		this.setSendMail(false);
 	}
 
 
@@ -425,10 +426,12 @@ public class PriceAlert {
 	/**
 	 * Validates the price alert.
 	 * 
+	 * @throws LocalizedException A general exception containing a localized message.
 	 * @throws Exception In case a general validation error occurred.
 	 */
-	public void validate() throws Exception {
+	public void validate() throws LocalizedException, Exception {
 		this.validateAnnotations();
+		this.validateAdditionalCharacteristics();
 	}
 
 
@@ -447,6 +450,33 @@ public class PriceAlert {
 
 		for(ConstraintViolation<PriceAlert> violation:violations) {
 			throw new Exception(violation.getMessage());
+		}
+	}
+	
+	
+	/**
+	 * Validates additional characteristics of the PriceAlert besides annotations.
+	 * 
+	 * @throws LocalizedException A general exception containing a localized message.
+	 */
+	private void validateAdditionalCharacteristics() throws LocalizedException {
+		this.validateAlertMailAddress();
+	}
+	
+	
+	/**
+	 * Validates the alertMailAddress attribute.
+	 * 
+	 * @throws LocalizedException If validation failed.
+	 */
+	private void validateAlertMailAddress() throws LocalizedException {
+		if(this.sendMail == true && this.alertMailAddress == null)
+			throw new LocalizedException("priceAlert.alertMailAddress.notNull.message");
+		
+		if(this.sendMail == true && this.alertMailAddress != null && 
+				(this.alertMailAddress.length() < 5 || this.alertMailAddress.length() > 254)) {
+			
+			throw new LocalizedException("priceAlert.alertMailAddress.size.message", this.alertMailAddress.length(), "5", "254");
 		}
 	}
 }
