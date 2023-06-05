@@ -11,6 +11,7 @@ import backend.dao.ObjectUnchangedException;
 import backend.dao.instrument.InstrumentDAO;
 import backend.dao.priceAlert.PriceAlertDAO;
 import backend.dao.priceAlert.PriceAlertOrderAttribute;
+import backend.model.LocalizedException;
 import backend.model.priceAlert.ConfirmationStatus;
 import backend.model.priceAlert.PriceAlert;
 import backend.model.priceAlert.PriceAlertArray;
@@ -19,6 +20,7 @@ import backend.model.priceAlert.TriggerStatus;
 import backend.model.webservice.WebServiceMessage;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
+import backend.tools.WebServiceTools;
 
 /**
  * Common implementation of the price alert WebService that can be used by multiple service interfaces like SOAP or REST.
@@ -135,13 +137,10 @@ public class PriceAlertService {
 			return addPriceAlertResult;
 		}
 		
-		//Validate the given price alert.
-		try {
-			convertedPriceAlert.validate();
-		} catch (Exception validationException) {
-			addPriceAlertResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, validationException.getMessage()));
+		//Validation of the given PriceAlert.
+		this.validatePriceAlert(convertedPriceAlert, addPriceAlertResult);
+		if(WebServiceTools.resultContainsErrorMessage(addPriceAlertResult))
 			return addPriceAlertResult;
-		}
 		
 		//Insert price alert if validation is successful.
 		try {
@@ -214,13 +213,10 @@ public class PriceAlertService {
 			return updatePriceAlertResult;
 		}
 		
-		//Validation of the given price alert.
-		try {
-			convertedPriceAlert.validate();
-		} catch (Exception validationException) {
-			updatePriceAlertResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, validationException.getMessage()));
+		//Validation of the given PriceAlert.
+		this.validatePriceAlert(convertedPriceAlert, updatePriceAlertResult);
+		if(WebServiceTools.resultContainsErrorMessage(updatePriceAlertResult))
 			return updatePriceAlertResult;
-		}
 		
 		//Update price alert if validation is successful.
 		try {
@@ -262,11 +258,33 @@ public class PriceAlertService {
 		priceAlert.setConfirmationTime(priceAlertWS.getConfirmationTime());
 		priceAlert.setTriggerTime(priceAlertWS.getTriggerTime());
 		priceAlert.setLastStockQuoteTime(priceAlertWS.getLastStockQuoteTime());
+		priceAlert.setSendMail(priceAlertWS.isSendMail());
+		priceAlert.setAlertMailAddress(priceAlertWS.getAlertMailAddress());
+		priceAlert.setMailTransmissionTime(priceAlertWS.getMailTransmissionTime());
 		
 		//Convert Instrument ID to Instrument object.
 		if(priceAlertWS.getInstrumentId() != null)
 			priceAlert.setInstrument(this.instrumentDAO.getInstrument(priceAlertWS.getInstrumentId()));
 		
 		return priceAlert;
+	}
+	
+	
+	/**
+	 * Validates the given PriceAlert and adds potential error messages to the given WebServiceResult.
+	 * 
+	 * @param priceAlert The PriceAlert to be validated.
+	 * @param webServiceResult The WebServiceResult containing potential validation error messages.
+	 */
+	private void validatePriceAlert(final PriceAlert priceAlert, WebServiceResult webServiceResult) {
+		try {
+			priceAlert.validate();
+		}
+		catch(LocalizedException localizedException) {
+			webServiceResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, localizedException.getLocalizedMessage()));
+		}
+		catch(Exception validationException) {
+			webServiceResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, validationException.getMessage()));
+		}
 	}
 }

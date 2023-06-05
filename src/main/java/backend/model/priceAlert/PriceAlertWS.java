@@ -57,12 +57,27 @@ public class PriceAlertWS {
 	 */
 	private Date lastStockQuoteTime;
 	
+	/**
+	 * Controls if E-Mail has to be sent if the alert is triggered.
+	 */
+	private boolean sendMail;
+	
+	/**
+	 * The E-Mail address to which a notification is sent, if the alert is triggered.
+	 */
+	private String alertMailAddress;
+	
+	/**
+	 * The time at which the E-Mail notification has been sent.
+	 */
+	private Date mailTransmissionTime;
+	
 	
 	/**
 	 * Default Constructor.
 	 */
 	public PriceAlertWS() {
-		
+		this.sendMail = false;
 	}
 
 
@@ -207,5 +222,53 @@ public class PriceAlertWS {
 	 */
 	public void setLastStockQuoteTime(Date lastStockQuoteTime) {
 		this.lastStockQuoteTime = lastStockQuoteTime;
+	}
+
+
+	/**
+	 * @return the sendMail
+	 */
+	public boolean isSendMail() {
+		return sendMail;
+	}
+
+
+	/**
+	 * @param sendMail the sendMail to set
+	 */
+	public void setSendMail(boolean sendMail) {
+		this.sendMail = sendMail;
+	}
+
+
+	/**
+	 * @return the alertMailAddress
+	 */
+	public String getAlertMailAddress() {
+		return alertMailAddress;
+	}
+
+
+	/**
+	 * @param alertMailAddress the alertMailAddress to set
+	 */
+	public void setAlertMailAddress(String alertMailAddress) {
+		this.alertMailAddress = alertMailAddress;
+	}
+
+
+	/**
+	 * @return the mailTransmissionTime
+	 */
+	public Date getMailTransmissionTime() {
+		return mailTransmissionTime;
+	}
+
+
+	/**
+	 * @param mailTransmissionTime the mailTransmissionTime to set
+	 */
+	public void setMailTransmissionTime(Date mailTransmissionTime) {
+		this.mailTransmissionTime = mailTransmissionTime;
 	}
 }

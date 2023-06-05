@@ -145,7 +145,7 @@ public class InstrumentService {
 			return addInstrumentResult;
 		}
 		
-		//Validate the given instrument.
+		//Validate the given Instrument.
 		this.validateInstrument(convertedInstrument, addInstrumentResult);
 		if(WebServiceTools.resultContainsErrorMessage(addInstrumentResult))
 			return addInstrumentResult;
@@ -245,7 +245,7 @@ public class InstrumentService {
 			return updateInstrumentResult;
 		}
 		
-		//Validation of the given instrument.
+		//Validation of the given Instrument.
 		this.validateInstrument(convertedInstrument, updateInstrumentResult);
 		if(WebServiceTools.resultContainsErrorMessage(updateInstrumentResult))
 			return updateInstrumentResult;
