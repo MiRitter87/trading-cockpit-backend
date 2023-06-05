@@ -2,6 +2,7 @@ package backend.model.priceAlert;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -105,7 +106,25 @@ public class PriceAlert {
 	@Column(name="LAST_STOCK_QUOTE_TIME")
 	private Date lastStockQuoteTime;
 	
+	/**
+	 * Controls if E-Mail has to be sent if the alert is triggered.
+	 */
+	@Column(name="SEND_MAIL")
+	private boolean sendMail;
 	
+	/**
+	 * The E-Mail address to which a notification is sent, if the alert is triggered.
+	 */
+	@Column(name="ALERT_MAIL_ADDRESS", length = 254)
+	private String alertMailAddress;
+	
+	/**
+	 * The time at which the E-Mail notification has been sent.
+	 */
+	@Column(name="MAIL_TRANSMISSION_TIME")
+	private Date mailTransmissionTime;
+	
+		
 	/**
 	 * Default constructor.
 	 */
@@ -258,20 +277,58 @@ public class PriceAlert {
 	}
 	
 	
+	/**
+	 * @return the sendMail
+	 */
+	public boolean isSendMail() {
+		return sendMail;
+	}
+
+
+	/**
+	 * @param sendMail the sendMail to set
+	 */
+	public void setSendMail(boolean sendMail) {
+		this.sendMail = sendMail;
+	}
+
+
+	/**
+	 * @return the alertMailAddress
+	 */
+	public String getAlertMailAddress() {
+		return alertMailAddress;
+	}
+
+
+	/**
+	 * @param alertMailAddress the alertMailAddress to set
+	 */
+	public void setAlertMailAddress(String alertMailAddress) {
+		this.alertMailAddress = alertMailAddress;
+	}
+
+
+	/**
+	 * @return the mailTransmissionTime
+	 */
+	public Date getMailTransmissionTime() {
+		return mailTransmissionTime;
+	}
+
+
+	/**
+	 * @param mailTransmissionTime the mailTransmissionTime to set
+	 */
+	public void setMailTransmissionTime(Date mailTransmissionTime) {
+		this.mailTransmissionTime = mailTransmissionTime;
+	}
+	
+	
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((alertType == null) ? 0 : alertType.hashCode());
-		result = prime * result + ((confirmationTime == null) ? 0 : confirmationTime.hashCode());
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result + ((price == null) ? 0 : price.hashCode());
-		result = prime * result + Float.floatToIntBits(triggerDistancePercent);
-		result = prime * result + ((currency == null) ? 0 : currency.hashCode());
-		result = prime * result + ((instrument == null) ? 0 : instrument.hashCode());
-		result = prime * result + ((triggerTime == null) ? 0 : triggerTime.hashCode());
-		result = prime * result + ((lastStockQuoteTime == null) ? 0 : lastStockQuoteTime.hashCode());
-		return result;
+		return Objects.hash(alertMailAddress, alertType, confirmationTime, currency, id, instrument, lastStockQuoteTime,
+				mailTransmissionTime, price, sendMail, triggerDistancePercent, triggerTime);
 	}
 	
 	
@@ -344,6 +401,23 @@ public class PriceAlert {
 		}
 		if(Float.floatToIntBits(triggerDistancePercent) != Float.floatToIntBits(other.triggerDistancePercent))
 			return false;
+		if(sendMail != other.sendMail)
+			return false;
+		if (alertMailAddress == null) {
+			if (other.alertMailAddress != null) {
+				return false;
+			}
+		} else if (!alertMailAddress.equals(other.alertMailAddress)) {
+			return false;
+		}
+		if (mailTransmissionTime == null && other.mailTransmissionTime != null)
+			return false;
+		if (mailTransmissionTime != null && other.mailTransmissionTime == null)
+			return false;
+		if(mailTransmissionTime != null && other.mailTransmissionTime != null) {
+			if (mailTransmissionTime.getTime() != other.mailTransmissionTime.getTime())
+				return false;
+		}
 		return true;
 	}
 
