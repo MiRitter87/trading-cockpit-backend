@@ -148,8 +148,9 @@ public class PriceAlertController {
 
 	/**
 	 * Starts the query and update process.
+	 * @throws Exception Failed to start executor of PriceAlertThread.
 	 */
-	public void start() {
+	public void start() throws Exception {
 		this.executorService = Executors.newSingleThreadScheduledExecutor();
 		
 		executorService.scheduleAtFixedRate(new PriceAlertThread(this.startTime, this.endTime, this.dataProviders), 

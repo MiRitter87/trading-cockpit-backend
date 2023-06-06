@@ -2,16 +2,20 @@ package backend.controller.alert;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import backend.controller.DataProvider;
+import backend.controller.MailController;
 import backend.controller.MainController;
 import backend.dao.DAOManager;
 import backend.dao.priceAlert.PriceAlertDAO;
@@ -77,9 +81,19 @@ public class PriceAlertThread extends Thread {
 	private PriceAlertDAO priceAlertDAO;
 	
 	/**
+	 * Controller used to send E-Mails.
+	 */
+	private MailController mailController;
+	
+	/**
 	 * Application logging.
 	 */
 	public static final Logger logger = LogManager.getLogger(PriceAlertThread.class);
+	
+	/**
+	 * Access to localized application resources.
+	 */
+	private ResourceBundle resources = ResourceBundle.getBundle("backend");
 	
 	
 	/**
@@ -88,8 +102,9 @@ public class PriceAlertThread extends Thread {
 	 * @param startTime The start time of the process.
 	 * @param endTime The end time of the process.
 	 * @param dataProviders Stock exchanges and their corresponding data providers.
+	 * @throws Exception Failed to initialize PriceAlertThread.
 	 */
-	public PriceAlertThread(final LocalTime startTime, final LocalTime endTime, final Map<StockExchange, DataProvider> dataProviders) {
+	public PriceAlertThread(final LocalTime startTime, final LocalTime endTime, final Map<StockExchange, DataProvider> dataProviders) throws Exception {
 		OkHttpClient okHttpClient = MainController.getInstance().getOkHttpClient();	
 		
 		this.startTime = startTime;
@@ -101,6 +116,8 @@ public class PriceAlertThread extends Thread {
 		this.quotationProviderGlobeAndMailDAO = new QuotationProviderGlobeAndMailDAO();
 		this.quotationProviderCNBCDAO = new QuotationProviderCNBCDAO(okHttpClient);
 		this.priceAlertDAO = DAOManager.getInstance().getPriceAlertDAO();
+		
+		this.mailController = new MailController();
 	}
 	
 	
@@ -193,20 +210,27 @@ public class PriceAlertThread extends Thread {
 	/**
 	 * Checks the price defined in the alert against the stock quote.
 	 * Updates the price alert afterwards.
+	 * An E-Mail is sent if requested.
 	 * 
 	 * @param priceAlert The price alert.
 	 * @param quotation The Quotation.
 	 * @throws Exception In case the update failed.
 	 */
 	private void checkAndUpdatePriceAlert(PriceAlert priceAlert, final Quotation quotation) throws Exception {
-		//If the trigger price has been reached, set the trigger time of the price alert.
-		if(priceAlert.getAlertType() == PriceAlertType.GREATER_OR_EQUAL && quotation.getClose().compareTo(priceAlert.getPrice()) >= 0)
-			priceAlert.setTriggerTime(new Date());
-		else if(priceAlert.getAlertType() == PriceAlertType.LESS_OR_EQUAL && quotation.getClose().compareTo(priceAlert.getPrice()) <= 0)
-			priceAlert.setTriggerTime(new Date());
+		String subject, body;
 		
 		priceAlert.setLastStockQuoteTime(new Date());
 		priceAlert.setTriggerDistancePercent(this.getTriggerDistancePercent(priceAlert, quotation));
+		
+		//If the trigger price has been reached, set the trigger time of the price alert. Send Mail if requested.
+		if(this.isAlertTriggered(priceAlert, quotation)) {
+			priceAlert.setTriggerTime(new Date());
+			
+			subject = this.getMailSubject(priceAlert);
+			body = this.getMailBody(priceAlert, quotation);
+			this.mailController.sendMail(priceAlert.getAlertMailAddress(), subject, body);
+			priceAlert.setMailTransmissionTime(new Date());
+		}
 		
 		this.priceAlertDAO.updatePriceAlert(priceAlert);
 	}
@@ -273,5 +297,66 @@ public class PriceAlertThread extends Thread {
 			default:
 				throw new Exception("No DAO could be determined for the DataProvider: " +dataProvider.toString());
 		}
+	}
+	
+	
+	/**
+	 * Checks if price alert has been triggered.
+	 * @param priceAlert The Price Alert.
+	 * @param quotation The Quotation containing the current price.
+	 * @return True, if price alert has been triggered; false, if not.
+	 */
+	private boolean isAlertTriggered(PriceAlert priceAlert, final Quotation quotation) {
+		if((priceAlert.getAlertType() == PriceAlertType.GREATER_OR_EQUAL && quotation.getClose().compareTo(priceAlert.getPrice()) >= 0) || 
+				(priceAlert.getAlertType() == PriceAlertType.LESS_OR_EQUAL && quotation.getClose().compareTo(priceAlert.getPrice()) <= 0)) {
+			
+			return true;
+		}
+		
+		return false;
+	}
+	
+	
+	/**
+	 * Gets the subject of the PriceAlert mail.
+	 * 
+	 * @param priceAlert The PriceAlert.
+	 * @return The mail subject.
+	 */
+	private String getMailSubject(final PriceAlert priceAlert) {
+		String subject = "";
+		
+		if(priceAlert.getAlertType() == PriceAlertType.GREATER_OR_EQUAL) {
+			subject = MessageFormat.format(this.resources.getString("priceAlert.mailSubjectGreatherThen"), priceAlert.getInstrument().getSymbol(), 
+					priceAlert.getPrice(), priceAlert.getCurrency());
+		} 
+		else if(priceAlert.getAlertType() == PriceAlertType.LESS_OR_EQUAL) {
+			subject = MessageFormat.format(this.resources.getString("priceAlert.mailSubjectLessThen"), priceAlert.getInstrument().getSymbol(), 
+					priceAlert.getPrice(), priceAlert.getCurrency());
+		}
+		
+		return subject;
+	}
+	
+	
+	/**
+	 * Gets the body of the PriceAlert mail.
+	 * 
+	 * @param priceAlert The PriceAlert.
+	 * @param quotation The Quotation containing the current price.
+	 * @return The mail body.
+	 */
+	private String getMailBody(final PriceAlert priceAlert, final Quotation quotation) {
+		String body = "";
+		String datePattern = "dd.MM.yyyy HH:mm:ss";
+		String formattedDate = "";
+		SimpleDateFormat dateFormat = new SimpleDateFormat(datePattern);
+		
+		formattedDate = dateFormat.format(priceAlert.getTriggerTime());
+		
+		body = MessageFormat.format(this.resources.getString("priceAlert.mailBody"), 
+				formattedDate, quotation.getClose(), quotation.getCurrency(), priceAlert.getTriggerDistancePercent());
+		
+		return body;
 	}
 }
