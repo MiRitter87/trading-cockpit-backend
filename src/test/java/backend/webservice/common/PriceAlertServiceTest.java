@@ -260,6 +260,9 @@ public class PriceAlertServiceTest {
 		alert.setCurrency(Currency.USD);
 		alert.setTriggerTime(new Date());
 		alert.setConfirmationTime(null);
+		alert.setSendMail(true);
+		alert.setAlertMailAddress("max.mustermann@muster.de");
+		alert.setMailTransmissionTime(new Date());
 		
 		return alert;
 	}
@@ -689,6 +692,54 @@ public class PriceAlertServiceTest {
 	}
 	
 	
+	@Test
+	/**
+	 * Tests updating the 'sendMail' attribute after the mail has already been sent.
+	 */
+	public void testChangeSendMailAfterMailSent() {
+		WebServiceResult updatePriceAlertResult;
+		PriceAlertService service = new PriceAlertService();
+		String actualErrorMessage, expectedErrorMessage;
+		
+		//Update price alert.
+		this.netflixAlert.setSendMail(false);
+		updatePriceAlertResult = service.updatePriceAlert(this.convertToWsPriceAlert(this.netflixAlert));
+		
+		//There should be a return message of type E
+		assertTrue(updatePriceAlertResult.getMessages().size() == 1);
+		assertTrue(updatePriceAlertResult.getMessages().get(0).getType() == WebServiceMessageType.E);
+		
+		//A proper message should be provided.
+		expectedErrorMessage = this.resources.getString("priceAlert.updateMailDataAfterMailSent");
+		actualErrorMessage = updatePriceAlertResult.getMessages().get(0).getText();
+		assertEquals(expectedErrorMessage, actualErrorMessage);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests updating the 'alertMailAddress' attribute after the mail has already been sent.
+	 */
+	public void testChangeAlertMailAddressAfterMailSent() {
+		WebServiceResult updatePriceAlertResult;
+		PriceAlertService service = new PriceAlertService();
+		String actualErrorMessage, expectedErrorMessage;
+		
+		//Update price alert.
+		this.netflixAlert.setAlertMailAddress("test@abc.de");
+		updatePriceAlertResult = service.updatePriceAlert(this.convertToWsPriceAlert(this.netflixAlert));
+		
+		//There should be a return message of type E
+		assertTrue(updatePriceAlertResult.getMessages().size() == 1);
+		assertTrue(updatePriceAlertResult.getMessages().get(0).getType() == WebServiceMessageType.E);
+		
+		//A proper message should be provided.
+		expectedErrorMessage = this.resources.getString("priceAlert.updateMailDataAfterMailSent");
+		actualErrorMessage = updatePriceAlertResult.getMessages().get(0).getText();
+		assertEquals(expectedErrorMessage, actualErrorMessage);
+	}
+	
+	
 	/**
 	 * Converts a PriceAlert to the lean WebService representation.
 	 * 
@@ -707,6 +758,9 @@ public class PriceAlertServiceTest {
 		priceAlertWS.setConfirmationTime(priceAlert.getConfirmationTime());
 		priceAlertWS.setTriggerTime(priceAlert.getTriggerTime());
 		priceAlertWS.setLastStockQuoteTime(priceAlert.getLastStockQuoteTime());
+		priceAlertWS.setSendMail(priceAlert.isSendMail());
+		priceAlertWS.setAlertMailAddress(priceAlert.getAlertMailAddress());
+		priceAlertWS.setMailTransmissionTime(priceAlert.getMailTransmissionTime());
 		
 		//Object references.
 		if(priceAlert.getInstrument() != null)

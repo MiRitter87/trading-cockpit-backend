@@ -228,6 +228,9 @@ public class PriceAlertService {
 			updatePriceAlertResult.addMessage(new WebServiceMessage(WebServiceMessageType.I, 
 					MessageFormat.format(this.resources.getString("priceAlert.updateUnchanged"), convertedPriceAlert.getId())));
 		}
+		catch(LocalizedException localizedException) {
+			updatePriceAlertResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, localizedException.getLocalizedMessage()));
+		}
 		catch (Exception e) {
 			updatePriceAlertResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
 					MessageFormat.format(this.resources.getString("priceAlert.updateError"), convertedPriceAlert.getId())));

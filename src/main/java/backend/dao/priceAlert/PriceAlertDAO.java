@@ -3,6 +3,7 @@ package backend.dao.priceAlert;
 import java.util.List;
 
 import backend.dao.ObjectUnchangedException;
+import backend.model.LocalizedException;
 import backend.model.priceAlert.ConfirmationStatus;
 import backend.model.priceAlert.PriceAlert;
 import backend.model.priceAlert.TriggerStatus;
@@ -58,7 +59,9 @@ public interface PriceAlertDAO {
 	 * Updates the given price alert.
 	 * 
 	 * @param priceAlert The price alert to be updated.
+	 * @throws ObjectUnchangedException Object data did not change.
+	 * @throws LocalizedException A general exception containing a localized message.
 	 * @throws Exception Price alert update failed.
 	 */
-	void updatePriceAlert(final PriceAlert priceAlert) throws ObjectUnchangedException, Exception;
+	void updatePriceAlert(final PriceAlert priceAlert) throws ObjectUnchangedException, LocalizedException, Exception;
 }

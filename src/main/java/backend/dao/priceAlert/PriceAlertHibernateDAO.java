@@ -12,6 +12,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import backend.dao.ObjectUnchangedException;
+import backend.model.LocalizedException;
 import backend.model.priceAlert.ConfirmationStatus;
 import backend.model.priceAlert.PriceAlert;
 import backend.model.priceAlert.TriggerStatus;
@@ -146,10 +147,11 @@ public class PriceAlertHibernateDAO implements PriceAlertDAO {
 
 	
 	@Override
-	public void updatePriceAlert(PriceAlert priceAlert) throws ObjectUnchangedException, Exception {
+	public void updatePriceAlert(PriceAlert priceAlert) throws ObjectUnchangedException, LocalizedException, Exception {
 		EntityManager entityManager;
 		
 		this.checkPriceAlertDataChanged(priceAlert);
+		this.checkValidChanges(priceAlert);
 		
 		entityManager = this.sessionFactory.createEntityManager();
 		entityManager.getTransaction().begin();
@@ -163,7 +165,7 @@ public class PriceAlertHibernateDAO implements PriceAlertDAO {
 	 * Checks if the data of the given price alert differ from the price alert that is persisted at database level.
 	 * 
 	 * @param priceAlert The price alert to be checked.
-	 * @throws ObjectUnchangedException In case the price alert has not been changed.
+	 * @throws ObjectUnchangedException Object data did not change.
 	 * @throws Exception In case an error occurred during determination of the price alert stored at the database.
 	 */
 	private void checkPriceAlertDataChanged(final PriceAlert priceAlert) throws ObjectUnchangedException, Exception {
@@ -171,6 +173,29 @@ public class PriceAlertHibernateDAO implements PriceAlertDAO {
 		
 		if(databasePriceAlert.equals(priceAlert))
 			throw new ObjectUnchangedException();
+	}
+	
+	
+	/**
+	 * Checks if the changes are valid.
+	 * 
+	 * @param priceAlert The price alert to be checked.
+	 * @throws LocalizedException A general exception containing a localized message.
+	 * @throws Exception In case an error occurred during determination of the price alert stored at the database.
+	 */
+	private void checkValidChanges(final PriceAlert priceAlert) throws LocalizedException, Exception {
+		PriceAlert databasePriceAlert;
+		
+		if(priceAlert.getMailTransmissionTime() == null)
+			return;
+		
+		databasePriceAlert = this.getPriceAlert(priceAlert.getId());
+		
+		if(priceAlert.isSendMail() != databasePriceAlert.isSendMail())
+			throw new LocalizedException("priceAlert.updateMailDataAfterMailSent");
+		
+		if(!priceAlert.getAlertMailAddress().equals(databasePriceAlert.getAlertMailAddress()))
+				throw new LocalizedException("priceAlert.updateMailDataAfterMailSent");	
 	}
 	
 	
