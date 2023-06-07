@@ -2,6 +2,7 @@ package backend.dao.priceAlert;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -184,18 +185,22 @@ public class PriceAlertHibernateDAO implements PriceAlertDAO {
 	 * @throws Exception In case an error occurred during determination of the price alert stored at the database.
 	 */
 	private void checkValidChanges(final PriceAlert priceAlert) throws LocalizedException, Exception {
-		PriceAlert databasePriceAlert;
+		PriceAlert databasePriceAlert = this.getPriceAlert(priceAlert.getId());
 		
-		if(priceAlert.getMailTransmissionTime() == null)
-			return;
+		//No changes allowed at all after PriceAlert has been triggered and confirmed.
+		if(databasePriceAlert.getTriggerTime() != null && databasePriceAlert.getConfirmationTime() != null)
+			throw new LocalizedException("priceAlert.updateAfterTriggered");
 		
-		databasePriceAlert = this.getPriceAlert(priceAlert.getId());
-		
-		if(priceAlert.isSendMail() != databasePriceAlert.isSendMail())
-			throw new LocalizedException("priceAlert.updateMailDataAfterMailSent");
-		
-		if(!priceAlert.getAlertMailAddress().equals(databasePriceAlert.getAlertMailAddress()))
-				throw new LocalizedException("priceAlert.updateMailDataAfterMailSent");	
+		//No changes of the attributes below allowed after PriceAlert has been triggered.
+		if(databasePriceAlert.getTriggerTime() != null && (
+				!databasePriceAlert.getInstrument().equals(priceAlert.getInstrument()) || 
+				databasePriceAlert.getAlertType() != priceAlert.getAlertType() || 
+				databasePriceAlert.getPrice().compareTo(priceAlert.getPrice()) != 0 ||
+				databasePriceAlert.isSendMail() != priceAlert.isSendMail() || 
+				!Objects.equals(databasePriceAlert.getAlertMailAddress(), priceAlert.getAlertMailAddress()))) {
+			
+			throw new LocalizedException("priceAlert.updateAfterTriggered");
+		}
 	}
 	
 	

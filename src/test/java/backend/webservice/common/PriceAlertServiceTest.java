@@ -694,15 +694,15 @@ public class PriceAlertServiceTest {
 	
 	@Test
 	/**
-	 * Tests updating the 'sendMail' attribute after the mail has already been sent.
+	 * Tests updating the price of a PriceAlert after the alert already has been triggered.
 	 */
-	public void testChangeSendMailAfterMailSent() {
+	public void testUpdatePriceAfterAlertTriggered() {
 		WebServiceResult updatePriceAlertResult;
 		PriceAlertService service = new PriceAlertService();
 		String actualErrorMessage, expectedErrorMessage;
 		
 		//Update price alert.
-		this.netflixAlert.setSendMail(false);
+		this.netflixAlert.setPrice(new BigDecimal(200));
 		updatePriceAlertResult = service.updatePriceAlert(this.convertToWsPriceAlert(this.netflixAlert));
 		
 		//There should be a return message of type E
@@ -710,7 +710,7 @@ public class PriceAlertServiceTest {
 		assertTrue(updatePriceAlertResult.getMessages().get(0).getType() == WebServiceMessageType.E);
 		
 		//A proper message should be provided.
-		expectedErrorMessage = this.resources.getString("priceAlert.updateMailDataAfterMailSent");
+		expectedErrorMessage = this.resources.getString("priceAlert.updateAfterTriggered");
 		actualErrorMessage = updatePriceAlertResult.getMessages().get(0).getText();
 		assertEquals(expectedErrorMessage, actualErrorMessage);
 	}
@@ -718,25 +718,32 @@ public class PriceAlertServiceTest {
 	
 	@Test
 	/**
-	 * Tests updating the 'alertMailAddress' attribute after the mail has already been sent.
+	 * Tests updating the confirmation time of a PriceAlert after the alert has been triggered.
 	 */
-	public void testChangeAlertMailAddressAfterMailSent() {
+	public void testUpdateConfirmationTimeAfterAlertTriggered() {
 		WebServiceResult updatePriceAlertResult;
+		PriceAlert updatedPriceAlert;
 		PriceAlertService service = new PriceAlertService();
-		String actualErrorMessage, expectedErrorMessage;
+		Date confirmationTime = new Date();
 		
-		//Update price alert.
-		this.netflixAlert.setAlertMailAddress("test@abc.de");
+		//Update the confirmation time.
+		this.netflixAlert.setConfirmationTime(confirmationTime);
 		updatePriceAlertResult = service.updatePriceAlert(this.convertToWsPriceAlert(this.netflixAlert));
 		
-		//There should be a return message of type E
-		assertTrue(updatePriceAlertResult.getMessages().size() == 1);
-		assertTrue(updatePriceAlertResult.getMessages().get(0).getType() == WebServiceMessageType.E);
+		//Assure no error message exists
+		assertTrue(WebServiceTools.resultContainsErrorMessage(updatePriceAlertResult) == false);
 		
-		//A proper message should be provided.
-		expectedErrorMessage = this.resources.getString("priceAlert.updateMailDataAfterMailSent");
-		actualErrorMessage = updatePriceAlertResult.getMessages().get(0).getText();
-		assertEquals(expectedErrorMessage, actualErrorMessage);
+		//There should be a success message
+		assertTrue(updatePriceAlertResult.getMessages().size() == 1);
+		assertTrue(updatePriceAlertResult.getMessages().get(0).getType() == WebServiceMessageType.S);
+		
+		//Retrieve the updated price alert and check if the changes have been persisted.
+		try {
+			updatedPriceAlert = priceAlertDAO.getPriceAlert(this.netflixAlert.getId());
+			assertEquals(confirmationTime.getTime(), updatedPriceAlert.getConfirmationTime().getTime());
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
 	}
 	
 	
