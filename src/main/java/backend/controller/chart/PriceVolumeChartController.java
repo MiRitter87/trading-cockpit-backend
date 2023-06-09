@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
+import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.CombinedDomainXYPlot;
 import org.jfree.chart.plot.DatasetRenderingOrder;
 import org.jfree.chart.plot.XYPlot;
@@ -48,6 +49,7 @@ public class PriceVolumeChartController extends ChartController {
         XYPlot candleStickSubplot = this.getCandlestickPlot(instrument, dateAxis);
 		XYPlot volumeSubplot = this.getVolumePlot(instrument, dateAxis);
 		
+		this.clipVolumeAt2TimesAverage(volumeSubplot, instrument);
 		this.addMovingAveragesPrice(instrument, withEma21, withSma50, withSma150, withSma200, candleStickSubplot);
 		this.addMovingAverageVolume(instrument, withSma30Volume, volumeSubplot);
 		
@@ -247,5 +249,41 @@ public class PriceVolumeChartController extends ChartController {
 		smaRenderer.setSeriesPaint(0, Color.BLACK);
 		volumeSubplot.setRenderer(index, smaRenderer);
 		volumeSubplot.setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
+	}
+	
+	
+	/**
+	 * Determines the highest average volume within the trading history of the given Instrument.
+	 * 
+	 * @param instrument The Instrument.
+	 * @return The highest average volume of the trading history.
+	 */
+	private long getHighestAverageVolume(final Instrument instrument) {
+		long highestAverageVolume = 0;
+		List<Quotation> quotationsSortedByDate = instrument.getQuotationsSortedByDate();
+		
+		for(Quotation tempQuotation : quotationsSortedByDate) {
+			if(tempQuotation.getIndicator().getSma30Volume() > highestAverageVolume)
+				highestAverageVolume = tempQuotation.getIndicator().getSma30Volume();
+		}
+		
+		
+		return highestAverageVolume;
+	}
+	
+	
+	/**
+	 * Clips the volume bars of the volume plot at two times of the maximum average volume.
+	 * This prevents a volume scale, where large "skyscraper" volume bars dominate the picture and the user is not able
+	 * to properly read the average volume.
+	 * 
+	 * @param volumeSubplot The sub plot of the chart showing the volume.
+	 * @param instrument The Instrument containing the trading history.
+	 */
+	private void clipVolumeAt2TimesAverage(XYPlot volumeSubplot, final Instrument instrument) {
+        double upperVolumeAxisRange = this.getHighestAverageVolume(instrument) * 2;
+        NumberAxis volumeAxis = (NumberAxis) volumeSubplot.getRangeAxis();
+        
+        volumeAxis.setRange(0, upperVolumeAxisRange);
 	}
 }
