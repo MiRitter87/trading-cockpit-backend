@@ -275,18 +275,20 @@ public class ChartService {
 	 * @param withSma50 Show SMA(50) as overlay.
 	 * @param withSma150 Show SMA(150) as overlay.
 	 * @param withSma200 Show SMA(200) as overlay.
+	 * @param withVolume Show volume information.
 	 * @param withSma30Volume Show SMA(30) of volume.
 	 * @return A Response containing the generated chart.
 	 */
 	public Response getPriceVolumeChart(final Integer instrumentId, final boolean withEma21, final boolean withSma50, 
-			final boolean withSma150, final boolean withSma200, final boolean withSma30Volume) {
+			final boolean withSma150, final boolean withSma200, final boolean withVolume, final boolean withSma30Volume) {
 		
 		PriceVolumeChartController priceVolumeChartController = new PriceVolumeChartController();
 		JFreeChart chart;
 		StreamingOutput streamingOutput = null;
 		
 		try {
-			chart = priceVolumeChartController.getPriceVolumeChart(instrumentId, withEma21, withSma50, withSma150, withSma200, withSma30Volume);
+			chart = priceVolumeChartController.getPriceVolumeChart(
+					instrumentId, withEma21, withSma50, withSma150, withSma200, withVolume, withSma30Volume);
 			
 			streamingOutput = new StreamingOutput() {
 				@Override

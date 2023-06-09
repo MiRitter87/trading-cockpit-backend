@@ -34,30 +34,37 @@ public class PriceVolumeChartController extends ChartController {
 	 * @param withSma50 Show SMA(50) as overlay.
 	 * @param withSma150 Show SMA(150) as overlay.
 	 * @param withSma200 Show SMA(200) as overlay.
+	 * @param withVolume Show volume information.
 	 * @param withSma30Volume Show SMA(30) of volume.
 	 * @return The chart.
 	 * @throws NoQuotationsExistException No quotations exist for the Quotation with the given ID.
 	 * @throws Exception Chart generation failed.
 	 */
 	public JFreeChart getPriceVolumeChart(final Integer instrumentId, final boolean withEma21, final boolean withSma50, 
-			final boolean withSma150, final boolean withSma200, final boolean withSma30Volume) throws NoQuotationsExistException, Exception {
+			final boolean withSma150, final boolean withSma200, final boolean withVolume, final boolean withSma30Volume) 
+					throws NoQuotationsExistException, Exception {
 		
 		Instrument instrument = this.getInstrumentWithQuotations(instrumentId);
 		JFreeChart chart;
 		DateAxis dateAxis = this.getDateAxis(instrument);	//The shared time axis of all subplots.
-        
+		CombinedDomainXYPlot combinedPlot = new CombinedDomainXYPlot();
         XYPlot candleStickSubplot = this.getCandlestickPlot(instrument, dateAxis);
-		XYPlot volumeSubplot = this.getVolumePlot(instrument, dateAxis);
+        XYPlot volumeSubplot = null;
+        
+        if(withVolume) {
+        	volumeSubplot = this.getVolumePlot(instrument, dateAxis);
+        	this.addMovingAverageVolume(instrument, withSma30Volume, volumeSubplot);        	
+        	this.clipVolumeAt2TimesAverage(volumeSubplot, instrument);
+        }
 		
-		this.clipVolumeAt2TimesAverage(volumeSubplot, instrument);
 		this.addMovingAveragesPrice(instrument, withEma21, withSma50, withSma150, withSma200, candleStickSubplot);
-		this.addMovingAverageVolume(instrument, withSma30Volume, volumeSubplot);
 		
 		//Build combined plot based on subplots.
-		CombinedDomainXYPlot combinedPlot = new CombinedDomainXYPlot();
-		combinedPlot.add(candleStickSubplot, 4);			//Price Plot takes 4 vertical size units.
-		combinedPlot.add(volumeSubplot, 1);					//Volume Plot takes 1 vertical size unit.
 		combinedPlot.setDomainAxis(dateAxis);
+		combinedPlot.add(candleStickSubplot, 4);			//Price Plot takes 4 vertical size units.
+		
+		if(withVolume)
+			combinedPlot.add(volumeSubplot, 1);					//Volume Plot takes 1 vertical size unit.
 		
 		//Build chart based on combined Plot.
 		chart = new JFreeChart(instrument.getName(), JFreeChart.DEFAULT_TITLE_FONT, combinedPlot, true);
