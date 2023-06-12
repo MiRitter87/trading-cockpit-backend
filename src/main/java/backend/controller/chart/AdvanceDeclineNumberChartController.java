@@ -53,7 +53,7 @@ public class AdvanceDeclineNumberChartController extends StatisticChartControlle
 		Statistic statistic;
 		TimeSeries timeSeries = new TimeSeries(this.resources.getString("chart.adNumber.timeSeriesName"));
 		TimeZone timeZone = TimeZone.getDefault();
-		TimeSeriesCollection timeSeriesColleciton = new TimeSeriesCollection(timeZone);
+		TimeSeriesCollection timeSeriesCollection = new TimeSeriesCollection(timeZone);
 		ListIterator<Statistic> iterator;
 		int cumulativeADNumber = 0;
 		
@@ -65,9 +65,9 @@ public class AdvanceDeclineNumberChartController extends StatisticChartControlle
 			timeSeries.add(new Day(statistic.getDate()), cumulativeADNumber);
 		}
 		
-        timeSeriesColleciton.addSeries(timeSeries);
-        timeSeriesColleciton.setXPosition(TimePeriodAnchor.MIDDLE);
+        timeSeriesCollection.addSeries(timeSeries);
+        timeSeriesCollection.setXPosition(TimePeriodAnchor.MIDDLE);
         
-        return timeSeriesColleciton;
+        return timeSeriesCollection;
 	}
 }

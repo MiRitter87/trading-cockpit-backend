@@ -2,16 +2,19 @@ package backend.controller.chart;
 
 import java.awt.Color;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.CombinedDomainXYPlot;
 import org.jfree.chart.plot.DatasetRenderingOrder;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.time.Day;
+import org.jfree.data.time.TimePeriodAnchor;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 
@@ -53,21 +56,28 @@ public class PriceVolumeChartController extends ChartController {
 		CombinedDomainXYPlot combinedPlot = new CombinedDomainXYPlot();
         XYPlot candleStickSubplot = this.getCandlestickPlot(instrument, dateAxis);
         XYPlot volumeSubplot = null;
+        XYPlot indicatorSubplot = null;
         
         if(withVolume) {
         	volumeSubplot = this.getVolumePlot(instrument, dateAxis);
         	this.addMovingAverageVolume(instrument, withSma30Volume, volumeSubplot);        	
         	this.clipVolumeAt2TimesAverage(volumeSubplot, instrument);
         }
+        
+        indicatorSubplot = this.getIndicatorPlot(indicator, rsInstrumentId, instrument, dateAxis);
 		
 		this.addMovingAveragesPrice(instrument, withEma21, withSma50, withSma150, withSma200, candleStickSubplot);
 		
 		//Build combined plot based on subplots.
 		combinedPlot.setDomainAxis(dateAxis);
+		
+		if(indicatorSubplot != null)
+			combinedPlot.add(indicatorSubplot, 1);			//Indicator Plot takes 1 vertical size unit.
+			
 		combinedPlot.add(candleStickSubplot, 4);			//Price Plot takes 4 vertical size units.
 		
 		if(withVolume)
-			combinedPlot.add(volumeSubplot, 1);					//Volume Plot takes 1 vertical size unit.
+			combinedPlot.add(volumeSubplot, 1);				//Volume Plot takes 1 vertical size unit.
 		
 		//Build chart based on combined Plot.
 		chart = new JFreeChart(instrument.getName(), JFreeChart.DEFAULT_TITLE_FONT, combinedPlot, true);
@@ -296,5 +306,60 @@ public class PriceVolumeChartController extends ChartController {
         
         if(upperVolumeAxisRange > 0)
         	volumeAxis.setRange(0, upperVolumeAxisRange);
+	}
+	
+	
+	/**
+	 * Builds a plot to display Indicator data of an Instrument.
+	 * 
+	 * @param indicator The requested Indicator.
+	 * @param rsInstrumentId The ID of the Instrument used to calculate the RS line.
+	 * @param instrument The Instrument for which the indicator is being calculated.
+	 * @param timeAxis The x-Axis (time).
+	 * @return A XYPlot depicting Indicator data.
+	 */
+	private XYPlot getIndicatorPlot(final Indicator indicator, final Integer rsInstrumentId, final Instrument instrument, final ValueAxis timeAxis) {
+		switch(indicator) {
+			case RS_LINE:
+				return this.getRsLinePlot(rsInstrumentId, instrument, timeAxis);
+			case NONE:
+				return null;
+			default:
+				return null;
+		}
+	}
+	
+	
+	/**
+	 * Builds a plot to display the RS line of an Instrument.
+	 * 
+	 * @param rsInstrumentId The ID of the Instrument used to calculate the RS line (the divisor of the price ratio).
+	 * @param instrument The Instrument for which the RS line is being calculated.
+	 * @param timeAxis The x-Axis (time).
+	 * @return A XYPlot depicting the RS line.
+	 */
+	private XYPlot getRsLinePlot(final Integer rsInstrumentId, final Instrument instrument, final ValueAxis timeAxis) {
+		TimeSeries timeSeries = new TimeSeries("");
+		TimeZone timeZone = TimeZone.getDefault();
+		TimeSeriesCollection timeSeriesCollection = new TimeSeriesCollection(timeZone);
+		XYPlot rsLinePlot;
+		NumberAxis valueAxis = new NumberAxis("");
+		XYLineAndShapeRenderer rsLineRenderer = new XYLineAndShapeRenderer(true, false);
+		
+		//TODO Call Controller to calculate the Quotations making up the ratio. Use the ratio quotations then.
+		for(Quotation quotation: instrument.getQuotationsSortedByDate()) {
+			timeSeries.add(new Day(quotation.getDate()), quotation.getClose());
+		}
+		
+		timeSeriesCollection.addSeries(timeSeries);
+        timeSeriesCollection.setXPosition(TimePeriodAnchor.MIDDLE);
+		
+        //Do not begin y-Axis at zero. Use lowest value of provided dataset instead.
+        valueAxis.setAutoRangeIncludesZero(false);
+        
+        rsLinePlot = new XYPlot(timeSeriesCollection, timeAxis, valueAxis, null);
+        rsLinePlot.setRenderer(rsLineRenderer);
+        
+		return rsLinePlot;
 	}
 }
