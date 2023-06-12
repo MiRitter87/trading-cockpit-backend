@@ -18,6 +18,7 @@ import org.jfree.data.time.TimeSeriesCollection;
 import backend.controller.instrumentCheck.NoQuotationsExistException;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
+import backend.webservice.Indicator;
 
 /**
  * Controller for the creation of a chart displaying an Instrument with price and volume.
@@ -36,13 +37,15 @@ public class PriceVolumeChartController extends ChartController {
 	 * @param withSma200 Show SMA(200) as overlay.
 	 * @param withVolume Show volume information.
 	 * @param withSma30Volume Show SMA(30) of volume.
+	 * @param indicator The Indicator that is being displayed above the chart.
+	 * @param rsInstrumentId The ID of the Instrument used to build the RS line (only used if type of Indicator is RS_LINE).
 	 * @return The chart.
 	 * @throws NoQuotationsExistException No quotations exist for the Quotation with the given ID.
 	 * @throws Exception Chart generation failed.
 	 */
 	public JFreeChart getPriceVolumeChart(final Integer instrumentId, final boolean withEma21, final boolean withSma50, 
-			final boolean withSma150, final boolean withSma200, final boolean withVolume, final boolean withSma30Volume) 
-					throws NoQuotationsExistException, Exception {
+			final boolean withSma150, final boolean withSma200, final boolean withVolume, final boolean withSma30Volume,
+			final Indicator indicator, final Integer rsInstrumentId) throws NoQuotationsExistException, Exception {
 		
 		Instrument instrument = this.getInstrumentWithQuotations(instrumentId);
 		JFreeChart chart;

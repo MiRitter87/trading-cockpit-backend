@@ -6,8 +6,8 @@ import java.util.ResourceBundle;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,6 +24,7 @@ import backend.controller.chart.RitterMarketTrendChartController;
 import backend.controller.chart.RitterPatternIndicatorChartController;
 import backend.controller.instrumentCheck.NoQuotationsExistException;
 import backend.model.instrument.InstrumentType;
+import backend.webservice.Indicator;
 
 /**
  * Common implementation of the Chart WebService that can be used by multiple service interfaces like SOAP or REST.
@@ -277,18 +278,21 @@ public class ChartService {
 	 * @param withSma200 Show SMA(200) as overlay.
 	 * @param withVolume Show volume information.
 	 * @param withSma30Volume Show SMA(30) of volume.
+	 * @param indicator The Indicator that is being displayed above the chart.
+	 * @param rsInstrumentId The ID of the Instrument used to build the RS line (only used if type of Indicator is RS_LINE).
 	 * @return A Response containing the generated chart.
 	 */
 	public Response getPriceVolumeChart(final Integer instrumentId, final boolean withEma21, final boolean withSma50, 
-			final boolean withSma150, final boolean withSma200, final boolean withVolume, final boolean withSma30Volume) {
+			final boolean withSma150, final boolean withSma200, final boolean withVolume, final boolean withSma30Volume,
+			final Indicator indicator, final Integer rsInstrumentId) {
 		
 		PriceVolumeChartController priceVolumeChartController = new PriceVolumeChartController();
 		JFreeChart chart;
 		StreamingOutput streamingOutput = null;
 		
 		try {
-			chart = priceVolumeChartController.getPriceVolumeChart(
-					instrumentId, withEma21, withSma50, withSma150, withSma200, withVolume, withSma30Volume);
+			chart = priceVolumeChartController.getPriceVolumeChart(instrumentId, withEma21, withSma50, withSma150, withSma200, 
+					withVolume, withSma30Volume, indicator, rsInstrumentId);
 			
 			streamingOutput = new StreamingOutput() {
 				@Override

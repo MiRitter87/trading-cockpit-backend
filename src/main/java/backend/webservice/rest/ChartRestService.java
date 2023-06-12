@@ -7,6 +7,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
+import backend.webservice.Indicator;
 import backend.webservice.common.ChartService;
 
 /**
@@ -132,6 +133,8 @@ public class ChartRestService {
 	 * @param withSma200 Show SMA(200) as overlay.
 	 * @param withVolume Show volume information.
 	 * @param withSma30Volume Show SMA(30) of volume.
+	 * @param indicator The Indicator that is being displayed above the chart.
+	 * @param rsInstrumentId The ID of the Instrument used to build the RS line (only used if type of Indicator is RS_LINE).
 	 * @return The chart.
 	 */
 	@GET
@@ -140,9 +143,11 @@ public class ChartRestService {
 	public Response getPriceVolumeChart(@PathParam("instrumentId") final Integer instrumentId, @QueryParam("withEma21") final boolean withEma21, 
 			@QueryParam("withSma50") final boolean withSma50, @QueryParam("withSma150") final boolean withSma150, 
 			@QueryParam("withSma200") final boolean withSma200, @QueryParam("withVolume") final boolean withVolume, 
-			@QueryParam("withSma30Volume") final boolean withSma30Volume) {
+			@QueryParam("withSma30Volume") final boolean withSma30Volume, @QueryParam("indicator") final Indicator indicator,
+			@QueryParam("rsInstrumentId") final Integer rsInstrumentId) {
 		
 		ChartService chartService = new ChartService();
-		return chartService.getPriceVolumeChart(instrumentId, withEma21, withSma50, withSma150, withSma200, withVolume, withSma30Volume);
+		return chartService.getPriceVolumeChart(instrumentId, withEma21, withSma50, withSma150, withSma200, withVolume, withSma30Volume,
+				indicator, rsInstrumentId);
 	}
 }
