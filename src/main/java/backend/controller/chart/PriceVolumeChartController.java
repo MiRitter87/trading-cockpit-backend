@@ -291,6 +291,7 @@ public class PriceVolumeChartController extends ChartController {
         double upperVolumeAxisRange = this.getHighestAverageVolume(instrument) * 2;
         NumberAxis volumeAxis = (NumberAxis) volumeSubplot.getRangeAxis();
         
-        volumeAxis.setRange(0, upperVolumeAxisRange);
+        if(upperVolumeAxisRange > 0)
+        	volumeAxis.setRange(0, upperVolumeAxisRange);
 	}
 }
