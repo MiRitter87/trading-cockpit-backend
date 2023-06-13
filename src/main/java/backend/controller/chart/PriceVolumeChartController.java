@@ -374,7 +374,7 @@ public class PriceVolumeChartController extends ChartController {
 		List<Quotation> ratioQuotations;
 		RatioCalculationController ratioCalculationController = new RatioCalculationController();
 		Instrument divisorInstrument = new Instrument();
-		TimeSeries timeSeries = new TimeSeries("");
+		TimeSeries timeSeries = new TimeSeries(this.resources.getString("chart.priceVolume.timeSeriesRsLineName"));
 		TimeZone timeZone = TimeZone.getDefault();
 		TimeSeriesCollection timeSeriesCollection = new TimeSeriesCollection(timeZone);
 		
