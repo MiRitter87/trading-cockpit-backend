@@ -17,7 +17,9 @@ import org.jfree.data.time.Day;
 import org.jfree.data.time.TimePeriodAnchor;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
+import org.jfree.data.xy.XYDataset;
 
+import backend.controller.RatioCalculationController;
 import backend.controller.instrumentCheck.NoQuotationsExistException;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
@@ -317,8 +319,11 @@ public class PriceVolumeChartController extends ChartController {
 	 * @param instrument The Instrument for which the indicator is being calculated.
 	 * @param timeAxis The x-Axis (time).
 	 * @return A XYPlot depicting Indicator data.
+	 * @throws Exception Failed to construct indicator plot.
 	 */
-	private XYPlot getIndicatorPlot(final Indicator indicator, final Integer rsInstrumentId, final Instrument instrument, final ValueAxis timeAxis) {
+	private XYPlot getIndicatorPlot(final Indicator indicator, final Integer rsInstrumentId, final Instrument instrument, final ValueAxis timeAxis)
+		throws Exception {
+	
 		switch(indicator) {
 			case RS_LINE:
 				return this.getRsLinePlot(rsInstrumentId, instrument, timeAxis);
@@ -337,29 +342,52 @@ public class PriceVolumeChartController extends ChartController {
 	 * @param instrument The Instrument for which the RS line is being calculated.
 	 * @param timeAxis The x-Axis (time).
 	 * @return A XYPlot depicting the RS line.
+	 * @throws Exception Failed to create RS line plot.
 	 */
-	private XYPlot getRsLinePlot(final Integer rsInstrumentId, final Instrument instrument, final ValueAxis timeAxis) {
-		TimeSeries timeSeries = new TimeSeries("");
-		TimeZone timeZone = TimeZone.getDefault();
-		TimeSeriesCollection timeSeriesCollection = new TimeSeriesCollection(timeZone);
+	private XYPlot getRsLinePlot(final Integer rsInstrumentId, final Instrument instrument, final ValueAxis timeAxis) throws Exception {
+		XYDataset dataset;
 		XYPlot rsLinePlot;
 		NumberAxis valueAxis = new NumberAxis("");
 		XYLineAndShapeRenderer rsLineRenderer = new XYLineAndShapeRenderer(true, false);
 		
-		//TODO Call Controller to calculate the Quotations making up the ratio. Use the ratio quotations then.
-		for(Quotation quotation: instrument.getQuotationsSortedByDate()) {
+		dataset = this.getRsLineDataset(rsInstrumentId, instrument);
+		
+        //Do not begin y-Axis at zero. Use lowest value of provided dataset instead.
+        valueAxis.setAutoRangeIncludesZero(false);
+        
+        rsLinePlot = new XYPlot(dataset, timeAxis, valueAxis, null);
+        rsLinePlot.setRenderer(rsLineRenderer);
+        
+		return rsLinePlot;
+	}
+	
+	
+	/**
+	 * Constructs a XYDataset for the RS line.
+	 * 
+	 * @param rsInstrumentId The ID of the Instrument for RS determination.
+	 * @param instrument The Instrument for which the Price Volume chart is displayed.
+	 * @return A dataset building the values of the RS line (price ratio).
+	 * @throws Exception Failed to construct dataset of RS line.
+	 */
+	private XYDataset getRsLineDataset(final Integer rsInstrumentId, final Instrument instrument) throws Exception {
+		List<Quotation> ratioQuotations;
+		RatioCalculationController ratioCalculationController = new RatioCalculationController();
+		Instrument divisorInstrument = new Instrument();
+		TimeSeries timeSeries = new TimeSeries("");
+		TimeZone timeZone = TimeZone.getDefault();
+		TimeSeriesCollection timeSeriesCollection = new TimeSeriesCollection(timeZone);
+		
+		divisorInstrument.setQuotations(this.quotationDAO.getQuotationsOfInstrument(rsInstrumentId));
+		ratioQuotations = ratioCalculationController.getRatios(instrument, divisorInstrument);
+		
+		for(Quotation quotation: ratioQuotations) {
 			timeSeries.add(new Day(quotation.getDate()), quotation.getClose());
 		}
 		
 		timeSeriesCollection.addSeries(timeSeries);
         timeSeriesCollection.setXPosition(TimePeriodAnchor.MIDDLE);
 		
-        //Do not begin y-Axis at zero. Use lowest value of provided dataset instead.
-        valueAxis.setAutoRangeIncludesZero(false);
-        
-        rsLinePlot = new XYPlot(timeSeriesCollection, timeAxis, valueAxis, null);
-        rsLinePlot.setRenderer(rsLineRenderer);
-        
-		return rsLinePlot;
+		return timeSeriesCollection;
 	}
 }
