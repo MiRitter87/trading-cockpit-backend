@@ -60,7 +60,7 @@ public class ChartService {
 			streamingOutput = new StreamingOutput() {
 				@Override
 				public void write(OutputStream output) throws IOException, WebApplicationException {
-					ChartUtils.writeChartAsPNG(output, chart, 800, 600);
+					ChartUtils.writeChartAsPNG(output, chart, 1600, 700);
 				}
 			};
 		} catch (Exception exception) {
@@ -89,7 +89,7 @@ public class ChartService {
 			streamingOutput = new StreamingOutput() {
 				@Override
 				public void write(OutputStream output) throws IOException, WebApplicationException {
-					ChartUtils.writeChartAsPNG(output, chart, 800, 600);
+					ChartUtils.writeChartAsPNG(output, chart, 1600, 700);
 				}
 			};
 		} catch (Exception exception) {
@@ -121,7 +121,7 @@ public class ChartService {
 			streamingOutput = new StreamingOutput() {
 				@Override
 				public void write(OutputStream output) throws IOException, WebApplicationException {
-					ChartUtils.writeChartAsPNG(output, chart, 1600, 600);
+					ChartUtils.writeChartAsPNG(output, chart, 1600, 700);
 				}
 			};
 		} 
@@ -158,7 +158,7 @@ public class ChartService {
 			streamingOutput = new StreamingOutput() {
 				@Override
 				public void write(OutputStream output) throws IOException, WebApplicationException {
-					ChartUtils.writeChartAsPNG(output, chart, 1600, 600);
+					ChartUtils.writeChartAsPNG(output, chart, 1600, 700);
 				}
 			};
 		} 
@@ -192,7 +192,7 @@ public class ChartService {
 			streamingOutput = new StreamingOutput() {
 				@Override
 				public void write(OutputStream output) throws IOException, WebApplicationException {
-					ChartUtils.writeChartAsPNG(output, chart, 800, 600);
+					ChartUtils.writeChartAsPNG(output, chart, 1600, 700);
 				}
 			};
 		} catch (Exception exception) {
@@ -221,7 +221,7 @@ public class ChartService {
 			streamingOutput = new StreamingOutput() {
 				@Override
 				public void write(OutputStream output) throws IOException, WebApplicationException {
-					ChartUtils.writeChartAsPNG(output, chart, 800, 600);
+					ChartUtils.writeChartAsPNG(output, chart, 1600, 700);
 				}
 			};
 		} catch (Exception exception) {
@@ -250,7 +250,7 @@ public class ChartService {
 			streamingOutput = new StreamingOutput() {
 				@Override
 				public void write(OutputStream output) throws IOException, WebApplicationException {
-					ChartUtils.writeChartAsPNG(output, chart, 1600, 600);
+					ChartUtils.writeChartAsPNG(output, chart, 1600, 700);
 				}
 			};
 		}
@@ -297,7 +297,7 @@ public class ChartService {
 			streamingOutput = new StreamingOutput() {
 				@Override
 				public void write(OutputStream output) throws IOException, WebApplicationException {
-					ChartUtils.writeChartAsPNG(output, chart, 1600, 600);
+					ChartUtils.writeChartAsPNG(output, chart, 1600, 700);
 				}
 			};
 		}
