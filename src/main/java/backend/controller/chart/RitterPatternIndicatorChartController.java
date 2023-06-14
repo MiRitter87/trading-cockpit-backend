@@ -56,6 +56,7 @@ public class RitterPatternIndicatorChartController extends ChartController {
 		);
 			
 		this.addHorizontalLine(chart.getXYPlot(), 0);
+		this.applyBackgroundTheme(chart);
 			
 		return chart;
 	}

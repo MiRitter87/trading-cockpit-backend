@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
@@ -294,5 +295,20 @@ public abstract class ChartController {
 		}
 		
 		return exclusionDates;
+	}
+	
+	
+	/**
+	 * Applies a custom theme to the given chart.
+	 * 
+	 * @param chart The chart.
+	 */
+	protected void applyBackgroundTheme(JFreeChart chart) {
+		XYPlot chartPlot;
+		
+		chartPlot = chart.getXYPlot();
+		chartPlot.setBackgroundPaint(Color.WHITE);
+		chartPlot.setDomainGridlinePaint(Color.BLACK);
+		chartPlot.setRangeGridlinePaint(Color.BLACK);
 	}
 }

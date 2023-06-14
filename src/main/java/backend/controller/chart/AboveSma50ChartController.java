@@ -38,6 +38,8 @@ public class AboveSma50ChartController extends StatisticChartController {
 			null, null,	dataset, true, true, false
 		);
 		
+		this.applyBackgroundTheme(chart);
+		
 		return chart;
 	}
 	

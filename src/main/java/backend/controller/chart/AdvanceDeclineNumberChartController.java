@@ -38,6 +38,8 @@ public class AdvanceDeclineNumberChartController extends StatisticChartControlle
 			null, null,	dataset, true, true, false
 		);
 		
+		this.applyBackgroundTheme(chart);
+		
 		return chart;
 	}
 	
