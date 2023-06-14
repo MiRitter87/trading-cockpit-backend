@@ -139,6 +139,9 @@ public abstract class ChartController {
 		candlestickRenderer.setDrawVolume(false);
 		candleStickSubplot.setRenderer(candlestickRenderer);
 		
+		//Candles having a black border.
+		candlestickRenderer.setSeriesPaint(0, Color.BLACK);
+		
 		return candleStickSubplot;
 	}
 	
@@ -156,7 +159,9 @@ public abstract class ChartController {
 		XYBarRenderer volumeRenderer = new XYBarRenderer();
         NumberAxis volumeAxis = new NumberAxis();
 		
-        volumeRenderer.setShadowVisible(false);
+        volumeRenderer.setShadowVisible(false);			//Volume bars without shadow.
+        volumeRenderer.setSeriesPaint(0, Color.BLUE);	//Blue volume bars.
+        
 		XYPlot volumeSubplot = new XYPlot(volumeData, timeAxis, volumeAxis, volumeRenderer);
 		
 		return volumeSubplot;

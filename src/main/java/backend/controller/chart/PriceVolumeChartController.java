@@ -11,7 +11,6 @@ import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.CombinedDomainXYPlot;
 import org.jfree.chart.plot.DatasetRenderingOrder;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.time.Day;
@@ -65,7 +64,6 @@ public class PriceVolumeChartController extends ChartController {
         	volumeSubplot = this.getVolumePlot(instrument, dateAxis);
         	this.addMovingAverageVolume(instrument, withSma30Volume, volumeSubplot);        	
         	this.clipVolumeAt2TimesAverage(volumeSubplot, instrument);
-        	this.setVolumeTheme(volumeSubplot);
         }
         
         indicatorSubplot = this.getIndicatorPlot(indicator, rsInstrumentId, instrument, dateAxis);
@@ -391,17 +389,5 @@ public class PriceVolumeChartController extends ChartController {
         timeSeriesCollection.setXPosition(TimePeriodAnchor.MIDDLE);
 		
 		return timeSeriesCollection;
-	}
-	
-	
-	/**
-	 * Sets the theme of the volume subplot.
-	 * 
-	 * @param volumeSubplot The volume subplot.
-	 */
-	private void setVolumeTheme(XYPlot volumeSubplot) {
-		XYBarRenderer volumeRenderer = (XYBarRenderer) volumeSubplot.getRenderer();
-		
-		volumeRenderer.setSeriesPaint(0, Color.BLUE);
 	}
 }
