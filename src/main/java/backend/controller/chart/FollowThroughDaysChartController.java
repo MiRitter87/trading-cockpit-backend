@@ -166,6 +166,8 @@ public class FollowThroughDaysChartController extends ChartController {
         NumberAxis failedFTDAxis = new NumberAxis();
 		
 		XYBarRenderer failedFTDRenderer = new XYBarRenderer();
+		failedFTDRenderer.setShadowVisible(false);
+		
 		XYPlot failedFTDSubplot = new XYPlot(distributionDaySumData, timeAxis, failedFTDAxis, failedFTDRenderer);
 		
 		return failedFTDSubplot;

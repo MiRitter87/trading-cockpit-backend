@@ -73,6 +73,8 @@ public class DistributionDaysChartController extends ChartController {
         NumberAxis distributionDaySumAxis = new NumberAxis();
 		
 		XYBarRenderer distributionDaySumRenderer = new XYBarRenderer();
+		distributionDaySumRenderer.setShadowVisible(false);
+		
 		XYPlot distributionDaySumSubplot = new XYPlot(distributionDaySumData, timeAxis, distributionDaySumAxis, distributionDaySumRenderer);
 		
 		return distributionDaySumSubplot;
