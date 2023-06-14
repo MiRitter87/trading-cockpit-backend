@@ -4,9 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jfree.chart.ChartTheme;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.StandardChartTheme;
 import org.jfree.chart.annotations.XYTextAnnotation;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
@@ -48,7 +46,6 @@ public class FollowThroughDaysChartController extends ChartController {
 		Instrument instrument = this.getInstrumentWithQuotations(instrumentId);
 		JFreeChart chart;
 		DateAxis dateAxis = this.getDateAxis(instrument);	//The shared time axis of all subplots.
-        ChartTheme currentTheme = new StandardChartTheme("JFree");
         
 		XYPlot candleStickSubplot = this.getCandlestickPlot(instrument, dateAxis);
 		XYPlot volumeSubplot = this.getVolumePlot(instrument, dateAxis);
@@ -65,7 +62,6 @@ public class FollowThroughDaysChartController extends ChartController {
 		
 		//Build chart based on combined Plot.
 		chart = new JFreeChart(instrument.getName(), JFreeChart.DEFAULT_TITLE_FONT, combinedPlot, true);
-		currentTheme.apply(chart);
 		
 		return chart;
 	}
