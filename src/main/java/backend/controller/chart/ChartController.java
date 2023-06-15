@@ -2,6 +2,7 @@ package backend.controller.chart;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.text.NumberFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -12,6 +13,7 @@ import java.util.ResourceBundle;
 
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
+import org.jfree.chart.axis.LogAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.ValueMarker;
@@ -130,11 +132,13 @@ public abstract class ChartController {
 	 */
 	protected XYPlot getCandlestickPlot(final Instrument instrument, final ValueAxis timeAxis) throws Exception {
 		OHLCDataset instrumentPriceData = this.getInstrumentOHLCDataset(instrument);
-		NumberAxis valueAxisCandlestick = new NumberAxis();
+		LogAxis valueAxisCandlestick = new LogAxis("");
+		NumberFormat logAxisNumberFormat = NumberFormat.getInstance();
         CandlestickRenderer candlestickRenderer = new CandlestickRenderer();
         
-        //Do not begin y-Axis at zero. Use lowest value of provided Dataset instead.
-        valueAxisCandlestick.setAutoRangeIncludesZero(false);
+        //Customize LogAxis for price.
+        logAxisNumberFormat.setMaximumFractionDigits(2);
+        valueAxisCandlestick.setNumberFormatOverride(logAxisNumberFormat);
 		
 		XYPlot candleStickSubplot = new XYPlot(instrumentPriceData, timeAxis, valueAxisCandlestick, null);
 		candlestickRenderer.setDrawVolume(false);
