@@ -13,6 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import backend.controller.DataProvider;
+import backend.controller.RatioCalculationController;
 import backend.dao.DAOManager;
 import backend.dao.ObjectUnchangedException;
 import backend.dao.instrument.InstrumentDAO;
@@ -248,36 +249,32 @@ public class ScanThread extends Thread {
 	 * @param instrument The Instrument to be updated.
 	 */
 	private void updateQuotationsRatio(Instrument instrument) {
-		Quotation divisorQuotation, existingQuotation, newQuotation;
+		Quotation existingQuotation;
 		java.util.List<Quotation> newQuotations = new ArrayList<>();
+		java.util.List<Quotation> ratioQuotations = new ArrayList<>();
+		RatioCalculationController ratioCalculationController = new RatioCalculationController();
 		
-		//1. Verify existing quotations of dividend and divisor.
+		//1. Calculate ratio quotations based on dividend and divisor quotations.
 		try {
 			instrument.getDividend().setQuotations(this.quotationDAO.getQuotationsOfInstrument(instrument.getDividend().getId()));
 			instrument.getDivisor().setQuotations(this.quotationDAO.getQuotationsOfInstrument(instrument.getDivisor().getId()));
-			this.checkQuotationsExistForRatio(instrument);
-		} 
-		catch (Exception e) {
+			ratioQuotations = ratioCalculationController.getRatios(instrument.getDividend(), instrument.getDivisor());
+		} catch (Exception exception) {
 			this.scan.addIncompleteInstrument(instrument);
-			logger.warn("Could not calculate ratio for instrument with ID " +instrument.getId() + ". " +e.getMessage());
+			logger.warn("Could not calculate ratio for instrument with ID " +instrument.getId() + ". " +exception.getMessage());
 			return;
 		}
 		
-		//2. Calculate ratio quotations based on dividend and divisor quotations.
+		//2. Update quotations of ratio Instrument.
 		try {
 			instrument.setQuotations(this.quotationDAO.getQuotationsOfInstrument(instrument.getId()));
 			
-			for(Quotation dividendQuotation: instrument.getDividend().getQuotationsSortedByDate()) {
-				divisorQuotation = instrument.getDivisor().getQuotationByDate(dividendQuotation.getDate());
-				
-				if(divisorQuotation == null)
-					continue;
-				
-				existingQuotation = instrument.getQuotationByDate(dividendQuotation.getDate());
+			for(Quotation ratioQuotation: ratioQuotations) {
+				existingQuotation = instrument.getQuotationByDate(ratioQuotation.getDate());
 				
 				if(existingQuotation == null) {
-					newQuotation = this.getRatioQuotation(instrument, dividendQuotation, divisorQuotation);
-					newQuotations.add(newQuotation);
+					ratioQuotation.setInstrument(instrument);
+					newQuotations.add(ratioQuotation);
 				}
 			}
 			
@@ -285,10 +282,9 @@ public class ScanThread extends Thread {
 				this.quotationDAO.insertQuotations(newQuotations);
 			
 			this.scan.getIncompleteInstruments().remove(instrument);
-		}
-		catch(Exception e) {
+		} catch (Exception exception) {
 			this.scan.addIncompleteInstrument(instrument);			
-			logger.error("Failed to update quotations of instrument with ID " +instrument.getId(), e);
+			logger.error("Failed to update quotations of instrument with ID " +instrument.getId(), exception);
 		}
 	}
 	
@@ -446,55 +442,5 @@ public class ScanThread extends Thread {
 		
 		if(quotationAgeDays >= dayThreshold)
 			logger.warn(MessageFormat.format("The newest Quotation data of symbol {0} are {1} days old.", symbol, quotationAgeDays));
-	}
-	
-	
-	/**
-	 * Checks if quotations exist for both instruments of a ratio.
-	 * Logs a message if at least one Instrument of the ratio does not have any quotations defined.
-	 * 
-	 * @param instrument The Instrument that is the ratio.
-	 * @throws Exception In case no quotations exist for at least one Instrument.
-	 */
-	private void checkQuotationsExistForRatio(final Instrument instrument) throws Exception {
-		if(instrument.getDividend().getQuotations().size() == 0)
-			throw new Exception("No quotations exist for Instrument with ID " +instrument.getDividend().getId());
-		
-		if(instrument.getDivisor().getQuotations().size() == 0)
-			throw new Exception("No quotations exist for Instrument with ID " +instrument.getDivisor().getId());
-	}
-	
-	
-	/**
-	 * Calculates a Quotation as ratio between two quotation.s
-	 * 
-	 * @param Instrument The Instrument for which the Quotation is being calculated.
-	 * @param dividendQuotation The dividend.
-	 * @param divisorQuotation The divisor.
-	 * @return The Quotation as ratio between dividend and divisor.
-	 */
-	private Quotation getRatioQuotation(final Instrument instrument, final Quotation dividendQuotation, final Quotation divisorQuotation) {
-		Quotation ratioQuotation = new Quotation();
-		BigDecimal ratioPrice;
-		
-		ratioQuotation.setInstrument(instrument);
-		ratioQuotation.setDate(dividendQuotation.getDate());
-		ratioQuotation.setCurrency(dividendQuotation.getCurrency());
-		
-		//A calculated ratio can consist of lot of values below 1.
-		//In this case rounding to two decimal places is not enough.
-		ratioPrice = dividendQuotation.getOpen().divide(divisorQuotation.getOpen(), 3, RoundingMode.HALF_UP);
-		ratioQuotation.setOpen(ratioPrice);
-		
-		ratioPrice = dividendQuotation.getHigh().divide(divisorQuotation.getHigh(), 3, RoundingMode.HALF_UP);
-		ratioQuotation.setHigh(ratioPrice);
-		
-		ratioPrice = dividendQuotation.getLow().divide(divisorQuotation.getLow(), 3, RoundingMode.HALF_UP);
-		ratioQuotation.setLow(ratioPrice);
-		
-		ratioPrice = dividendQuotation.getClose().divide(divisorQuotation.getClose(), 3, RoundingMode.HALF_UP);
-		ratioQuotation.setClose(ratioPrice);
-		
-		return ratioQuotation;
 	}
 }
