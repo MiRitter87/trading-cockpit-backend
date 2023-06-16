@@ -1,5 +1,6 @@
 package backend.model.instrument;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -132,5 +133,48 @@ public class QuotationArray {
 	 */
 	public void sortQuotationsBySymbol() {
 		Collections.sort(this.quotations, new QuotationSymbolComparator());
+	}
+	
+	
+	/**
+	 * Determines the price high of all quotations within the QuotationArray.
+	 * 
+	 * @return The price high.
+	 */
+	public BigDecimal getPriceHigh() {
+		BigDecimal high = new BigDecimal(0);
+		
+		for(Quotation quotation: this.quotations) {
+			if(quotation.getHigh().doubleValue() > high.doubleValue())
+				high = quotation.getHigh();
+		}
+		
+		return high;
+	}
+	
+	
+	/**
+	 * Determines the price low of all quotations within the QuotationArray.
+	 * 
+	 * @return The price low.
+	 */
+	public BigDecimal getPriceLow() {
+		BigDecimal low = new BigDecimal(0);
+		Quotation quotation;
+		
+		if(this.quotations.size() > 0) {
+			quotation = this.quotations.get(0);
+			low = quotation.getLow();
+		}
+		else {			
+			return low;
+		}
+		
+		for(Quotation tempQuotation: this.quotations) {
+			if(tempQuotation.getLow().doubleValue() < low.doubleValue())
+				low = tempQuotation.getLow();
+		}
+		
+		return low;
 	}
 }
