@@ -15,6 +15,8 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.LogAxis;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.NumberTickUnit;
+import org.jfree.chart.axis.TickUnits;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
@@ -136,9 +138,10 @@ public abstract class ChartController {
 		NumberFormat logAxisNumberFormat = NumberFormat.getInstance();
         CandlestickRenderer candlestickRenderer = new CandlestickRenderer();
         
-        //Customize LogAxis for price.
+        //Customize LogarithmicAxis for price.
         logAxisNumberFormat.setMaximumFractionDigits(2);
         valueAxisCandlestick.setNumberFormatOverride(logAxisNumberFormat);
+        valueAxisCandlestick.setStandardTickUnits(this.getPriceAxisTickUnits(instrument));
 		
 		XYPlot candleStickSubplot = new XYPlot(instrumentPriceData, timeAxis, valueAxisCandlestick, null);
 		candlestickRenderer.setDrawVolume(false);
@@ -314,5 +317,32 @@ public abstract class ChartController {
 		chartPlot.setBackgroundPaint(Color.WHITE);
 		chartPlot.setDomainGridlinePaint(Color.BLACK);
 		chartPlot.setRangeGridlinePaint(Color.BLACK);
+	}
+	
+	
+	/**
+	 * Determines the TickUnits for the logarithmic price axis of an Instrument. Uses the base 10 logarithm to calculate TickUnits.
+	 * 
+	 * @param instrument The Instrument containing the quotations that define the trading history.
+	 * @return TickUnits to be displayed in a logarithmic chart.
+	 */
+	private TickUnits getPriceAxisTickUnits(final Instrument instrument) {
+		TickUnits tickUnits = new TickUnits();
+		
+		tickUnits.add(new NumberTickUnit(Math.log10(30)));
+		
+		//TODO Implement method
+		
+		//Try to display 20 Tick units
+		
+		//Determine price high and low of trading history
+		
+		//Subtract low from high
+		
+		//Divide difference by 20
+		
+		//If difference between x and y take z increment size
+		
+		return tickUnits;
 	}
 }
