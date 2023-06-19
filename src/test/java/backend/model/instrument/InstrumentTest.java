@@ -7,11 +7,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.math.BigDecimal;
 import java.text.MessageFormat;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -522,22 +518,6 @@ public class InstrumentTest {
 		} catch (Exception e) {
 			fail("No general exception should have occurred. Just the LocalizedException.");
 		}
-	}
-	
-	
-	@Test
-	/**
-	 * Tests the determination of the age of the instruments newest Quotation.
-	 */
-	public void testGetAgeOfNewestQuotationInDays() {
-		Date currentDate = new Date();
-		LocalDate currentDateLocal = LocalDate.ofInstant(currentDate.toInstant(), ZoneId.systemDefault());
-		LocalDate newestQuotationDateLocal = LocalDate.ofInstant(this.quotation2.getDate().toInstant(), ZoneId.systemDefault());
-		long actualNumberDays, expectedNumberDays = ChronoUnit.DAYS.between(newestQuotationDateLocal, currentDateLocal);
-		
-		actualNumberDays = this.instrument.getAgeOfNewestQuotationInDays();
-		
-		assertEquals(expectedNumberDays, actualNumberDays);
 	}
 	
 	

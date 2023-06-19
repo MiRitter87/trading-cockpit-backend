@@ -24,6 +24,7 @@ import backend.dao.scan.ScanDAO;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
+import backend.model.instrument.QuotationArray;
 import backend.model.scan.Scan;
 import backend.model.scan.ScanCompletionStatus;
 import backend.model.scan.ScanExecutionStatus;
@@ -434,11 +435,11 @@ public class ScanThread extends Thread {
 	 * @param dayThreshold The threshold in days used to log.
 	 */
 	private void checkAgeOfNewestQuotation(final String symbol, final java.util.List<Quotation> quotations, final int dayThreshold) {
-		Instrument instrument = new Instrument();
+		QuotationArray quotationArray = new QuotationArray();
 		long quotationAgeDays;
-				
-		instrument.setQuotations(quotations);
-		quotationAgeDays = instrument.getAgeOfNewestQuotationInDays();
+		
+		quotationArray.setQuotations(quotations);
+		quotationAgeDays = quotationArray.getAgeOfNewestQuotationInDays();
 		
 		if(quotationAgeDays >= dayThreshold)
 			logger.warn(MessageFormat.format("The newest Quotation data of symbol {0} are {1} days old.", symbol, quotationAgeDays));

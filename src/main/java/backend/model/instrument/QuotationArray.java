@@ -1,6 +1,9 @@
 package backend.model.instrument;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -117,6 +120,32 @@ public class QuotationArray {
 		}
 		
 		return false;
+	}
+	
+	
+	/**
+	 * Gets the age of the newest Quotation in days.
+	 * 
+	 * @return The age of the newest Quotation in days.
+	 */
+	public long getAgeOfNewestQuotationInDays() {
+		Quotation newestQuotation;
+		Date currentDate = new Date();
+		LocalDate currentDateLocal = LocalDate.ofInstant(currentDate.toInstant(), ZoneId.systemDefault());
+		LocalDate newestQuotationDateLocal;
+		long days;
+		
+		if(this.quotations == null || this.quotations.size() == 0)
+			return 0;
+		
+		this.sortQuotationsByDate();
+		
+		newestQuotation = this.quotations.get(0);
+		newestQuotationDateLocal = LocalDate.ofInstant(newestQuotation.getDate().toInstant(), ZoneId.systemDefault());
+		
+		days = ChronoUnit.DAYS.between(newestQuotationDateLocal, currentDateLocal);
+		
+		return days;
 	}
 	
 	

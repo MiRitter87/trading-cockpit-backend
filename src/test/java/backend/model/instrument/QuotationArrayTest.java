@@ -1,14 +1,20 @@
 package backend.model.instrument;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import backend.dao.quotation.QuotationProviderDAO;
 import backend.dao.quotation.QuotationProviderYahooDAOStub;
@@ -76,5 +82,28 @@ public class QuotationArrayTest {
 	 */
 	private void tearDown() {
 		this.quotationArray = null;
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the determination of the age of the newest Quotation within the QuotationArray.
+	 */
+	public void testGetAgeOfNewestQuotationInDays() {
+		Date currentDate = new Date();
+		LocalDate currentDateLocal = LocalDate.ofInstant(currentDate.toInstant(), ZoneId.systemDefault());
+		LocalDate newestQuotationDateLocal;
+		long actualNumberDays, expectedNumberDays;
+		Quotation newestQuotation;
+		
+		this.quotationArray.sortQuotationsByDate();
+		newestQuotation = this.quotationArray.getQuotations().get(0);
+		
+		newestQuotationDateLocal = LocalDate.ofInstant(newestQuotation.getDate().toInstant(), ZoneId.systemDefault());
+		expectedNumberDays = ChronoUnit.DAYS.between(newestQuotationDateLocal, currentDateLocal);
+		
+		actualNumberDays = this.quotationArray.getAgeOfNewestQuotationInDays();
+		
+		assertEquals(expectedNumberDays, actualNumberDays);
 	}
 }
