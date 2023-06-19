@@ -1,8 +1,6 @@
 package backend.dao.quotation;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -15,12 +13,9 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import backend.controller.scan.IndicatorCalculator;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
-import backend.model.instrument.QuotationArray;
-import backend.tools.DateTools;
 import backend.webservice.ScanTemplate;
 
 /**
@@ -38,6 +33,11 @@ public class QuotationHibernateDAO implements QuotationDAO {
 	 * The size for database batch operations.
 	 */
 	private static final int BATCH_SIZE = 20;
+	
+	/**
+	 * Processor that performs more complex tasks during the template-based query process.
+	 */
+	private ScanTemplateProcessor scanTemplateProcessor;
 
 	
 	/**
@@ -47,6 +47,7 @@ public class QuotationHibernateDAO implements QuotationDAO {
 	 */
 	public QuotationHibernateDAO(final EntityManagerFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
+		this.scanTemplateProcessor = new ScanTemplateProcessor(this);
 	}
 
 	
@@ -353,92 +354,10 @@ public class QuotationHibernateDAO implements QuotationDAO {
 			entityManager.close();			
 		}
 		
-		this.fillTransientAttributes(instrumentType, quotations);
-		this.templateBasedPostProcessing(scanTemplate, startDate, quotations);
+		this.scanTemplateProcessor.fillTransientAttributes(instrumentType, quotations);
+		this.scanTemplateProcessor.templateBasedPostProcessing(scanTemplate, startDate, quotations);
 		
 		return quotations;
-	}
-	
-	
-	/**
-	 * Fills transient attributes of the given quotations.
-	 * 
-	 * @param instrumentType The InstrumentType of the given quotations.
-	 * @param quotations The quotations with their referenced data whose transient attributes are to be filled.
-	 * @throws Exception In case an error occurred during data determination.
-	 */
-	private void fillTransientAttributes(final InstrumentType instrumentType, List<Quotation> quotations) throws Exception {
-		QuotationArray sectorQuotations = new QuotationArray();
-		QuotationArray industryGroupQuotations = new QuotationArray();
-		List<Quotation> quotationsOfInstrument;
-		Quotation sectorQuotation, industryGroupQuotation;
-		
-		if(quotations.size() == 0 || instrumentType != InstrumentType.STOCK)
-			return;
-		
-		sectorQuotations.setQuotations(this.getRecentQuotations(InstrumentType.SECTOR));
-		industryGroupQuotations.setQuotations(this.getRecentQuotations(InstrumentType.IND_GROUP));
-
-		//Determine and set the sector and industry group RS number for each quotation.
-		for(Quotation quotation : quotations) {
-			if(quotation.getInstrument().getSector() != null) {
-				quotationsOfInstrument = sectorQuotations.getQuotationsByInstrumentId(quotation.getInstrument().getSector().getId());
-				
-				if(quotationsOfInstrument.size() == 1)
-					sectorQuotation = quotationsOfInstrument.get(0);
-				else
-					sectorQuotation = null;
-				
-				if(sectorQuotation != null && this.areQuotationsOfSameDay(quotation, sectorQuotation))
-					quotation.getIndicator().setRsNumberSector(sectorQuotation.getIndicator().getRsNumber());
-			}
-			
-			if(quotation.getInstrument().getIndustryGroup() != null) {
-				quotationsOfInstrument = industryGroupQuotations.getQuotationsByInstrumentId(quotation.getInstrument().getIndustryGroup().getId());
-				
-				if(quotationsOfInstrument.size() == 1)
-					industryGroupQuotation = quotationsOfInstrument.get(0);
-				else
-					industryGroupQuotation = null;
-				
-				if(industryGroupQuotation != null && this.areQuotationsOfSameDay(quotation, industryGroupQuotation))
-					quotation.getIndicator().setRsNumberIndustryGroup(industryGroupQuotation.getIndicator().getRsNumber());
-			}
-		}
-	}
-	
-	
-	/**
-	 * Performs post processing tasks on the given quotations based on the scan template.
-	 * 
-	 * @param scanTemplate The scan template.
-	 * @param startDateAsString The start date for calculation of the RS number.
-	 * @param quotations The quotations on which the post processing is performed.
-	 * @throws Exception Post processing failed.
-	 */
-	private void templateBasedPostProcessing(final ScanTemplate scanTemplate, final String startDateAsString, List<Quotation> quotations) throws Exception {		
-		if(scanTemplate != ScanTemplate.RS_SINCE_DATE)
-			return;
-		
-		IndicatorCalculator indicatorCalculator = new IndicatorCalculator();
-		Date startDate = DateTools.convertStringToDate(startDateAsString);
-		QuotationArray quotationsOfInstrument = new QuotationArray();
-		Quotation quotationOfDate;
-		int quotationOfDateIndex;
-		float rsPercent;
-		
-		//Calculate the price performance from the start date to the current date.
-		for(Quotation currentQuotation: quotations) {
-			quotationsOfInstrument.setQuotations(this.getQuotationsOfInstrument(currentQuotation.getInstrument().getId()));
-			quotationOfDateIndex = quotationsOfInstrument.getIndexOfQuotationWithDate(startDate);
-			quotationOfDate = quotationsOfInstrument.getQuotations().get(quotationOfDateIndex);
-			
-			rsPercent = indicatorCalculator.getPerformance(currentQuotation, quotationOfDate);
-			currentQuotation.getIndicator().setRsPercentSum(rsPercent);
-		}
-		
-		//Calculate the RS numbers based on the newly calculated performance.
-		indicatorCalculator.calculateRsNumbers(quotations);
 	}
 	
 	
@@ -631,31 +550,5 @@ public class QuotationHibernateDAO implements QuotationDAO {
 				+ "quotation_id IN :quotationIds "
 				+ "AND q.indicator IS NOT NULL "
 				+ "AND r.distanceTo52WeekLow <= 5 ");
-	}
-	
-	
-	/**
-	 * Checks if both quotations are of the same day.
-	 * 
-	 * @param quotation1 The first Quotation.
-	 * @param quotation2 The second Quotation.
-	 * @return true, if both quotations are of the same day.
-	 */
-	private boolean areQuotationsOfSameDay(final Quotation quotation1, final Quotation quotation2) {
-		Calendar date1 = Calendar.getInstance();
-		Calendar date2 = Calendar.getInstance();
-		
-		date1.setTimeInMillis(quotation1.getDate().getTime());
-		date2.setTimeInMillis(quotation2.getDate().getTime());
-		
-		if(	date1.get(Calendar.YEAR) == date2.get(Calendar.YEAR) &&
-			date1.get(Calendar.MONTH) == date2.get(Calendar.MONTH) &&
-			date1.get(Calendar.DAY_OF_MONTH) == date2.get(Calendar.DAY_OF_MONTH)) {
-			
-			return true;
-		}
-		else {
-			return false;
-		}
 	}
 }
