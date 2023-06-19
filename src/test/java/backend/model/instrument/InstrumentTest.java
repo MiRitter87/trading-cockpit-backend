@@ -25,7 +25,7 @@ import backend.model.StockExchange;
 import backend.tools.test.ValidationMessageProvider;
 
 /**
- * Tests the instrument model.
+ * Tests the Instrument model.
  * 
  * @author Michael
  */
