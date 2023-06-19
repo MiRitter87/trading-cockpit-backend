@@ -3,6 +3,7 @@ package backend.controller.chart;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.annotations.XYTextAnnotation;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.LogAxis;
 import org.jfree.chart.axis.NumberAxis;
@@ -147,6 +149,8 @@ public abstract class ChartController {
 		//Candles having a black border.
 		candlestickRenderer.setSeriesPaint(0, Color.BLACK);
 		
+		this.addMostRecentDate(candleStickSubplot, instrument);
+		
 		return candleStickSubplot;
 	}
 	
@@ -224,6 +228,38 @@ public abstract class ChartController {
 	protected void addHorizontalLine(XYPlot plot, final double horizontalLinePosition) {
 		ValueMarker valueMarker = new ValueMarker(horizontalLinePosition, Color.BLACK, new BasicStroke(2), null, null, 1.0f);
 		plot.addRangeMarker(valueMarker);
+	}
+	
+	
+	/**
+	 * Adds the date of the most recent Quotation of the Instrument to the given plot.
+	 * 
+	 * @param plot The XYPlot to which the date is added.
+	 * @param Instrument instrument The instrument containing the quotations.
+	 */
+	protected void addMostRecentDate(XYPlot plot, final Instrument instrument) {
+		QuotationArray quotationArray = new QuotationArray();
+		String datePattern = "dd.MM.yyyy";
+		String formattedDate = "";
+		SimpleDateFormat dateFormat = new SimpleDateFormat(datePattern);
+		Quotation oldestQuotation, newestQuotation;
+		double priceHigh;
+		XYTextAnnotation dateAnnotation;
+		
+		if(instrument.getQuotations().size() == 0)
+			return;
+		
+		quotationArray.setQuotations(instrument.getQuotations());
+		quotationArray.sortQuotationsByDate();
+		
+		newestQuotation = quotationArray.getQuotations().get(0);
+		formattedDate = dateFormat.format(newestQuotation.getDate());
+		
+		oldestQuotation = quotationArray.getQuotations().get(quotationArray.getQuotations().size() - 1);		
+		priceHigh = quotationArray.getPriceHigh().doubleValue();
+		
+		dateAnnotation = new XYTextAnnotation(formattedDate, oldestQuotation.getDate().getTime(), priceHigh);
+		plot.addAnnotation(dateAnnotation);
 	}
 	
 	
