@@ -87,10 +87,9 @@ public class InstrumentCheckController {
 	 * @throws Exception Health check failed.
 	 */
 	public Protocol checkInstrument(final Integer instrumentId, final Date startDate) throws NoQuotationsExistException, Exception {
-		QuotationArray quotations = new QuotationArray();
+		QuotationArray quotations = new QuotationArray(this.quotationDAO.getQuotationsOfInstrument(instrumentId));
 		Protocol protocol = new Protocol();
 		
-		quotations.setQuotations(this.quotationDAO.getQuotationsOfInstrument(instrumentId));
 		quotations.sortQuotationsByDate();
 		this.checkQuotationsExistAfterStartDate(startDate, quotations);
 		

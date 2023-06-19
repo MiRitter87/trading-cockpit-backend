@@ -32,6 +32,16 @@ public class QuotationArray {
 	public QuotationArray() {
 		this.quotations = new ArrayList<>();
 	}
+	
+	
+	/**
+	 * Initializes the QuotationArray with the given quotations.
+	 * 
+	 * @param quotations The quotations.
+	 */
+	public QuotationArray(final List<Quotation> quotations) {
+		this.quotations = quotations;
+	}
 
 	
 	/**

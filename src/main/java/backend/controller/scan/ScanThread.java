@@ -435,10 +435,9 @@ public class ScanThread extends Thread {
 	 * @param dayThreshold The threshold in days used to log.
 	 */
 	private void checkAgeOfNewestQuotation(final String symbol, final java.util.List<Quotation> quotations, final int dayThreshold) {
-		QuotationArray quotationArray = new QuotationArray();
+		QuotationArray quotationArray = new QuotationArray(quotations);
 		long quotationAgeDays;
 		
-		quotationArray.setQuotations(quotations);
 		quotationAgeDays = quotationArray.getAgeOfNewestQuotationInDays();
 		
 		if(quotationAgeDays >= dayThreshold)

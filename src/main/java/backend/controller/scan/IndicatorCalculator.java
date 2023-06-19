@@ -34,10 +34,8 @@ public class IndicatorCalculator {
 	 * @return The Quotation with the calculated indicators.
 	 */
 	public Quotation calculateIndicators(final Instrument instrument, final Quotation quotation, boolean mostRecent) {
-		QuotationArray sortedQuotations = new QuotationArray();
+		QuotationArray sortedQuotations = new QuotationArray(instrument.getQuotationsSortedByDate());
 		Indicator indicator;
-		
-		sortedQuotations.setQuotations(instrument.getQuotationsSortedByDate());
 		
 		if(quotation.getIndicator() == null)
 			indicator = new Indicator();

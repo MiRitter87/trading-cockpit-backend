@@ -68,8 +68,7 @@ public class QuotationArrayTest {
 		
 		try {
 			quotations.addAll(quotationProviderYahooDAO.getQuotationHistory("DML", StockExchange.TSX, InstrumentType.STOCK, 1));
-			this.quotationArray = new QuotationArray();
-			this.quotationArray.setQuotations(quotations);
+			this.quotationArray = new QuotationArray(quotations);
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}

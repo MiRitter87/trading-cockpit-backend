@@ -238,7 +238,7 @@ public abstract class ChartController {
 	 * @param Instrument instrument The instrument containing the quotations.
 	 */
 	protected void addMostRecentDate(XYPlot plot, final Instrument instrument) {
-		QuotationArray quotationArray = new QuotationArray();
+		QuotationArray quotationArray = new QuotationArray(instrument.getQuotationsSortedByDate());
 		String datePattern = "dd.MM.yyyy";
 		String formattedDate = "";
 		SimpleDateFormat dateFormat = new SimpleDateFormat(datePattern);
@@ -248,9 +248,6 @@ public abstract class ChartController {
 		
 		if(instrument.getQuotations().size() == 0)
 			return;
-		
-		quotationArray.setQuotations(instrument.getQuotations());
-		quotationArray.sortQuotationsByDate();
 		
 		newestQuotation = quotationArray.getQuotations().get(0);
 		formattedDate = dateFormat.format(newestQuotation.getDate());
@@ -314,12 +311,9 @@ public abstract class ChartController {
 	 */
 	protected List<Date> getTimelineExclusionDates(final Instrument instrument) {
 		List<Date> exclusionDates = new ArrayList<>();
-		QuotationArray quotations = new QuotationArray();		
+		QuotationArray quotations = new QuotationArray(instrument.getQuotationsSortedByDate());		
 		Date oldestDate, newestDate;
 		LocalDate startDate, endDate;
-		
-		quotations.setQuotations(instrument.getQuotations());
-		quotations.sortQuotationsByDate();
 		
 		oldestDate = quotations.getQuotations().get(quotations.getQuotations().size() - 1).getDate();
 		newestDate = quotations.getQuotations().get(0).getDate();
