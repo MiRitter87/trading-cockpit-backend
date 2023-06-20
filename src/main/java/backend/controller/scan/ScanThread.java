@@ -218,7 +218,7 @@ public class ScanThread extends Thread {
 					this.quotationProviderDAO.getQuotationHistory(instrument.getSymbol(), instrument.getStockExchange(), instrument.getType(), 1);
 			
 			for(Quotation wsQuotation:wsQuotations) {
-				obsoleteQuotations.addAll(instrument.getOlderQuotationsOfSameDay(wsQuotation.getDate()));
+				obsoleteQuotations.addAll(instrument.getQuotationArray().getOlderQuotationsOfSameDay(wsQuotation.getDate()));
 				databaseQuotation = instrument.getQuotationByDate(wsQuotation.getDate());
 				
 				if(databaseQuotation == null) {

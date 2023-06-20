@@ -3,10 +3,12 @@ package backend.model.instrument;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -104,5 +106,39 @@ public class QuotationArrayTest {
 		actualNumberDays = this.quotationArray.getAgeOfNewestQuotationInDays();
 		
 		assertEquals(expectedNumberDays, actualNumberDays);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of quotations that are older than the given Quotation but still on the same day.
+	 */
+	public void testGetOlderQuotationsOfSameDay() {
+		List<Quotation> olderQuotationsSameDay;
+		Quotation olderQuotationOfSameDay, addedQuotation, quotation;
+		Calendar calendar = Calendar.getInstance();
+		
+		//The newest Quotation of a day.
+		quotation = this.quotationArray.getQuotations().get(0);
+		calendar.setTime(quotation.getDate());
+		calendar.add(Calendar.MINUTE, -1);
+		
+		//Add an additional Quotation to the array that is older but at the same day.
+		addedQuotation = new Quotation();
+		addedQuotation.setDate(calendar.getTime());
+		addedQuotation.setCurrency(quotation.getCurrency());
+		addedQuotation.setVolume(150000);
+		addedQuotation.setOpen(new BigDecimal(1.95));
+		addedQuotation.setHigh(new BigDecimal(2.05));
+		addedQuotation.setLow(new BigDecimal(1.95));
+		addedQuotation.setClose(new BigDecimal(2.00));
+		this.quotationArray.getQuotations().add(addedQuotation);
+		
+		olderQuotationsSameDay = this.quotationArray.getOlderQuotationsOfSameDay(quotation.getDate());
+		
+		assertEquals(1, olderQuotationsSameDay.size());
+		
+		olderQuotationOfSameDay = olderQuotationsSameDay.get(0);
+		assertEquals(addedQuotation, olderQuotationOfSameDay);
 	}
 }

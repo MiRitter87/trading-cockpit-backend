@@ -424,23 +424,6 @@ public class InstrumentTest {
 	
 	@Test
 	/**
-	 * Tests the retrieval of quotations that are older than the given Quotation but still on the same day.
-	 */
-	public void testGetOlderQuotationsOfSameDay() {
-		List<Quotation> olderQuotationsSameDay;
-		Quotation olderQuotationOfSameDay;
-		
-		olderQuotationsSameDay = this.instrument.getOlderQuotationsOfSameDay(this.quotation2.getDate());
-		
-		assertEquals(1, olderQuotationsSameDay.size());
-		
-		olderQuotationOfSameDay = olderQuotationsSameDay.get(0);
-		assertEquals(this.quotation3, olderQuotationOfSameDay);
-	}
-	
-	
-	@Test
-	/**
 	 * Tests referencing the sector of an Instrument with another Instrument of type stock.
 	 */
 	public void testReferenceSectorWithStock() {

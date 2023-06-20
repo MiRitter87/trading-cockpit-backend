@@ -1,7 +1,5 @@
 package backend.model.instrument;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -354,35 +352,6 @@ public class Instrument {
 		
 		return null;
 	}
-	
-	
-	/**
-	 * Gets the quotations that are older than the given date but are still at the same day.
-	 * 
-	 * @param date The date for which older quotations of the same day are requested.
-	 * @return Older quotations of the same day.
-	 */
-	public List<Quotation> getOlderQuotationsOfSameDay(final Date date) {
-		List<Quotation> quotationsSortedByDate = this.getQuotationsSortedByDate();
-		List<Quotation> olderQuotationsSameDay = new ArrayList<>();
-		LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-		LocalDate tempQuotationLocalDate;
-		
-		for(Quotation tempQuotation:quotationsSortedByDate) {
-			tempQuotationLocalDate = tempQuotation.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-			
-			if(localDate.equals(tempQuotationLocalDate)) {
-				if(tempQuotation.getDate().getTime() < date.getTime()) {
-					olderQuotationsSameDay.add(tempQuotation);					
-				}
-			}
-			else {
-				break;	//The quotations are sorted by date. Therefore all quotations coming afterwards are not at the same day.
-			}
-		}
-		
-		return olderQuotationsSameDay;
-	}
 
 
 	@Override
@@ -492,6 +461,19 @@ public class Instrument {
 		Collections.sort(this.quotations, new QuotationDateComparator());
 				
 		return this.quotations;
+	}
+	
+	
+	/**
+	 * Gets all quotations as QuotationArray object.
+	 * 
+	 * @return The quotations as QuotationArray.
+	 */
+	@JsonIgnore
+	public QuotationArray getQuotationArray() {
+		QuotationArray quotationArray = new QuotationArray(this.quotations);
+		
+		return quotationArray;
 	}
 
 
