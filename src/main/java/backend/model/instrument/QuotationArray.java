@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -186,6 +187,75 @@ public class QuotationArray {
 		}
 		
 		return olderQuotationsSameDay;
+	}
+	
+	
+	/**
+	 * Determines a List of weekly quotations based on the quotations stored in the QuotationArray.
+	 * 
+	 * @return A List of weekly quotations.
+	 */
+	public List<Quotation> getWeeklyQuotations() {
+		List<Quotation> weeklyQuotations = new ArrayList<>();
+		Quotation weeklyQuotation = new Quotation(), previousQuotation = null;
+		
+		this.sortQuotationsByDate();
+		
+		for(Quotation dailyQuotation: this.quotations) {
+			if(this.isNewWeek(dailyQuotation, previousQuotation) == true) {
+				if(previousQuotation != null) {
+					weeklyQuotation.setDate(previousQuotation.getDate());
+					weeklyQuotation.setOpen(previousQuotation.getOpen());
+					weeklyQuotations.add(weeklyQuotation);
+				}
+				
+				weeklyQuotation = new Quotation();
+				weeklyQuotation.setClose(dailyQuotation.getClose());
+				weeklyQuotation.setHigh(dailyQuotation.getHigh());
+				weeklyQuotation.setLow(dailyQuotation.getLow());
+				weeklyQuotation.setCurrency(dailyQuotation.getCurrency());
+			}
+			else {
+				if(dailyQuotation.getHigh().doubleValue() > weeklyQuotation.getHigh().doubleValue())
+					weeklyQuotation.setHigh(dailyQuotation.getHigh());
+				
+				if(dailyQuotation.getLow().doubleValue() < weeklyQuotation.getLow().doubleValue())
+					weeklyQuotation.setLow(dailyQuotation.getLow());
+			}
+			
+			weeklyQuotation.setVolume(weeklyQuotation.getVolume() + dailyQuotation.getVolume());
+			
+			previousQuotation = dailyQuotation;
+		}
+		
+		return weeklyQuotations;
+	}
+	
+	
+	/**
+	 * Checks two quotations to determine if the newer Quotation is part of a new week.
+	 * 
+	 * @param currentQuotation The current Quotation.
+	 * @param previousQuotation The previous Quotation.
+	 * @return true, if the current Quotation is part of a new week; false if not.
+	 */
+	private boolean isNewWeek(final Quotation currentQuotation, final Quotation previousQuotation) {
+		Calendar calendarCurrent = Calendar.getInstance();
+		Calendar calendarPrevious = Calendar.getInstance();
+		
+		if(previousQuotation == null && currentQuotation instanceof Quotation)
+			return true;
+		
+		if(currentQuotation == null)
+			return false;
+		
+		calendarCurrent.setTime(currentQuotation.getDate());
+		calendarPrevious.setTime(previousQuotation.getDate());
+		
+		if(calendarCurrent.get(Calendar.DAY_OF_WEEK) > calendarPrevious.get(Calendar.DAY_OF_WEEK))
+			return true;
+		
+		return false;
 	}
 	
 	

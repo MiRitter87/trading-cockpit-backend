@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 
 import backend.dao.quotation.QuotationProviderDAO;
 import backend.dao.quotation.QuotationProviderYahooDAOStub;
+import backend.model.Currency;
 import backend.model.StockExchange;
 
 /**
@@ -140,5 +141,46 @@ public class QuotationArrayTest {
 		
 		olderQuotationOfSameDay = olderQuotationsSameDay.get(0);
 		assertEquals(addedQuotation, olderQuotationOfSameDay);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the determination of weekly quotations.
+	 */
+	public void testGetWeeklyQuotations() {
+		Quotation quotation1, quotation2, currentQuotation;
+		List<Quotation> weeklyQuotations;
+		
+		//Define the most recent two of the expected weekly quotations.
+		quotation1 = new Quotation();
+		quotation1.setDate(this.quotationArray.getQuotations().get(4).getDate());
+		quotation1.setCurrency(Currency.CAD);
+		quotation1.setVolume(8146700);
+		quotation1.setOpen(new BigDecimal("1.38"));
+		quotation1.setHigh(new BigDecimal("1.54"));
+		quotation1.setLow(new BigDecimal("1.35"));
+		quotation1.setClose(new BigDecimal("1.36"));
+		
+		quotation2 = new Quotation();
+		quotation2.setDate(this.quotationArray.getQuotations().get(9).getDate());
+		quotation2.setCurrency(Currency.CAD);
+		quotation2.setVolume(6258300);
+		quotation2.setOpen(new BigDecimal("1.34"));
+		quotation2.setHigh(new BigDecimal("1.38"));
+		quotation2.setLow(new BigDecimal("1.24"));
+		quotation2.setClose(new BigDecimal("1.36"));
+		
+		weeklyQuotations = this.quotationArray.getWeeklyQuotations();
+		
+		//Assure that there is one Quotation for each week of the year.
+		assertEquals(52, weeklyQuotations.size());
+		
+		//Check the newest two weekly quotations.
+		currentQuotation = weeklyQuotations.get(0);
+		assertEquals(quotation1, currentQuotation);
+		
+		currentQuotation = weeklyQuotations.get(1);
+		assertEquals(quotation2, currentQuotation);
 	}
 }
