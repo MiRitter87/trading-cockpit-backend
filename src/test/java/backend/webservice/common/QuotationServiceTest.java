@@ -20,6 +20,8 @@ import org.junit.jupiter.api.Test;
 import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
 import backend.dao.quotation.QuotationDAO;
+import backend.dao.quotation.QuotationProviderDAO;
+import backend.dao.quotation.QuotationProviderYahooDAOStub;
 import backend.model.Currency;
 import backend.model.StockExchange;
 import backend.model.instrument.Indicator;
@@ -48,6 +50,11 @@ public class QuotationServiceTest {
 	private static QuotationDAO quotationDAO;
 	
 	/**
+	 * DAO to access quotation data from Yahoo.
+	 */
+	private static QuotationProviderDAO quotationProviderYahooDAO;
+	
+	/**
 	 * The stock of Apple.
 	 */
 	private Instrument appleStock;
@@ -56,6 +63,11 @@ public class QuotationServiceTest {
 	 * The stock of Microsoft.
 	 */
 	private Instrument microsoftStock;
+	
+	/**
+	 * The stock of Denison Mines.
+	 */
+	private Instrument denisonMinesStock;
 	
 	/**
 	 * The stock of Ford.
@@ -145,6 +157,7 @@ public class QuotationServiceTest {
 	public static void setUpClass() {
 		instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
 		quotationDAO = DAOManager.getInstance().getQuotationDAO();
+		quotationProviderYahooDAO = new QuotationProviderYahooDAOStub();
 	}
 	
 	
@@ -155,6 +168,7 @@ public class QuotationServiceTest {
 	public static void tearDownClass() {
 		try {
 			DAOManager.getInstance().close();
+			quotationProviderYahooDAO = null;
 		} catch (IOException e) {
 			fail(e.getMessage());
 		}
@@ -189,6 +203,7 @@ public class QuotationServiceTest {
 		this.appleStock = this.getAppleStock();
 		this.microsoftStock = this.getMicrosoftStock();
 		this.fordStock = this.getFordStock();
+		this.denisonMinesStock = this.getDenisonMinesStock();
 		this.xleETF = this.getXleEtf();
 		this.xlbETF = this.getXlbEtf();
 		this.xlfETF = this.getXlfEtf();
@@ -197,6 +212,7 @@ public class QuotationServiceTest {
 			instrumentDAO.insertInstrument(this.appleStock);
 			instrumentDAO.insertInstrument(this.microsoftStock);
 			instrumentDAO.insertInstrument(this.fordStock);
+			instrumentDAO.insertInstrument(this.denisonMinesStock);
 			instrumentDAO.insertInstrument(this.xleETF);
 			instrumentDAO.insertInstrument(this.xlbETF);
 			instrumentDAO.insertInstrument(this.xlfETF);
@@ -214,6 +230,7 @@ public class QuotationServiceTest {
 			instrumentDAO.deleteInstrument(this.xlfETF);
 			instrumentDAO.deleteInstrument(this.xlbETF);
 			instrumentDAO.deleteInstrument(this.xleETF);
+			instrumentDAO.deleteInstrument(this.denisonMinesStock);
 			instrumentDAO.deleteInstrument(this.fordStock);
 			instrumentDAO.deleteInstrument(this.microsoftStock);
 			instrumentDAO.deleteInstrument(this.appleStock);
@@ -268,6 +285,36 @@ public class QuotationServiceTest {
 		instrument.setName("Ford Motor Company");
 		instrument.setStockExchange(StockExchange.NYSE);
 		instrument.setType(InstrumentType.STOCK);
+		
+		return instrument;
+	}
+	
+	
+	/**
+	 * Gets the Instrument of the Denison Mines stock.
+	 * 
+	 * @return The Instrument of the Denison Mines stock.
+	 */
+	private Instrument getDenisonMinesStock() {
+		Instrument instrument = new Instrument();
+		List<Quotation> quotations = new ArrayList<>();
+		
+		instrument.setSymbol("DML");
+		instrument.setStockExchange(StockExchange.TSX);
+		instrument.setType(InstrumentType.STOCK);
+		instrument.setName("Denison Mines");
+		
+		try {
+			quotations.addAll(quotationProviderYahooDAO.getQuotationHistory("DML", StockExchange.TSX, InstrumentType.STOCK, 1));
+			
+			for(Quotation tempQuotation: quotations) {
+				tempQuotation.setInstrument(instrument);				
+			}
+			
+			instrument.setQuotations(quotations);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
 		
 		return instrument;
 	}
@@ -347,6 +394,7 @@ public class QuotationServiceTest {
 		quotations.add(this.xleQuotation2);
 		quotations.add(this.xlbQuotation1);
 		quotations.add(this.xlfQuotation1);
+		quotations.addAll(this.denisonMinesStock.getQuotations());
 		
 		try {
 			quotationDAO.insertQuotations(quotations);
@@ -370,6 +418,7 @@ public class QuotationServiceTest {
 		quotations.add(this.microsoftQuotation1);
 		quotations.add(this.appleQuotation2);
 		quotations.add(this.appleQuotation1);
+		quotations.addAll(this.denisonMinesStock.getQuotations());
 		
 		try {
 			quotationDAO.deleteQuotations(quotations);
