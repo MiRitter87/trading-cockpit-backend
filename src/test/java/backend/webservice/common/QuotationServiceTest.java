@@ -17,6 +17,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import backend.controller.scan.IndicatorCalculator;
 import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
 import backend.dao.quotation.QuotationDAO;
@@ -128,6 +129,11 @@ public class QuotationServiceTest {
 	 * A Quotation of the XLF ETF.
 	 */
 	private Quotation xlfQuotation1;
+	
+	/**
+	 * Quotations of the Denison Mines stock.
+	 */
+	private List<Quotation> denisonMinesQuotations;
 	
 	/**
 	 * The Indicator the Apple stock Quotation 2.
@@ -297,24 +303,11 @@ public class QuotationServiceTest {
 	 */
 	private Instrument getDenisonMinesStock() {
 		Instrument instrument = new Instrument();
-		List<Quotation> quotations = new ArrayList<>();
 		
 		instrument.setSymbol("DML");
 		instrument.setStockExchange(StockExchange.TSX);
 		instrument.setType(InstrumentType.STOCK);
 		instrument.setName("Denison Mines");
-		
-		try {
-			quotations.addAll(quotationProviderYahooDAO.getQuotationHistory("DML", StockExchange.TSX, InstrumentType.STOCK, 1));
-			
-			for(Quotation tempQuotation: quotations) {
-				tempQuotation.setInstrument(instrument);				
-			}
-			
-			instrument.setQuotations(quotations);
-		} catch (Exception e) {
-			fail(e.getMessage());
-		}
 		
 		return instrument;
 	}
@@ -385,6 +378,7 @@ public class QuotationServiceTest {
 		this.xleQuotation2 = this.getXleQuotation2();
 		this.xlbQuotation1 = this.getXlbQuotation1();
 		this.xlfQuotation1 = this.getXlfQuotation1();
+		this.denisonMinesQuotations = this.getDenisonMinesQuotationsWithoutIndicators();
 		
 		quotations.add(this.appleQuotation1);
 		quotations.add(this.appleQuotation2);
@@ -394,7 +388,7 @@ public class QuotationServiceTest {
 		quotations.add(this.xleQuotation2);
 		quotations.add(this.xlbQuotation1);
 		quotations.add(this.xlfQuotation1);
-		quotations.addAll(this.denisonMinesStock.getQuotations());
+		quotations.addAll(this.denisonMinesQuotations);
 		
 		try {
 			quotationDAO.insertQuotations(quotations);
@@ -418,7 +412,7 @@ public class QuotationServiceTest {
 		quotations.add(this.microsoftQuotation1);
 		quotations.add(this.appleQuotation2);
 		quotations.add(this.appleQuotation1);
-		quotations.addAll(this.denisonMinesStock.getQuotations());
+		quotations.addAll(this.denisonMinesQuotations);
 		
 		try {
 			quotationDAO.deleteQuotations(quotations);
@@ -601,6 +595,28 @@ public class QuotationServiceTest {
 	
 	
 	/**
+	 * Gets quotations of the Denison Mines stock.
+	 * 
+	 * @return A List of quotations.
+	 */
+	private List<Quotation> getDenisonMinesQuotationsWithoutIndicators() {
+		List<Quotation> quotationsWithoutIndicators = new ArrayList<>();
+		
+		try {
+			quotationsWithoutIndicators.addAll(quotationProviderYahooDAO.getQuotationHistory("DML", StockExchange.TSX, InstrumentType.STOCK, 1));
+			
+			for(Quotation tempQuotation: quotationsWithoutIndicators) {
+				tempQuotation.setInstrument(this.denisonMinesStock);
+			}
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+		
+		return quotationsWithoutIndicators;
+	}
+	
+	
+	/**
 	 * Initializes the database with dummy indicators.
 	 */
 	private void createDummyIndicators() {
@@ -670,12 +686,39 @@ public class QuotationServiceTest {
 		quotations.add(this.fordQuotation1);
 		quotations.add(this.xleQuotation2);
 		quotations.add(this.xlbQuotation1);
+		quotations.addAll(this.getDenisonMinesQuotationsWithIndicators());
 		
 		try {
 			quotationDAO.updateQuotations(quotations);
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
+	}
+	
+	
+	/**
+	 * Calculates indicators and adds them to the DML quotations.
+	 */
+	private List<Quotation> getDenisonMinesQuotationsWithIndicators() {
+		Quotation quotation;
+		List<Quotation> quotationsWithIndicators = new ArrayList<>();
+		IndicatorCalculator indicatorCalculator = new IndicatorCalculator();
+		
+		//Quotations of Instrument are needed for indicator calculation.
+		this.denisonMinesStock.setQuotations(this.denisonMinesQuotations);
+		
+		for(int i = 0; i < this.denisonMinesQuotations.size(); i++) {
+			quotation = this.denisonMinesQuotations.get(i);
+			
+			if(i == 0)
+				quotation = indicatorCalculator.calculateIndicators(this.denisonMinesStock, quotation, true);
+			else
+				quotation = indicatorCalculator.calculateIndicators(this.denisonMinesStock, quotation, false);
+			
+			quotationsWithIndicators.add(quotation);
+		}
+		
+		return quotationsWithIndicators;
 	}
 	
 	
@@ -697,8 +740,8 @@ public class QuotationServiceTest {
 		//Assure no error message exists
 		assertTrue(WebServiceTools.resultContainsErrorMessage(getQuotationsResult) == false);
 		
-		//Check if two quotations are returned.
-		assertEquals(2, quotations.getQuotations().size());
+		//Check if three quotations are returned.
+		assertEquals(3, quotations.getQuotations().size());
 		
 		//Check if the correct quotations are returned.
 		for(Quotation tempQuotation: quotations.getQuotations()) {
@@ -707,6 +750,9 @@ public class QuotationServiceTest {
 			}
 			else if(tempQuotation.getId().equals(this.fordQuotation1.getId())) {
 				assertEquals(this.fordQuotation1, tempQuotation);	
+			}
+			else if(tempQuotation.getId().equals(this.denisonMinesQuotations.get(0).getId())) {
+				assertEquals(this.denisonMinesQuotations.get(0), tempQuotation);	
 			}
 			else {
 				fail("An unrelated Quotation has been returned.");
