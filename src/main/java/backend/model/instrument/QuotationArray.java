@@ -216,10 +216,10 @@ public class QuotationArray {
 				weeklyQuotation.setCurrency(dailyQuotation.getCurrency());
 			}
 			else {
-				if(dailyQuotation.getHigh().doubleValue() > weeklyQuotation.getHigh().doubleValue())
+				if(dailyQuotation.getHigh() != null && (dailyQuotation.getHigh().doubleValue() > weeklyQuotation.getHigh().doubleValue()))
 					weeklyQuotation.setHigh(dailyQuotation.getHigh());
 				
-				if(dailyQuotation.getLow().doubleValue() < weeklyQuotation.getLow().doubleValue())
+				if(dailyQuotation.getLow() != null && (dailyQuotation.getLow().doubleValue() < weeklyQuotation.getLow().doubleValue()))
 					weeklyQuotation.setLow(dailyQuotation.getLow());
 			}
 			

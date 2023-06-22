@@ -991,4 +991,33 @@ public class QuotationServiceTest {
 		quotation = quotations.getQuotations().get(0);
 		assertEquals(this.xlbQuotation1, quotation);
 	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of the most recent quotations that match the "3 Weeks Tight" template.
+	 * Only those quotations should be returned that have an Indicator associated with them.
+	 * Only instruments of InstrumentType 'STOCK' are requested.
+	 */
+	public void testGetQuotations3WeeksTightStock() {
+		QuotationArray quotations;
+		WebServiceResult getQuotationsResult;
+		Quotation expectedQuotation, actualQuotation;
+		
+		//Get the quotations.
+		QuotationService service = new QuotationService();
+		getQuotationsResult = service.getQuotations(ScanTemplate.THREE_WEEKS_TIGHT, InstrumentType.STOCK, null);
+		quotations = (QuotationArray) getQuotationsResult.getData();
+		
+		//Assure no error message exists
+		assertTrue(WebServiceTools.resultContainsErrorMessage(getQuotationsResult) == false);
+		
+		//Check if one Quotation is returned.
+		assertEquals(1, quotations.getQuotations().size());
+		
+		//Check if the correct Quotation is returned.
+		actualQuotation = quotations.getQuotations().get(0);
+		expectedQuotation = this.denisonMinesQuotations.get(0);
+		assertEquals(expectedQuotation, actualQuotation);
+	}
 }

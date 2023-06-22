@@ -331,6 +331,7 @@ public class QuotationHibernateDAO implements QuotationDAO {
 					break;
 				case ALL:
 				case RS_SINCE_DATE:
+				case THREE_WEEKS_TIGHT:
 					query = this.getQueryForQuotationsWithInstrument(entityManager, true);
 					break;
 				default:

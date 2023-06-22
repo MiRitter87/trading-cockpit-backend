@@ -49,5 +49,10 @@ public enum ScanTemplate {
 	/**
 	 * Instruments with their RS number since the given date.
 	 */
-	RS_SINCE_DATE
+	RS_SINCE_DATE,
+	
+	/**
+	 * Instruments having three weekly closes within a tight range.
+	 */
+	THREE_WEEKS_TIGHT
 }
