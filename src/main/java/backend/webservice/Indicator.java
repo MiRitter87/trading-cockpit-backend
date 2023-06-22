@@ -14,5 +14,10 @@ public enum Indicator {
 	/**
 	 * The relative strength line showing the price ratio between two instruments.
 	 */
-	RS_LINE
+	RS_LINE,
+	
+	/**
+	 * Bollinger BandWidth.
+	 */
+	BBW
 }

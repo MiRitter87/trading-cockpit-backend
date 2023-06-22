@@ -23,6 +23,7 @@ import backend.controller.RatioCalculationController;
 import backend.controller.instrumentCheck.NoQuotationsExistException;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
+import backend.model.instrument.QuotationArray;
 import backend.webservice.Indicator;
 
 /**
@@ -327,6 +328,8 @@ public class PriceVolumeChartController extends ChartController {
 		switch(indicator) {
 			case RS_LINE:
 				return this.getRsLinePlot(rsInstrumentId, instrument, timeAxis);
+			case BBW:
+				return this.getBollingerBandWidthPlot(instrument, timeAxis);
 			case NONE:
 				return null;
 			default:
@@ -383,6 +386,60 @@ public class PriceVolumeChartController extends ChartController {
 		
 		for(Quotation quotation: ratioQuotations) {
 			timeSeries.add(new Day(quotation.getDate()), quotation.getClose());
+		}
+		
+		timeSeriesCollection.addSeries(timeSeries);
+        timeSeriesCollection.setXPosition(TimePeriodAnchor.MIDDLE);
+		
+		return timeSeriesCollection;
+	}
+	
+	
+	/**
+	 * Builds a plot to display the Bollinger BandWidth of an Instrument.
+	 * 
+	 * @param instrument The Instrument for which the Bollinger BandWidth is being calculated.
+	 * @param timeAxis The x-Axis (time).
+	 * @return A XYPlot depicting the Bollinger BandWidth.
+	 * @throws Exception Failed to create Bollinger BandWidth plot.
+	 */
+	private XYPlot getBollingerBandWidthPlot(final Instrument instrument, final ValueAxis timeAxis) throws Exception {
+		XYDataset dataset;
+		XYPlot bbwPlot;
+		NumberAxis valueAxis = new NumberAxis("");
+		XYLineAndShapeRenderer bbwRenderer = new XYLineAndShapeRenderer(true, false);
+		
+		dataset = this.getBollingerBandWidthDataset(instrument);
+		
+        //Do not begin y-Axis at zero. Use lowest value of provided dataset instead.
+        valueAxis.setAutoRangeIncludesZero(false);
+        
+        bbwPlot = new XYPlot(dataset, timeAxis, valueAxis, null);
+        bbwPlot.setRenderer(bbwRenderer);
+        
+		return bbwPlot;
+	}
+	
+	
+	/**
+	 * Constructs a XYDataset for the Bollinger BandWidth.
+	 * 
+	 * @param instrument The Instrument for which the Price Volume chart is displayed.
+	 * @return A dataset building the values of the Bollinger BandWidth.
+	 * @throws Exception Failed to construct dataset of RS line.
+	 */
+	private XYDataset getBollingerBandWidthDataset(final Instrument instrument) throws Exception {
+		TimeSeries timeSeries = new TimeSeries(this.resources.getString("chart.priceVolume.timeSeriesBbwName"));
+		TimeZone timeZone = TimeZone.getDefault();
+		TimeSeriesCollection timeSeriesCollection = new TimeSeriesCollection(timeZone);
+		QuotationArray quotationArray = instrument.getQuotationArray();
+		float bollingerBandWidth;
+		
+		quotationArray.sortQuotationsByDate();
+				
+		for(Quotation quotation: quotationArray.getQuotations()) {
+			bollingerBandWidth = this.indicatorCalculator.getBollingerBandWidth(10, 2, quotation, quotationArray);
+			timeSeries.add(new Day(quotation.getDate()), bollingerBandWidth);
 		}
 		
 		timeSeriesCollection.addSeries(timeSeries);
