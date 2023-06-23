@@ -19,5 +19,10 @@ public enum Indicator {
 	/**
 	 * Bollinger BandWidth.
 	 */
-	BBW
+	BBW,
+	
+	/**
+	 * Slow Stochastic.
+	 */
+	SLOW_STOCHASTIC
 }

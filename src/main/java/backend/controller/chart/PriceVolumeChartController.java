@@ -330,6 +330,8 @@ public class PriceVolumeChartController extends ChartController {
 				return this.getRsLinePlot(rsInstrumentId, instrument, timeAxis);
 			case BBW:
 				return this.getBollingerBandWidthPlot(instrument, timeAxis);
+			case SLOW_STOCHASTIC:
+				return this.getSlowStochasticPlot(instrument, timeAxis);
 			case NONE:
 				return null;
 			default:
@@ -426,7 +428,7 @@ public class PriceVolumeChartController extends ChartController {
 	 * 
 	 * @param instrument The Instrument for which the Price Volume chart is displayed.
 	 * @return A dataset building the values of the Bollinger BandWidth.
-	 * @throws Exception Failed to construct dataset of RS line.
+	 * @throws Exception Failed to construct dataset of Bollinger BandWidth.
 	 */
 	private XYDataset getBollingerBandWidthDataset(final Instrument instrument) throws Exception {
 		TimeSeries timeSeries = new TimeSeries(this.resources.getString("chart.priceVolume.timeSeriesBbwName"));
@@ -440,6 +442,57 @@ public class PriceVolumeChartController extends ChartController {
 		for(Quotation quotation: quotationArray.getQuotations()) {
 			bollingerBandWidth = this.indicatorCalculator.getBollingerBandWidth(10, 2, quotation, quotationArray);
 			timeSeries.add(new Day(quotation.getDate()), bollingerBandWidth);
+		}
+		
+		timeSeriesCollection.addSeries(timeSeries);
+        timeSeriesCollection.setXPosition(TimePeriodAnchor.MIDDLE);
+		
+		return timeSeriesCollection;
+	}
+	
+	
+	/**
+	 * Builds a plot to display the Slow Stochastic of an Instrument.
+	 * 
+	 * @param instrument The Instrument for which the Slow Stochastic is being calculated.
+	 * @param timeAxis The x-Axis (time).
+	 * @return A XYPlot depicting the Slow Stochastic.
+	 * @throws Exception Failed to create Slow Stochastic plot.
+	 */
+	private XYPlot getSlowStochasticPlot(final Instrument instrument, final ValueAxis timeAxis) throws Exception {
+		XYDataset dataset;
+		XYPlot slowStochasticPlot;
+		NumberAxis valueAxis = new NumberAxis("");
+		XYLineAndShapeRenderer slowStochasticRenderer = new XYLineAndShapeRenderer(true, false);
+		
+		dataset = this.getSlowStochasticDataset(instrument);
+		
+        slowStochasticPlot = new XYPlot(dataset, timeAxis, valueAxis, null);
+        slowStochasticPlot.setRenderer(slowStochasticRenderer);
+        
+		return slowStochasticPlot;
+	}
+	
+	
+	/**
+	 * Constructs a XYDataset for the Slow Stochastic.
+	 * 
+	 * @param instrument The Instrument for which the Price Volume chart is displayed.
+	 * @return A dataset building the values of the Slow Stochastic.
+	 * @throws Exception Failed to construct dataset of Slow Stochastic.
+	 */
+	private XYDataset getSlowStochasticDataset(final Instrument instrument) throws Exception {
+		TimeSeries timeSeries = new TimeSeries(this.resources.getString("chart.priceVolume.timeSeriesSlowStochasticName"));
+		TimeZone timeZone = TimeZone.getDefault();
+		TimeSeriesCollection timeSeriesCollection = new TimeSeriesCollection(timeZone);
+		QuotationArray quotationArray = instrument.getQuotationArray();
+		float slowStochastic;
+		
+		quotationArray.sortQuotationsByDate();
+				
+		for(Quotation quotation: quotationArray.getQuotations()) {
+			slowStochastic = this.indicatorCalculator.getSlowStochastic(14, quotation, quotationArray);
+			timeSeries.add(new Day(quotation.getDate()), slowStochastic);
 		}
 		
 		timeSeriesCollection.addSeries(timeSeries);
