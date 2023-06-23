@@ -497,6 +497,7 @@ public class IndicatorCalculator {
 		indexOfQuotation = sortedQuotations.getQuotations().indexOf(quotation);
 		
 		//Check if enough quotations exist for sum calculation.
+		//The -1 is needed because a up or down day can only be calculated against a previous day. Therefore an additional Quotation has to exist.
 		if((sortedQuotations.getQuotations().size() - days - indexOfQuotation - 1) < 0)
 			return 0;
 		
@@ -537,6 +538,7 @@ public class IndicatorCalculator {
 		indexOfQuotation = sortedQuotations.getQuotations().indexOf(quotation);
 		
 		//Check if enough quotations exist for price performance calculation.
+		//The -1 is needed because a performance can only be calculated against a previous day. Therefore an additional Quotation has to exist.
 		if((sortedQuotations.getQuotations().size() - days - indexOfQuotation - 1) < 0)
 			return 0;
 		
@@ -592,6 +594,41 @@ public class IndicatorCalculator {
 	
 	
 	/**
+	 * Calculates the Stochastic for the given number of days.
+	 * 
+	 * @param days The number of days used for calculation.
+	 * @param quotation The Quotation for which the Stochastic is calculated.
+	 * @param sortedQuotations A list of quotations sorted by date that build the trading history used for calculation.
+	 * @return The Stochastic.
+	 */
+	public float getStochastic(final int days, final Quotation quotation, final QuotationArray sortedQuotations) {
+		float lowestLow, highestHigh, stochastic, close;
+		int indexOfQuotation = 0;
+		
+		//Get the starting point of Slow Stochastic calculation.
+		indexOfQuotation = sortedQuotations.getQuotations().indexOf(quotation);
+		
+		//Check if enough quotations exist for high and low calculation.
+		if((sortedQuotations.getQuotations().size() - days - indexOfQuotation) < 0)
+			return 0;
+		
+		lowestLow = this.getLowestLow(days, quotation, sortedQuotations);
+		highestHigh = this.getHighestHigh(days, quotation, sortedQuotations);
+		close = quotation.getClose().floatValue();
+		
+		if((highestHigh - lowestLow) == 0)
+			return 0;	//Prevent possible division by zero.
+		
+		stochastic = (close - lowestLow) / (highestHigh - lowestLow) * 100;
+		
+		//Round result to two decimal places.
+		stochastic = (float) (Math.round(stochastic * 100.0) / 100.0);
+		
+		return stochastic;
+	}
+	
+	
+	/**
 	 * Provides the performance of a given interval for relative strength calculation.
 	 * 
 	 * @param sortedQuotations The quotations containing date and price information for performance calculation.
@@ -643,5 +680,70 @@ public class IndicatorCalculator {
 		}
 		
 		return prices;
+	}
+	
+	
+	/**
+	 * Gets the lowest low of the given period.
+	 * 
+	 * @param days The number of days taken into account for low determination.
+	 * @param quotation The Quotation as starting point for low determination.
+	 * @param sortedQuotations A list of quotations sorted by date that build the trading history.
+	 * @return The lowest low of the period.
+	 */
+	private float getLowestLow(final int days, final Quotation quotation, final QuotationArray sortedQuotations) {
+		float lowestLow = 0;
+		int indexOfQuotation = 0;
+		Quotation currentQuotation;
+		
+		//Get the starting point of low calculation.
+		indexOfQuotation = sortedQuotations.getQuotations().indexOf(quotation);
+		
+		//Check if enough quotations exist for high calculation.
+		if((sortedQuotations.getQuotations().size() - days - indexOfQuotation) < 0)
+			return 0;
+		
+		for(int i = indexOfQuotation; i < (days + indexOfQuotation); i++) {
+			currentQuotation = sortedQuotations.getQuotations().get(i);
+			
+			if(i == indexOfQuotation)
+				lowestLow = currentQuotation.getLow().floatValue();	//Initially set the lowest low.
+			
+			if(currentQuotation.getLow().floatValue() < lowestLow)
+				lowestLow = currentQuotation.getLow().floatValue();
+		}
+		
+		return lowestLow;
+	}
+	
+	
+	/**
+	 * Gets the highest high of the given period.
+	 * 
+	 * @param days The number of days taken into account for high determination.
+	 * @param quotation The Quotation as starting point for high determination.
+	 * @param sortedQuotations A list of quotations sorted by date that build the trading history.
+	 * @return The highest high of the period.
+	 */
+	private float getHighestHigh(final int days, final Quotation quotation, final QuotationArray sortedQuotations) {
+		float highestHigh = 0;
+		int indexOfQuotation = 0;
+		Quotation currentQuotation;
+		
+		//Get the starting point of high calculation.
+		indexOfQuotation = sortedQuotations.getQuotations().indexOf(quotation);
+		
+		//Check if enough quotations exist for high calculation.
+		if((sortedQuotations.getQuotations().size() - days - indexOfQuotation) < 0)
+			return 0;
+		
+		for(int i = indexOfQuotation; i < (days + indexOfQuotation); i++) {
+			currentQuotation = sortedQuotations.getQuotations().get(i);
+			
+			if(currentQuotation.getHigh().floatValue() > highestHigh)
+				highestHigh = currentQuotation.getHigh().floatValue();
+		}
+		
+		return highestHigh;
 	}
 }

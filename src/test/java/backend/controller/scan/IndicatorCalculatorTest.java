@@ -517,4 +517,18 @@ public class IndicatorCalculatorTest {
 		
 		assertEquals(expectedLiquidity, actualLiquidity);
 	}
+	
+	
+	@Test
+	/**
+	 * Tests the calculation of the Stochastic.
+	 */
+	public void testGetStochastic() {
+		QuotationArray sortedQuotations = new QuotationArray(this.dmlStock.getQuotationsSortedByDate());
+		float expectedStochastic = 48.57f, actualStochastic;
+		
+		actualStochastic = this.indicatorCalculator.getStochastic(14, sortedQuotations.getQuotations().get(0), sortedQuotations);
+		
+		assertEquals(expectedStochastic, actualStochastic);
+	}
 }
