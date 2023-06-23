@@ -24,6 +24,11 @@ public class IndicatorCalculator {
 	 */
 	private static final int TRADING_DAYS_PER_MONTH = 21;
 	
+	/**
+	 * Smoothing period used for Slow Stochastic.
+	 */
+	private static final int SLOW_STOCHASTIC_SMOOTHING_PERIOD = 3;
+	
 	
 	/**
 	 * Calculates indicators for the given Quotation.
@@ -625,6 +630,42 @@ public class IndicatorCalculator {
 		stochastic = (float) (Math.round(stochastic * 100.0) / 100.0);
 		
 		return stochastic;
+	}
+	
+	
+	/**
+	 * Calculates the Slow Stochastic for the given number of days.
+	 * The Slow Stochastic uses a default smoothing period of 3.
+	 * 
+	 * @param days The number of days used for calculation.
+	 * @param quotation The Quotation for which the Slow Stochastic is calculated.
+	 * @param sortedQuotations A list of quotations sorted by date that build the trading history used for calculation.
+	 * @return The Slow Stochastic.
+	 */
+	public float getSlowStochastic(final int days, final Quotation quotation, final QuotationArray sortedQuotations) {
+		float slowStochastic, stochastic, sum = 0;
+		int indexOfQuotation = 0;
+		Quotation currentQuotation;
+		
+		//Get the starting point of Slow Stochastic calculation.
+		indexOfQuotation = sortedQuotations.getQuotations().indexOf(quotation);
+		
+		//Check if enough quotations exist for Slow Stochastic calculation.
+		if((sortedQuotations.getQuotations().size() - days - indexOfQuotation - SLOW_STOCHASTIC_SMOOTHING_PERIOD) < 0)
+			return 0;
+		
+		for(int i = indexOfQuotation; i < (SLOW_STOCHASTIC_SMOOTHING_PERIOD + indexOfQuotation); i++) {
+			currentQuotation = sortedQuotations.getQuotations().get(i);
+			stochastic = this.getStochastic(days, currentQuotation, sortedQuotations);
+			sum += stochastic;
+		}
+		
+		slowStochastic = sum / SLOW_STOCHASTIC_SMOOTHING_PERIOD;
+		
+		//Round result to two decimal places.
+		slowStochastic = (float) (Math.round(slowStochastic * 100.0) / 100.0);
+		
+		return slowStochastic;
 	}
 	
 	
