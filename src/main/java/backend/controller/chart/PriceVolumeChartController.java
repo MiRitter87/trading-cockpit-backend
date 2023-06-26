@@ -10,6 +10,7 @@ import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.CombinedDomainXYPlot;
 import org.jfree.chart.plot.DatasetRenderingOrder;
+import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
@@ -464,11 +465,22 @@ public class PriceVolumeChartController extends ChartController {
 		XYPlot slowStochasticPlot;
 		NumberAxis valueAxis = new NumberAxis("");
 		XYLineAndShapeRenderer slowStochasticRenderer = new XYLineAndShapeRenderer(true, false);
+		ValueMarker valueMarker;
 		
 		dataset = this.getSlowStochasticDataset(instrument);
 		
         slowStochasticPlot = new XYPlot(dataset, timeAxis, valueAxis, null);
         slowStochasticPlot.setRenderer(slowStochasticRenderer);
+        
+        //Add value marker at 15, 50 and 85.
+        valueMarker = new ValueMarker(15);
+        slowStochasticPlot.addRangeMarker(valueMarker);
+        
+        valueMarker = new ValueMarker(50);
+        slowStochasticPlot.addRangeMarker(valueMarker);
+        
+        valueMarker = new ValueMarker(85);
+        slowStochasticPlot.addRangeMarker(valueMarker);
         
 		return slowStochasticPlot;
 	}
