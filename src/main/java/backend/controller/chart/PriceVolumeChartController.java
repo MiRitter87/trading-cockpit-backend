@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
@@ -363,6 +364,7 @@ public class PriceVolumeChartController extends ChartController {
         
         rsLinePlot = new XYPlot(dataset, timeAxis, valueAxis, null);
         rsLinePlot.setRenderer(rsLineRenderer);
+        rsLinePlot.setRangeAxisLocation(AxisLocation.TOP_OR_RIGHT);
         
 		return rsLinePlot;
 	}
@@ -419,6 +421,7 @@ public class PriceVolumeChartController extends ChartController {
         
         bbwPlot = new XYPlot(dataset, timeAxis, valueAxis, null);
         bbwPlot.setRenderer(bbwRenderer);
+        bbwPlot.setRangeAxisLocation(AxisLocation.TOP_OR_RIGHT);
         
 		return bbwPlot;
 	}
@@ -471,6 +474,7 @@ public class PriceVolumeChartController extends ChartController {
 		
         slowStochasticPlot = new XYPlot(dataset, timeAxis, valueAxis, null);
         slowStochasticPlot.setRenderer(slowStochasticRenderer);
+        slowStochasticPlot.setRangeAxisLocation(AxisLocation.TOP_OR_RIGHT);
         
         //Add value marker at 15, 50 and 85.
         valueMarker = new ValueMarker(15);

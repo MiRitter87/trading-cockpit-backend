@@ -14,6 +14,7 @@ import java.util.ResourceBundle;
 
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.annotations.XYTextAnnotation;
+import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.LogAxis;
 import org.jfree.chart.axis.NumberAxis;
@@ -142,12 +143,14 @@ public abstract class ChartController {
         logAxisNumberFormat.setMaximumFractionDigits(2);
         valueAxisCandlestick.setNumberFormatOverride(logAxisNumberFormat);
 		
-		XYPlot candleStickSubplot = new XYPlot(instrumentPriceData, timeAxis, valueAxisCandlestick, null);
 		candlestickRenderer.setDrawVolume(false);
-		candleStickSubplot.setRenderer(candlestickRenderer);
 		
 		//Candles having a black border.
 		candlestickRenderer.setSeriesPaint(0, Color.BLACK);
+		
+		XYPlot candleStickSubplot = new XYPlot(instrumentPriceData, timeAxis, valueAxisCandlestick, null);
+		candleStickSubplot.setRenderer(candlestickRenderer);
+		candleStickSubplot.setRangeAxisLocation(AxisLocation.TOP_OR_RIGHT);
 		
 		this.addMostRecentDate(candleStickSubplot, instrument);
 		
@@ -172,6 +175,7 @@ public abstract class ChartController {
         volumeRenderer.setSeriesPaint(0, Color.BLUE);	//Blue volume bars.
         
 		XYPlot volumeSubplot = new XYPlot(volumeData, timeAxis, volumeAxis, volumeRenderer);
+		volumeSubplot.setRangeAxisLocation(AxisLocation.TOP_OR_RIGHT);
 		
 		return volumeSubplot;
 	}

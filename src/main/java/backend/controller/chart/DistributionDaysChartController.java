@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.annotations.XYTextAnnotation;
+import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
@@ -76,6 +77,7 @@ public class DistributionDaysChartController extends ChartController {
 		distributionDaySumRenderer.setShadowVisible(false);
 		
 		XYPlot distributionDaySumSubplot = new XYPlot(distributionDaySumData, timeAxis, distributionDaySumAxis, distributionDaySumRenderer);
+		distributionDaySumSubplot.setRangeAxisLocation(AxisLocation.TOP_OR_RIGHT);
 		
 		return distributionDaySumSubplot;
 	}

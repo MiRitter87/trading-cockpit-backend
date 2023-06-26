@@ -13,6 +13,7 @@ import java.util.TreeMap;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.AxisLocation;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.TimePeriodAnchor;
 import org.jfree.data.time.TimeSeries;
@@ -57,7 +58,8 @@ public class RitterPatternIndicatorChartController extends ChartController {
 			
 		this.addHorizontalLine(chart.getXYPlot(), 0);
 		this.applyBackgroundTheme(chart);
-			
+		chart.getXYPlot().setRangeAxisLocation(AxisLocation.TOP_OR_RIGHT);
+		
 		return chart;
 	}
 	

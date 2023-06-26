@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.annotations.XYTextAnnotation;
+import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
@@ -164,11 +165,15 @@ public class FollowThroughDaysChartController extends ChartController {
 	private XYPlot getFailedFTDPlot(final Instrument instrument, final ValueAxis timeAxis) throws Exception {
 		IntervalXYDataset distributionDaySumData = this.getFailedFTDDataset(instrument);
         NumberAxis failedFTDAxis = new NumberAxis();
+        
+        //Only use integers as tick units. Otherwise values like 0.2 Follow-Through Days would be generated which is useless.
+        failedFTDAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
 		
 		XYBarRenderer failedFTDRenderer = new XYBarRenderer();
 		failedFTDRenderer.setShadowVisible(false);
 		
 		XYPlot failedFTDSubplot = new XYPlot(distributionDaySumData, timeAxis, failedFTDAxis, failedFTDRenderer);
+		failedFTDSubplot.setRangeAxisLocation(AxisLocation.TOP_OR_RIGHT);
 		
 		return failedFTDSubplot;
 	}
