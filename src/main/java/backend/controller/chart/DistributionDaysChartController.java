@@ -210,7 +210,7 @@ public class DistributionDaysChartController extends ChartController {
         
 		for(Integer indexOfDistributionDay:indexOfDistributionDays) {
 			textAnnotation = new XYTextAnnotation("D", instrumentPriceData.getXValue(0, indexOfDistributionDay), 
-					instrumentPriceData.getHighValue(0, indexOfDistributionDay) * 1.03);	//Show annotation 3 percent above high price.
+					instrumentPriceData.getHighValue(0, indexOfDistributionDay) * 1.02);	//Show annotation 2 percent above high price.
 			candlestickPlot.addAnnotation(textAnnotation);
 		}
 	}

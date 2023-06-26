@@ -91,7 +91,7 @@ public class FollowThroughDaysChartController extends ChartController {
         
 		for(Integer indexOfFollowThroughDay:indexOfFollowThroughDays) {
 			textAnnotation = new XYTextAnnotation("F", instrumentPriceData.getXValue(0, indexOfFollowThroughDay), 
-					instrumentPriceData.getHighValue(0, indexOfFollowThroughDay) * 1.03);	//Show annotation 3 percent above high price.
+					instrumentPriceData.getHighValue(0, indexOfFollowThroughDay) * 1.02);	//Show annotation 2 percent above high price.
 			candlestickPlot.addAnnotation(textAnnotation);
 		}
 	}
