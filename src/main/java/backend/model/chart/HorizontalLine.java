@@ -2,6 +2,19 @@ package backend.model.chart;
 
 import java.math.BigDecimal;
 import java.util.Objects;
+import java.util.Set;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.HibernateValidator;
+import org.hibernate.validator.messageinterpolation.ExpressionLanguageFeatureLevel;
 
 import backend.model.instrument.Instrument;
 
@@ -14,16 +27,21 @@ public class HorizontalLine {
 	/**
 	 * The ID.
 	 */
+	@Min(value = 1, message = "{horizontalLine.id.min.message}")
 	private Integer id;
 	
 	/**
 	 * The price at which the horizontal line is drawn.
 	 */
+	@NotNull(message = "{horizontalLine.price.notNull.message}")
+	@DecimalMin(value = "0.01", inclusive = true, message = "{horizontalLine.price.decimalMin.message}")
+	@Max(value = 100000, message = "{horizontalLine.price.max.message}")
 	private BigDecimal price;
 	
 	/**
 	 * The Instrument this line belongs to.
 	 */
+	@NotNull(message = "{horizontalLine.instrument.notNull.message}")
 	private Instrument instrument;
 	
 	
@@ -108,5 +126,34 @@ public class HorizontalLine {
 			return false;
 		
 		return Objects.equals(id, other.id) && Objects.equals(instrument, other.instrument);
+	}
+	
+	
+	/**
+	 * Validates the HorizontalLine.
+	 * 
+	 * @throws Exception In case a general validation error occurred.
+	 */
+	public void validate() throws Exception {
+		this.validateAnnotations();
+	}
+	
+	
+	/**
+	 * Validates the HorizontalLine according to the annotations of the validation framework.
+	 * 
+	 * @exception Exception In case the validation failed.
+	 */
+	private void validateAnnotations() throws Exception {
+		ValidatorFactory validatorFactory = Validation.byProvider(HibernateValidator.class)   
+                .configure().constraintExpressionLanguageFeatureLevel(ExpressionLanguageFeatureLevel.BEAN_METHODS)
+                .buildValidatorFactory();
+
+		Validator validator = validatorFactory.getValidator();
+		Set<ConstraintViolation<HorizontalLine>> violations = validator.validate(this);
+
+		for(ConstraintViolation<HorizontalLine> violation:violations) {
+			throw new Exception(violation.getMessage());
+		}
 	}
 }
