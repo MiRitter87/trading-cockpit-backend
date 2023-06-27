@@ -4,6 +4,16 @@ import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.Set;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -23,16 +33,23 @@ import backend.model.instrument.Instrument;
  * 
  * @author Michael
  */
+@Table(name="HORIZONTAL_LINE")
+@Entity
+@SequenceGenerator(name = "horizontalLineSequence", initialValue = 1, allocationSize = 1)
 public class HorizontalLine {
 	/**
 	 * The ID.
 	 */
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "horizontalLineSequence")
+	@Column(name="HORIZONTAL_LINE_ID")
 	@Min(value = 1, message = "{horizontalLine.id.min.message}")
 	private Integer id;
 	
 	/**
 	 * The price at which the horizontal line is drawn.
 	 */
+	@Column(name="PRICE")
 	@NotNull(message = "{horizontalLine.price.notNull.message}")
 	@DecimalMin(value = "0.01", inclusive = true, message = "{horizontalLine.price.decimalMin.message}")
 	@Max(value = 100000, message = "{horizontalLine.price.max.message}")
@@ -41,6 +58,8 @@ public class HorizontalLine {
 	/**
 	 * The Instrument this line belongs to.
 	 */
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name="INSTRUMENT_ID")
 	@NotNull(message = "{horizontalLine.instrument.notNull.message}")
 	private Instrument instrument;
 	

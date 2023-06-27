@@ -11,6 +11,7 @@
         <class>backend.model.list.List</class>
         <class>backend.model.scan.Scan</class>
         <class>backend.model.statistic.Statistic</class>
+        <class>backend.model.chart.HorizontalLine</class>
         
         <!-- Several configuration properties -->
         <properties>
