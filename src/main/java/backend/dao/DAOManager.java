@@ -6,6 +6,8 @@ import java.io.IOException;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
+import backend.dao.chart.ChartObjectDAO;
+import backend.dao.chart.ChartObjectHibernateDAO;
 import backend.dao.instrument.InstrumentDAO;
 import backend.dao.instrument.InstrumentHibernateDAO;
 import backend.dao.list.ListDAO;
@@ -64,6 +66,11 @@ public class DAOManager implements Closeable {
 	 * DAO to access statistics.
 	 */
 	private StatisticDAO statisticDAO;
+	
+	/**
+	 * DAO to access chart objects.
+	 */
+	private ChartObjectDAO chartObjectDAO;
 	
 	
 	/**
@@ -173,6 +180,19 @@ public class DAOManager implements Closeable {
 			this.statisticDAO = new StatisticHibernateDAO(this.sessionFactory);
 		
 		return this.statisticDAO;
+	}
+	
+	
+	/**
+	 * Returns a DAO to access chart object data.
+	 * 
+	 * @return The ChartObjectDAO.
+	 */
+	public ChartObjectDAO getChartObjectDAO() {
+		if(this.chartObjectDAO == null)
+			this.chartObjectDAO = new ChartObjectHibernateDAO(this.sessionFactory);
+		
+		return this.chartObjectDAO;
 	}
 
 	

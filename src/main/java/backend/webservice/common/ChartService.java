@@ -28,6 +28,7 @@ import backend.webservice.Indicator;
 
 /**
  * Common implementation of the Chart WebService that can be used by multiple service interfaces like SOAP or REST.
+ * This service provides several types of charts as PNG images.
  * 
  * @author Michael
  */
