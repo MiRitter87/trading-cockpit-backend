@@ -7,6 +7,10 @@ import java.util.Map;
 import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 import backend.dao.ObjectUnchangedException;
 import backend.model.chart.HorizontalLine;
@@ -82,8 +86,38 @@ public class ChartObjectHibernateDAO implements ChartObjectDAO {
 	
 	@Override
 	public List<HorizontalLine> getHorizontalLines(Integer instrumentId) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		List<HorizontalLine> horizontalLines = null;
+		EntityManager entityManager = this.sessionFactory.createEntityManager();
+		
+		//Use entity graphs to load data of referenced Instrument instances.
+		EntityGraph<HorizontalLine> graph = entityManager.createEntityGraph(HorizontalLine.class);
+		graph.addAttributeNodes("instrument");
+		
+		entityManager.getTransaction().begin();
+		
+		try {
+			CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+			CriteriaQuery<HorizontalLine> criteriaQuery = criteriaBuilder.createQuery(HorizontalLine.class);
+			Root<HorizontalLine> criteria = criteriaQuery.from(HorizontalLine.class);
+			criteriaQuery.select(criteria);
+			criteriaQuery.orderBy(criteriaBuilder.asc(criteria.get("id")));	//Order by id ascending
+			TypedQuery<HorizontalLine> typedQuery = entityManager.createQuery(criteriaQuery);
+			typedQuery.setHint("javax.persistence.loadgraph", graph);	//Also fetch all Instrument data.
+			horizontalLines = typedQuery.getResultList();
+			
+			entityManager.getTransaction().commit();			
+		}
+		catch(Exception exception) {
+			//If something breaks a rollback is necessary.
+			if(entityManager.getTransaction().isActive())
+				entityManager.getTransaction().rollback();
+			throw exception;
+		}
+		finally {
+			entityManager.close();			
+		}
+		
+		return horizontalLines;
 	}
 
 	

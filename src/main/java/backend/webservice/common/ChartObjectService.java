@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import backend.dao.DAOManager;
 import backend.dao.chart.ChartObjectDAO;
 import backend.model.chart.HorizontalLine;
+import backend.model.chart.HorizontalLineArray;
 import backend.model.webservice.WebServiceMessage;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
@@ -69,11 +70,36 @@ public class ChartObjectService {
 		}
 		catch (Exception e) {
 			getHorizontalLineResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
-					MessageFormat.format(this.resources.getString("horizontalLine.getError"), id)));
+					MessageFormat.format(this.resources.getString("horizontalLine.getHorizontalLineError"), id)));
 			
-			logger.error(MessageFormat.format(this.resources.getString("horizontalLine.getError"), id), e);
+			logger.error(MessageFormat.format(this.resources.getString("horizontalLine.getHorizontalLineError"), id), e);
 		}
 		
 		return getHorizontalLineResult;
+	}
+	
+	
+	/**
+	 * Provides a list of all horizontal lines.
+	 * The Instrument id can be given optionally to only get horizontal lines of a certain Instrument.
+	 * 
+	 * @param instrumentId The Instrument id (can be null)
+	 * @return A list of all horizontal lines.
+	 */
+	public WebServiceResult getHorizontalLines(final Integer instrumentId) {
+		HorizontalLineArray horizontalLines = new HorizontalLineArray();
+		WebServiceResult getHorizontalLinesResult = new WebServiceResult(null);
+		
+		try {
+			horizontalLines.setHorizontalLines(this.chartObjectDAO.getHorizontalLines(instrumentId));
+			getHorizontalLinesResult.setData(horizontalLines);
+		} catch (Exception e) {
+			getHorizontalLinesResult.addMessage(new WebServiceMessage(
+					WebServiceMessageType.E, this.resources.getString("horizontalLine.getHorizontalLinesError")));
+			
+			logger.error(this.resources.getString("horizontalLine.getHorizontalLinesError"), e);
+		}
+		
+		return getHorizontalLinesResult;
 	}
 }

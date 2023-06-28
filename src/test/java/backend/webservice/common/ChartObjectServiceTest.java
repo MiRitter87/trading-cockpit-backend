@@ -21,6 +21,7 @@ import backend.dao.chart.ChartObjectDAO;
 import backend.dao.instrument.InstrumentDAO;
 import backend.model.StockExchange;
 import backend.model.chart.HorizontalLine;
+import backend.model.chart.HorizontalLineArray;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.webservice.WebServiceMessageType;
@@ -54,14 +55,24 @@ public class ChartObjectServiceTest {
 	private Instrument appleInstrument;
 	
 	/**
-	 * A horizontal line.
+	 * Instrument of Microsoft stock.
+	 */
+	private Instrument microsoftInstrument;
+	
+	/**
+	 * A horizontal line of Apple.
 	 */
 	private HorizontalLine horizontalLine1;
 	
 	/**
-	 * Another horizontal line.
+	 * Another horizontal line of Apple.
 	 */
 	private HorizontalLine horizontalLine2;
+	
+	/**
+	 * A horizontal line of Microsoft.
+	 */
+	private HorizontalLine horizontalLine3;
 	
 	
 	@BeforeAll
@@ -112,9 +123,11 @@ public class ChartObjectServiceTest {
 	 */
 	private void createDummyInstruments() {
 		this.appleInstrument = this.getAppleInstrument();
+		this.microsoftInstrument = this.getMicrosoftInstrument();
 		
 		try {
 			instrumentDAO.insertInstrument(this.appleInstrument);
+			instrumentDAO.insertInstrument(this.microsoftInstrument);
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
@@ -126,6 +139,7 @@ public class ChartObjectServiceTest {
 	 */
 	private void deleteDummyInstruments() {
 		try {
+			instrumentDAO.deleteInstrument(this.microsoftInstrument);
 			instrumentDAO.deleteInstrument(this.appleInstrument);
 		} catch (Exception e) {
 			fail(e.getMessage());
@@ -139,10 +153,12 @@ public class ChartObjectServiceTest {
 	private void createDummyHorizontalLines() {
 		this.horizontalLine1 = this.getHorizontalLine1();
 		this.horizontalLine2 = this.getHorizontalLine2();
+		this.horizontalLine3 = this.getHorizontalLine3();
 		
 		try {
 			chartObjectDAO.insertHorizontalLine(this.horizontalLine1);
 			chartObjectDAO.insertHorizontalLine(this.horizontalLine2);
+			chartObjectDAO.insertHorizontalLine(this.horizontalLine3);
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
@@ -154,6 +170,7 @@ public class ChartObjectServiceTest {
 	 */
 	private void deleteDummyHorizontalLines() {
 		try {
+			chartObjectDAO.deleteHorizontalLine(this.horizontalLine3);
 			chartObjectDAO.deleteHorizontalLine(this.horizontalLine2);
 			chartObjectDAO.deleteHorizontalLine(this.horizontalLine1);
 		} catch (Exception e) {
@@ -172,6 +189,23 @@ public class ChartObjectServiceTest {
 		
 		instrument.setSymbol("AAPL");
 		instrument.setName("Apple");
+		instrument.setStockExchange(StockExchange.NYSE);
+		instrument.setType(InstrumentType.STOCK);
+		
+		return instrument;
+	}
+	
+	
+	/**
+	 * Gets the Instrument of the Microsoft stock.
+	 * 
+	 * @return The Instrument of the Microsoft stock.
+	 */
+	private Instrument getMicrosoftInstrument() {
+		Instrument instrument = new Instrument();
+		
+		instrument.setSymbol("MSFT");
+		instrument.setName("Microsoft");
 		instrument.setStockExchange(StockExchange.NYSE);
 		instrument.setType(InstrumentType.STOCK);
 		
@@ -204,6 +238,21 @@ public class ChartObjectServiceTest {
 		
 		horizontalLine.setInstrument(this.appleInstrument);
 		horizontalLine.setPrice(new BigDecimal("155.00"));
+		
+		return horizontalLine;
+	}
+	
+	
+	/**
+	 * Gets the first horizontal line of the Microsoft stock.
+	 * 
+	 * @return The HorizontalLine.
+	 */
+	private HorizontalLine getHorizontalLine3() {
+		HorizontalLine horizontalLine = new HorizontalLine();
+		
+		horizontalLine.setInstrument(this.microsoftInstrument);
+		horizontalLine.setPrice(new BigDecimal("290.00"));
 		
 		return horizontalLine;
 	}
@@ -258,5 +307,37 @@ public class ChartObjectServiceTest {
 		expectedErrorMessage = MessageFormat.format(this.resources.getString("horizontalLine.notFound"), unknownHorizontalLineId);
 		actualErrorMessage = getHorizontalLineResult.getMessages().get(0).getText();
 		assertEquals(expectedErrorMessage, actualErrorMessage);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of all horizontal lines.
+	 */
+	public void testGetAllHorizontalLines() {
+		WebServiceResult getHorizontalLinesResult;
+		HorizontalLineArray horizontalLines;
+		HorizontalLine horizontalLine;
+		
+		//Get the horizontal lines.
+		ChartObjectService service = new ChartObjectService();
+		getHorizontalLinesResult = service.getHorizontalLines(null);
+		horizontalLines = (HorizontalLineArray) getHorizontalLinesResult.getData();
+		
+		//Assure no error message exists
+		assertTrue(WebServiceTools.resultContainsErrorMessage(getHorizontalLinesResult) == false);
+		
+		//Check if three horizontal lines are returned.
+		assertEquals(3, horizontalLines.getHorizontalLines().size());
+		
+		//Check all horizontal lines by each attribute
+		horizontalLine = horizontalLines.getHorizontalLines().get(0);
+		assertEquals(this.horizontalLine1, horizontalLine);
+		
+		horizontalLine = horizontalLines.getHorizontalLines().get(1);
+		assertEquals(this.horizontalLine2, horizontalLine);
+		
+		horizontalLine = horizontalLines.getHorizontalLines().get(2);
+		assertEquals(this.horizontalLine3, horizontalLine);
 	}
 }

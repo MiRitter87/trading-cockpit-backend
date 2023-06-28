@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlSeeAlso;
 
+import backend.model.chart.HorizontalLineArray;
 import backend.model.instrument.InstrumentArray;
 import backend.model.instrument.QuotationArray;
 import backend.model.list.ListArray;
@@ -23,7 +24,7 @@ import backend.model.statistic.StatisticArray;
  *
  */
 @XmlSeeAlso({PriceAlertArray.class, InstrumentArray.class, QuotationArray.class, ListArray.class, ScanArray.class, 
-	StatisticArray.class, Protocol.class})
+	StatisticArray.class, HorizontalLineArray.class, Protocol.class})
 public class WebServiceResult {
 	/**
 	 * A list of messages.
