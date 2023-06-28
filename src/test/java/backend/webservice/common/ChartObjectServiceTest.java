@@ -1,14 +1,20 @@
 package backend.webservice.common;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.MessageFormat;
+import java.util.ResourceBundle;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import backend.dao.DAOManager;
 import backend.dao.chart.ChartObjectDAO;
@@ -17,6 +23,9 @@ import backend.model.StockExchange;
 import backend.model.chart.HorizontalLine;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
+import backend.model.webservice.WebServiceMessageType;
+import backend.model.webservice.WebServiceResult;
+import backend.tools.WebServiceTools;
 
 /**
  * Tests the ChartObjectService.
@@ -24,6 +33,11 @@ import backend.model.instrument.InstrumentType;
  * @author Michael
  */
 public class ChartObjectServiceTest {
+	/**
+	 * Access to localized application resources.
+	 */
+	private ResourceBundle resources = ResourceBundle.getBundle("backend");	
+	
 	/**
 	 * DAO to access chart object data.
 	 */
@@ -192,5 +206,57 @@ public class ChartObjectServiceTest {
 		horizontalLine.setPrice(new BigDecimal("155.00"));
 		
 		return horizontalLine;
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of a HorizontalLine.
+	 */
+	public void testGetHorizontalLine() {
+		WebServiceResult getHorizontalLineResult;
+		HorizontalLine horizontalLine;
+		
+		//Get the HorizontalLine.
+		ChartObjectService service = new ChartObjectService();
+		getHorizontalLineResult = service.getHorizontalLine(this.horizontalLine1.getId());
+		
+		//Assure no error message exists
+		assertTrue(WebServiceTools.resultContainsErrorMessage(getHorizontalLineResult) == false);
+		
+		//Assure that a HorizontalLine is returned
+		assertTrue(getHorizontalLineResult.getData() instanceof HorizontalLine);
+		
+		horizontalLine = (HorizontalLine) getHorizontalLineResult.getData();
+		
+		//Check each attribute of the HorizontalLine.
+		assertEquals(this.horizontalLine1, horizontalLine);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of a HorizontalLine with an id that is unknown.
+	 */
+	public void testGetHorizontalLineWithUnknownId() {
+		WebServiceResult getHorizontalLineResult;
+		Integer unknownHorizontalLineId = 0;
+		String expectedErrorMessage, actualErrorMessage;
+		
+		//Get the HorizontalLine.
+		ChartObjectService service = new ChartObjectService();
+		getHorizontalLineResult = service.getHorizontalLine(unknownHorizontalLineId);
+		
+		//Assure that no HorizontalLine is returned
+		assertNull(getHorizontalLineResult.getData());
+				
+		//There should be a return message of type E.
+		assertTrue(getHorizontalLineResult.getMessages().size() == 1);
+		assertTrue(getHorizontalLineResult.getMessages().get(0).getType() == WebServiceMessageType.E);
+		
+		//Verify the expected error message.
+		expectedErrorMessage = MessageFormat.format(this.resources.getString("horizontalLine.notFound"), unknownHorizontalLineId);
+		actualErrorMessage = getHorizontalLineResult.getMessages().get(0).getText();
+		assertEquals(expectedErrorMessage, actualErrorMessage);
 	}
 }
