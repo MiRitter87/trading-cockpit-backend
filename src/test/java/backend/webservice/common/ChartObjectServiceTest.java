@@ -340,4 +340,30 @@ public class ChartObjectServiceTest {
 		horizontalLine = horizontalLines.getHorizontalLines().get(2);
 		assertEquals(this.horizontalLine3, horizontalLine);
 	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of all horizontal lines of the Microsoft stock.
+	 */
+	public void testGetAllHorizontalLinesMicrosoft() {
+		WebServiceResult getHorizontalLinesResult;
+		HorizontalLineArray horizontalLines;
+		HorizontalLine horizontalLine;
+		
+		//Get the horizontal lines of the Microsoft stock.
+		ChartObjectService service = new ChartObjectService();
+		getHorizontalLinesResult = service.getHorizontalLines(this.microsoftInstrument.getId());
+		horizontalLines = (HorizontalLineArray) getHorizontalLinesResult.getData();
+		
+		//Assure no error message exists
+		assertTrue(WebServiceTools.resultContainsErrorMessage(getHorizontalLinesResult) == false);
+		
+		//Check if one HorizontalLine is returned.
+		assertEquals(1, horizontalLines.getHorizontalLines().size());
+		
+		//Check if the expected HorizontalLine is returned.
+		horizontalLine = horizontalLines.getHorizontalLines().get(0);
+		assertEquals(this.horizontalLine3, horizontalLine);
+	}
 }

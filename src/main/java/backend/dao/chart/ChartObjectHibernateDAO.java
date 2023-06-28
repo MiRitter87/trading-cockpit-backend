@@ -1,5 +1,6 @@
 package backend.dao.chart;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import backend.dao.ObjectUnchangedException;
@@ -86,6 +88,8 @@ public class ChartObjectHibernateDAO implements ChartObjectDAO {
 	
 	@Override
 	public List<HorizontalLine> getHorizontalLines(Integer instrumentId) throws Exception {
+		Predicate predicate;
+		List<Predicate> predicates = new ArrayList<Predicate>();
 		List<HorizontalLine> horizontalLines = null;
 		EntityManager entityManager = this.sessionFactory.createEntityManager();
 		
@@ -100,6 +104,13 @@ public class ChartObjectHibernateDAO implements ChartObjectDAO {
 			CriteriaQuery<HorizontalLine> criteriaQuery = criteriaBuilder.createQuery(HorizontalLine.class);
 			Root<HorizontalLine> criteria = criteriaQuery.from(HorizontalLine.class);
 			criteriaQuery.select(criteria);
+			
+			predicate = applyInstrumentIdParameter(instrumentId, criteriaBuilder, criteria);
+			if(predicate != null)
+				predicates.add(predicate);
+			
+			criteriaQuery.where(predicates.toArray(new Predicate[predicates.size()]));
+			
 			criteriaQuery.orderBy(criteriaBuilder.asc(criteria.get("id")));	//Order by id ascending
 			TypedQuery<HorizontalLine> typedQuery = entityManager.createQuery(criteriaQuery);
 			typedQuery.setHint("javax.persistence.loadgraph", graph);	//Also fetch all Instrument data.
@@ -144,5 +155,25 @@ public class ChartObjectHibernateDAO implements ChartObjectDAO {
 	public void updateHorizontalLine(HorizontalLine horizontalLine) throws ObjectUnchangedException, Exception {
 		// TODO Auto-generated method stub
 
+	}
+	
+	
+	/**
+	 * Applies the Instrument id parameter to the horizontal lines query.
+	 * 
+	 * @param instrumentId The ID of the Instrument whose horizontal lines are requested.
+	 * @param criteriaBuilder The builder of criteria.
+	 * @param criteria The root entity of the HorizontalLine that is being queried.
+	 * @return A predicate for the Instrument ID.
+	 */
+	private Predicate applyInstrumentIdParameter(final Integer instrumentId, final CriteriaBuilder criteriaBuilder, final Root<HorizontalLine> criteria) {
+		Predicate predicate;
+		
+		if(instrumentId != null)
+			predicate = criteriaBuilder.equal(criteria.get("instrument"), instrumentId);
+		else
+			predicate = null;
+		
+		return predicate;
 	}
 }

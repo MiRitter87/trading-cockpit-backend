@@ -208,7 +208,7 @@ public class PriceAlertHibernateDAO implements PriceAlertDAO {
 	 * Applies the trigger status parameter to the price alert query.
 	 * 
 	 * @param triggerStatus The parameter for price alert triggerTime status.
-	 * @param criteriaBuilder The builder of criterias.
+	 * @param criteriaBuilder The builder of criteria.
 	 * @param criteria The root entity of the price alert that is being queried.
 	 * @return A predicate for the trigger status.
 	 */
@@ -228,7 +228,7 @@ public class PriceAlertHibernateDAO implements PriceAlertDAO {
 	 * Applies the confirmation status parameter to the price alert query.
 	 * 
 	 * @param confirmationStatus The parameter for price alert confirmationTime status.
-	 * @param criteriaBuilder The builder of criterias.
+	 * @param criteriaBuilder The builder of criteria.
 	 * @param criteria The root entity of the price alert that is being queried.
 	 * @return A predicate for the trigger status.
 	 */
@@ -250,7 +250,7 @@ public class PriceAlertHibernateDAO implements PriceAlertDAO {
 	 * 
 	 * @param priceAlertOrderAttribute The parameter for price alert ordering.
 	 * @param criteriaQuery The price alert criteria query.
-	 * @param criteriaBuilder The builder of criterias.
+	 * @param criteriaBuilder The builder of criteria.
 	 * @param criteria The root entity of the price alert that is being queried.
 	 */
 	private void applyPriceAlertOrderAttribute(final PriceAlertOrderAttribute priceAlertOrderAttribute, final CriteriaQuery<PriceAlert> criteriaQuery,
