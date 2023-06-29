@@ -28,6 +28,7 @@ import backend.model.instrument.InstrumentType;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
 import backend.tools.WebServiceTools;
+import backend.tools.test.ValidationMessageProvider;
 
 /**
  * Tests the ChartObjectService.
@@ -461,6 +462,31 @@ public class ChartObjectServiceTest {
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests updating a HorizontalLine with invalid data.
+	 */
+	public void testUpdateInvalidHorizontalLine() {
+		WebServiceResult updateHorizontalLineResult;
+		ChartObjectService service = new ChartObjectService();
+		ValidationMessageProvider messageProvider = new ValidationMessageProvider();
+		String actualErrorMessage, expectedErrorMessage;
+		
+		//Remove the instrument.
+		this.horizontalLine3.setInstrument(null);
+		updateHorizontalLineResult = service.updateHorizontalLine(this.convertToWsHorizontalLine(this.horizontalLine3));
+		
+		//There should be a return message of type E.
+		assertTrue(updateHorizontalLineResult.getMessages().size() == 1);
+		assertTrue(updateHorizontalLineResult.getMessages().get(0).getType() == WebServiceMessageType.E);
+		
+		//A proper message should be provided.
+		expectedErrorMessage = messageProvider.getNotNullValidationMessage("horizontalLine", "instrument");
+		actualErrorMessage = updateHorizontalLineResult.getMessages().get(0).getText();
+		assertEquals(expectedErrorMessage, actualErrorMessage);
 	}
 	
 	

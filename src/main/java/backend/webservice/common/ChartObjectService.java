@@ -15,6 +15,7 @@ import backend.model.chart.HorizontalLineWS;
 import backend.model.webservice.WebServiceMessage;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
+import backend.tools.WebServiceTools;
 
 /**
  * Common implementation of the chart object WebService that can be used by multiple service interfaces like SOAP or REST.
@@ -169,7 +170,10 @@ public class ChartObjectService {
 			return updateHorizontalLineResult;
 		}
 		
-		//TODO Object validation
+		//Validation of the given HorizontalLine.
+		this.validateHorizontalLine(convertedHorizontalLine, updateHorizontalLineResult);
+		if(WebServiceTools.resultContainsErrorMessage(updateHorizontalLineResult))
+			return updateHorizontalLineResult;
 		
 		//Update HorizontalLine if validation is successful.
 		try {
@@ -207,5 +211,21 @@ public class ChartObjectService {
 			horizontalLine.setInstrument(this.instrumentDAO.getInstrument(horizontalLineWS.getInstrumentId()));
 		
 		return horizontalLine;
+	}
+	
+	
+	/**
+	 * Validates the given HorizontalLine and adds potential error messages to the given WebServiceResult.
+	 * 
+	 * @param horizontalLine The HorizontalLine to be validated.
+	 * @param webServiceResult The WebServiceResult containing potential validation error messages.
+	 */
+	private void validateHorizontalLine(final HorizontalLine horizontalLine, WebServiceResult webServiceResult) {
+		try {
+			horizontalLine.validate();
+		}
+		catch(Exception validationException) {
+			webServiceResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, validationException.getMessage()));
+		}
 	}
 }
