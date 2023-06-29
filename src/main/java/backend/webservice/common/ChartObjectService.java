@@ -7,6 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import backend.dao.DAOManager;
+import backend.dao.ObjectUnchangedException;
 import backend.dao.chart.ChartObjectDAO;
 import backend.dao.instrument.InstrumentDAO;
 import backend.model.chart.HorizontalLine;
@@ -180,7 +181,11 @@ public class ChartObjectService {
 			this.chartObjectDAO.updateHorizontalLine(convertedHorizontalLine);
 			updateHorizontalLineResult.addMessage(new WebServiceMessage(WebServiceMessageType.S, 
 					MessageFormat.format(this.resources.getString("horizontalLine.updateSuccess"), convertedHorizontalLine.getId())));
-		} 
+		}
+		catch(ObjectUnchangedException objectUnchangedException) {
+			updateHorizontalLineResult.addMessage(new WebServiceMessage(WebServiceMessageType.I, 
+					MessageFormat.format(this.resources.getString("horizontalLine.updateUnchanged"), convertedHorizontalLine.getId())));
+		}
 		catch (Exception e) {
 			updateHorizontalLineResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
 					MessageFormat.format(this.resources.getString("horizontalLine.updateError"), convertedHorizontalLine.getId())));

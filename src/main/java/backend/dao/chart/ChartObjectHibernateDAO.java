@@ -155,13 +155,28 @@ public class ChartObjectHibernateDAO implements ChartObjectDAO {
 	public void updateHorizontalLine(HorizontalLine horizontalLine) throws ObjectUnchangedException, Exception {
 		EntityManager entityManager;
 		
-		//TODO Check if unchanged
+		this.checkHorizontalLineDataChanged(horizontalLine);
 		
 		entityManager = this.sessionFactory.createEntityManager();
 		entityManager.getTransaction().begin();
 		entityManager.merge(horizontalLine);
 		entityManager.getTransaction().commit();
 		entityManager.close();
+	}
+	
+	
+	/**
+	 * Checks if the data of the given HorizontalLine differ from the HorizontalLine that is persisted at database level.
+	 * 
+	 * @param horizontalLine The HorizontalLine to be checked.
+	 * @throws ObjectUnchangedException Object data did not change.
+	 * @throws Exception In case an error occurred during determination of the HorizontalLine stored at the database.
+	 */
+	private void checkHorizontalLineDataChanged(final HorizontalLine horizontalLine) throws ObjectUnchangedException, Exception {
+		HorizontalLine databaseHorizontalLine = this.getHorizontalLine(horizontalLine.getId());
+		
+		if(databaseHorizontalLine.equals(horizontalLine))
+			throw new ObjectUnchangedException();
 	}
 	
 	

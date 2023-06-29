@@ -490,6 +490,29 @@ public class ChartObjectServiceTest {
 	}
 	
 	
+	@Test
+	/**
+	 * Tests updating a HorizontalLine without changing any data.
+	 */
+	public void testUpdateUnchangedHorizontalLine() {
+		WebServiceResult updateHorizontalLineResult;
+		ChartObjectService service = new ChartObjectService();
+		String actualErrorMessage, expectedErrorMessage;
+		
+		//Update HorizontalLine without changing any data.
+		updateHorizontalLineResult = service.updateHorizontalLine(this.convertToWsHorizontalLine(this.horizontalLine3));
+		
+		//There should be a return message of type I
+		assertTrue(updateHorizontalLineResult.getMessages().size() == 1);
+		assertTrue(updateHorizontalLineResult.getMessages().get(0).getType() == WebServiceMessageType.I);
+		
+		//A proper message should be provided.
+		expectedErrorMessage = MessageFormat.format(this.resources.getString("horizontalLine.updateUnchanged"), this.horizontalLine3.getId());
+		actualErrorMessage = updateHorizontalLineResult.getMessages().get(0).getText();
+		assertEquals(expectedErrorMessage, actualErrorMessage);
+	}
+	
+	
 	/**
 	 * Converts a HorizontalLine to the lean WebService representation.
 	 * 
