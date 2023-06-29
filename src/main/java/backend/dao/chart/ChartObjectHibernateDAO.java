@@ -153,8 +153,15 @@ public class ChartObjectHibernateDAO implements ChartObjectDAO {
 	
 	@Override
 	public void updateHorizontalLine(HorizontalLine horizontalLine) throws ObjectUnchangedException, Exception {
-		// TODO Auto-generated method stub
-
+		EntityManager entityManager;
+		
+		//TODO Check if unchanged
+		
+		entityManager = this.sessionFactory.createEntityManager();
+		entityManager.getTransaction().begin();
+		entityManager.merge(horizontalLine);
+		entityManager.getTransaction().commit();
+		entityManager.close();
 	}
 	
 	

@@ -22,6 +22,7 @@ import backend.dao.instrument.InstrumentDAO;
 import backend.model.StockExchange;
 import backend.model.chart.HorizontalLine;
 import backend.model.chart.HorizontalLineArray;
+import backend.model.chart.HorizontalLineWS;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.webservice.WebServiceMessageType;
@@ -430,5 +431,56 @@ public class ChartObjectServiceTest {
 		expectedErrorMessage = MessageFormat.format(this.resources.getString("horizontalLine.notFound"), unknownHorizontalLineId);
 		actualErrorMessage = deleteHorizontalLineResult.getMessages().get(0).getText();
 		assertEquals(expectedErrorMessage, actualErrorMessage);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests updating a HorizontalLine with valid data.
+	 */
+	public void testUpdateValidHorizontalLine() {
+		WebServiceResult updateHorizontalLineResult;
+		HorizontalLine updatedHorizontalLine;
+		ChartObjectService service = new ChartObjectService();
+		
+		//Update the price.
+		this.horizontalLine3.setPrice(new BigDecimal("300.00"));
+		updateHorizontalLineResult = service.updateHorizontalLine(this.convertToWsHorizontalLine(this.horizontalLine3));
+		
+		//Assure no error message exists
+		assertTrue(WebServiceTools.resultContainsErrorMessage(updateHorizontalLineResult) == false);
+		
+		//There should be a success message
+		assertTrue(updateHorizontalLineResult.getMessages().size() == 1);
+		assertTrue(updateHorizontalLineResult.getMessages().get(0).getType() == WebServiceMessageType.S);
+		
+		//Retrieve the updated HorizontalLine and check if the changes have been persisted.
+		try {
+			updatedHorizontalLine = chartObjectDAO.getHorizontalLine(this.horizontalLine3.getId());
+			assertTrue(this.horizontalLine3.getPrice().compareTo(updatedHorizontalLine.getPrice()) == 0);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	/**
+	 * Converts a HorizontalLine to the lean WebService representation.
+	 * 
+	 * @param horizontalLine The HorizontalLine to be converted.
+	 * @return The lean WebService representation of the HorizontalLine.
+	 */
+	private HorizontalLineWS convertToWsHorizontalLine(final HorizontalLine horizontalLine) {
+		HorizontalLineWS horizontalLineWS = new HorizontalLineWS();
+		
+		//Simple attributes.
+		horizontalLineWS.setId(horizontalLine.getId());
+		horizontalLineWS.setPrice(horizontalLine.getPrice());
+		
+		//Object references.
+		if(horizontalLine.getInstrument() != null)
+			horizontalLineWS.setInstrumentId(horizontalLine.getInstrument().getId());
+		
+		return horizontalLineWS;
 	}
 }

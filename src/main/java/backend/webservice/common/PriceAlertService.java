@@ -209,7 +209,7 @@ public class PriceAlertService {
 		}
 		catch(Exception exception) {
 			updatePriceAlertResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, this.resources.getString("priceAlert.updateError")));	
-			logger.error(this.resources.getString("list.updateError"), exception);
+			logger.error(this.resources.getString("priceAlert.updateError"), exception);
 			return updatePriceAlertResult;
 		}
 		
