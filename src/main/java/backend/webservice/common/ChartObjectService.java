@@ -102,4 +102,41 @@ public class ChartObjectService {
 		
 		return getHorizontalLinesResult;
 	}
+	
+	
+	/**
+	 * Deletes the HorizontalLine with the given id.
+	 * 
+	 * @param id The id of the HorizontalLine to be deleted.
+	 * @return The result of the delete function.
+	 */
+	public WebServiceResult deleteHorizontalLine(final Integer id) {
+		WebServiceResult deleteHorizontalLineResult = new WebServiceResult(null);
+		HorizontalLine horizontalLine = null;
+		
+		//Check if a HorizontalLine with the given id exists.
+		try {
+			horizontalLine = this.chartObjectDAO.getHorizontalLine(id);
+			
+			if(horizontalLine != null) {
+				//Delete HorizontalLine if exists.
+				this.chartObjectDAO.deleteHorizontalLine(horizontalLine);
+				deleteHorizontalLineResult.addMessage(new WebServiceMessage(WebServiceMessageType.S, 
+						MessageFormat.format(this.resources.getString("horizontalLine.deleteSuccess"), id)));
+			}
+			else {
+				//HorizontalLine not found.
+				deleteHorizontalLineResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
+						MessageFormat.format(this.resources.getString("horizontalLine.notFound"), id)));
+			}
+		}
+		catch (Exception e) {
+			deleteHorizontalLineResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
+					MessageFormat.format(this.resources.getString("horizontalLine.deleteError"), id)));
+			
+			logger.error(MessageFormat.format(this.resources.getString("horizontalLine.deleteError"), id), e);
+		}
+		
+		return deleteHorizontalLineResult;
+	}
 }

@@ -366,4 +366,69 @@ public class ChartObjectServiceTest {
 		horizontalLine = horizontalLines.getHorizontalLines().get(0);
 		assertEquals(this.horizontalLine3, horizontalLine);
 	}
+	
+	
+	@Test
+	/**
+	 * Tests deletion of a HorizontalLine.
+	 */
+	public void testDeleteHorizontalLine() {
+		WebServiceResult deleteHorizontalLineResult;
+		HorizontalLine deletedHorizontalLine;
+		
+		try {
+			//Delete HorizontalLine of Microsoft stock using the service.
+			ChartObjectService service = new ChartObjectService();
+			deleteHorizontalLineResult = service.deleteHorizontalLine(this.horizontalLine3.getId());
+			
+			//There should be no error messages
+			assertTrue(WebServiceTools.resultContainsErrorMessage(deleteHorizontalLineResult) == false);
+			
+			//There should be a success message
+			assertTrue(deleteHorizontalLineResult.getMessages().size() == 1);
+			assertTrue(deleteHorizontalLineResult.getMessages().get(0).getType() == WebServiceMessageType.S);
+			
+			//Check if previously deleted HorizontalLine is missing using the DAO.
+			deletedHorizontalLine = chartObjectDAO.getHorizontalLine(this.horizontalLine3.getId());
+			
+			if(deletedHorizontalLine != null)
+				fail("Microsoft horizontal line is still persisted but should have been deleted by the WebService operation 'deleteHorizontalLine'.");
+		}
+		catch (Exception e) {
+			fail(e.getMessage());
+		}
+		finally {
+			//Restore old database state by adding the HorizontalLine that has been deleted previously.
+			try {
+				this.horizontalLine3 = this.getHorizontalLine3();
+				chartObjectDAO.insertHorizontalLine(this.horizontalLine3);
+			} 
+			catch (Exception e) {
+				fail(e.getMessage());
+			}
+		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests deletion of a HorizontalLine with an unknown ID.
+	 */
+	public void testDeleteHorizontalLineUnknownId() {
+		WebServiceResult deleteHorizontalLineResult;
+		Integer unknownHorizontalLineId = 0;
+		String expectedErrorMessage, actualErrorMessage;
+		
+		ChartObjectService service = new ChartObjectService();
+		deleteHorizontalLineResult = service.deleteHorizontalLine(unknownHorizontalLineId);
+		
+		//There should be a return message of type E.
+		assertTrue(deleteHorizontalLineResult.getMessages().size() == 1);
+		assertTrue(deleteHorizontalLineResult.getMessages().get(0).getType() == WebServiceMessageType.E);
+		
+		//Verify the expected error message.
+		expectedErrorMessage = MessageFormat.format(this.resources.getString("horizontalLine.notFound"), unknownHorizontalLineId);
+		actualErrorMessage = deleteHorizontalLineResult.getMessages().get(0).getText();
+		assertEquals(expectedErrorMessage, actualErrorMessage);
+	}
 }
