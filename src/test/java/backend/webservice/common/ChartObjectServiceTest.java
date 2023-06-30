@@ -1,6 +1,7 @@
 package backend.webservice.common;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -510,6 +511,56 @@ public class ChartObjectServiceTest {
 		expectedErrorMessage = MessageFormat.format(this.resources.getString("horizontalLine.updateUnchanged"), this.horizontalLine3.getId());
 		actualErrorMessage = updateHorizontalLineResult.getMessages().get(0).getText();
 		assertEquals(expectedErrorMessage, actualErrorMessage);
+	}
+	
+	
+	@Test
+	/**
+	 * Tests adding of a new HorizontalLine.
+	 */
+	public void testAddValidHorizontalLine() {
+		HorizontalLine newHorizontalLine = new HorizontalLine();
+		HorizontalLine addedHorizontalLine;
+		WebServiceResult addHorizontalLineResult;
+		ChartObjectService service = new ChartObjectService();
+		
+		//Define the new HorizontalLine.
+		newHorizontalLine.setInstrument(this.microsoftInstrument);
+		newHorizontalLine.setPrice(new BigDecimal("323.00"));
+		
+		//Add a HorizontalLine to the database via WebService
+		addHorizontalLineResult = service.addHorizontalLine(this.convertToWsHorizontalLine(newHorizontalLine));
+		
+		//Assure no error message exists
+		assertTrue(WebServiceTools.resultContainsErrorMessage(addHorizontalLineResult) == false);
+		
+		//There should be a success message
+		assertTrue(addHorizontalLineResult.getMessages().size() == 1);
+		assertTrue(addHorizontalLineResult.getMessages().get(0).getType() == WebServiceMessageType.S);
+		
+		//The ID of the newly created HorizontalLine should be provided in the data part of the WebService return.
+		assertNotNull(addHorizontalLineResult.getData());
+		assertTrue(addHorizontalLineResult.getData() instanceof Integer);
+		newHorizontalLine.setId((Integer) addHorizontalLineResult.getData());
+		
+		//Read the persisted HorizontalLine via DAO
+		try {
+			addedHorizontalLine = chartObjectDAO.getHorizontalLine(newHorizontalLine.getId());
+			
+			//Check if the HorizontalLine read by the DAO equals the HorizontalLine inserted using the WebService in each attribute.
+			assertEquals(newHorizontalLine, addedHorizontalLine);
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+		finally {
+			//Delete the newly added HorizontalLine.
+			try {
+				chartObjectDAO.deleteHorizontalLine(newHorizontalLine);
+			} 
+			catch (Exception e) {
+				fail(e.getMessage());
+			}
+		}		
 	}
 	
 	

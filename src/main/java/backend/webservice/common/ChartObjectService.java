@@ -115,6 +115,42 @@ public class ChartObjectService {
 	
 	
 	/**
+	 * Adds a HorizontalLine.
+	 * 
+	 * @param horizontalLine The HorizontalLine to be added.
+	 * @return The result of the add function.
+	 */
+	public WebServiceResult addHorizontalLine(final HorizontalLineWS horizontalLine) {
+		HorizontalLine convertedHorizontalLine;
+		WebServiceResult addHorizontalLineResult = new WebServiceResult();
+		
+		//Convert the WebService data transfer object to the internal data model.
+		try {
+			convertedHorizontalLine = this.convertHorizontalLine(horizontalLine);
+		}
+		catch(Exception exception) {
+			addHorizontalLineResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, this.resources.getString("horizontalLine.addError")));	
+			logger.error(this.resources.getString("horizontalLine.addError"), exception);
+			return addHorizontalLineResult;
+		}
+		
+		//TODO Validate 
+		
+		//Insert HorizontalLine if validation is successful.
+		try {
+			this.chartObjectDAO.insertHorizontalLine(convertedHorizontalLine);
+			addHorizontalLineResult.addMessage(new WebServiceMessage(WebServiceMessageType.S, this.resources.getString("horizontalLine.addSuccess")));
+			addHorizontalLineResult.setData(convertedHorizontalLine.getId());
+		} catch (Exception e) {
+			addHorizontalLineResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, this.resources.getString("horizontalLine.addError")));
+			logger.error(this.resources.getString("priceAlert.addError"), e);
+		}
+		
+		return addHorizontalLineResult;
+	}
+	
+	
+	/**
 	 * Deletes the HorizontalLine with the given id.
 	 * 
 	 * @param id The id of the HorizontalLine to be deleted.
