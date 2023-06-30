@@ -134,7 +134,10 @@ public class ChartObjectService {
 			return addHorizontalLineResult;
 		}
 		
-		//TODO Validate 
+		//Validation of the given HorizontalLine.
+		this.validateHorizontalLine(convertedHorizontalLine, addHorizontalLineResult);
+		if(WebServiceTools.resultContainsErrorMessage(addHorizontalLineResult))
+			return addHorizontalLineResult;
 		
 		//Insert HorizontalLine if validation is successful.
 		try {

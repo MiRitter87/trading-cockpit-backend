@@ -564,6 +564,30 @@ public class ChartObjectServiceTest {
 	}
 	
 	
+	@Test
+	/**
+	 * Tests adding of an invalid HorizontalLine.
+	 */
+	public void testAddInvalidHorizontalLine() {
+		HorizontalLine newHorizontalLine = new HorizontalLine();
+		WebServiceResult addHorizontalLineResult;
+		ChartObjectService service = new ChartObjectService();
+		
+		//Define the new HorizontalLine without an Instrument.
+		newHorizontalLine.setPrice(new BigDecimal("323.00"));
+		
+		//Add a new HorizontalLine to the database via WebService
+		addHorizontalLineResult = service.addHorizontalLine(this.convertToWsHorizontalLine(newHorizontalLine));
+		
+		//There should be a return message of type E.
+		assertTrue(addHorizontalLineResult.getMessages().size() == 1);
+		assertTrue(addHorizontalLineResult.getMessages().get(0).getType() == WebServiceMessageType.E);
+		
+		//The new HorizontalLine should not have been persisted
+		assertNull(newHorizontalLine.getId());
+	}
+	
+	
 	/**
 	 * Converts a HorizontalLine to the lean WebService representation.
 	 * 
