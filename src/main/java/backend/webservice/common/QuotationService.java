@@ -1,5 +1,6 @@
 package backend.webservice.common;
 
+import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
 import org.apache.logging.log4j.LogManager;
@@ -73,5 +74,30 @@ public class QuotationService {
 		}
 		
 		return getRecentQuotationsResult;
+	}
+	
+	
+	/**
+	 * Provides a List of all quotations of the Instrument with the given ID.
+	 * 
+	 * @param instrumentId The ID of the Instrument.
+	 * @return A List of quotations of the Instrument with the given ID.
+	 */
+	public WebServiceResult getQuotationsOfInstrument(final Integer instrumentId) {
+		QuotationArray quotations = new QuotationArray();
+		WebServiceResult getQuotationsResult = new WebServiceResult(null);
+		
+		try {
+			quotations.setQuotations(this.quotationDAO.getQuotationsOfInstrument(instrumentId));
+			quotations.sortQuotationsByDate();
+			getQuotationsResult.setData(quotations);
+		} catch (Exception e) {
+			getQuotationsResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
+					MessageFormat.format(this.resources.getString("quotation.getQuotationsOfInstrumentError"), instrumentId)));
+			
+			logger.error(MessageFormat.format(this.resources.getString("quotation.getQuotationsOfInstrumentError"), instrumentId), e);
+		}
+		
+		return getQuotationsResult;
 	}
 }
