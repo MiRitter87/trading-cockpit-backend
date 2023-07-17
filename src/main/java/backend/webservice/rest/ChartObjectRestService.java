@@ -92,7 +92,7 @@ public class ChartObjectRestService {
 	 * @return The result of the delete function.
 	 */
 	@DELETE
-	@Path("/{id}")
+	@Path("/horizontalLine/{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public WebServiceResult deleteHorizontalLine(@PathParam("id") final Integer id) {
