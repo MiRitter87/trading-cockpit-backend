@@ -1,6 +1,7 @@
 package backend.webservice.rest;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -81,5 +82,21 @@ public class ChartObjectRestService {
 	public WebServiceResult updateHorizontalLine(final HorizontalLineWS horizontalLine) {
 		ChartObjectService chartObjectService = new ChartObjectService();
 		return chartObjectService.updateHorizontalLine(horizontalLine);
+	}
+	
+	
+	/**
+	 * Deletes the HorizontalLine with the given id.
+	 * 
+	 * @param id The id of the HorizontalLine to be deleted.
+	 * @return The result of the delete function.
+	 */
+	@DELETE
+	@Path("/{id}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public WebServiceResult deleteHorizontalLine(@PathParam("id") final Integer id) {
+		ChartObjectService chartObjectService = new ChartObjectService();
+		return chartObjectService.deleteHorizontalLine(id);
 	}
 }
