@@ -16,10 +16,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import backend.dao.DAOManager;
+import backend.dao.chart.ChartObjectDAO;
 import backend.dao.quotation.QuotationDAO;
 import backend.model.Currency;
 import backend.model.ObjectInUseException;
 import backend.model.StockExchange;
+import backend.model.chart.HorizontalLine;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
@@ -41,6 +43,11 @@ public class InstrumentHibernateDAOTest {
 	private static QuotationDAO quotationDAO;
 	
 	/**
+	 * DAO to access chart object data.
+	 */
+	private static ChartObjectDAO chartObjectDAO;
+	
+	/**
 	 * The stock of Apple.
 	 */
 	private Instrument appleStock;
@@ -55,6 +62,11 @@ public class InstrumentHibernateDAOTest {
 	 */
 	private Quotation appleQuotation2;
 	
+	/**
+	 * A HorizontalLine in a chart.
+	 */
+	private HorizontalLine horizontalLine;
+	
 	
 	@BeforeAll
 	/**
@@ -63,6 +75,7 @@ public class InstrumentHibernateDAOTest {
 	public static void setUpClass() {
 		instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
 		quotationDAO = DAOManager.getInstance().getQuotationDAO();
+		chartObjectDAO = DAOManager.getInstance().getChartObjectDAO();
 	}
 	
 	
@@ -102,8 +115,9 @@ public class InstrumentHibernateDAOTest {
 	 */
 	private void createTestData() {
 		Calendar calendar = Calendar.getInstance();
-		List<Quotation> quotations = new ArrayList<>();
+		
 		this.appleStock = new Instrument();
+		this.horizontalLine = new HorizontalLine();
 		
 		try {
 			this.appleStock.setSymbol("AAPL");
@@ -119,7 +133,6 @@ public class InstrumentHibernateDAOTest {
 			this.appleQuotation1.setCurrency(Currency.USD);
 			this.appleQuotation1.setVolume(6784544);
 			this.appleQuotation1.setInstrument(this.appleStock);
-			quotations.add(this.appleQuotation1);
 			
 			calendar.add(Calendar.DAY_OF_YEAR, 1);
 			this.appleQuotation2 = new Quotation();
@@ -128,9 +141,9 @@ public class InstrumentHibernateDAOTest {
 			this.appleQuotation2.setCurrency(Currency.USD);
 			this.appleQuotation2.setVolume(4584544);
 			this.appleQuotation2.setInstrument(this.appleStock);
-			quotations.add(this.appleQuotation2);
 			
-			quotationDAO.insertQuotations(quotations);			
+			this.horizontalLine.setInstrument(this.appleStock);
+			this.horizontalLine.setPrice(new BigDecimal("187.50"));
 		} catch (DuplicateInstrumentException e) {
 			fail(e.getMessage());
 		} catch (Exception e) {
@@ -144,12 +157,6 @@ public class InstrumentHibernateDAOTest {
 	 */
 	private void deleteTestData() {
 		try {
-			List<Quotation> quotations = new ArrayList<>();
-
-			quotations.add(this.appleQuotation1);
-			quotations.add(this.appleQuotation2);
-
-			quotationDAO.deleteQuotations(quotations);
 			instrumentDAO.deleteInstrument(this.appleStock);
 		} catch (Exception e) {
 			fail(e.getMessage());
@@ -163,12 +170,52 @@ public class InstrumentHibernateDAOTest {
 	 * An Instrument can't be deleted as long as quotations are referenced to the Instrument.
 	 */
 	public void testDeleteInstrumentWithReferencedQuotations() {
+		List<Quotation> quotations = new ArrayList<>();
+		
+		quotations.add(this.appleQuotation1);
+		quotations.add(this.appleQuotation2);
+				
 		try {
+			quotationDAO.insertQuotations(quotations);
+			
 			instrumentDAO.deleteInstrument(this.appleStock);
+			fail("Delete should have failed because quotations are referenced to the instrument");
 		} catch (ObjectInUseException expected) {
 			//All is well.
 		} catch (Exception e) {
 			fail(e.getMessage());
+		}
+		finally {
+			try {
+				quotationDAO.deleteQuotations(quotations);
+			} catch (Exception e) {
+				fail(e.getMessage());
+			}
+		}
+	}
+	
+	@Test
+	/**
+	 * Tests deletion of an Instrument.
+	 * An Instrument can't be deleted as long as horizontal lines are referenced to the Instrument.
+	 */
+	public void testDeleteInstrumentWithReferencedHorizontalLines() {
+		try {
+			chartObjectDAO.insertHorizontalLine(this.horizontalLine);
+
+			instrumentDAO.deleteInstrument(this.appleStock);
+			fail("Delete should have failed because a horizontal line is referenced to the instrument");
+		} catch (ObjectInUseException expected) {
+			//All is well.
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+		finally {
+			try {
+				chartObjectDAO.deleteHorizontalLine(this.horizontalLine);
+			} catch (Exception e) {
+				fail(e.getMessage());
+			}
 		}
 	}
 }

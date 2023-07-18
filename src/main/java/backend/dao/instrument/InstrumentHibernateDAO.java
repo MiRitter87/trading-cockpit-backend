@@ -15,6 +15,7 @@ import javax.persistence.criteria.Root;
 import backend.dao.ObjectUnchangedException;
 import backend.model.ObjectInUseException;
 import backend.model.StockExchange;
+import backend.model.chart.HorizontalLine;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
@@ -218,6 +219,7 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 	 */
 	private void checkInstrumentInUse(final Instrument instrument, final EntityManager entityManager) throws ObjectInUseException {	
 		this.checkQuotationsExist(instrument, entityManager);
+		this.checkHorizontalLinesExist(instrument, entityManager);
 		this.checkInstrumentUsedInList(instrument, entityManager);
 		this.checkInstrumentUsedInPriceAlert(instrument, entityManager);
 		this.checkInstrumentUsedAsSectorOrIg(instrument, entityManager);
@@ -241,6 +243,27 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 		
 		if(quotations.size() > 0) {
 			throw new ObjectInUseException(instrument.getId(), quotations.get(0).getId(), quotations.get(0));
+		}
+	}
+	
+	
+	/**
+	 * Checks if the given Instrument has any horizontal lines referenced.
+	 * 
+	 * @param entityManager The EntityManager used to check for existing horizontal lines.
+	 * @param instrument The Instrument whose horizontal lines are checked.
+	 * @throws ObjectInUseException In case the Instrument has horizontal lines referenced.
+	 */
+	@SuppressWarnings("unchecked")
+	private void checkHorizontalLinesExist(final Instrument instrument, final EntityManager entityManager) throws ObjectInUseException {
+		Query query = entityManager.createQuery("SELECT h FROM HorizontalLine h WHERE INSTRUMENT_ID = :instrumentId");
+		List<HorizontalLine> horizontalLines;
+		
+		query.setParameter("instrumentId", instrument.getId());
+		horizontalLines = query.getResultList();
+		
+		if(horizontalLines.size() > 0) {
+			throw new ObjectInUseException(instrument.getId(), horizontalLines.get(0).getId(), horizontalLines.get(0));
 		}
 	}
 	
