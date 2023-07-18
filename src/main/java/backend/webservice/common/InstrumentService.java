@@ -13,11 +13,13 @@ import backend.controller.instrumentCheck.InstrumentCheckController;
 import backend.controller.instrumentCheck.NoQuotationsExistException;
 import backend.dao.DAOManager;
 import backend.dao.ObjectUnchangedException;
+import backend.dao.chart.ChartObjectDAO;
 import backend.dao.instrument.DuplicateInstrumentException;
 import backend.dao.instrument.InstrumentDAO;
 import backend.dao.quotation.QuotationDAO;
 import backend.model.LocalizedException;
 import backend.model.ObjectInUseException;
+import backend.model.chart.HorizontalLine;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentArray;
 import backend.model.instrument.InstrumentType;
@@ -48,6 +50,11 @@ public class InstrumentService {
 	private QuotationDAO quotationDAO;
 	
 	/**
+	 * DAO for chart object access.
+	 */
+	private ChartObjectDAO chartObjectDAO;
+	
+	/**
 	 * Access to localized application resources.
 	 */
 	private ResourceBundle resources = ResourceBundle.getBundle("backend");
@@ -64,6 +71,7 @@ public class InstrumentService {
 	public InstrumentService() {
 		this.instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
 		this.quotationDAO = DAOManager.getInstance().getQuotationDAO();
+		this.chartObjectDAO = DAOManager.getInstance().getChartObjectDAO();
 	}
 	
 	
@@ -197,25 +205,7 @@ public class InstrumentService {
 			}
 		}
 		catch(ObjectInUseException objectInUseException) {
-			if(objectInUseException.getUsedByObject() instanceof backend.model.list.List) {
-				deleteInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
-						MessageFormat.format(this.resources.getString("instrument.deleteUsedInList"), id, objectInUseException.getUsedById())));
-			}
-			else if(objectInUseException.getUsedByObject() instanceof PriceAlert) {
-				deleteInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
-						MessageFormat.format(this.resources.getString("instrument.deleteUsedInPriceAlert"), id, objectInUseException.getUsedById())));
-			}
-			else if(objectInUseException.getUsedByObject() instanceof Instrument) {
-				deleteInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
-						MessageFormat.format(this.resources.getString("instrument.deleteUsedInInstrument"), id, objectInUseException.getUsedById())));
-			}
-			else if(objectInUseException.getUsedByObject() instanceof Quotation) {
-				deleteInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
-						MessageFormat.format(this.resources.getString("instrument.deleteError"), id)));
-				
-				//This is an error the user can not fix. Therefore it is logged.
-				logger.error(MessageFormat.format(this.resources.getString("instrument.deleteUsedInQuotation"), id));
-			}
+			this.handleObjectInUseDeletion(id, objectInUseException, deleteInstrumentResult);
 		}
 		catch(Exception e) {
 			deleteInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
@@ -372,10 +362,55 @@ public class InstrumentService {
 	 */
 	private void deleteReferencedObjects(final Integer id) throws Exception {
 		List<Quotation> quotationsOfInstrument = new ArrayList<>();
+		List<HorizontalLine> horizontalLinesOfInstrument = new ArrayList<>();
 		
 		//If the Instrument has any quotations referenced, delete those first before deleting the Instrument.
 		quotationsOfInstrument = this.quotationDAO.getQuotationsOfInstrument(id);
 		if(quotationsOfInstrument.size() > 0)
 			this.quotationDAO.deleteQuotations(quotationsOfInstrument);
+		
+		//If the Instrument has any horizontal lines referenced, delete those first before deleting the Instrument.
+		horizontalLinesOfInstrument = this.chartObjectDAO.getHorizontalLines(id);
+		for(HorizontalLine horizontalLine: horizontalLinesOfInstrument) {
+			this.chartObjectDAO.deleteHorizontalLine(horizontalLine);
+		}
+			
+	}
+	
+	
+	/**
+	 * Handling of the ObjectInUseException during deletion of an Instrument.
+	 * 
+	 * @param id The Instrument id.
+	 * @param objectInUseException The ObjectInUseException.
+	 * @param deleteInstrumentResult The WebServiceResult of the delete operation.
+	 */
+	private void handleObjectInUseDeletion(final Integer id, final ObjectInUseException objectInUseException, WebServiceResult deleteInstrumentResult) {
+		if(objectInUseException.getUsedByObject() instanceof backend.model.list.List) {
+			deleteInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
+					MessageFormat.format(this.resources.getString("instrument.deleteUsedInList"), id, objectInUseException.getUsedById())));
+		}
+		else if(objectInUseException.getUsedByObject() instanceof PriceAlert) {
+			deleteInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
+					MessageFormat.format(this.resources.getString("instrument.deleteUsedInPriceAlert"), id, objectInUseException.getUsedById())));
+		}
+		else if(objectInUseException.getUsedByObject() instanceof Instrument) {
+			deleteInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
+					MessageFormat.format(this.resources.getString("instrument.deleteUsedInInstrument"), id, objectInUseException.getUsedById())));
+		}
+		else if(objectInUseException.getUsedByObject() instanceof Quotation) {
+			deleteInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
+					MessageFormat.format(this.resources.getString("instrument.deleteError"), id)));
+			
+			//This is an error the user can not fix. Therefore it is logged.
+			logger.error(MessageFormat.format(this.resources.getString("instrument.deleteUsedInQuotation"), id));
+		}
+		else if(objectInUseException.getUsedByObject() instanceof HorizontalLine) {
+			deleteInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
+					MessageFormat.format(this.resources.getString("instrument.deleteError"), id)));
+			
+			//This is an error the user can not fix. Therefore it is logged.
+			logger.error(MessageFormat.format(this.resources.getString("instrument.deleteUsedInHorizontalLine"), id));
+		}
 	}
 }
