@@ -176,17 +176,14 @@ public class InstrumentService {
 	public WebServiceResult deleteInstrument(final Integer id) {
 		WebServiceResult deleteInstrumentResult = new WebServiceResult(null);
 		Instrument instrument = null;
-		List<Quotation> quotationsOfInstrument = new ArrayList<>();
+		
 		
 		//Check if an instrument with the given id exists.
 		try {
 			instrument = this.instrumentDAO.getInstrument(id);
 			
 			if(instrument != null) {
-				//If the Instrument has any quotations referenced, delete those first before deleting the Instrument.
-				quotationsOfInstrument = this.quotationDAO.getQuotationsOfInstrument(id);
-				if(quotationsOfInstrument.size() > 0)
-					this.quotationDAO.deleteQuotations(quotationsOfInstrument);
+				this.deleteReferencedObjects(id);
 				
 				//Delete instrument if exists.
 				this.instrumentDAO.deleteInstrument(instrument);
@@ -208,10 +205,16 @@ public class InstrumentService {
 				deleteInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
 						MessageFormat.format(this.resources.getString("instrument.deleteUsedInPriceAlert"), id, objectInUseException.getUsedById())));
 			}
-			
-			if(objectInUseException.getUsedByObject() instanceof Instrument) {
+			else if(objectInUseException.getUsedByObject() instanceof Instrument) {
 				deleteInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
 						MessageFormat.format(this.resources.getString("instrument.deleteUsedInInstrument"), id, objectInUseException.getUsedById())));
+			}
+			else if(objectInUseException.getUsedByObject() instanceof Quotation) {
+				deleteInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
+						MessageFormat.format(this.resources.getString("instrument.deleteError"), id)));
+				
+				//This is an error the user can not fix. Therefore it is logged.
+				logger.error(MessageFormat.format(this.resources.getString("instrument.deleteUsedInQuotation"), id));
 			}
 		}
 		catch(Exception e) {
@@ -358,5 +361,21 @@ public class InstrumentService {
 		catch(Exception validationException) {
 			webServiceResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, validationException.getMessage()));
 		}
+	}
+	
+	
+	/**
+	 * Deletes referenced objects of the Instrument with the given ID.
+	 * 
+	 * @param id The id of the instrument to be deleted.
+	 * @throws Exception In case reading or deleting referenced objects failed.
+	 */
+	private void deleteReferencedObjects(final Integer id) throws Exception {
+		List<Quotation> quotationsOfInstrument = new ArrayList<>();
+		
+		//If the Instrument has any quotations referenced, delete those first before deleting the Instrument.
+		quotationsOfInstrument = this.quotationDAO.getQuotationsOfInstrument(id);
+		if(quotationsOfInstrument.size() > 0)
+			this.quotationDAO.deleteQuotations(quotationsOfInstrument);
 	}
 }
