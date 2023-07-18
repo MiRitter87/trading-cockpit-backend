@@ -153,7 +153,7 @@ public class PriceAlertController {
 	public void start() throws Exception {
 		this.executorService = Executors.newSingleThreadScheduledExecutor();
 		
-		executorService.scheduleAtFixedRate(new PriceAlertThread(this.startTime, this.endTime, this.dataProviders), 
+		executorService.scheduleWithFixedDelay(new PriceAlertThread(this.startTime, this.endTime, this.dataProviders), 
 				0, this.getQueryInterval(), TimeUnit.SECONDS);
 	}
 	
