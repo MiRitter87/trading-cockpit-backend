@@ -17,7 +17,8 @@ import backend.webservice.ScanTemplate;
  * 
  * These tasks include:<br>
  * -Post processing activity performed on scan results<br>
- * -Complex scan algorithms that go beyond the scope of a simple database selection based on indicator values
+ * -Complex scan algorithms that go beyond the scope of a simple database selection based on indicator values<br>
+ * -Apply filter criteria to the template-based scan results
  * 
  * @author Michael
  */
@@ -108,6 +109,18 @@ public class ScanTemplateProcessor {
 	
 	
 	/**
+	 * Applies the given filters to the given quotations.
+	 * If a Quotation does not fulfill the given filters, it is removed from the List.
+	 * 
+	 * @param minLiquidity The minimum trading liquidity that is required. Parameter can be omitted (null).
+	 * @param quotations The quotations on which the filtering is performed.
+	 */
+	protected void applyFilters(final Float minLiquidity, List<Quotation> quotations) {
+		this.filterByMinLiquidity(minLiquidity, quotations);
+	}
+	
+	
+	/**
 	 * Performs post processing tasks for the given quotations based on the ScanTemplate "RS_SINCE_DATE".
 	 * The method calculates and sets the RS number beginning from the given date.
 	 * 
@@ -158,6 +171,28 @@ public class ScanTemplateProcessor {
 			weeklyQuotations = quotationArray.getWeeklyQuotations();
 			
 			if(!this.isThreeWeeksTight(weeklyQuotations))
+				quotationIterator.remove();
+		}
+	}
+	
+	
+	/**
+	 * Filters the given quotations by the minimum liquidity.
+	 * 
+	 * @param minLiquidity The minimum trading liquidity that is required. Parameter can be omitted (null).
+	 * @param quotations The quotations on which the filtering is performed.
+	 */
+	private void filterByMinLiquidity(final Float minLiquidity, List<Quotation> quotations) {
+		Iterator<Quotation> quotationIterator = quotations.iterator();
+		Quotation currentQuotation;
+		
+		if(minLiquidity == null)
+			return;
+		
+		while(quotationIterator.hasNext()) {
+			currentQuotation = quotationIterator.next();
+			
+			if(currentQuotation.getIndicator().getLiquidity20Days() < minLiquidity)
 				quotationIterator.remove();
 		}
 	}

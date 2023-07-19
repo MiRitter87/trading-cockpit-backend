@@ -24,17 +24,19 @@ public class QuotationRestService {
 	 * 
 	 * @param scanTemplate The template that defines the parameters applied to the Scan results. Parameter can be omitted.
 	 * @param instrumentType The type of Instrument that is requested.
-	 * @param startDate The start date for the RS number determination. Format used: yyyy-MM-dd. Parameter can be omitted.
+	 * @param startDate The start date for the RS number determination. Format used: yyyy-MM-dd. Parameter can be omitted (null)..
+	 * @param minLiquidity The minimum trading liquidity that is required. Parameter can be omitted (null)..
 	 * @return A list of all quotations.
 	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public WebServiceResult getQuotations(@QueryParam("scanTemplate") final ScanTemplate scanTemplate, 
 			@QueryParam("instrumentType") final InstrumentType instrumentType,
-			@QueryParam("startDate") final String startDate) {
+			@QueryParam("startDate") final String startDate,
+			@QueryParam("minLiquidity") final Float minLiquidity) {
 		
 		QuotationService quotationService = new QuotationService();
-		return quotationService.getQuotations(scanTemplate, instrumentType, startDate);
+		return quotationService.getQuotations(scanTemplate, instrumentType, startDate, minLiquidity);
 	}
 	
 	

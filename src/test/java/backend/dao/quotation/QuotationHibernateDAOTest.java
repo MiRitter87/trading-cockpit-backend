@@ -594,7 +594,7 @@ public class QuotationHibernateDAOTest {
 		Quotation databaseQuotation;
 		
 		try {
-			quotations = quotationDAO.getQuotationsByTemplate(ScanTemplate.ALL, InstrumentType.STOCK, null);
+			quotations = quotationDAO.getQuotationsByTemplate(ScanTemplate.ALL, InstrumentType.STOCK, null, null);
 			
 			//Assure one Quotation is returned.
 			assertEquals(1, quotations.size());

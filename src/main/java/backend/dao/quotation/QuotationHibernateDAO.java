@@ -288,7 +288,7 @@ public class QuotationHibernateDAO implements QuotationDAO {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Quotation> getQuotationsByTemplate(final ScanTemplate scanTemplate, final InstrumentType instrumentType, 
-			final String startDate) throws Exception {
+			final String startDate, final Float minLiquidity) throws Exception {
 		
 		EntityManager entityManager = this.sessionFactory.createEntityManager();
 		List<Quotation> quotations;
@@ -355,6 +355,7 @@ public class QuotationHibernateDAO implements QuotationDAO {
 			entityManager.close();			
 		}
 		
+		this.scanTemplateProcessor.applyFilters(minLiquidity, quotations);
 		this.scanTemplateProcessor.fillTransientAttributes(instrumentType, quotations);
 		this.scanTemplateProcessor.templateBasedPostProcessing(scanTemplate, startDate, quotations);
 		

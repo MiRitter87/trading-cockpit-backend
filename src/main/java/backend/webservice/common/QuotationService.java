@@ -51,10 +51,13 @@ public class QuotationService {
 	 * 
 	 * @param scanTemplate The template that defines the parameters applied to the Scan results.
 	 * @param instrumentType The InstrumentType.
-	 * @param startDate The start date for the RS number determination. Format used: yyyy-MM-dd
+	 * @param startDate The start date for the RS number determination. Format used: yyyy-MM-dd. Parameter can be omitted (null).
+	 * @param minLiquidity The minimum trading liquidity that is required. Parameter can be omitted (null).
 	 * @return A list of the most recent Quotation of each Instrument.
 	 */
-	public WebServiceResult getQuotations(final ScanTemplate scanTemplate, final InstrumentType instrumentType, final String startDate) {
+	public WebServiceResult getQuotations(final ScanTemplate scanTemplate, final InstrumentType instrumentType, 
+			final String startDate, final Float minLiquidity) {
+		
 		QuotationArray quotations = new QuotationArray();
 		WebServiceResult getRecentQuotationsResult = new WebServiceResult(null);
 		
@@ -64,7 +67,7 @@ public class QuotationService {
 		}
 		
 		try {
-			quotations.setQuotations(this.quotationDAO.getQuotationsByTemplate(scanTemplate, instrumentType, startDate));
+			quotations.setQuotations(this.quotationDAO.getQuotationsByTemplate(scanTemplate, instrumentType, startDate, minLiquidity));
 			getRecentQuotationsResult.setData(quotations);
 		} catch (Exception e) {
 			getRecentQuotationsResult.addMessage(new WebServiceMessage(
