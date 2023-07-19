@@ -226,10 +226,12 @@ public class PriceAlertThread extends Thread {
 		if(this.isAlertTriggered(priceAlert, quotation)) {
 			priceAlert.setTriggerTime(new Date());
 			
-			subject = this.getMailSubject(priceAlert);
-			body = this.getMailBody(priceAlert, quotation);
-			this.mailController.sendMail(priceAlert.getAlertMailAddress(), subject, body);
-			priceAlert.setMailTransmissionTime(new Date());
+			if(priceAlert.isSendMail()) {
+				subject = this.getMailSubject(priceAlert);
+				body = this.getMailBody(priceAlert, quotation);
+				this.mailController.sendMail(priceAlert.getAlertMailAddress(), subject, body);
+				priceAlert.setMailTransmissionTime(new Date());				
+			}
 		}
 		
 		this.priceAlertDAO.updatePriceAlert(priceAlert);
