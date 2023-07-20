@@ -23,6 +23,9 @@ import org.jfree.data.xy.XYDataset;
 
 import backend.controller.RatioCalculationController;
 import backend.controller.instrumentCheck.NoQuotationsExistException;
+import backend.dao.DAOManager;
+import backend.dao.chart.ChartObjectDAO;
+import backend.model.chart.HorizontalLine;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
@@ -35,6 +38,19 @@ import backend.webservice.Indicator;
  * @author Michael
  */
 public class PriceVolumeChartController extends ChartController {
+	/**
+	 * DAO to access chart object data.
+	 */
+	private ChartObjectDAO chartObjectDAO;
+	
+	/**
+	 * Initializes the PriceVolumeChartController.
+	 */
+	public PriceVolumeChartController() {
+		this.chartObjectDAO = DAOManager.getInstance().getChartObjectDAO();
+	}
+	
+	
 	/**
 	 * Gets a chart of an Instrument with volume information.
 	 * 
@@ -72,6 +88,7 @@ public class PriceVolumeChartController extends ChartController {
         indicatorSubplot = this.getIndicatorPlot(indicator, rsInstrumentId, instrument, dateAxis);
 		
 		this.addMovingAveragesPrice(instrument, withEma21, withSma50, withSma150, withSma200, candleStickSubplot);
+		this.addHorizontalLines(instrument, candleStickSubplot);
 		
 		//Build combined plot based on subplots.
 		combinedPlot.setDomainAxis(dateAxis);
@@ -515,5 +532,21 @@ public class PriceVolumeChartController extends ChartController {
         timeSeriesCollection.setXPosition(TimePeriodAnchor.MIDDLE);
 		
 		return timeSeriesCollection;
+	}
+	
+	
+	/**
+	 * Adds horizontal lines to the candlestick subplot of the given Instrument.
+	 * 
+	 * @param instrument The Instrument.
+	 * @param candleStickSubplot The candlestick plot of the Instrument.
+	 * @throws Exception Failed to add horizontal lines.
+	 */
+	private void addHorizontalLines(final Instrument instrument, XYPlot candleStickSubplot) throws Exception {
+		List<HorizontalLine> horizontalLines = this.chartObjectDAO.getHorizontalLines(instrument.getId());
+		
+		for(HorizontalLine horizontalLine: horizontalLines) {
+			this.addHorizontalLine(candleStickSubplot, horizontalLine.getPrice().doubleValue());
+		}
 	}
 }
