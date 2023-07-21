@@ -385,6 +385,7 @@ public class QuotationProviderYahooDAO extends AbstractQuotationProviderDAO impl
 				stockExchangeBuilder.append("L");
 				return stockExchangeBuilder.toString();
 			case NYSE:
+			case NDQ:
 			default:
 				return stockExchangeBuilder.toString();
 		}

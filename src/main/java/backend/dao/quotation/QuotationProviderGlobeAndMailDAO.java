@@ -109,8 +109,11 @@ public class QuotationProviderGlobeAndMailDAO extends AbstractQuotationProviderD
 	protected String getQueryUrlCurrentQuotation(final Instrument instrument) throws Exception {
 		String queryUrl = new String(BASE_URL_CURRENT_QUOTATION);
 		
-		if(instrument.getStockExchange() == StockExchange.LSE || instrument.getStockExchange() == StockExchange.NYSE)
+		if(instrument.getStockExchange() == StockExchange.LSE || instrument.getStockExchange() == StockExchange.NYSE || 
+				instrument.getStockExchange() == StockExchange.NDQ) {
+			
 			throw new Error("The DAO for TheGlobeAndMail does not provide current quotations for the exchange: " + instrument.getStockExchange());
+		}
 		
 		queryUrl = queryUrl.replace(PLACEHOLDER_SYMBOL, instrument.getSymbol());
 		queryUrl = queryUrl.replace(PLACEHOLDER_EXCHANGE, this.getExchangeForQueryURL(instrument));
