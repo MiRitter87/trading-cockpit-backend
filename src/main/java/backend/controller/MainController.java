@@ -141,6 +141,9 @@ public class MainController {
 	public DataProvider getDataProviderForProperty(final String propertyKey) throws Exception {
 		String dataProviderAsString = this.getConfigurationProperty(propertyKey);
 		
+		if(dataProviderAsString == null)
+			return null;
+		
 		switch(dataProviderAsString) {
 			case "YAHOO":
 				return DataProvider.YAHOO;

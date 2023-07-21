@@ -51,6 +51,11 @@ public class PriceAlertController {
 	protected static final String PROPERTY_DATA_PROVIDER_NYSE = "dataProvider.priceAlert.nyse";
 	
 	/**
+	 * Property Key: Data Provider for stock exchange Nasdaq.
+	 */
+	protected static final String PROPERTY_DATA_PROVIDER_NASDAQ = "dataProvider.priceAlert.ndq";
+	
+	/**
 	 * Property Key: Data Provider for stock exchange TSX.
 	 */
 	protected static final String PROPERTY_DATA_PROVIDER_TSX = "dataProvider.priceAlert.tsx";
@@ -221,6 +226,7 @@ public class PriceAlertController {
 		this.dataProviders = new HashMap<>();
 		
 		this.dataProviders.put(StockExchange.NYSE, MainController.getInstance().getDataProviderForProperty(PROPERTY_DATA_PROVIDER_NYSE));
+		this.dataProviders.put(StockExchange.NDQ, MainController.getInstance().getDataProviderForProperty(PROPERTY_DATA_PROVIDER_NASDAQ));
 		this.dataProviders.put(StockExchange.TSX, MainController.getInstance().getDataProviderForProperty(PROPERTY_DATA_PROVIDER_TSX));
 		this.dataProviders.put(StockExchange.TSXV, MainController.getInstance().getDataProviderForProperty(PROPERTY_DATA_PROVIDER_TSXV));
 		this.dataProviders.put(StockExchange.CSE, MainController.getInstance().getDataProviderForProperty(PROPERTY_DATA_PROVIDER_CSE));
