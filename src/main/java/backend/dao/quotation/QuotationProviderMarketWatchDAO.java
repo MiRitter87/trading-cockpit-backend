@@ -262,8 +262,8 @@ public class QuotationProviderMarketWatchDAO extends AbstractQuotationProviderDA
 			case LSE:
 				countryCode = "&countrycode=UK";
 				break;
-		default:
-			break;
+			default:
+				break;
 		}
 		
 		return countryCode;

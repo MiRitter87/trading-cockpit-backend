@@ -86,6 +86,27 @@ public class QuotationProviderCNBCDAOTest {
 	 * Tests the retrieval of the query URL for the current quotation of a stock listed at the NYSE.
 	 */
 	public void testGetQueryUrlCurrentQuotationNYSE() {
+		final String symbol = "F";
+		final StockExchange stockExchange = StockExchange.NYSE;
+		final String expectedURL = "https://quote.cnbc.com/quote-html-webservice/restQuote/symbolType/symbol?symbols=F"
+				+ "&requestMethod=itv&noform=1&partnerId=2&fund=1&exthrs=1&output=json&events=1";
+		String actualURL = "";
+		
+		try {
+			actualURL = quotationProviderCNBCDAO.getQueryUrlCurrentQuotation(symbol, stockExchange);
+			assertEquals(expectedURL, actualURL);			
+		}
+		catch(Exception e) {
+			fail(e.getMessage());
+		}
+	}
+	
+	
+	@Test
+	/**
+	 * Tests the retrieval of the query URL for the current quotation of a stock listed at the Nasdaq.
+	 */
+	public void testGetQueryUrlCurrentQuotationNasdaq() {
 		final String symbol = "AAPL";
 		final StockExchange stockExchange = StockExchange.NDQ;
 		final String expectedURL = "https://quote.cnbc.com/quote-html-webservice/restQuote/symbolType/symbol?symbols=AAPL"
