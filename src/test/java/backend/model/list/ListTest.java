@@ -39,7 +39,7 @@ public class ListTest {
 		this.instrument.setId(Integer.valueOf(1));
 		this.instrument.setSymbol("AAPL");
 		this.instrument.setType(InstrumentType.STOCK);
-		this.instrument.setStockExchange(StockExchange.NYSE);
+		this.instrument.setStockExchange(StockExchange.NDQ);
 		this.instrument.setName("Apple");
 		
 		this.list = new List();
@@ -238,7 +238,7 @@ public class ListTest {
 		duplicateInstrument.setId(Integer.valueOf(1));
 		duplicateInstrument.setSymbol("AAPL");
 		duplicateInstrument.setType(InstrumentType.STOCK);
-		duplicateInstrument.setStockExchange(StockExchange.NYSE);
+		duplicateInstrument.setStockExchange(StockExchange.NDQ);
 		duplicateInstrument.setName("Apple");
 		
 		this.list.addInstrument(duplicateInstrument);

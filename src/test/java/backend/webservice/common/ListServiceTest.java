@@ -228,7 +228,7 @@ public class ListServiceTest {
 		
 		instrument.setSymbol("MSFT");
 		instrument.setName("Microsoft");
-		instrument.setStockExchange(StockExchange.NYSE);
+		instrument.setStockExchange(StockExchange.NDQ);
 		instrument.setType(InstrumentType.STOCK);
 		
 		return instrument;
@@ -245,7 +245,7 @@ public class ListServiceTest {
 		
 		instrument.setSymbol("AMZN");
 		instrument.setName("Amazon");
-		instrument.setStockExchange(StockExchange.NYSE);
+		instrument.setStockExchange(StockExchange.NDQ);
 		instrument.setType(InstrumentType.STOCK);
 		
 		return instrument;

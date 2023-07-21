@@ -86,13 +86,13 @@ public class ExcelExportControllerTest {
 		this.appleStock = new Instrument();
 		this.appleStock.setSymbol("AAPL");
 		this.appleStock.setName("Apple");
-		this.appleStock.setStockExchange(StockExchange.NYSE);
+		this.appleStock.setStockExchange(StockExchange.NDQ);
 		this.appleStock.setType(InstrumentType.STOCK);
 		
 		this.microsoftStock = new Instrument();
 		this.microsoftStock.setSymbol("MSFT");
 		this.microsoftStock.setName("Microsoft");
-		this.microsoftStock.setStockExchange(StockExchange.NYSE);
+		this.microsoftStock.setStockExchange(StockExchange.NDQ);
 		this.microsoftStock.setType(InstrumentType.STOCK);
 		
 		calendar.setTime(new Date());

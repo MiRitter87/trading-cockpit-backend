@@ -87,7 +87,7 @@ public class QuotationProviderCNBCDAOTest {
 	 */
 	public void testGetQueryUrlCurrentQuotationNYSE() {
 		final String symbol = "AAPL";
-		final StockExchange stockExchange = StockExchange.NYSE;
+		final StockExchange stockExchange = StockExchange.NDQ;
 		final String expectedURL = "https://quote.cnbc.com/quote-html-webservice/restQuote/symbolType/symbol?symbols=AAPL"
 				+ "&requestMethod=itv&noform=1&partnerId=2&fund=1&exthrs=1&output=json&events=1";
 		String actualURL = "";

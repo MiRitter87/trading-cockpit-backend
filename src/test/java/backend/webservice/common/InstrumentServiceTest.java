@@ -207,7 +207,7 @@ public class InstrumentServiceTest {
 		
 		instrument.setSymbol("AAPL");
 		instrument.setName("Apple");
-		instrument.setStockExchange(StockExchange.NYSE);
+		instrument.setStockExchange(StockExchange.NDQ);
 		instrument.setType(InstrumentType.STOCK);
 		
 		return instrument;
@@ -224,7 +224,7 @@ public class InstrumentServiceTest {
 		
 		instrument.setSymbol("MSFT");
 		instrument.setName("Microsoft");
-		instrument.setStockExchange(StockExchange.NYSE);
+		instrument.setStockExchange(StockExchange.NDQ);
 		instrument.setType(InstrumentType.STOCK);
 		
 		return instrument;
@@ -241,7 +241,7 @@ public class InstrumentServiceTest {
 		
 		instrument.setSymbol("NVDA");
 		instrument.setName("NVIDIA");
-		instrument.setStockExchange(StockExchange.NYSE);
+		instrument.setStockExchange(StockExchange.NDQ);
 		instrument.setType(InstrumentType.STOCK);
 		
 		return instrument;
@@ -933,7 +933,7 @@ public class InstrumentServiceTest {
 		//Define the new instrument.
 		newInstrument.setSymbol("TSLA");
 		newInstrument.setName("Tesla Inc.");
-		newInstrument.setStockExchange(StockExchange.NYSE);
+		newInstrument.setStockExchange(StockExchange.NDQ);
 		newInstrument.setType(InstrumentType.STOCK);
 		
 		//Add the new instrument to the database via WebService
@@ -984,7 +984,7 @@ public class InstrumentServiceTest {
 		//Define the new instrument without a type.
 		newInstrument.setSymbol("TSLA");
 		newInstrument.setName("Tesla Inc.");
-		newInstrument.setStockExchange(StockExchange.NYSE);
+		newInstrument.setStockExchange(StockExchange.NDQ);
 		
 		//Add a new instrument to the database via WebService
 		addInstrumentResult = service.addInstrument(this.convertToWsInstrument(newInstrument));
@@ -1011,7 +1011,7 @@ public class InstrumentServiceTest {
 		//Define the new instrument without a type.
 		newInstrument.setSymbol("AAPL");
 		newInstrument.setName("Apple Computer");
-		newInstrument.setStockExchange(StockExchange.NYSE);
+		newInstrument.setStockExchange(StockExchange.NDQ);
 		newInstrument.setType(InstrumentType.STOCK);
 		
 		//Add a new instrument to the database via WebService.

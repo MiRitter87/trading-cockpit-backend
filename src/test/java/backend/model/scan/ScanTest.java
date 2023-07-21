@@ -45,7 +45,7 @@ public class ScanTest {
 		this.instrument.setId(Integer.valueOf(1));
 		this.instrument.setSymbol("AAPL");
 		this.instrument.setType(InstrumentType.STOCK);
-		this.instrument.setStockExchange(StockExchange.NYSE);
+		this.instrument.setStockExchange(StockExchange.NDQ);
 		this.instrument.setName("Apple");
 		
 		this.list = new List();

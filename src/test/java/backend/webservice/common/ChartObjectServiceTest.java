@@ -192,7 +192,7 @@ public class ChartObjectServiceTest {
 		
 		instrument.setSymbol("AAPL");
 		instrument.setName("Apple");
-		instrument.setStockExchange(StockExchange.NYSE);
+		instrument.setStockExchange(StockExchange.NDQ);
 		instrument.setType(InstrumentType.STOCK);
 		
 		return instrument;
@@ -209,7 +209,7 @@ public class ChartObjectServiceTest {
 		
 		instrument.setSymbol("MSFT");
 		instrument.setName("Microsoft");
-		instrument.setStockExchange(StockExchange.NYSE);
+		instrument.setStockExchange(StockExchange.NDQ);
 		instrument.setType(InstrumentType.STOCK);
 		
 		return instrument;

@@ -234,7 +234,7 @@ public class PriceAlertHibernateDAOTest {
 		
 		instrument.setSymbol("AAPL");
 		instrument.setName("Apple");
-		instrument.setStockExchange(StockExchange.NYSE);
+		instrument.setStockExchange(StockExchange.NDQ);
 		instrument.setType(InstrumentType.STOCK);
 		
 		return instrument;
@@ -251,7 +251,7 @@ public class PriceAlertHibernateDAOTest {
 		
 		instrument.setSymbol("MSFT");
 		instrument.setName("Microsoft");
-		instrument.setStockExchange(StockExchange.NYSE);
+		instrument.setStockExchange(StockExchange.NDQ);
 		instrument.setType(InstrumentType.STOCK);
 		
 		return instrument;
@@ -268,7 +268,7 @@ public class PriceAlertHibernateDAOTest {
 		
 		instrument.setSymbol("NFLX");
 		instrument.setName("Netflix");
-		instrument.setStockExchange(StockExchange.NYSE);
+		instrument.setStockExchange(StockExchange.NDQ);
 		instrument.setType(InstrumentType.STOCK);
 		
 		return instrument;
@@ -285,7 +285,7 @@ public class PriceAlertHibernateDAOTest {
 		
 		instrument.setSymbol("NVDA");
 		instrument.setName("NVidia");
-		instrument.setStockExchange(StockExchange.NYSE);
+		instrument.setStockExchange(StockExchange.NDQ);
 		instrument.setType(InstrumentType.STOCK);
 		
 		return instrument;

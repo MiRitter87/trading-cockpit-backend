@@ -122,7 +122,7 @@ public class InstrumentHibernateDAOTest {
 		try {
 			this.appleStock.setSymbol("AAPL");
 			this.appleStock.setName("Apple");
-			this.appleStock.setStockExchange(StockExchange.NYSE);
+			this.appleStock.setStockExchange(StockExchange.NDQ);
 			this.appleStock.setType(InstrumentType.STOCK);
 			instrumentDAO.insertInstrument(this.appleStock);
 			

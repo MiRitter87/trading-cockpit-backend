@@ -105,7 +105,7 @@ public class InstrumentTest {
 		this.instrument.setId(Integer.valueOf(1));
 		this.instrument.setSymbol("AAPL");
 		this.instrument.setType(InstrumentType.STOCK);
-		this.instrument.setStockExchange(StockExchange.NYSE);
+		this.instrument.setStockExchange(StockExchange.NDQ);
 		this.instrument.setName("Apple");
 		this.instrument.addQuotation(this.quotation1);
 		this.instrument.addQuotation(this.quotation2);
@@ -115,7 +115,7 @@ public class InstrumentTest {
 		this.microsoftStock.setId(Integer.valueOf(2));
 		this.microsoftStock.setSymbol("MSFT");
 		this.microsoftStock.setType(InstrumentType.STOCK);
-		this.microsoftStock.setStockExchange(StockExchange.NYSE);
+		this.microsoftStock.setStockExchange(StockExchange.NDQ);
 		this.microsoftStock.setName("Microsoft");
 		
 		this.sector = new Instrument();

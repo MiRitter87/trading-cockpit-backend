@@ -70,7 +70,7 @@ public class QuotationProviderInvestingDAOTest {
 		Instrument instrument = new Instrument();
 		
 		instrument.setSymbol("AMZN");
-		instrument.setStockExchange(StockExchange.NYSE);
+		instrument.setStockExchange(StockExchange.NDQ);
 		instrument.setType(InstrumentType.STOCK);
 		instrument.setCompanyPathInvestingCom("amazon-com-inc");
 		

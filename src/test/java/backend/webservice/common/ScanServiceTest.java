@@ -249,7 +249,7 @@ public class ScanServiceTest {
 		
 		instrument.setSymbol("MSFT");
 		instrument.setName("Microsoft");
-		instrument.setStockExchange(StockExchange.NYSE);
+		instrument.setStockExchange(StockExchange.NDQ);
 		instrument.setType(InstrumentType.STOCK);
 		
 		return instrument;
@@ -267,7 +267,7 @@ public class ScanServiceTest {
 		
 		instrument.setSymbol("AMZN");
 		instrument.setName("Amazon");
-		instrument.setStockExchange(StockExchange.NYSE);
+		instrument.setStockExchange(StockExchange.NDQ);
 		instrument.setType(InstrumentType.STOCK);
 		
 		calendar.setTime(new Date());

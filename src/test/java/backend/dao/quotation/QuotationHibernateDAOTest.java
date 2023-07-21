@@ -192,7 +192,7 @@ public class QuotationHibernateDAOTest {
 			
 			this.appleStock.setSymbol("AAPL");
 			this.appleStock.setName("Apple");
-			this.appleStock.setStockExchange(StockExchange.NYSE);
+			this.appleStock.setStockExchange(StockExchange.NDQ);
 			this.appleStock.setType(InstrumentType.STOCK);
 			this.appleStock.setSector(this.xliSector);
 			this.appleStock.setIndustryGroup(this.copperIndustryGroup);
@@ -200,7 +200,7 @@ public class QuotationHibernateDAOTest {
 			
 			this.microsoftStock.setSymbol("MSFT");
 			this.microsoftStock.setName("Microsoft");
-			this.microsoftStock.setStockExchange(StockExchange.NYSE);
+			this.microsoftStock.setStockExchange(StockExchange.NDQ);
 			this.microsoftStock.setType(InstrumentType.STOCK);
 			instrumentDAO.insertInstrument(this.microsoftStock);
 			
