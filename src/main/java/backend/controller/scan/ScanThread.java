@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
@@ -21,6 +22,7 @@ import backend.dao.quotation.QuotationDAO;
 import backend.dao.quotation.QuotationProviderDAO;
 import backend.dao.quotation.QuotationProviderDAOFactory;
 import backend.dao.scan.ScanDAO;
+import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
@@ -42,6 +44,11 @@ public class ScanThread extends Thread {
 	private int queryInterval;
 	
 	/**
+	 * A Map of stock exchanges and their corresponding data providers.
+	 */
+	private Map<StockExchange, DataProvider> dataProviders;
+	
+	/**
 	 * The scan that is executed.
 	 */
 	private Scan scan;
@@ -50,11 +57,6 @@ public class ScanThread extends Thread {
 	 * Indication to only scan incomplete instruments of the scan.
 	 */
 	private boolean scanOnlyIncompleteInstruments;
-	
-	/**
-	 * DAO to access quotations from a third-party data provider of quotation data.
-	 */
-	QuotationProviderDAO quotationProviderDAO;
 	
 	/**
 	 * DAO to access quotations of the database.
@@ -92,17 +94,18 @@ public class ScanThread extends Thread {
 	 * Initializes the scan thread.
 	 * 
 	 * @param queryInterval The interval in seconds between each historical quotation query.
-	 * @param dataProvider The DataProvider for historical quotation data.
+	 * @param dataProviders Stock exchanges and their corresponding data providers.
 	 * @param scan The scan that is executed by the thread.
 	 * @param scanOnlyIncompleteInstruments Indication to only scan incomplete instruments of the scan.
 	 */
-	public ScanThread(final int queryInterval, final DataProvider dataProvider, final Scan scan, final boolean scanOnlyIncompleteInstruments) {
+	public ScanThread(final int queryInterval, final Map<StockExchange, DataProvider> dataProviders, 
+			final Scan scan, final boolean scanOnlyIncompleteInstruments) {
+		
 		this.queryInterval = queryInterval;
+		this.dataProviders = dataProviders;
 		this.scan = scan;
 		this.scanOnlyIncompleteInstruments = scanOnlyIncompleteInstruments;
 		
-		//TODO Get matching DAO
-		//this.quotationProviderDAO = QuotationProviderDAOFactory.getQuotationProviderDAO(dataProvider);
 		this.quotationDAO = DAOManager.getInstance().getQuotationDAO();
 		this.scanDAO = DAOManager.getInstance().getScanDAO();
 		this.instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
@@ -176,6 +179,28 @@ public class ScanThread extends Thread {
 	
 	
 	/**
+	 * Gets the QuotationProviderDAO that is configured to be used for the given StockExchange.
+	 * 
+	 * @param stockExchange The StockExchange.
+	 * @return The QuotationProviderDAO that is used for the given StockExchange.
+	 * @throws Exception Failed to determine QuotationProviderDAO for the given StockExchange.
+	 */
+	private QuotationProviderDAO getQuotationProviderDAO(final StockExchange stockExchange) throws Exception {
+		DataProvider dataProvider;
+		QuotationProviderDAO quotationProviderDAO;
+		
+		dataProvider = this.dataProviders.get(stockExchange);
+		
+		if(dataProvider == null)
+			throw new Exception("There is no data provider defined for the stock exchange: " + stockExchange.toString());
+		
+		quotationProviderDAO = QuotationProviderDAOFactory.getInstance().getQuotationProviderDAO(dataProvider);
+		
+		return quotationProviderDAO;
+	}
+	
+	
+	/**
 	 * Updates quotations and indicators of the given instrument.
 	 * 
 	 * @param instrument The instrument to be updated.
@@ -211,12 +236,14 @@ public class ScanThread extends Thread {
 		java.util.List<Quotation> databaseQuotations = new ArrayList<>();
 		java.util.List<Quotation> newQuotations = new ArrayList<>();
 		Set<Quotation> obsoleteQuotations = new HashSet<>();
+		QuotationProviderDAO quotationProviderDAO;
 		
 		try {
+			quotationProviderDAO = this.getQuotationProviderDAO(instrument.getStockExchange());
 			databaseQuotations.addAll(this.quotationDAO.getQuotationsOfInstrument(instrument.getId()));
 			instrument.setQuotations(databaseQuotations);
 			java.util.List<Quotation> wsQuotations = 
-					this.quotationProviderDAO.getQuotationHistory(instrument.getSymbol(), instrument.getStockExchange(), instrument.getType(), 1);
+					quotationProviderDAO.getQuotationHistory(instrument.getSymbol(), instrument.getStockExchange(), instrument.getType(), 1);
 			
 			for(Quotation wsQuotation:wsQuotations) {
 				obsoleteQuotations.addAll(instrument.getQuotationArray().getOlderQuotationsOfSameDay(wsQuotation.getDate()));

@@ -113,9 +113,8 @@ public class ScanController {
 	 * @param scanOnlyIncompleteIntruments Indication to only scan incomplete instruments of the scan.
 	 */
 	private void execute(final Scan scan, final boolean scanOnlyIncompleteIntruments) {
-		//TODO Adapt ScanThread to Map of data providers
-		//Thread scanThread = new ScanThread(this.queryInterval, this.dataProvider, scan, scanOnlyIncompleteIntruments);
-		//scanThread.start();
+		Thread scanThread = new ScanThread(this.queryInterval, this.dataProviders, scan, scanOnlyIncompleteIntruments);
+		scanThread.start();
 	}
 	
 	
