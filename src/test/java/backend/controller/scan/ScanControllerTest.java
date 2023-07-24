@@ -3,11 +3,14 @@ package backend.controller.scan;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.util.Map;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import backend.controller.DataProvider;
+import backend.model.StockExchange;
 
 /**
  * Tests the functionality of the ScanController
@@ -57,12 +60,28 @@ public class ScanControllerTest {
 	
 	@Test
 	/**
-	 * Tests getting the data provider for historical data.
+	 * Tests getting the data providers.
 	 */
-	public void testGetDataProviderHistory() {
-		final DataProvider expectedDataProvider = DataProvider.MARKETWATCH;
-		final DataProvider actualDataProvider = this.scanController.getDataProvider();
+	public void testGetDataProviders() {
+		final Map<StockExchange, DataProvider> dataProviders = this.scanController.getDataProviders();
+		DataProvider dataProvider;
 		
-		assertEquals(expectedDataProvider, actualDataProvider);
+		dataProvider = dataProviders.get(StockExchange.NYSE);
+		assertEquals(DataProvider.YAHOO, dataProvider);
+		
+		dataProvider = dataProviders.get(StockExchange.NDQ);
+		assertEquals(DataProvider.YAHOO, dataProvider);
+		
+		dataProvider = dataProviders.get(StockExchange.TSX);
+		assertEquals(DataProvider.MARKETWATCH, dataProvider);
+		
+		dataProvider = dataProviders.get(StockExchange.TSXV);
+		assertEquals(DataProvider.MARKETWATCH, dataProvider);
+		
+		dataProvider = dataProviders.get(StockExchange.CSE);
+		assertEquals(DataProvider.MARKETWATCH, dataProvider);
+		
+		dataProvider = dataProviders.get(StockExchange.LSE);
+		assertEquals(DataProvider.MARKETWATCH, dataProvider);
 	}
 }
