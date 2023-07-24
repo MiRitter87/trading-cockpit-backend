@@ -15,12 +15,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import backend.controller.DataProvider;
+import backend.controller.DataRetrievalThread;
 import backend.controller.MailController;
 import backend.dao.DAOManager;
 import backend.dao.priceAlert.PriceAlertDAO;
 import backend.dao.priceAlert.PriceAlertOrderAttribute;
 import backend.dao.quotation.QuotationProviderDAO;
-import backend.dao.quotation.QuotationProviderDAOFactory;
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
@@ -34,7 +34,7 @@ import backend.model.priceAlert.TriggerStatus;
  * 
  * @author Michael
  */
-public class PriceAlertThread extends Thread {
+public class PriceAlertThread extends DataRetrievalThread {
 	/**
 	 * The start time of the trading session.
 	 */
@@ -44,12 +44,7 @@ public class PriceAlertThread extends Thread {
 	 * The end time of the trading session.
 	 */
 	private LocalTime endTime;
-	
-	/**
-	 * A Map of stock exchanges and their corresponding data providers.
-	 */
-	private Map<StockExchange, DataProvider> dataProviders;
-		
+			
 	/**
 	 * DAO to access price alerts.
 	 */
@@ -80,9 +75,9 @@ public class PriceAlertThread extends Thread {
 	 * @throws Exception Failed to initialize PriceAlertThread.
 	 */
 	public PriceAlertThread(final LocalTime startTime, final LocalTime endTime, final Map<StockExchange, DataProvider> dataProviders) throws Exception {
+		this.setDataProviders(dataProviders);
 		this.startTime = startTime;
 		this.endTime = endTime;
-		this.dataProviders = dataProviders;
 
 		this.priceAlertDAO = DAOManager.getInstance().getPriceAlertDAO();
 		
@@ -240,29 +235,7 @@ public class PriceAlertThread extends Thread {
 		
 		return quotation;
 	}
-	
-	
-	/**
-	 * Gets the QuotationProviderDAO that is configured to be used for the given StockExchange.
-	 * 
-	 * @param stockExchange The StockExchange.
-	 * @return The QuotationProviderDAO that is used for the given StockExchange.
-	 * @throws Exception Failed to determine QuotationProviderDAO for the given StockExchange.
-	 */
-	private QuotationProviderDAO getQuotationProviderDAO(final StockExchange stockExchange) throws Exception {
-		DataProvider dataProvider;
-		QuotationProviderDAO quotationProviderDAO;
 		
-		dataProvider = this.dataProviders.get(stockExchange);
-		
-		if(dataProvider == null)
-			throw new Exception("There is no data provider defined for the stock exchange: " + stockExchange.toString());
-		
-		quotationProviderDAO = QuotationProviderDAOFactory.getInstance().getQuotationProviderDAO(dataProvider);
-		
-		return quotationProviderDAO;
-	}
-	
 	
 	/**
 	 * Checks if price alert has been triggered.

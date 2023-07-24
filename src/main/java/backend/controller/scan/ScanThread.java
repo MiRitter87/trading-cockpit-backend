@@ -14,13 +14,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import backend.controller.DataProvider;
+import backend.controller.DataRetrievalThread;
 import backend.controller.RatioCalculationController;
 import backend.dao.DAOManager;
 import backend.dao.ObjectUnchangedException;
 import backend.dao.instrument.InstrumentDAO;
 import backend.dao.quotation.QuotationDAO;
 import backend.dao.quotation.QuotationProviderDAO;
-import backend.dao.quotation.QuotationProviderDAOFactory;
 import backend.dao.scan.ScanDAO;
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
@@ -37,17 +37,12 @@ import backend.model.scan.ScanExecutionStatus;
  * 
  * @author Michael
  */
-public class ScanThread extends Thread {
+public class ScanThread extends DataRetrievalThread {
 	/**
 	 * The interval in seconds between queries of historical quotations.
 	 */
 	private int queryInterval;
-	
-	/**
-	 * A Map of stock exchanges and their corresponding data providers.
-	 */
-	private Map<StockExchange, DataProvider> dataProviders;
-	
+		
 	/**
 	 * The scan that is executed.
 	 */
@@ -62,7 +57,6 @@ public class ScanThread extends Thread {
 	 * DAO to access quotations of the database.
 	 */
 	QuotationDAO quotationDAO;
-	
 	
 	/**
 	 * DAO for scan persistence.
@@ -101,8 +95,8 @@ public class ScanThread extends Thread {
 	public ScanThread(final int queryInterval, final Map<StockExchange, DataProvider> dataProviders, 
 			final Scan scan, final boolean scanOnlyIncompleteInstruments) {
 		
+		this.setDataProviders(dataProviders);
 		this.queryInterval = queryInterval;
-		this.dataProviders = dataProviders;
 		this.scan = scan;
 		this.scanOnlyIncompleteInstruments = scanOnlyIncompleteInstruments;
 		
@@ -175,28 +169,6 @@ public class ScanThread extends Thread {
 		incompleteInstruments.addAll(this.scan.getIncompleteInstruments());
 		
 		return incompleteInstruments;
-	}
-	
-	
-	/**
-	 * Gets the QuotationProviderDAO that is configured to be used for the given StockExchange.
-	 * 
-	 * @param stockExchange The StockExchange.
-	 * @return The QuotationProviderDAO that is used for the given StockExchange.
-	 * @throws Exception Failed to determine QuotationProviderDAO for the given StockExchange.
-	 */
-	private QuotationProviderDAO getQuotationProviderDAO(final StockExchange stockExchange) throws Exception {
-		DataProvider dataProvider;
-		QuotationProviderDAO quotationProviderDAO;
-		
-		dataProvider = this.dataProviders.get(stockExchange);
-		
-		if(dataProvider == null)
-			throw new Exception("There is no data provider defined for the stock exchange: " + stockExchange.toString());
-		
-		quotationProviderDAO = QuotationProviderDAOFactory.getInstance().getQuotationProviderDAO(dataProvider);
-		
-		return quotationProviderDAO;
 	}
 	
 	
