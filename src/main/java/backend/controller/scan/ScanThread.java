@@ -101,7 +101,8 @@ public class ScanThread extends Thread {
 		this.scan = scan;
 		this.scanOnlyIncompleteInstruments = scanOnlyIncompleteInstruments;
 		
-		this.quotationProviderDAO = QuotationProviderDAOFactory.getQuotationProviderDAO(dataProvider);
+		//TODO Get matching DAO
+		//this.quotationProviderDAO = QuotationProviderDAOFactory.getQuotationProviderDAO(dataProvider);
 		this.quotationDAO = DAOManager.getInstance().getQuotationDAO();
 		this.scanDAO = DAOManager.getInstance().getScanDAO();
 		this.instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
