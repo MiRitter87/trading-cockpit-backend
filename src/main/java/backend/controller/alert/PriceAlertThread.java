@@ -16,15 +16,11 @@ import org.apache.logging.log4j.Logger;
 
 import backend.controller.DataProvider;
 import backend.controller.MailController;
-import backend.controller.MainController;
 import backend.dao.DAOManager;
 import backend.dao.priceAlert.PriceAlertDAO;
 import backend.dao.priceAlert.PriceAlertOrderAttribute;
-import backend.dao.quotation.QuotationProviderCNBCDAO;
 import backend.dao.quotation.QuotationProviderDAO;
-import backend.dao.quotation.QuotationProviderGlobeAndMailDAO;
-import backend.dao.quotation.QuotationProviderInvestingDAO;
-import backend.dao.quotation.QuotationProviderYahooDAO;
+import backend.dao.quotation.QuotationProviderDAOFactory;
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
@@ -32,7 +28,6 @@ import backend.model.priceAlert.ConfirmationStatus;
 import backend.model.priceAlert.PriceAlert;
 import backend.model.priceAlert.PriceAlertType;
 import backend.model.priceAlert.TriggerStatus;
-import okhttp3.OkHttpClient;
 
 /**
  * Queries Instrument quote data and updates price alerts if the trigger price has been reached.
@@ -54,27 +49,7 @@ public class PriceAlertThread extends Thread {
 	 * A Map of stock exchanges and their corresponding data providers.
 	 */
 	private Map<StockExchange, DataProvider> dataProviders;
-	
-	/**
-	 * DAO to access stock quotes using Yahoo.
-	 */
-	private QuotationProviderYahooDAO quotationProviderYahooDAO;
-	
-	/**
-	 * DAO to access stock quotes using investing.com.
-	 */
-	private QuotationProviderInvestingDAO quotationProviderInvestingDAO;
-	
-	/**
-	 * DAO to access stock quotes using TheGlobeAndMail.com.
-	 */
-	private QuotationProviderGlobeAndMailDAO quotationProviderGlobeAndMailDAO;
-	
-	/**
-	 * DAO to access stock quotes using CNBC.
-	 */
-	private QuotationProviderCNBCDAO quotationProviderCNBCDAO;
-	
+		
 	/**
 	 * DAO to access price alerts.
 	 */
@@ -105,16 +80,10 @@ public class PriceAlertThread extends Thread {
 	 * @throws Exception Failed to initialize PriceAlertThread.
 	 */
 	public PriceAlertThread(final LocalTime startTime, final LocalTime endTime, final Map<StockExchange, DataProvider> dataProviders) throws Exception {
-		OkHttpClient okHttpClient = MainController.getInstance().getOkHttpClient();	
-		
 		this.startTime = startTime;
 		this.endTime = endTime;
 		this.dataProviders = dataProviders;
-		
-		this.quotationProviderYahooDAO = new QuotationProviderYahooDAO(okHttpClient);
-		this.quotationProviderInvestingDAO = new QuotationProviderInvestingDAO();
-		this.quotationProviderGlobeAndMailDAO = new QuotationProviderGlobeAndMailDAO();
-		this.quotationProviderCNBCDAO = new QuotationProviderCNBCDAO(okHttpClient);
+
 		this.priceAlertDAO = DAOManager.getInstance().getPriceAlertDAO();
 		
 		this.mailController = new MailController();
@@ -265,15 +234,8 @@ public class PriceAlertThread extends Thread {
 	 */
 	private Quotation getCurrentQuotationOfInstrument(final Instrument instrument) throws Exception {
 		Quotation quotation;
-		final DataProvider dataProvider;
-		final QuotationProviderDAO quotationProviderDAO;
+		final QuotationProviderDAO quotationProviderDAO = this.getQuotationProviderDAO(instrument.getStockExchange());
 		
-		dataProvider = this.dataProviders.get(instrument.getStockExchange());
-		
-		if(dataProvider == null)
-			throw new Exception("There is no data provider defined for the stock exchange: " + instrument.getStockExchange().toString());
-		
-		quotationProviderDAO = this.getDAOForDataProvider(dataProvider);
 		quotation = quotationProviderDAO.getCurrentQuotation(instrument);
 		
 		return quotation;
@@ -281,24 +243,24 @@ public class PriceAlertThread extends Thread {
 	
 	
 	/**
-	 * Provides the QuotationProviderDAO for the given DataProvider.
-	 * @param dataProvider The DataProvider.
-	 * @return The corresponding QuotationProviderDAO.
-	 * @throws Exception DataProvider could not be determined.
+	 * Gets the QuotationProviderDAO that is configured to be used for the given StockExchange.
+	 * 
+	 * @param stockExchange The StockExchange.
+	 * @return The QuotationProviderDAO that is used for the given StockExchange.
+	 * @throws Exception Failed to determine QuotationProviderDAO for the given StockExchange.
 	 */
-	private QuotationProviderDAO getDAOForDataProvider(final DataProvider dataProvider) throws Exception {
-		switch(dataProvider) {
-			case YAHOO:
-				return this.quotationProviderYahooDAO;
-			case INVESTING:
-				return this.quotationProviderInvestingDAO;
-			case GLOBEANDMAIL:
-				return this.quotationProviderGlobeAndMailDAO;
-			case CNBC:
-				return this.quotationProviderCNBCDAO;
-			default:
-				throw new Exception("No DAO could be determined for the DataProvider: " +dataProvider.toString());
-		}
+	private QuotationProviderDAO getQuotationProviderDAO(final StockExchange stockExchange) throws Exception {
+		DataProvider dataProvider;
+		QuotationProviderDAO quotationProviderDAO;
+		
+		dataProvider = this.dataProviders.get(stockExchange);
+		
+		if(dataProvider == null)
+			throw new Exception("There is no data provider defined for the stock exchange: " + stockExchange.toString());
+		
+		quotationProviderDAO = QuotationProviderDAOFactory.getInstance().getQuotationProviderDAO(dataProvider);
+		
+		return quotationProviderDAO;
 	}
 	
 	
