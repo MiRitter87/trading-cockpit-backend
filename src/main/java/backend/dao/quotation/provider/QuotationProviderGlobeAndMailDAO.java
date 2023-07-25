@@ -1,4 +1,4 @@
-package backend.dao.quotation;
+package backend.dao.quotation.provider;
 
 import java.math.BigDecimal;
 import java.util.List;

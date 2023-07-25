@@ -1,4 +1,4 @@
-package backend.dao.quotation;
+package backend.dao.quotation.provider;
 
 import backend.controller.DataProvider;
 import backend.controller.MainController;

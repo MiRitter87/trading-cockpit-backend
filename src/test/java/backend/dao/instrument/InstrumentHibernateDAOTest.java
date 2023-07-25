@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test;
 
 import backend.dao.DAOManager;
 import backend.dao.chart.ChartObjectDAO;
-import backend.dao.quotation.QuotationDAO;
+import backend.dao.quotation.persistence.QuotationDAO;
 import backend.model.Currency;
 import backend.model.ObjectInUseException;
 import backend.model.StockExchange;

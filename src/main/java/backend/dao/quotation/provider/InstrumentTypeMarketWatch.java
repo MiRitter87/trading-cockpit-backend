@@ -1,4 +1,4 @@
-package backend.dao.quotation;
+package backend.dao.quotation.provider;
 
 /**
  * The type of an Instrument as used by MarketWatch in URLs.

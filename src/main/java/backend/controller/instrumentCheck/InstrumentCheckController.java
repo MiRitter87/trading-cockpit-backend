@@ -8,7 +8,7 @@ import java.util.ResourceBundle;
 
 import backend.controller.scan.IndicatorCalculator;
 import backend.dao.DAOManager;
-import backend.dao.quotation.QuotationDAO;
+import backend.dao.quotation.persistence.QuotationDAO;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
 import backend.model.protocol.Protocol;

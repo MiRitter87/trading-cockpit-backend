@@ -1,4 +1,4 @@
-package backend.dao.quotation;
+package backend.dao.quotation.provider;
 
 import static org.junit.jupiter.api.Assertions.fail;
 

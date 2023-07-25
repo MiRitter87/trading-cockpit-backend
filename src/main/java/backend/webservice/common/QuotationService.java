@@ -7,7 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import backend.dao.DAOManager;
-import backend.dao.quotation.QuotationDAO;
+import backend.dao.quotation.persistence.QuotationDAO;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.QuotationArray;
 import backend.model.webservice.WebServiceMessage;

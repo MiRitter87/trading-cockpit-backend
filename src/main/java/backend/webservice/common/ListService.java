@@ -20,7 +20,7 @@ import backend.dao.DAOManager;
 import backend.dao.ObjectUnchangedException;
 import backend.dao.instrument.InstrumentDAO;
 import backend.dao.list.ListDAO;
-import backend.dao.quotation.QuotationDAO;
+import backend.dao.quotation.persistence.QuotationDAO;
 import backend.dao.scan.ScanDAO;
 import backend.model.ObjectInUseException;
 import backend.model.instrument.Instrument;

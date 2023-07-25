@@ -1,8 +1,9 @@
-package backend.dao.quotation;
+package backend.dao.quotation.provider;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import backend.dao.quotation.provider.QuotationProviderCNBCDAO;
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;

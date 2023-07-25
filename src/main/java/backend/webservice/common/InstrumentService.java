@@ -16,7 +16,7 @@ import backend.dao.ObjectUnchangedException;
 import backend.dao.chart.ChartObjectDAO;
 import backend.dao.instrument.DuplicateInstrumentException;
 import backend.dao.instrument.InstrumentDAO;
-import backend.dao.quotation.QuotationDAO;
+import backend.dao.quotation.persistence.QuotationDAO;
 import backend.model.LocalizedException;
 import backend.model.ObjectInUseException;
 import backend.model.chart.HorizontalLine;

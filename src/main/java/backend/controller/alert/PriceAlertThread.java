@@ -20,7 +20,7 @@ import backend.controller.MailController;
 import backend.dao.DAOManager;
 import backend.dao.priceAlert.PriceAlertDAO;
 import backend.dao.priceAlert.PriceAlertOrderAttribute;
-import backend.dao.quotation.QuotationProviderDAO;
+import backend.dao.quotation.provider.QuotationProviderDAO;
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;

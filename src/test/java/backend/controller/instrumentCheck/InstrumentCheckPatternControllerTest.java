@@ -15,8 +15,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import backend.controller.scan.IndicatorCalculator;
-import backend.dao.quotation.QuotationProviderYahooDAO;
-import backend.dao.quotation.QuotationProviderYahooDAOStub;
+import backend.dao.quotation.provider.QuotationProviderYahooDAO;
+import backend.dao.quotation.provider.QuotationProviderYahooDAOStub;
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;

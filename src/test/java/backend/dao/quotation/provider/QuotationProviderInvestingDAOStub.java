@@ -1,8 +1,9 @@
-package backend.dao.quotation;
+package backend.dao.quotation.provider;
 
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
+import backend.dao.quotation.provider.QuotationProviderInvestingDAO;
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;

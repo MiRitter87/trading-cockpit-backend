@@ -1,4 +1,4 @@
-package backend.dao.quotation;
+package backend.dao.quotation.provider;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -13,6 +13,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import backend.dao.quotation.provider.QuotationProviderYahooDAO;
 import backend.model.Currency;
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;

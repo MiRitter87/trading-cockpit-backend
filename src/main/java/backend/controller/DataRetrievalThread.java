@@ -2,8 +2,8 @@ package backend.controller;
 
 import java.util.Map;
 
-import backend.dao.quotation.QuotationProviderDAO;
-import backend.dao.quotation.QuotationProviderDAOFactory;
+import backend.dao.quotation.provider.QuotationProviderDAO;
+import backend.dao.quotation.provider.QuotationProviderDAOFactory;
 import backend.model.StockExchange;
 
 /**

@@ -24,7 +24,7 @@ import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
 import backend.dao.list.ListDAO;
 import backend.dao.priceAlert.PriceAlertDAO;
-import backend.dao.quotation.QuotationDAO;
+import backend.dao.quotation.persistence.QuotationDAO;
 import backend.model.Currency;
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;

@@ -1,4 +1,4 @@
-package backend.dao.quotation;
+package backend.dao.quotation.persistence;
 
 import java.util.List;
 

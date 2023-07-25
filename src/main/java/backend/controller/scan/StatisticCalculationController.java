@@ -7,7 +7,7 @@ import java.util.List;
 import backend.dao.DAOManager;
 import backend.dao.ObjectUnchangedException;
 import backend.dao.instrument.InstrumentDAO;
-import backend.dao.quotation.QuotationDAO;
+import backend.dao.quotation.persistence.QuotationDAO;
 import backend.dao.statistic.StatisticDAO;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;

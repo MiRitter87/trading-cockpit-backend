@@ -1,4 +1,4 @@
-package backend.dao.quotation;
+package backend.dao.quotation.persistence;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import backend.dao.DAOManager;
 import backend.dao.instrument.DuplicateInstrumentException;
 import backend.dao.instrument.InstrumentDAO;
+import backend.dao.quotation.persistence.QuotationDAO;
 import backend.model.Currency;
 import backend.model.StockExchange;
 import backend.model.instrument.Indicator;
