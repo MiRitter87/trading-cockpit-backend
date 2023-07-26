@@ -10,10 +10,13 @@ The backend provides WebServices to create, read, update and delete the followin
 - Scans
 
 ### Price Alerts
-A price alert notifies you if the price of an instrument reaches a certain threshold. There are two types of alerts. One alert informs you if a price is equal or higher than your defined price. The other type informs you if the price is equal of lower your defined price. The backend queries stock quotes cyclically to check if the defined threshold has been triggered.
+A price alert notifies the user if the price of an instrument reaches a certain threshold. 
+There are two types of alerts. One alert informs you if a price is equal or higher than your defined price. The other type informs you if the price is equal of lower your defined price. 
+The backend queries stock quotes cyclically to check if the defined threshold has been triggered.
+If requested, an E-Mail is sent to a recipient when an alert has been triggered.
 
 ### Instruments
-Instruments are tradable assets that come in different forms like stocks or ETFs. Currently instruments of type 'stock', 'etf', 'sector' and 'industry group' can be managed.
+Instruments are tradable assets that come in different forms like stocks or ETFs. Currently instruments of type 'stock', 'etf', 'sector','industry group' and 'ratio' can be managed.
 
 ### Lists
 Lists allow you to organize sets of instruments. The list feature allows you for example to reproduce ETFs or stock indexes. Lists are used by the scan functionality to scan and screen all instruments of multiple lists.
@@ -21,6 +24,7 @@ Lists allow you to organize sets of instruments. The list feature allows you for
 ### Scans
 A Scan consists of multiple lists that have instruments defined in them. The scan process queries historical price and volume data of the instruments. Indicators are then calculated and the instruments are ranked according to their performance of the past year.
 The backend offers multiple templates to filter the scan results by different characteristics. For example stocks can be filtered that have advanced on above-average volume.
+Ratio data are not queried from a third-party data provider. Instead they are calculated locally within the application based on existing instrument data.
 
 ### Dashboard
 The Dashboard aims to provide a meta overview of the current state of the market.
@@ -53,13 +57,13 @@ The Trading Cockpit is based on the following technologies and frameworks
 
 ## Available Data Provider
 
-| Data Provider   			| Historical Quotations			| Real-Time Quotations			| Delayed Quotations	|
-|---------------------------|-------------------------------|-------------------------------|-----------------------|
-| Yahoo				 		| NYSE, TSX, TSX/V, CSE, LSE	| NYSE, TSX, TSX/V, CSE		    | LSE					|
-| MarketWatch				| NYSE, TSX, TSX/V, CSE, LSE	|								|						|
-| Investing					|  								| NYSE, TSX, LSE				| TSX/V, CSE			|
-| GlobeAndMail				| 								| TSX, TSX/V, CSE				|						|
-| CNBC						|								| NYSE, LSE						| TSX, TSX/V			|
+| Data Provider   			| Historical Quotations				| Real-Time Quotations			| Delayed Quotations	|
+|---------------------------|-----------------------------------|-------------------------------|-----------------------|
+| Yahoo				 		| NYSE, NDQ,  TSX, TSX/V, CSE, LSE	| NYSE, NDQ, TSX, TSX/V, CSE	| LSE					|
+| MarketWatch				| NYSE, NDQ,  TSX, TSX/V, CSE, LSE	|								|						|
+| Investing					|  									| NYSE, NDQ, TSX, LSE			| TSX/V, CSE			|
+| GlobeAndMail				| 									| TSX, TSX/V, CSE				|						|
+| CNBC						|									| NYSE, NDQ, LSE				| TSX, TSX/V			|
 
 
 ## Configuration
@@ -73,8 +77,14 @@ The configuration file "tradingCockpitBackend.properties" has multiple propertie
 | startTime.minute 				|  Application starts stock quote queries at this time 				| 30       		|
 | endTime.hour 					|  Application ends stock quote queries at this time 				| 22       		|
 | endTime.minute 				|  Application ends stock quote queries at this time 				| 0        		|
-| dataProvider.scan				|  Data provider for historical quotation data						| YAHOO	   		|
+| dataProvider.scan.nyse		|  Data provider for historical quotations of exchange NYSE			| YAHOO	   		|
+| dataProvider.scan.ndq			|  Data provider for historical quotations of exchange Nasdaq		| YAHOO	   		|
+| dataProvider.scan.tsx			|  Data provider for historical quotations of exchange TSX			| YAHOO	   		|
+| dataProvider.scan.tsxv		|  Data provider for historical quotations of exchange TSX/V		| YAHOO	   		|
+| dataProvider.scan.cse			|  Data provider for historical quotations of exchange CSE			| YAHOO	   		|
+| dataProvider.scan.lse			|  Data provider for historical quotations of exchange LSE			| YAHOO	   		|
 | dataProvider.priceAlert.nyse	|  Data provider for current quotations of exchange NYSE			| YAHOO	   		|
+| dataProvider.priceAlert.ndq	|  Data provider for current quotations of exchange Nasdaq			| YAHOO	   		|
 | dataProvider.priceAlert.tsx	|  Data provider for current quotations of exchange TSX				| YAHOO    		|
 | dataProvider.priceAlert.tsxv	|  Data provider for current quotations of exchange TSX/V			| YAHOO	   		|
 | dataProvider.priceAlert.cse	|  Data provider for current quotations of exchange CSE				| YAHOO    		|
