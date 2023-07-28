@@ -1,4 +1,4 @@
-package backend.controller.instrumentCheck;
+package backend.controller;
 
 import java.util.Date;
 

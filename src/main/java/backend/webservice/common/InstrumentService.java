@@ -9,8 +9,8 @@ import java.util.ResourceBundle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import backend.controller.NoQuotationsExistException;
 import backend.controller.instrumentCheck.InstrumentCheckController;
-import backend.controller.instrumentCheck.NoQuotationsExistException;
 import backend.dao.DAOManager;
 import backend.dao.ObjectUnchangedException;
 import backend.dao.chart.ChartObjectDAO;

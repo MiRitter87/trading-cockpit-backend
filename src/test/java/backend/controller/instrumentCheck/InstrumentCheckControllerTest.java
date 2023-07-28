@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import backend.controller.NoQuotationsExistException;
 import backend.controller.scan.IndicatorCalculator;
 import backend.dao.quotation.provider.QuotationProviderYahooDAO;
 import backend.dao.quotation.provider.QuotationProviderYahooDAOStub;

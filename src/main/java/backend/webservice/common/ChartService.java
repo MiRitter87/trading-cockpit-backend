@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
 
+import backend.controller.NoQuotationsExistException;
 import backend.controller.chart.AboveSma50ChartController;
 import backend.controller.chart.AdvanceDeclineNumberChartController;
 import backend.controller.chart.DistributionDaysChartController;
@@ -22,7 +23,6 @@ import backend.controller.chart.PocketPivotChartController;
 import backend.controller.chart.PriceVolumeChartController;
 import backend.controller.chart.RitterMarketTrendChartController;
 import backend.controller.chart.RitterPatternIndicatorChartController;
-import backend.controller.instrumentCheck.NoQuotationsExistException;
 import backend.model.instrument.InstrumentType;
 import backend.webservice.Indicator;
 

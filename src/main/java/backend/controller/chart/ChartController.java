@@ -30,7 +30,7 @@ import org.jfree.data.xy.DefaultHighLowDataset;
 import org.jfree.data.xy.IntervalXYDataset;
 import org.jfree.data.xy.OHLCDataset;
 
-import backend.controller.instrumentCheck.NoQuotationsExistException;
+import backend.controller.NoQuotationsExistException;
 import backend.controller.scan.IndicatorCalculator;
 import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;

@@ -21,8 +21,8 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 
+import backend.controller.NoQuotationsExistException;
 import backend.controller.RatioCalculationController;
-import backend.controller.instrumentCheck.NoQuotationsExistException;
 import backend.dao.DAOManager;
 import backend.dao.chart.ChartObjectDAO;
 import backend.model.chart.HorizontalLine;
