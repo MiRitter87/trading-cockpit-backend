@@ -295,43 +295,6 @@ public class PriceVolumeChartController extends ChartController {
 	
 	
 	/**
-	 * Determines the highest average volume within the trading history of the given Instrument.
-	 * 
-	 * @param instrument The Instrument.
-	 * @return The highest average volume of the trading history.
-	 */
-	private long getHighestAverageVolume(final Instrument instrument) {
-		long highestAverageVolume = 0;
-		List<Quotation> quotationsSortedByDate = instrument.getQuotationsSortedByDate();
-		
-		for(Quotation tempQuotation : quotationsSortedByDate) {
-			if(tempQuotation.getIndicator().getSma30Volume() > highestAverageVolume)
-				highestAverageVolume = tempQuotation.getIndicator().getSma30Volume();
-		}
-		
-		
-		return highestAverageVolume;
-	}
-	
-	
-	/**
-	 * Clips the volume bars of the volume plot at two times of the maximum average volume.
-	 * This prevents a volume scale, where large "skyscraper" volume bars dominate the picture and the user is not able
-	 * to properly read the average volume.
-	 * 
-	 * @param volumeSubplot The sub plot of the chart showing the volume.
-	 * @param instrument The Instrument containing the trading history.
-	 */
-	private void clipVolumeAt2TimesAverage(XYPlot volumeSubplot, final Instrument instrument) {
-        double upperVolumeAxisRange = this.getHighestAverageVolume(instrument) * 2;
-        NumberAxis volumeAxis = (NumberAxis) volumeSubplot.getRangeAxis();
-        
-        if(upperVolumeAxisRange > 0)
-        	volumeAxis.setRange(0, upperVolumeAxisRange);
-	}
-	
-	
-	/**
 	 * Builds a plot to display Indicator data of an Instrument.
 	 * 
 	 * @param indicator The requested Indicator.
