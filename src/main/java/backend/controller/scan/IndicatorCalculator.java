@@ -29,6 +29,19 @@ public class IndicatorCalculator {
 	 */
 	private static final int SLOW_STOCHASTIC_SMOOTHING_PERIOD = 3;
 	
+	/**
+	 * Calculator for moving averages of price and volume.
+	 */
+	private MovingAverageCalculator movingAverageCalculator;
+	
+	
+	/**
+	 * Default constructor.
+	 */
+	public IndicatorCalculator() {
+		this.movingAverageCalculator = new MovingAverageCalculator();
+	}
+	
 	
 	/**
 	 * Calculates indicators for the given Quotation.
@@ -50,10 +63,10 @@ public class IndicatorCalculator {
 		if(mostRecent) {
 			//These indicators are calculated only for the most recent Quotation.
 			indicator.setRsPercentSum(this.getRSPercentSum(quotation, sortedQuotations));
-			indicator.setEma21(this.getExponentialMovingAverage(21, quotation, sortedQuotations));
-			indicator.setSma50(this.getSimpleMovingAverage(50, quotation, sortedQuotations));
-			indicator.setSma150(this.getSimpleMovingAverage(150, quotation, sortedQuotations));
-			indicator.setSma200(this.getSimpleMovingAverage(200, quotation, sortedQuotations));
+			indicator.setEma21(this.movingAverageCalculator.getExponentialMovingAverage(21, quotation, sortedQuotations));
+			indicator.setSma50(this.movingAverageCalculator.getSimpleMovingAverage(50, quotation, sortedQuotations));
+			indicator.setSma150(this.movingAverageCalculator.getSimpleMovingAverage(150, quotation, sortedQuotations));
+			indicator.setSma200(this.movingAverageCalculator.getSimpleMovingAverage(200, quotation, sortedQuotations));
 			indicator.setDistanceTo52WeekHigh(this.getDistanceTo52WeekHigh(quotation, sortedQuotations));
 			indicator.setDistanceTo52WeekLow(this.getDistanceTo52WeekLow(quotation, sortedQuotations));
 			indicator.setBollingerBandWidth(this.getBollingerBandWidth(10, 2, quotation, sortedQuotations));
@@ -63,15 +76,15 @@ public class IndicatorCalculator {
 			indicator.setUpDownVolumeRatio(this.getUpDownVolumeRatio(50, quotation, sortedQuotations));
 			indicator.setPerformance5Days(this.getPricePerformanceForDays(5, quotation, sortedQuotations));
 			indicator.setLiquidity20Days(this.getLiquidityForDays(20, quotation, sortedQuotations));
-			indicator.setSma30Volume(this.getSimpleMovingAverageVolume(30, quotation, sortedQuotations));
+			indicator.setSma30Volume(this.movingAverageCalculator.getSimpleMovingAverageVolume(30, quotation, sortedQuotations));
 		}
 		else {
 			//These indicators are calculated for historical quotations too.
-			indicator.setSma50(this.getSimpleMovingAverage(50, quotation, sortedQuotations));
-			indicator.setSma150(this.getSimpleMovingAverage(150, quotation, sortedQuotations));
-			indicator.setSma200(this.getSimpleMovingAverage(200, quotation, sortedQuotations));
-			indicator.setEma21(this.getExponentialMovingAverage(21, quotation, sortedQuotations));
-			indicator.setSma30Volume(this.getSimpleMovingAverageVolume(30, quotation, sortedQuotations));
+			indicator.setSma50(this.movingAverageCalculator.getSimpleMovingAverage(50, quotation, sortedQuotations));
+			indicator.setSma150(this.movingAverageCalculator.getSimpleMovingAverage(150, quotation, sortedQuotations));
+			indicator.setSma200(this.movingAverageCalculator.getSimpleMovingAverage(200, quotation, sortedQuotations));
+			indicator.setEma21(this.movingAverageCalculator.getExponentialMovingAverage(21, quotation, sortedQuotations));
+			indicator.setSma30Volume(this.movingAverageCalculator.getSimpleMovingAverageVolume(30, quotation, sortedQuotations));
 		}
 		
 		quotation.setIndicator(indicator);
@@ -125,85 +138,6 @@ public class IndicatorCalculator {
 				this.getPerformance(sortedQuotations.getQuotations().get(0), sortedQuotations.getQuotations().get(indexOfQuotation)));
 		
 		return rsPercent.setScale(2, RoundingMode.HALF_UP).floatValue();
-	}
-	
-	
-	/**
-	 * Returns the Simple Moving Average.
-	 * 
-	 * @param days The number of days on which the Simple Moving Average is based.
-	 * @param quotation The Quotation for which the Simple Moving Average is calculated.
-	 * @param sortedQuotations A list of quotations sorted by date that build the trading history used for Simple Moving Average calculation.
-	 * @return The Simple Moving Average.
-	 */
-	public float getSimpleMovingAverage(final int days, final Quotation quotation, final QuotationArray sortedQuotations) {
-		int indexOfQuotation = 0;
-		BigDecimal sum = new BigDecimal(0), average;
-		
-		//Get the starting point of average calculation.
-		indexOfQuotation = sortedQuotations.getQuotations().indexOf(quotation);
-		
-		//Check if enough quotations exist for average calculation.
-		if((sortedQuotations.getQuotations().size() - days - indexOfQuotation) < 0)
-			return 0;
-		
-		//Calculate the sum of the prices of the last x days.
-		for(int i = indexOfQuotation; i < (days + indexOfQuotation); i++) {
-			sum = sum.add(sortedQuotations.getQuotations().get(i).getClose());
-		}
-		
-		//Build the average.
-		average = sum.divide(BigDecimal.valueOf(days), 3, RoundingMode.HALF_UP);
-		
-		return average.floatValue();
-	}
-	
-	
-	/**
-	 * Returns the Exponential Moving Average.
-	 * 
-	 * @param days The number of days on which the Exponential Moving Average is based.
-	 * @param quotation The Quotation for which the Exponential Moving Average is calculated.
-	 * @param sortedQuotations A list of quotations sorted by date that build the trading history.
-	 * @return The Exponential Moving Average.
-	 */
-	public float getExponentialMovingAverage(final int days, final Quotation quotation, final QuotationArray sortedQuotations) {
-		int indexOfQuotation = 0, indexForSmaCalculation;
-		float smoothingMultiplier, sma, previousEma, currentEma = 0;
-		Quotation currentQuotation;
-		BigDecimal roundedEma;
-		
-		//Get the index of the Quotation for which the EMA has to be calculated.
-		indexOfQuotation = sortedQuotations.getQuotations().indexOf(quotation);
-		
-		//Check if enough historical quotations exist for EMA calculation.
-		//days*2 is used because the SMA has to be calculated first as starting point for EMA calculation.
-		//Additional days are needed afterwards for the EMA approximation based on the SMA; therefore days*2 is used.
-		if((sortedQuotations.getQuotations().size() - days*2 - indexOfQuotation) < 0)
-			return 0;
-		
-		smoothingMultiplier = 2.0f / (days + 1);
-		
-		//Calculate the SMA as starting point for EMA calculation.
-		indexForSmaCalculation = indexOfQuotation + days;
-		sma = this.getSimpleMovingAverage(days, sortedQuotations.getQuotations().get(indexForSmaCalculation), sortedQuotations);
-		
-		//The initial EMA is initialized with the SMA.
-		previousEma = sma;
-		
-		//Calculate the EMA approximation for the number of days after the starting point as defined by the SMA.
-		//Start the day after the one for which the SMA has been calculated.
-		for(int i = indexForSmaCalculation - 1; i >= indexOfQuotation; i--) {
-			currentQuotation = sortedQuotations.getQuotations().get(i);
-			currentEma = smoothingMultiplier * (currentQuotation.getClose().floatValue() - previousEma) + previousEma;
-			previousEma = currentEma;
-		}
-		
-		//Round result to three decimal places.
-		roundedEma = new BigDecimal(currentEma);
-		roundedEma = roundedEma.setScale(3, RoundingMode.HALF_UP);
-		
-		return roundedEma.floatValue();
 	}
 	
 	
@@ -310,7 +244,7 @@ public class IndicatorCalculator {
 			final QuotationArray sortedQuotations) {
 		
 		float standardDeviation = this.getStandardDeviation(this.getPricesAsArray(days, quotation, sortedQuotations));
-		float simpleMovingAverage = this.getSimpleMovingAverage(days, quotation, sortedQuotations);
+		float simpleMovingAverage = this.movingAverageCalculator.getSimpleMovingAverage(days, quotation, sortedQuotations);
 		float middleBand, upperBand, lowerBand, bandWidth;
 		BigDecimal roundedResult;
 		
@@ -378,38 +312,6 @@ public class IndicatorCalculator {
 	
 	
 	/**
-	 * Returns the Simple Moving Average of the Volume.
-	 * 
-	 * @param days The number of days on which the Simple Moving Average Volume is based.
-	 * @param quotation The Quotation for which the Simple Moving Average Volume is calculated.
-	 * @param sortedQuotations A list of quotations sorted by date that build the trading history used for Simple Moving Average Volume calculation.
-	 * @return The Simple Moving Average Volume.
-	 */
-	public long getSimpleMovingAverageVolume(final int days, final Quotation quotation, final QuotationArray sortedQuotations) {
-		int indexOfQuotation = 0;
-		long sum = 0;
-		BigDecimal average;
-		
-		//Get the starting point of average calculation.
-		indexOfQuotation = sortedQuotations.getQuotations().indexOf(quotation);
-		
-		//Check if enough quotations exist for average calculation.
-		if((sortedQuotations.getQuotations().size() - days - indexOfQuotation) < 0)
-			return 0;
-		
-		//Calculate the sum of the volume of the last x days.
-		for(int i = indexOfQuotation; i < (days + indexOfQuotation); i++) {
-			sum = sum += sortedQuotations.getQuotations().get(i).getVolume();
-		}
-		
-		//Build the average.
-		average = (new BigDecimal(sum)).divide(BigDecimal.valueOf(days), 0, RoundingMode.HALF_UP);
-		
-		return average.longValue();
-	}
-	
-	
-	/**
 	 * Calculates the difference in percent between the average volume of two periods.
 	 * 
 	 * @param daysPeriod1 The first period in days on which the Simple Moving Average Volume is based. Usually the longer period.
@@ -421,8 +323,8 @@ public class IndicatorCalculator {
 	public float getVolumeDifferential(final int daysPeriod1, final int daysPeriod2, final Quotation quotation, final QuotationArray sortedQuotations) {
 		BigDecimal averageVolumePeriod1, averageVolumePeriod2, volumeDifferential;
 		
-		averageVolumePeriod1 = new BigDecimal(this.getSimpleMovingAverageVolume(daysPeriod1, quotation, sortedQuotations));
-		averageVolumePeriod2 = new BigDecimal(this.getSimpleMovingAverageVolume(daysPeriod2, quotation, sortedQuotations));
+		averageVolumePeriod1 = new BigDecimal(this.movingAverageCalculator.getSimpleMovingAverageVolume(daysPeriod1, quotation, sortedQuotations));
+		averageVolumePeriod2 = new BigDecimal(this.movingAverageCalculator.getSimpleMovingAverageVolume(daysPeriod2, quotation, sortedQuotations));
 		
 		if(averageVolumePeriod1.equals(new BigDecimal(0)))
 			return 0;
@@ -568,8 +470,8 @@ public class IndicatorCalculator {
 		float averagePrice, liquidity;
 		long averageVolume;
 		
-		averagePrice = this.getSimpleMovingAverage(days, quotation, sortedQuotations);
-		averageVolume = this.getSimpleMovingAverageVolume(days, quotation, sortedQuotations);
+		averagePrice = this.movingAverageCalculator.getSimpleMovingAverage(days, quotation, sortedQuotations);
+		averageVolume = this.movingAverageCalculator.getSimpleMovingAverageVolume(days, quotation, sortedQuotations);
 		
 		liquidity = averagePrice * averageVolume;
 		
