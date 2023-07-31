@@ -32,6 +32,7 @@ import org.jfree.data.xy.OHLCDataset;
 
 import backend.controller.NoQuotationsExistException;
 import backend.controller.scan.IndicatorCalculator;
+import backend.controller.scan.StochasticCalculator;
 import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
 import backend.dao.list.ListDAO;
@@ -72,6 +73,11 @@ public abstract class ChartController {
 	protected IndicatorCalculator indicatorCalculator;
 	
 	/**
+	 * Stochastic calculator.
+	 */
+	protected StochasticCalculator stochasticCalculator;
+	
+	/**
 	 * Access to localized application resources.
 	 */
 	protected ResourceBundle resources = ResourceBundle.getBundle("backend");
@@ -86,6 +92,7 @@ public abstract class ChartController {
 		this.listDAO = DAOManager.getInstance().getListDAO();
 		
 		this.indicatorCalculator = new IndicatorCalculator();
+		this.stochasticCalculator = new StochasticCalculator();
 	}
 	
 	

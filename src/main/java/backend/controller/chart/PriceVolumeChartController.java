@@ -487,7 +487,7 @@ public class PriceVolumeChartController extends ChartController {
 		quotationArray.sortQuotationsByDate();
 				
 		for(Quotation quotation: quotationArray.getQuotations()) {
-			slowStochastic = this.indicatorCalculator.getSlowStochastic(14, quotation, quotationArray);
+			slowStochastic = this.stochasticCalculator.getSlowStochastic(14, quotation, quotationArray);
 			timeSeries.add(new Day(quotation.getDate()), slowStochastic);
 		}
 		
