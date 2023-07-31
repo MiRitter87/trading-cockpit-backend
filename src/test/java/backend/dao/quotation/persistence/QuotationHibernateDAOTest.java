@@ -22,7 +22,6 @@ import org.junit.jupiter.api.Test;
 import backend.dao.DAOManager;
 import backend.dao.instrument.DuplicateInstrumentException;
 import backend.dao.instrument.InstrumentDAO;
-import backend.dao.quotation.persistence.QuotationDAO;
 import backend.model.Currency;
 import backend.model.StockExchange;
 import backend.model.instrument.Indicator;
@@ -165,11 +164,19 @@ public class QuotationHibernateDAOTest {
 	
 	
 	/**
-	 * Initializes the database with the apple stock and its quotations.
+	 * Initializes the database with instruments, quotations and indicators used as test data.
 	 */
 	private void createTestData() {
-		Calendar calendar = Calendar.getInstance();
-		List<Quotation> quotations = new ArrayList<>();
+		this.createInstruments();
+		this.createQuotations();
+		this.createIndicators();
+	}
+	
+	
+	/**
+	 * Creates Instrument data.
+	 */
+	private void createInstruments() {
 		this.appleStock = new Instrument();
 		this.microsoftStock = new Instrument();
 		this.xleETF = new Instrument();
@@ -177,8 +184,6 @@ public class QuotationHibernateDAOTest {
 		this.copperIndustryGroup = new Instrument();
 		
 		try {
-			//Initialize instruments and their quotations.
-			
 			this.xliSector.setSymbol("XLI");
 			this.xliSector.setName("Industrial Select Sector SPDR Fund");
 			this.xliSector.setStockExchange(StockExchange.NYSE);
@@ -210,7 +215,22 @@ public class QuotationHibernateDAOTest {
 			this.xleETF.setStockExchange(StockExchange.NYSE);
 			this.xleETF.setType(InstrumentType.ETF);
 			instrumentDAO.insertInstrument(this.xleETF);
-			
+		} catch (DuplicateInstrumentException e) {
+			fail(e.getMessage());
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}	
+	}
+	
+	
+	/**
+	 * Creates Quotation data.
+	 */
+	private void createQuotations() {
+		Calendar calendar = Calendar.getInstance();
+		List<Quotation> quotations = new ArrayList<>();
+		
+		try {
 			calendar.setTime(new Date());
 			this.microsoftQuotation1 = new Quotation();
 			this.microsoftQuotation1.setDate(calendar.getTime());
@@ -267,10 +287,19 @@ public class QuotationHibernateDAOTest {
 			quotations.add(this.copperIndustryGroupQuotation1);
 			
 			quotationDAO.insertQuotations(quotations);
-			
-			//Initialize indicators.
-			quotations.clear();
-			
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}	
+	}
+	
+	
+	/**
+	 * Creates Indicator data.
+	 */
+	private void createIndicators() {
+		List<Quotation> quotations = new ArrayList<>();
+		
+		try {
 			this.appleQuotation2Indicator = new Indicator();
 			this.appleQuotation2Indicator.setStage(3);
 			this.appleQuotation2.setIndicator(this.appleQuotation2Indicator);
@@ -294,16 +323,14 @@ public class QuotationHibernateDAOTest {
 			quotations.add(this.copperIndustryGroupQuotation1);
 			
 			quotationDAO.updateQuotations(quotations);
-		} catch (DuplicateInstrumentException e) {
-			fail(e.getMessage());
 		} catch (Exception e) {
 			fail(e.getMessage());
-		}	
+		}
 	}
 	
 	
 	/**
-	 * Deletes the apple stock and its quotations from the database.
+	 * Deletes the instruments, quotations and indicators used as test data from the database.
 	 */
 	private void deleteTestData() {
 		try {

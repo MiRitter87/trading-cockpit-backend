@@ -77,6 +77,32 @@ public class InstrumentTest {
 	 * Tasks to be performed before each test is run.
 	 */
 	private void setUp() {
+		this.initializeQuotations();
+		this.initializeInstruments();
+	}
+	
+	
+	@AfterEach
+	/**
+	 * Tasks to be performed after each test has been run.
+	 */
+	private void tearDown() {
+		this.sectorIgRatio = null;
+		this.industryGroup = null;
+		this.sector = null;
+		this.microsoftStock = null;
+		this.instrument = null;
+		
+		this.quotation3 = null;
+		this.quotation2 = null;
+		this.quotation1 = null;
+	}
+	
+	
+	/**
+	 * Initializes the quotations.
+	 */
+	private void initializeQuotations() {
 		Calendar calendar = Calendar.getInstance();
 		calendar.clear();
 		
@@ -100,7 +126,13 @@ public class InstrumentTest {
 		this.quotation3.setClose(BigDecimal.valueOf(1.11));
 		this.quotation3.setCurrency(Currency.USD);
 		this.quotation3.setVolume(10110);
-		
+	}
+	
+	
+	/**
+	 * Initializes the instruments.
+	 */
+	private void initializeInstruments() {
 		this.instrument = new Instrument();
 		this.instrument.setId(Integer.valueOf(1));
 		this.instrument.setSymbol("AAPL");
@@ -138,16 +170,6 @@ public class InstrumentTest {
 		this.sectorIgRatio.setName("Sector/Industry Group");
 		this.sectorIgRatio.setDividend(this.sector);
 		this.sectorIgRatio.setDivisor(this.industryGroup);
-	}
-	
-	
-	@AfterEach
-	/**
-	 * Tasks to be performed after each test has been run.
-	 */
-	private void tearDown() {
-		this.instrument = null;
-		this.sectorIgRatio = null;
 	}
 	
 	

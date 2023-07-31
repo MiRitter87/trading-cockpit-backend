@@ -4,7 +4,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
-import backend.dao.quotation.provider.QuotationProviderMarketWatchDAO;
 import backend.model.StockExchange;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;

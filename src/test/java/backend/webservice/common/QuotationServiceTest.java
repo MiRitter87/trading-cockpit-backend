@@ -622,64 +622,16 @@ public class QuotationServiceTest {
 	private void createDummyIndicators() {
 		List<Quotation> quotations = new ArrayList<>();
 		
-		this.appleQuotation2Indicator = new Indicator();
-		this.appleQuotation2Indicator.setStage(2);
-		this.appleQuotation2Indicator.setSma200(60);
-		this.appleQuotation2Indicator.setSma150((float) 63.45);
-		this.appleQuotation2Indicator.setSma50((float) 69.24);
-		this.appleQuotation2Indicator.setRsNumber(71);
-		this.appleQuotation2Indicator.setPerformance5Days((float) 12.44);
-		this.appleQuotation2Indicator.setDistanceTo52WeekHigh((float) -4.4);
-		this.appleQuotation2Indicator.setDistanceTo52WeekLow((float) 78.81);
-		this.appleQuotation2Indicator.setBollingerBandWidth((float) 8.71);
-		this.appleQuotation2Indicator.setVolumeDifferential5Days((float) 47.18);
-		this.appleQuotation2Indicator.setVolumeDifferential10Days((float) 19.34);
-		this.appleQuotation2Indicator.setBaseLengthWeeks(32);
+		this.initAppleQuotation2Indicator();
 		this.appleQuotation2.setIndicator(this.appleQuotation2Indicator);
 		
-		this.fordQuotation1Indicator = new Indicator();
-		this.fordQuotation1Indicator.setStage(3);
-		this.fordQuotation1Indicator.setSma200((float) 16.36);
-		this.fordQuotation1Indicator.setSma150((float) 15.08);
-		this.fordQuotation1Indicator.setSma50((float) 13.07);
-		this.fordQuotation1Indicator.setRsNumber(45);
-		this.fordQuotation1Indicator.setPerformance5Days((float) -10.21);
-		this.fordQuotation1Indicator.setDistanceTo52WeekHigh((float) -9.41);
-		this.fordQuotation1Indicator.setDistanceTo52WeekLow((float) 48.81);
-		this.fordQuotation1Indicator.setBollingerBandWidth((float) 4.11);
-		this.fordQuotation1Indicator.setVolumeDifferential5Days((float) 25.55);
-		this.fordQuotation1Indicator.setVolumeDifferential10Days((float) -9.67);
-		this.fordQuotation1Indicator.setBaseLengthWeeks(3);
+		this.initFordQuotation1Indicator();
 		this.fordQuotation1.setIndicator(this.fordQuotation1Indicator);
 		
-		this.xleQuotation2Indicator = new Indicator();
-		this.xleQuotation2Indicator.setStage(2);
-		this.xleQuotation2Indicator.setSma200((float) 74.02);
-		this.xleQuotation2Indicator.setSma150((float) 76.84);
-		this.xleQuotation2Indicator.setSma50((float) 78.15);
-		this.xleQuotation2Indicator.setRsNumber(71);
-		this.xleQuotation2Indicator.setPerformance5Days((float) 3.17);
-		this.xleQuotation2Indicator.setDistanceTo52WeekHigh((float) -21.4);
-		this.xleQuotation2Indicator.setDistanceTo52WeekLow((float) 78.81);
-		this.xleQuotation2Indicator.setBollingerBandWidth((float) 8.71);
-		this.xleQuotation2Indicator.setVolumeDifferential5Days((float) 12.12);
-		this.xleQuotation2Indicator.setVolumeDifferential10Days((float) 19.34);
-		this.xleQuotation2Indicator.setBaseLengthWeeks(32);
+		this.initXleQuotation2Indicator();
 		this.xleQuotation2.setIndicator(this.xleQuotation2Indicator);
 		
-		this.xlbQuotation1Indicator = new Indicator();
-		this.xlbQuotation1Indicator.setStage(4);
-		this.xlbQuotation1Indicator.setSma200((float) 79.83);
-		this.xlbQuotation1Indicator.setSma150((float) 78.64);
-		this.xlbQuotation1Indicator.setSma50((float) 74.01);
-		this.xlbQuotation1Indicator.setRsNumber(71);
-		this.xlbQuotation1Indicator.setPerformance5Days((float) -6.70);
-		this.xlbQuotation1Indicator.setDistanceTo52WeekHigh((float) -9.41);
-		this.xlbQuotation1Indicator.setDistanceTo52WeekLow((float) 0.81);
-		this.xlbQuotation1Indicator.setBollingerBandWidth((float) 4.11);
-		this.xlbQuotation1Indicator.setVolumeDifferential5Days((float) 21.89);
-		this.xlbQuotation1Indicator.setVolumeDifferential10Days((float) -9.67);
-		this.xlbQuotation1Indicator.setBaseLengthWeeks(3);
+		this.initXlbQuotation1Indicator();
 		this.xlbQuotation1.setIndicator(this.xlbQuotation1Indicator);
 		
 		quotations.add(this.appleQuotation2);
@@ -693,6 +645,86 @@ public class QuotationServiceTest {
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
+	}
+	
+	
+	/**
+	 * Initializes the appleQuotation2Indicator.
+	 */
+	private void initAppleQuotation2Indicator() {
+		this.appleQuotation2Indicator = new Indicator();
+		this.appleQuotation2Indicator.setStage(2);
+		this.appleQuotation2Indicator.setSma200(60);
+		this.appleQuotation2Indicator.setSma150((float) 63.45);
+		this.appleQuotation2Indicator.setSma50((float) 69.24);
+		this.appleQuotation2Indicator.setRsNumber(71);
+		this.appleQuotation2Indicator.setPerformance5Days((float) 12.44);
+		this.appleQuotation2Indicator.setDistanceTo52WeekHigh((float) -4.4);
+		this.appleQuotation2Indicator.setDistanceTo52WeekLow((float) 78.81);
+		this.appleQuotation2Indicator.setBollingerBandWidth((float) 8.71);
+		this.appleQuotation2Indicator.setVolumeDifferential5Days((float) 47.18);
+		this.appleQuotation2Indicator.setVolumeDifferential10Days((float) 19.34);
+		this.appleQuotation2Indicator.setBaseLengthWeeks(32);
+	}
+	
+	
+	/**
+	 * Initializes the fordQuotation1Indicator.
+	 */
+	private void initFordQuotation1Indicator() {
+		this.fordQuotation1Indicator = new Indicator();
+		this.fordQuotation1Indicator.setStage(3);
+		this.fordQuotation1Indicator.setSma200((float) 16.36);
+		this.fordQuotation1Indicator.setSma150((float) 15.08);
+		this.fordQuotation1Indicator.setSma50((float) 13.07);
+		this.fordQuotation1Indicator.setRsNumber(45);
+		this.fordQuotation1Indicator.setPerformance5Days((float) -10.21);
+		this.fordQuotation1Indicator.setDistanceTo52WeekHigh((float) -9.41);
+		this.fordQuotation1Indicator.setDistanceTo52WeekLow((float) 48.81);
+		this.fordQuotation1Indicator.setBollingerBandWidth((float) 4.11);
+		this.fordQuotation1Indicator.setVolumeDifferential5Days((float) 25.55);
+		this.fordQuotation1Indicator.setVolumeDifferential10Days((float) -9.67);
+		this.fordQuotation1Indicator.setBaseLengthWeeks(3);
+	}
+	
+	
+	/**
+	 * Initializes the xleQuotation2Indicator.
+	 */
+	private void initXleQuotation2Indicator() {
+		this.xleQuotation2Indicator = new Indicator();
+		this.xleQuotation2Indicator.setStage(2);
+		this.xleQuotation2Indicator.setSma200((float) 74.02);
+		this.xleQuotation2Indicator.setSma150((float) 76.84);
+		this.xleQuotation2Indicator.setSma50((float) 78.15);
+		this.xleQuotation2Indicator.setRsNumber(71);
+		this.xleQuotation2Indicator.setPerformance5Days((float) 3.17);
+		this.xleQuotation2Indicator.setDistanceTo52WeekHigh((float) -21.4);
+		this.xleQuotation2Indicator.setDistanceTo52WeekLow((float) 78.81);
+		this.xleQuotation2Indicator.setBollingerBandWidth((float) 8.71);
+		this.xleQuotation2Indicator.setVolumeDifferential5Days((float) 12.12);
+		this.xleQuotation2Indicator.setVolumeDifferential10Days((float) 19.34);
+		this.xleQuotation2Indicator.setBaseLengthWeeks(32);
+	}
+	
+	
+	/**
+	 * Initializes the xlbQuotation1Indicator.
+	 */
+	private void initXlbQuotation1Indicator() {
+		this.xlbQuotation1Indicator = new Indicator();
+		this.xlbQuotation1Indicator.setStage(4);
+		this.xlbQuotation1Indicator.setSma200((float) 79.83);
+		this.xlbQuotation1Indicator.setSma150((float) 78.64);
+		this.xlbQuotation1Indicator.setSma50((float) 74.01);
+		this.xlbQuotation1Indicator.setRsNumber(71);
+		this.xlbQuotation1Indicator.setPerformance5Days((float) -6.70);
+		this.xlbQuotation1Indicator.setDistanceTo52WeekHigh((float) -9.41);
+		this.xlbQuotation1Indicator.setDistanceTo52WeekLow((float) 0.81);
+		this.xlbQuotation1Indicator.setBollingerBandWidth((float) 4.11);
+		this.xlbQuotation1Indicator.setVolumeDifferential5Days((float) 21.89);
+		this.xlbQuotation1Indicator.setVolumeDifferential10Days((float) -9.67);
+		this.xlbQuotation1Indicator.setBaseLengthWeeks(3);
 	}
 	
 	

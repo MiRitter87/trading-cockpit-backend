@@ -203,6 +203,15 @@ public class StatisticCalculationControllerTest {
 	 * Initializes the database with dummy quotations.
 	 */
 	private void createDummyQuotations() {
+		this.createDummyQuotationsApple();
+		this.createDummyQuotationsMicrosoft();
+	}
+	
+	
+	/**
+	 * Initializes the database with dummy quotations for the Apple stock.
+	 */
+	private void createDummyQuotationsApple() {
 		Calendar calendar = Calendar.getInstance();
 		List<Quotation> quotations = new ArrayList<>();
 		
@@ -234,6 +243,23 @@ public class StatisticCalculationControllerTest {
 			this.appleQuotation3.setInstrument(this.appleStock);
 			quotations.add(this.appleQuotation3);
 			
+			quotationDAO.insertQuotations(quotations);
+		} catch (DuplicateInstrumentException e) {
+			fail(e.getMessage());
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}	
+	}
+	
+	
+	/**
+	 * Initializes the database with dummy quotations for the Microsoft stock.
+	 */
+	private void createDummyQuotationsMicrosoft() {
+		Calendar calendar = Calendar.getInstance();
+		List<Quotation> quotations = new ArrayList<>();
+		
+		try {		
 			calendar.setTime(new Date());
 			this.microsoftQuotation1 = new Quotation();
 			this.microsoftQuotation1.setDate(calendar.getTime());
