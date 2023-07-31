@@ -301,35 +301,6 @@ public class IndicatorCalculatorTest {
 	
 	@Test
 	/**
-	 * Tests the calculation of the standard deviation.
-	 */
-	public void testGetStandardDeviation() {
-		float[] inputValues = {46, 69, 32, 60, 52, 41};
-		float expectedStandardDeviation = (float) 12.1518;
-		float actualStandardDeviation;
-		
-		actualStandardDeviation = this.indicatorCalculator.getStandardDeviation(inputValues);
-		
-		assertEquals(expectedStandardDeviation, actualStandardDeviation);
-	}
-	
-	
-	@Test
-	/**
-	 * Tests the calculation of the Bollinger BandWidth.
-	 */
-	public void testGetBollingerBandWidth() {
-		QuotationArray sortedQuotations = new QuotationArray(this.dmlStock.getQuotationsSortedByDate());
-		float actualBollingerBandWidth, expectedBollingerBandWidth = (float) 24.75;
-		
-		actualBollingerBandWidth = this.indicatorCalculator.getBollingerBandWidth(10, 2, sortedQuotations.getQuotations().get(0), sortedQuotations);
-		
-		assertEquals(expectedBollingerBandWidth, actualBollingerBandWidth);
-	}
-	
-	
-	@Test
-	/**
 	 * Tests the calculation of the volume differential between two moving averages of the volume.
 	 */
 	public void testGetVolumeDifferential() {

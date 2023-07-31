@@ -23,6 +23,8 @@ import org.jfree.data.xy.XYDataset;
 
 import backend.controller.NoQuotationsExistException;
 import backend.controller.RatioCalculationController;
+import backend.controller.scan.BollingerCalculator;
+import backend.controller.scan.StochasticCalculator;
 import backend.dao.DAOManager;
 import backend.dao.chart.ChartObjectDAO;
 import backend.model.chart.HorizontalLine;
@@ -44,10 +46,23 @@ public class PriceVolumeChartController extends ChartController {
 	private ChartObjectDAO chartObjectDAO;
 	
 	/**
+	 * Stochastic calculator.
+	 */
+	private StochasticCalculator stochasticCalculator;
+	
+	/**
+	 * Bollinger calculator.
+	 */
+	private BollingerCalculator bollingerCalculator;
+	
+	/**
 	 * Initializes the PriceVolumeChartController.
 	 */
 	public PriceVolumeChartController() {
 		this.chartObjectDAO = DAOManager.getInstance().getChartObjectDAO();
+		
+		this.stochasticCalculator = new StochasticCalculator();
+		this.bollingerCalculator = new BollingerCalculator();
 	}
 	
 	
@@ -424,7 +439,7 @@ public class PriceVolumeChartController extends ChartController {
 		quotationArray.sortQuotationsByDate();
 				
 		for(Quotation quotation: quotationArray.getQuotations()) {
-			bollingerBandWidth = this.indicatorCalculator.getBollingerBandWidth(10, 2, quotation, quotationArray);
+			bollingerBandWidth = this.bollingerCalculator.getBollingerBandWidth(10, 2, quotation, quotationArray);
 			timeSeries.add(new Day(quotation.getDate()), bollingerBandWidth);
 		}
 		
