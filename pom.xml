@@ -32,6 +32,10 @@
 		<jfreechart.version>1.5.3</jfreechart.version>
 		<htmlunit.version>2.70.0</htmlunit.version>
 		<angus.mail.version>2.0.2</angus.mail.version>
+		<maven.checkstyle.version>3.3.0</maven.checkstyle.version>
+				
+		<!-- Define the location of the custom ruleset of Apache Checkstyle plugin. -->
+    	<checkstyle.config.location>checkstyle/checkstyle.xml</checkstyle.config.location>
 	</properties>
 	
 	<dependencies>
@@ -236,7 +240,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>3.3.0</version>
+				<version>${maven.checkstyle.version}</version>
 				<reportSets>
 					<reportSet>
 						<reports>
