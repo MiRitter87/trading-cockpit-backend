@@ -15,8 +15,7 @@ import backend.controller.MainController;
 import backend.model.StockExchange;
 
 /**
- * Controls the process, that cyclically queries Instrument quotes and updates
- * the alerts accordingly.
+ * Controls the process, that cyclically queries Instrument quotes and updates the alerts accordingly.
  *
  * @author Michael
  */
@@ -104,7 +103,7 @@ public class PriceAlertController {
     /**
      * Application logging.
      */
-    public static final Logger logger = LogManager.getLogger(PriceAlertController.class);
+    public static final Logger LOGGER = LogManager.getLogger(PriceAlertController.class);
 
     /**
      * Initialization.
@@ -148,7 +147,7 @@ public class PriceAlertController {
 
     /**
      * Starts the query and update process.
-     * 
+     *
      * @throws Exception Failed to start executor of PriceAlertThread.
      */
     public void start() throws Exception {
@@ -162,11 +161,13 @@ public class PriceAlertController {
      * Stops the query and update process.
      */
     public void stop() {
+        final long timeout = 10;
+
         try {
             executorService.shutdown();
-            executorService.awaitTermination(10, TimeUnit.SECONDS);
+            executorService.awaitTermination(timeout, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
-            logger.error("Failed to orderly shutdown Thread Executor Service.", e);
+            LOGGER.error("Failed to orderly shutdown Thread Executor Service.", e);
         }
     }
 
@@ -176,8 +177,8 @@ public class PriceAlertController {
      * @Throws Exception In case the property could not be read or initialized.
      */
     private void initializeQueryInterval() throws Exception {
-        String queryInterval = MainController.getInstance().getConfigurationProperty(PROPERTY_QUERY_INTERVAL);
-        this.queryInterval = Integer.valueOf(queryInterval);
+        String queryIntervalString = MainController.getInstance().getConfigurationProperty(PROPERTY_QUERY_INTERVAL);
+        this.queryInterval = Integer.valueOf(queryIntervalString);
     }
 
     /**
@@ -186,10 +187,8 @@ public class PriceAlertController {
      * @Throws Exception In case the property could not be read or initialized.
      */
     private void initializeStartTime() throws Exception {
-        String startTimeHour, startTimeMinute;
-
-        startTimeHour = MainController.getInstance().getConfigurationProperty(PROPERTY_START_TIME_HOUR);
-        startTimeMinute = MainController.getInstance().getConfigurationProperty(PROPERTY_START_TIME_MINUTE);
+        String startTimeHour = MainController.getInstance().getConfigurationProperty(PROPERTY_START_TIME_HOUR);
+        String startTimeMinute = MainController.getInstance().getConfigurationProperty(PROPERTY_START_TIME_MINUTE);
 
         this.startTime = LocalTime.of(Integer.valueOf(startTimeHour), Integer.valueOf(startTimeMinute));
     }
@@ -200,17 +199,14 @@ public class PriceAlertController {
      * @Throws Exception In case the property could not be read or initialized.
      */
     private void initializeEndTime() throws Exception {
-        String endTimeHour, endTimeMinute;
-
-        endTimeHour = MainController.getInstance().getConfigurationProperty(PROPERTY_END_TIME_HOUR);
-        endTimeMinute = MainController.getInstance().getConfigurationProperty(PROPERTY_END_TIME_MINUTE);
+        String endTimeHour = MainController.getInstance().getConfigurationProperty(PROPERTY_END_TIME_HOUR);
+        String endTimeMinute = MainController.getInstance().getConfigurationProperty(PROPERTY_END_TIME_MINUTE);
 
         this.endTime = LocalTime.of(Integer.valueOf(endTimeHour), Integer.valueOf(endTimeMinute));
     }
 
     /**
-     * Initializes the relations between stock exchanges and their corresponding
-     * data providers.
+     * Initializes the relations between stock exchanges and their corresponding data providers.
      *
      * @throws Exception In case a property could not be read or initialized.
      */

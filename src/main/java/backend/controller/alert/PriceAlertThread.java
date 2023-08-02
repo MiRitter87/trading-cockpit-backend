@@ -30,8 +30,7 @@ import backend.model.priceAlert.PriceAlertType;
 import backend.model.priceAlert.TriggerStatus;
 
 /**
- * Queries Instrument quote data and updates price alerts if the trigger price
- * has been reached.
+ * Queries Instrument quote data and updates price alerts if the trigger price has been reached.
  *
  * @author Michael
  */
@@ -59,7 +58,7 @@ public class PriceAlertThread extends DataRetrievalThread {
     /**
      * Application logging.
      */
-    public static final Logger logger = LogManager.getLogger(PriceAlertThread.class);
+    public static final Logger LOGGER = LogManager.getLogger(PriceAlertThread.class);
 
     /**
      * Access to localized application resources.
@@ -93,46 +92,48 @@ public class PriceAlertThread extends DataRetrievalThread {
         PriceAlert priceAlert = null;
         Quotation quotation;
 
-        if (this.isWeekend() || !this.isTimeIntervalActive())
+        if (this.isWeekend() || !this.isTimeIntervalActive()) {
             return;
+        }
 
         try {
             priceAlert = this.getOldestPriceAlert();
         } catch (Exception e) {
-            logger.error("Failed to determine price alerts for next checkup.", e);
+            LOGGER.error("Failed to determine price alerts for next checkup.", e);
         }
 
-        if (priceAlert == null)
+        if (priceAlert == null) {
             return;
+        }
 
         // Get the Quotation of the Instrument defined in the price alert.
         try {
             quotation = this.getCurrentQuotationOfInstrument(priceAlert.getInstrument());
         } catch (Exception e) {
-            logger.error("Failed to determine quotation for symbol: " + priceAlert.getInstrument().getSymbol(), e);
+            LOGGER.error("Failed to determine quotation for symbol: " + priceAlert.getInstrument().getSymbol(), e);
             return;
         }
 
         try {
             this.checkAndUpdatePriceAlert(priceAlert, quotation);
         } catch (Exception e) {
-            logger.error("Failed to update price alert with ID: " + priceAlert.getId(), e);
+            LOGGER.error("Failed to update price alert with ID: " + priceAlert.getId(), e);
         }
     }
 
     /**
-     * Checks if the current time is between the start time and the end time defined
-     * in the configuration file.
+     * Checks if the current time is between the start time and the end time defined in the configuration file.
      *
      * @return true, if current time is in defined interval; false, otherwise.
      */
     private boolean isTimeIntervalActive() {
         LocalTime currentTime = LocalTime.now();
 
-        if (currentTime.isAfter(this.startTime) && currentTime.isBefore(this.endTime))
+        if (currentTime.isAfter(this.startTime) && currentTime.isBefore(this.endTime)) {
             return true;
-        else
-            return false;
+        }
+
+        return false;
     }
 
     /**
@@ -146,15 +147,15 @@ public class PriceAlertThread extends DataRetrievalThread {
         calendar.setTime(new Date());
 
         if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY
-                || calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY)
+                || calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
             return true;
-        else
-            return false;
+        }
+
+        return false;
     }
 
     /**
-     * Gets the price alert with the oldest lastStockQuoteTime that has not been
-     * triggered yet.
+     * Gets the price alert with the oldest lastStockQuoteTime that has not been triggered yet.
      *
      * @return The price alert.
      * @throws Exception In case price alert determination failed.
@@ -165,22 +166,24 @@ public class PriceAlertThread extends DataRetrievalThread {
         priceAlerts.addAll(this.priceAlertDAO.getPriceAlerts(PriceAlertOrderAttribute.LAST_STOCK_QUOTE_TIME,
                 TriggerStatus.NOT_TRIGGERED, ConfirmationStatus.NOT_CONFIRMED));
 
-        if (priceAlerts.size() > 0)
+        if (priceAlerts.size() > 0) {
             return priceAlerts.get(0);
-        else
+        } else {
             return null;
+        }
     }
 
     /**
-     * Checks the price defined in the alert against the stock quote. Updates the
-     * price alert afterwards. An E-Mail is sent if requested.
+     * Checks the price defined in the alert against the stock quote. Updates the price alert afterwards. An E-Mail is
+     * sent if requested.
      *
      * @param priceAlert The price alert.
      * @param quotation  The Quotation.
      * @throws Exception In case the update failed.
      */
-    private void checkAndUpdatePriceAlert(PriceAlert priceAlert, final Quotation quotation) throws Exception {
-        String subject, body;
+    private void checkAndUpdatePriceAlert(final PriceAlert priceAlert, final Quotation quotation) throws Exception {
+        String subject;
+        String body;
 
         priceAlert.setLastStockQuoteTime(new Date());
         priceAlert.setTriggerDistancePercent(this.getTriggerDistancePercent(priceAlert, quotation));
@@ -202,8 +205,7 @@ public class PriceAlertThread extends DataRetrievalThread {
     }
 
     /**
-     * Gets the distance between the current instrument price and the trigger price
-     * in percent.
+     * Gets the distance between the current instrument price and the trigger price in percent.
      *
      * @param priceAlert The PriceAlert defining the trigger price.
      * @param quotation  The Quotation containing the current price.
@@ -211,10 +213,12 @@ public class PriceAlertThread extends DataRetrievalThread {
      */
     private float getTriggerDistancePercent(final PriceAlert priceAlert, final Quotation quotation) {
         BigDecimal percentDistance = new BigDecimal(0);
+        final int scale = 4;
+        final long hundredPercent = 100;
 
-        percentDistance = quotation.getClose().divide(priceAlert.getPrice(), 4, RoundingMode.HALF_UP);
+        percentDistance = quotation.getClose().divide(priceAlert.getPrice(), scale, RoundingMode.HALF_UP);
         percentDistance = percentDistance.subtract(BigDecimal.valueOf(1));
-        percentDistance = percentDistance.multiply(BigDecimal.valueOf(100));
+        percentDistance = percentDistance.multiply(BigDecimal.valueOf(hundredPercent));
 
         return percentDistance.floatValue();
     }
@@ -237,12 +241,12 @@ public class PriceAlertThread extends DataRetrievalThread {
 
     /**
      * Checks if price alert has been triggered.
-     * 
+     *
      * @param priceAlert The Price Alert.
      * @param quotation  The Quotation containing the current price.
      * @return True, if price alert has been triggered; false, if not.
      */
-    private boolean isAlertTriggered(PriceAlert priceAlert, final Quotation quotation) {
+    private boolean isAlertTriggered(final PriceAlert priceAlert, final Quotation quotation) {
         if ((priceAlert.getAlertType() == PriceAlertType.GREATER_OR_EQUAL
                 && quotation.getClose().compareTo(priceAlert.getPrice()) >= 0)
                 || (priceAlert.getAlertType() == PriceAlertType.LESS_OR_EQUAL
