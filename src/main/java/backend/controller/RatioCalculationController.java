@@ -15,15 +15,11 @@ import backend.model.instrument.Quotation;
  */
 public class RatioCalculationController {
     /**
-     * Calculates the List of price ratios between the given dividend and divisor
-     * instruments.
+     * Calculates the List of price ratios between the given dividend and divisor instruments.
      *
-     * @param dividendInstrument Dividend Instrument with quotations for ratio
-     *                           calculation.
-     * @param divisorInstrument  Divisor Instrument with quotations for ratio
-     *                           calculation.
-     * @return A List of quotations that constitute the price ratio between dividend
-     *         and divisor.
+     * @param dividendInstrument Dividend Instrument with quotations for ratio calculation.
+     * @param divisorInstrument  Divisor Instrument with quotations for ratio calculation.
+     * @return A List of quotations that constitute the price ratio between dividend and divisor.
      * @throws Exception Ratio calculation failed.
      */
     public List<Quotation> getRatios(final Instrument dividendInstrument, final Instrument divisorInstrument)
@@ -39,37 +35,39 @@ public class RatioCalculationController {
     /**
      * Checks if quotations exist for both instruments of a ratio.
      *
-     * @param instrument The Instrument that is the ratio.
+     * @param dividendInstrument The Instrument being the dividend.
+     * @param divisorInstrument The Instrument being the divisor.
      * @throws Exception In case no quotations exist for at least one Instrument.
      */
     private void checkQuotationsExistForRatio(final Instrument dividendInstrument, final Instrument divisorInstrument)
             throws Exception {
-        if (dividendInstrument.getQuotations().size() == 0)
+        if (dividendInstrument.getQuotations().size() == 0) {
             throw new Exception("No quotations exist for Instrument with ID " + dividendInstrument.getId());
+        }
 
-        if (divisorInstrument.getQuotations().size() == 0)
+        if (divisorInstrument.getQuotations().size() == 0) {
             throw new Exception("No quotations exist for Instrument with ID " + divisorInstrument.getId());
+        }
     }
 
     /**
      * Calculates the ratio quotations.
      *
-     * @param dividendInstrument Dividend Instrument with quotations for ratio
-     *                           calculation.
-     * @param divisorInstrument  Divisor Instrument with quotations for ratio
-     *                           calculation.
-     * @return A List of quotations that constitute the price ratio between dividend
-     *         and divisor.
+     * @param dividendInstrument Dividend Instrument with quotations for ratio calculation.
+     * @param divisorInstrument  Divisor Instrument with quotations for ratio calculation.
+     * @return A List of quotations that constitute the price ratio between dividend and divisor.
      */
     private List<Quotation> calculateRatios(final Instrument dividendInstrument, final Instrument divisorInstrument) {
         List<Quotation> ratios = new ArrayList<>();
-        Quotation divisorQuotation, ratioQuotation;
+        Quotation divisorQuotation;
+        Quotation ratioQuotation;
 
         for (Quotation dividendQuotation : dividendInstrument.getQuotationsSortedByDate()) {
             divisorQuotation = divisorInstrument.getQuotationByDate(dividendQuotation.getDate());
 
-            if (divisorQuotation == null)
+            if (divisorQuotation == null) {
                 continue;
+            }
 
             ratioQuotation = this.getRatioQuotation(dividendQuotation, divisorQuotation);
             ratios.add(ratioQuotation);
@@ -88,22 +86,23 @@ public class RatioCalculationController {
     private Quotation getRatioQuotation(final Quotation dividendQuotation, final Quotation divisorQuotation) {
         Quotation ratioQuotation = new Quotation();
         BigDecimal ratioPrice;
+        final int scale = 3;
 
         ratioQuotation.setDate(dividendQuotation.getDate());
         ratioQuotation.setCurrency(dividendQuotation.getCurrency());
 
         // A calculated ratio can consist of lot of values below 1.
         // In this case rounding to two decimal places is not enough.
-        ratioPrice = dividendQuotation.getOpen().divide(divisorQuotation.getOpen(), 3, RoundingMode.HALF_UP);
+        ratioPrice = dividendQuotation.getOpen().divide(divisorQuotation.getOpen(), scale, RoundingMode.HALF_UP);
         ratioQuotation.setOpen(ratioPrice);
 
-        ratioPrice = dividendQuotation.getHigh().divide(divisorQuotation.getHigh(), 3, RoundingMode.HALF_UP);
+        ratioPrice = dividendQuotation.getHigh().divide(divisorQuotation.getHigh(), scale, RoundingMode.HALF_UP);
         ratioQuotation.setHigh(ratioPrice);
 
-        ratioPrice = dividendQuotation.getLow().divide(divisorQuotation.getLow(), 3, RoundingMode.HALF_UP);
+        ratioPrice = dividendQuotation.getLow().divide(divisorQuotation.getLow(), scale, RoundingMode.HALF_UP);
         ratioQuotation.setLow(ratioPrice);
 
-        ratioPrice = dividendQuotation.getClose().divide(divisorQuotation.getClose(), 3, RoundingMode.HALF_UP);
+        ratioPrice = dividendQuotation.getClose().divide(divisorQuotation.getClose(), scale, RoundingMode.HALF_UP);
         ratioQuotation.setClose(ratioPrice);
 
         return ratioQuotation;

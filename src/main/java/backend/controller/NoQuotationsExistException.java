@@ -3,8 +3,7 @@ package backend.controller;
 import java.util.Date;
 
 /**
- * Exception indicating that no quotations exist. Optionally a date can be
- * defined after which no quotations exist.
+ * Exception indicating that no quotations exist. Optionally a date can be defined after which no quotations exist.
  *
  * @author Michael
  *
@@ -46,7 +45,7 @@ public class NoQuotationsExistException extends Exception {
     /**
      * @param date the date to set
      */
-    public void setDate(Date date) {
+    public void setDate(final Date date) {
         this.date = date;
     }
 }

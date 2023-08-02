@@ -17,9 +17,9 @@ import okhttp3.OkHttpClient;
  *
  * @author Michael
  */
-public class MainController {
+public final class MainController {
     /**
-     * File path to configuration properties
+     * File path to configuration properties.
      */
     protected static final String SUBPATH_CONFIGURATION_PROPERTIES = "/conf/tradingCockpitBackend.properties";
 
@@ -46,7 +46,7 @@ public class MainController {
     /**
      * Application logging.
      */
-    public static final Logger logger = LogManager.getLogger(MainController.class);
+    public static final Logger LOGGER = LogManager.getLogger(MainController.class);
 
     /**
      * Creates and initializes the main controller.
@@ -61,8 +61,9 @@ public class MainController {
      * @return The instance of the MainController.
      */
     public static MainController getInstance() {
-        if (instance == null)
+        if (instance == null) {
             instance = new MainController();
+        }
 
         return instance;
     }
@@ -79,7 +80,7 @@ public class MainController {
             this.priceAlertController = new PriceAlertController();
             this.priceAlertController.start();
         } catch (Exception e) {
-            logger.error("The query mechanism for price alerts failed to start.", e);
+            LOGGER.error("The query mechanism for price alerts failed to start.", e);
         }
 
         System.out.println("Application started.");
@@ -92,8 +93,9 @@ public class MainController {
         try {
             DAOManager.getInstance().close();
 
-            if (this.priceAlertController != null)
+            if (this.priceAlertController != null) {
                 this.priceAlertController.stop();
+            }
 
             System.out.println("Application stopped");
         } catch (IOException e) {
@@ -137,8 +139,9 @@ public class MainController {
     public DataProvider getDataProviderForProperty(final String propertyKey) throws Exception {
         String dataProviderAsString = this.getConfigurationProperty(propertyKey);
 
-        if (dataProviderAsString == null)
+        if (dataProviderAsString == null) {
             return null;
+        }
 
         switch (dataProviderAsString) {
         case "YAHOO":

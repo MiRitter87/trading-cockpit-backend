@@ -18,13 +18,11 @@ public class DataRetrievalThread extends Thread {
     private Map<StockExchange, DataProvider> dataProviders;
 
     /**
-     * Gets the QuotationProviderDAO that is configured to be used for the given
-     * StockExchange.
+     * Gets the QuotationProviderDAO that is configured to be used for the given StockExchange.
      *
      * @param stockExchange The StockExchange.
      * @return The QuotationProviderDAO that is used for the given StockExchange.
-     * @throws Exception Failed to determine QuotationProviderDAO for the given
-     *                   StockExchange.
+     * @throws Exception Failed to determine QuotationProviderDAO for the given StockExchange.
      */
     public QuotationProviderDAO getQuotationProviderDAO(final StockExchange stockExchange) throws Exception {
         DataProvider dataProvider;
@@ -52,7 +50,7 @@ public class DataRetrievalThread extends Thread {
     /**
      * @param dataProviders the dataProviders to set
      */
-    public void setDataProviders(Map<StockExchange, DataProvider> dataProviders) {
+    public void setDataProviders(final Map<StockExchange, DataProvider> dataProviders) {
         this.dataProviders = dataProviders;
     }
 }

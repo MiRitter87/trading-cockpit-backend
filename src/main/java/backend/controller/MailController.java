@@ -91,7 +91,7 @@ public class MailController {
 
     /**
      * Initializes the properties for Mail transfer.
-     * 
+     *
      * @return Configuration properties for mail transfer.
      * @throws Exception Could not read configuration properties from file.
      */
@@ -113,8 +113,6 @@ public class MailController {
      * Gets the Session for Mail transfer.
      *
      * @param properties The configuration properties.
-     * @param username   The user name of the sending mail account.
-     * @param password   The password of the sending mail account.
      * @return The Session.
      * @throws Exception Could not read configuration properties from file.
      */
@@ -122,13 +120,13 @@ public class MailController {
         String username = MainController.getInstance().getConfigurationProperty(PROPERTY_MAIL_SENDER_USERNAME);
         String password = MainController.getInstance().getConfigurationProperty(PROPERTY_MAIL_SENDER_PASSWORD);
 
-        Session session = Session.getInstance(properties, new Authenticator() {
+        Session mailSession = Session.getInstance(properties, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(username, password);
             }
         });
 
-        return session;
+        return mailSession;
     }
 }
