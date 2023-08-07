@@ -7,30 +7,28 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 
 /**
  * A list of horizontal lines.
- * 
+ *
  * @author Michael
  */
 public class HorizontalLineArray {
-	/**
-	 * A list of horizontal lines.
-	 */
-	private List<HorizontalLine> horizontalLines = null;
+    /**
+     * A list of horizontal lines.
+     */
+    private List<HorizontalLine> horizontalLines = null;
 
-	
-	/**
-	 * @return the horizontalLines
-	 */
-	@XmlElementWrapper(name="horizontalLines")
-    @XmlElement(name="horizontalLine")
-	public List<HorizontalLine> getHorizontalLines() {
-		return horizontalLines;
-	}
+    /**
+     * @return the horizontalLines
+     */
+    @XmlElementWrapper(name = "horizontalLines")
+    @XmlElement(name = "horizontalLine")
+    public List<HorizontalLine> getHorizontalLines() {
+        return horizontalLines;
+    }
 
-	
-	/**
-	 * @param horizontalLines the horizontalLines to set
-	 */
-	public void setHorizontalLines(List<HorizontalLine> horizontalLines) {
-		this.horizontalLines = horizontalLines;
-	}
+    /**
+     * @param horizontalLines the horizontalLines to set
+     */
+    public void setHorizontalLines(final List<HorizontalLine> horizontalLines) {
+        this.horizontalLines = horizontalLines;
+    }
 }
