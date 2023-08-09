@@ -23,271 +23,267 @@ import backend.model.webservice.WebServiceResult;
 import backend.tools.WebServiceTools;
 
 /**
- * Common implementation of the price alert WebService that can be used by multiple service interfaces like SOAP or REST.
- * 
+ * Common implementation of the price alert WebService that can be used by multiple service interfaces like SOAP or
+ * REST.
+ *
  * @author Michael
  */
 public class PriceAlertService {
-	/**
-	 * DAO for PriceAlert access.
-	 */
-	private PriceAlertDAO priceAlertDAO;
-	
-	/**
-	 * DAO for Instrument access.
-	 */
-	private InstrumentDAO instrumentDAO;
-	
-	/**
-	 * Access to localized application resources.
-	 */
-	private ResourceBundle resources = ResourceBundle.getBundle("backend");
-	
-	/**
-	 * Application logging.
-	 */
-	public static final Logger logger = LogManager.getLogger(PriceAlertService.class);
-	
-	
-	/**
-	 * Initializes the price alert service.
-	 */
-	public PriceAlertService() {
-		this.instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
-		this.priceAlertDAO = DAOManager.getInstance().getPriceAlertDAO();
-	}
-	
-	
-	/**
-	 * Provides the price alert with the given id.
-	 * 
-	 * @param id The id of the price alert.
-	 * @return The price alert with the given id, if found.
-	 */
-	public WebServiceResult getPriceAlert(final Integer id) {
-		PriceAlert priceAlert = null;
-		WebServiceResult getPriceAlertResult = new WebServiceResult(null);
-		
-		try {
-			priceAlert = this.priceAlertDAO.getPriceAlert(id);
-			
-			if(priceAlert != null) {
-				//Price alert found
-				getPriceAlertResult.setData(priceAlert);
-			}
-			else {
-				//Price Alert not found
-				getPriceAlertResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
-						MessageFormat.format(this.resources.getString("priceAlert.notFound"), id)));
-			}
-		}
-		catch (Exception e) {
-			getPriceAlertResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
-					MessageFormat.format(this.resources.getString("priceAlert.getError"), id)));
-			
-			logger.error(MessageFormat.format(this.resources.getString("priceAlert.getError"), id), e);
-		}
-		
-		return getPriceAlertResult;
-	}
-	
-	
-	/**
-	 * Provides a list of all price alerts that match the given filter criteria.
-	 * 
-	 * @param triggerStatus Filter criterion for trigger status.
-	 * @param confirmationStatus Filter criterion for confirmation status.
-	 * @return A list of all price alerts.
-	 */
-	public WebServiceResult getPriceAlerts(final TriggerStatus triggerStatus, final ConfirmationStatus confirmationStatus) {
-		PriceAlertArray priceAlerts = new PriceAlertArray();
-		WebServiceResult getPriceAlertsResult = new WebServiceResult(null);
-		
-		try {
-			priceAlerts.setPriceAlerts(this.priceAlertDAO.getPriceAlerts(PriceAlertOrderAttribute.ID, triggerStatus, confirmationStatus));
-			getPriceAlertsResult.setData(priceAlerts);
-		} catch (Exception e) {
-			getPriceAlertsResult.addMessage(new WebServiceMessage(
-					WebServiceMessageType.E, this.resources.getString("priceAlert.getPriceAlertsError")));
-			
-			logger.error(this.resources.getString("priceAlert.getPriceAlertsError"), e);
-		}
-		
-		return getPriceAlertsResult;
-	}
-	
-	
-	/**
-	 * Adds a price alert.
-	 * 
-	 * @param priceAlert The price alert to be added.
-	 * @return The result of the add function.
-	 */
-	public WebServiceResult addPriceAlert(final PriceAlertWS priceAlert) {
-		PriceAlert convertedPriceAlert;
-		WebServiceResult addPriceAlertResult = new WebServiceResult();
-		
-		//Convert the WebService data transfer object to the internal data model.
-		try {
-			convertedPriceAlert = this.convertPriceAlert(priceAlert);
-		}
-		catch(Exception exception) {
-			addPriceAlertResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, this.resources.getString("priceAlert.addError")));	
-			logger.error(this.resources.getString("priceAlert.addError"), exception);
-			return addPriceAlertResult;
-		}
-		
-		//Validation of the given PriceAlert.
-		this.validatePriceAlert(convertedPriceAlert, addPriceAlertResult);
-		if(WebServiceTools.resultContainsErrorMessage(addPriceAlertResult))
-			return addPriceAlertResult;
-		
-		//Insert price alert if validation is successful.
-		try {
-			this.priceAlertDAO.insertPriceAlert(convertedPriceAlert);
-			addPriceAlertResult.addMessage(new WebServiceMessage(WebServiceMessageType.S, this.resources.getString("priceAlert.addSuccess")));
-			addPriceAlertResult.setData(convertedPriceAlert.getId());
-		} catch (Exception e) {
-			addPriceAlertResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, this.resources.getString("priceAlert.addError")));
-			logger.error(this.resources.getString("priceAlert.addError"), e);
-		}
-		
-		return addPriceAlertResult;
-	}
-	
-	
-	/**
-	 * Deletes the price alert with the given id.
-	 * 
-	 * @param id The id of the price alert to be deleted.
-	 * @return The result of the delete function.
-	 */
-	public WebServiceResult deletePriceAlert(final Integer id) {
-		WebServiceResult deletePriceAlertResult = new WebServiceResult(null);
-		PriceAlert priceAlert = null;
-		
-		//Check if a price alert with the given id exists.
-		try {
-			priceAlert = this.priceAlertDAO.getPriceAlert(id);
-			
-			if(priceAlert != null) {
-				//Delete price alert if exists.
-				this.priceAlertDAO.deletePriceAlert(priceAlert);
-				deletePriceAlertResult.addMessage(new WebServiceMessage(WebServiceMessageType.S, 
-						MessageFormat.format(this.resources.getString("priceAlert.deleteSuccess"), id)));
-			}
-			else {
-				//Price alert not found.
-				deletePriceAlertResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
-						MessageFormat.format(this.resources.getString("priceAlert.notFound"), id)));
-			}
-		}
-		catch (Exception e) {
-			deletePriceAlertResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
-					MessageFormat.format(this.resources.getString("priceAlert.deleteError"), id)));
-			
-			logger.error(MessageFormat.format(this.resources.getString("priceAlert.deleteError"), id), e);
-		}
-		
-		return deletePriceAlertResult;
-	}
-	
-	
-	/**
-	 * Updates an existing price alert.
-	 * 
-	 * @param priceAlert The price alert to be updated.
-	 * @return The result of the update function.
-	 */
-	public WebServiceResult updatePriceAlert(final PriceAlertWS priceAlert) {
-		PriceAlert convertedPriceAlert;
-		WebServiceResult updatePriceAlertResult = new WebServiceResult(null);
-		
-		//Convert the WebService data transfer object to the internal data model.
-		try {
-			convertedPriceAlert = this.convertPriceAlert(priceAlert);
-		}
-		catch(Exception exception) {
-			updatePriceAlertResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, this.resources.getString("priceAlert.updateError")));	
-			logger.error(this.resources.getString("priceAlert.updateError"), exception);
-			return updatePriceAlertResult;
-		}
-		
-		//Validation of the given PriceAlert.
-		this.validatePriceAlert(convertedPriceAlert, updatePriceAlertResult);
-		if(WebServiceTools.resultContainsErrorMessage(updatePriceAlertResult))
-			return updatePriceAlertResult;
-		
-		//Update price alert if validation is successful.
-		try {
-			this.priceAlertDAO.updatePriceAlert(convertedPriceAlert);
-			updatePriceAlertResult.addMessage(new WebServiceMessage(WebServiceMessageType.S, 
-					MessageFormat.format(this.resources.getString("priceAlert.updateSuccess"), convertedPriceAlert.getId())));
-		} 
-		catch(ObjectUnchangedException objectUnchangedException) {
-			updatePriceAlertResult.addMessage(new WebServiceMessage(WebServiceMessageType.I, 
-					MessageFormat.format(this.resources.getString("priceAlert.updateUnchanged"), convertedPriceAlert.getId())));
-		}
-		catch(LocalizedException localizedException) {
-			updatePriceAlertResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, localizedException.getLocalizedMessage()));
-		}
-		catch (Exception e) {
-			updatePriceAlertResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, 
-					MessageFormat.format(this.resources.getString("priceAlert.updateError"), convertedPriceAlert.getId())));
-			
-			logger.error(MessageFormat.format(this.resources.getString("priceAlert.updateError"), convertedPriceAlert.getId()), e);
-		}
-		
-		return updatePriceAlertResult;
-	}
-	
-	
-	/**
-	 * Converts the lean PriceAlert representation that is provided by the WebService to the internal data model for further processing.
-	 * 
-	 * @param priceAlertWS The lean PriceAlert representation provided by the WebService.
-	 * @return The PriceAlert model that is used by the backend internally.
-	 * @throws Exception In case the conversion fails.
-	 */
-	private PriceAlert convertPriceAlert(final PriceAlertWS priceAlertWS) throws Exception {
-		PriceAlert priceAlert = new PriceAlert();
-		
-		//Simple object attributes.
-		priceAlert.setId(priceAlertWS.getId());
-		priceAlert.setAlertType(priceAlertWS.getAlertType());
-		priceAlert.setPrice(priceAlertWS.getPrice());
-		priceAlert.setCurrency(priceAlertWS.getCurrency());
-		priceAlert.setTriggerDistancePercent(priceAlertWS.getTriggerDistancePercent());
-		priceAlert.setConfirmationTime(priceAlertWS.getConfirmationTime());
-		priceAlert.setTriggerTime(priceAlertWS.getTriggerTime());
-		priceAlert.setLastStockQuoteTime(priceAlertWS.getLastStockQuoteTime());
-		priceAlert.setSendMail(priceAlertWS.isSendMail());
-		priceAlert.setAlertMailAddress(priceAlertWS.getAlertMailAddress());
-		priceAlert.setMailTransmissionTime(priceAlertWS.getMailTransmissionTime());
-		
-		//Convert Instrument ID to Instrument object.
-		if(priceAlertWS.getInstrumentId() != null)
-			priceAlert.setInstrument(this.instrumentDAO.getInstrument(priceAlertWS.getInstrumentId()));
-		
-		return priceAlert;
-	}
-	
-	
-	/**
-	 * Validates the given PriceAlert and adds potential error messages to the given WebServiceResult.
-	 * 
-	 * @param priceAlert The PriceAlert to be validated.
-	 * @param webServiceResult The WebServiceResult containing potential validation error messages.
-	 */
-	private void validatePriceAlert(final PriceAlert priceAlert, WebServiceResult webServiceResult) {
-		try {
-			priceAlert.validate();
-		}
-		catch(LocalizedException localizedException) {
-			webServiceResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, localizedException.getLocalizedMessage()));
-		}
-		catch(Exception validationException) {
-			webServiceResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, validationException.getMessage()));
-		}
-	}
+    /**
+     * DAO for PriceAlert access.
+     */
+    private PriceAlertDAO priceAlertDAO;
+
+    /**
+     * DAO for Instrument access.
+     */
+    private InstrumentDAO instrumentDAO;
+
+    /**
+     * Access to localized application resources.
+     */
+    private ResourceBundle resources = ResourceBundle.getBundle("backend");
+
+    /**
+     * Application logging.
+     */
+    public static final Logger LOGGER = LogManager.getLogger(PriceAlertService.class);
+
+    /**
+     * Initializes the price alert service.
+     */
+    public PriceAlertService() {
+        this.instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
+        this.priceAlertDAO = DAOManager.getInstance().getPriceAlertDAO();
+    }
+
+    /**
+     * Provides the price alert with the given id.
+     *
+     * @param id The id of the price alert.
+     * @return The price alert with the given id, if found.
+     */
+    public WebServiceResult getPriceAlert(final Integer id) {
+        PriceAlert priceAlert = null;
+        WebServiceResult getPriceAlertResult = new WebServiceResult(null);
+
+        try {
+            priceAlert = this.priceAlertDAO.getPriceAlert(id);
+
+            if (priceAlert != null) {
+                // Price alert found
+                getPriceAlertResult.setData(priceAlert);
+            } else {
+                // Price Alert not found
+                getPriceAlertResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
+                        MessageFormat.format(this.resources.getString("priceAlert.notFound"), id)));
+            }
+        } catch (Exception e) {
+            getPriceAlertResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
+                    MessageFormat.format(this.resources.getString("priceAlert.getError"), id)));
+
+            LOGGER.error(MessageFormat.format(this.resources.getString("priceAlert.getError"), id), e);
+        }
+
+        return getPriceAlertResult;
+    }
+
+    /**
+     * Provides a list of all price alerts that match the given filter criteria.
+     *
+     * @param triggerStatus      Filter criterion for trigger status.
+     * @param confirmationStatus Filter criterion for confirmation status.
+     * @return A list of all price alerts.
+     */
+    public WebServiceResult getPriceAlerts(final TriggerStatus triggerStatus,
+            final ConfirmationStatus confirmationStatus) {
+        PriceAlertArray priceAlerts = new PriceAlertArray();
+        WebServiceResult getPriceAlertsResult = new WebServiceResult(null);
+
+        try {
+            priceAlerts.setPriceAlerts(
+                    this.priceAlertDAO.getPriceAlerts(PriceAlertOrderAttribute.ID, triggerStatus, confirmationStatus));
+            getPriceAlertsResult.setData(priceAlerts);
+        } catch (Exception e) {
+            getPriceAlertsResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
+                    this.resources.getString("priceAlert.getPriceAlertsError")));
+
+            LOGGER.error(this.resources.getString("priceAlert.getPriceAlertsError"), e);
+        }
+
+        return getPriceAlertsResult;
+    }
+
+    /**
+     * Adds a price alert.
+     *
+     * @param priceAlert The price alert to be added.
+     * @return The result of the add function.
+     */
+    public WebServiceResult addPriceAlert(final PriceAlertWS priceAlert) {
+        PriceAlert convertedPriceAlert;
+        WebServiceResult addPriceAlertResult = new WebServiceResult();
+
+        // Convert the WebService data transfer object to the internal data model.
+        try {
+            convertedPriceAlert = this.convertPriceAlert(priceAlert);
+        } catch (Exception exception) {
+            addPriceAlertResult.addMessage(
+                    new WebServiceMessage(WebServiceMessageType.E, this.resources.getString("priceAlert.addError")));
+            LOGGER.error(this.resources.getString("priceAlert.addError"), exception);
+            return addPriceAlertResult;
+        }
+
+        // Validation of the given PriceAlert.
+        this.validatePriceAlert(convertedPriceAlert, addPriceAlertResult);
+        if (WebServiceTools.resultContainsErrorMessage(addPriceAlertResult)) {
+            return addPriceAlertResult;
+        }
+
+        // Insert price alert if validation is successful.
+        try {
+            this.priceAlertDAO.insertPriceAlert(convertedPriceAlert);
+            addPriceAlertResult.addMessage(
+                    new WebServiceMessage(WebServiceMessageType.S, this.resources.getString("priceAlert.addSuccess")));
+            addPriceAlertResult.setData(convertedPriceAlert.getId());
+        } catch (Exception e) {
+            addPriceAlertResult.addMessage(
+                    new WebServiceMessage(WebServiceMessageType.E, this.resources.getString("priceAlert.addError")));
+            LOGGER.error(this.resources.getString("priceAlert.addError"), e);
+        }
+
+        return addPriceAlertResult;
+    }
+
+    /**
+     * Deletes the price alert with the given id.
+     *
+     * @param id The id of the price alert to be deleted.
+     * @return The result of the delete function.
+     */
+    public WebServiceResult deletePriceAlert(final Integer id) {
+        WebServiceResult deletePriceAlertResult = new WebServiceResult(null);
+        PriceAlert priceAlert = null;
+
+        // Check if a price alert with the given id exists.
+        try {
+            priceAlert = this.priceAlertDAO.getPriceAlert(id);
+
+            if (priceAlert != null) {
+                // Delete price alert if exists.
+                this.priceAlertDAO.deletePriceAlert(priceAlert);
+                deletePriceAlertResult.addMessage(new WebServiceMessage(WebServiceMessageType.S,
+                        MessageFormat.format(this.resources.getString("priceAlert.deleteSuccess"), id)));
+            } else {
+                // Price alert not found.
+                deletePriceAlertResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
+                        MessageFormat.format(this.resources.getString("priceAlert.notFound"), id)));
+            }
+        } catch (Exception e) {
+            deletePriceAlertResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
+                    MessageFormat.format(this.resources.getString("priceAlert.deleteError"), id)));
+
+            LOGGER.error(MessageFormat.format(this.resources.getString("priceAlert.deleteError"), id), e);
+        }
+
+        return deletePriceAlertResult;
+    }
+
+    /**
+     * Updates an existing price alert.
+     *
+     * @param priceAlert The price alert to be updated.
+     * @return The result of the update function.
+     */
+    public WebServiceResult updatePriceAlert(final PriceAlertWS priceAlert) {
+        PriceAlert convertedPriceAlert;
+        WebServiceResult updatePriceAlertResult = new WebServiceResult(null);
+
+        // Convert the WebService data transfer object to the internal data model.
+        try {
+            convertedPriceAlert = this.convertPriceAlert(priceAlert);
+        } catch (Exception exception) {
+            updatePriceAlertResult.addMessage(
+                    new WebServiceMessage(WebServiceMessageType.E, this.resources.getString("priceAlert.updateError")));
+            LOGGER.error(this.resources.getString("priceAlert.updateError"), exception);
+            return updatePriceAlertResult;
+        }
+
+        // Validation of the given PriceAlert.
+        this.validatePriceAlert(convertedPriceAlert, updatePriceAlertResult);
+        if (WebServiceTools.resultContainsErrorMessage(updatePriceAlertResult)) {
+            return updatePriceAlertResult;
+        }
+
+        // Update price alert if validation is successful.
+        try {
+            this.priceAlertDAO.updatePriceAlert(convertedPriceAlert);
+            updatePriceAlertResult.addMessage(new WebServiceMessage(WebServiceMessageType.S, MessageFormat
+                    .format(this.resources.getString("priceAlert.updateSuccess"), convertedPriceAlert.getId())));
+        } catch (ObjectUnchangedException objectUnchangedException) {
+            updatePriceAlertResult.addMessage(new WebServiceMessage(WebServiceMessageType.I, MessageFormat
+                    .format(this.resources.getString("priceAlert.updateUnchanged"), convertedPriceAlert.getId())));
+        } catch (LocalizedException localizedException) {
+            updatePriceAlertResult.addMessage(
+                    new WebServiceMessage(WebServiceMessageType.E, localizedException.getLocalizedMessage()));
+        } catch (Exception e) {
+            updatePriceAlertResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, MessageFormat
+                    .format(this.resources.getString("priceAlert.updateError"), convertedPriceAlert.getId())));
+
+            LOGGER.error(MessageFormat.format(this.resources.getString("priceAlert.updateError"),
+                    convertedPriceAlert.getId()), e);
+        }
+
+        return updatePriceAlertResult;
+    }
+
+    /**
+     * Converts the lean PriceAlert representation that is provided by the WebService to the internal data model for
+     * further processing.
+     *
+     * @param priceAlertWS The lean PriceAlert representation provided by the WebService.
+     * @return The PriceAlert model that is used by the backend internally.
+     * @throws Exception In case the conversion fails.
+     */
+    private PriceAlert convertPriceAlert(final PriceAlertWS priceAlertWS) throws Exception {
+        PriceAlert priceAlert = new PriceAlert();
+
+        // Simple object attributes.
+        priceAlert.setId(priceAlertWS.getId());
+        priceAlert.setAlertType(priceAlertWS.getAlertType());
+        priceAlert.setPrice(priceAlertWS.getPrice());
+        priceAlert.setCurrency(priceAlertWS.getCurrency());
+        priceAlert.setTriggerDistancePercent(priceAlertWS.getTriggerDistancePercent());
+        priceAlert.setConfirmationTime(priceAlertWS.getConfirmationTime());
+        priceAlert.setTriggerTime(priceAlertWS.getTriggerTime());
+        priceAlert.setLastStockQuoteTime(priceAlertWS.getLastStockQuoteTime());
+        priceAlert.setSendMail(priceAlertWS.isSendMail());
+        priceAlert.setAlertMailAddress(priceAlertWS.getAlertMailAddress());
+        priceAlert.setMailTransmissionTime(priceAlertWS.getMailTransmissionTime());
+
+        // Convert Instrument ID to Instrument object.
+        if (priceAlertWS.getInstrumentId() != null) {
+            priceAlert.setInstrument(this.instrumentDAO.getInstrument(priceAlertWS.getInstrumentId()));
+        }
+
+        return priceAlert;
+    }
+
+    /**
+     * Validates the given PriceAlert and adds potential error messages to the given WebServiceResult.
+     *
+     * @param priceAlert       The PriceAlert to be validated.
+     * @param webServiceResult The WebServiceResult containing potential validation error messages.
+     */
+    private void validatePriceAlert(final PriceAlert priceAlert, final WebServiceResult webServiceResult) {
+        try {
+            priceAlert.validate();
+        } catch (LocalizedException localizedException) {
+            webServiceResult.addMessage(
+                    new WebServiceMessage(WebServiceMessageType.E, localizedException.getLocalizedMessage()));
+        } catch (Exception validationException) {
+            webServiceResult
+                    .addMessage(new WebServiceMessage(WebServiceMessageType.E, validationException.getMessage()));
+        }
+    }
 }
