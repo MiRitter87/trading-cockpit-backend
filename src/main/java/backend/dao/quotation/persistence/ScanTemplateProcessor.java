@@ -27,7 +27,7 @@ public class ScanTemplateProcessor {
     /**
      * The percentage threshold that defines a trading range that constitutes a "three weeks tight" pattern.
      */
-    private static final float THREE_WEEKS_TIGHT_THRESHOLD = 1.02f;
+    private static final float THREE_WEEKS_TIGHT_THRESHOLD = 1.015f;
 
     /**
      * DAO to access Quotation data.
