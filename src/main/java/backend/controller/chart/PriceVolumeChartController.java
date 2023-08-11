@@ -69,10 +69,7 @@ public class PriceVolumeChartController extends ChartController {
      * Gets a chart of an Instrument with volume information.
      *
      * @param instrumentId    The ID of the Instrument used for chart creation.
-     * @param withEma21       Show EMA(21) as overlay.
-     * @param withSma50       Show SMA(50) as overlay.
-     * @param withSma150      Show SMA(150) as overlay.
-     * @param withSma200      Show SMA(200) as overlay.
+     * @param overlays        The requested chart overlays.
      * @param withVolume      Show volume information.
      * @param withSma30Volume Show SMA(30) of volume.
      * @param indicator       The Indicator that is being displayed above the chart.
@@ -82,9 +79,9 @@ public class PriceVolumeChartController extends ChartController {
      * @throws NoQuotationsExistException No quotations exist for the Quotation with the given ID.
      * @throws Exception                  Chart generation failed.
      */
-    public JFreeChart getPriceVolumeChart(final Integer instrumentId, final boolean withEma21, final boolean withSma50,
-            final boolean withSma150, final boolean withSma200, final boolean withVolume, final boolean withSma30Volume,
-            final Indicator indicator, final Integer rsInstrumentId) throws NoQuotationsExistException, Exception {
+    public JFreeChart getPriceVolumeChart(final Integer instrumentId, final List<String> overlays,
+            final boolean withVolume, final boolean withSma30Volume, final Indicator indicator,
+            final Integer rsInstrumentId) throws NoQuotationsExistException, Exception {
 
         Instrument instrument = this.getInstrumentWithQuotations(instrumentId);
         JFreeChart chart;
@@ -103,7 +100,7 @@ public class PriceVolumeChartController extends ChartController {
 
         indicatorSubplot = this.getIndicatorPlot(indicator, rsInstrumentId, instrument, dateAxis);
 
-        this.addMovingAveragesPrice(instrument, withEma21, withSma50, withSma150, withSma200, candleStickSubplot);
+        this.addMovingAveragesPrice(instrument, overlays, candleStickSubplot);
         this.addHorizontalLines(instrument, candleStickSubplot);
 
         // Build combined plot based on subplots.
@@ -129,30 +126,27 @@ public class PriceVolumeChartController extends ChartController {
      * Adds moving averages of the price to the chart.
      *
      * @param instrument         The Instrument whose price and volume data are displayed.
-     * @param withEma21          Show EMA(21) as overlay.
-     * @param withSma50          Show SMA(50) as overlay.
-     * @param withSma150         Show SMA(150) as overlay.
-     * @param withSma200         Show SMA(200) as overlay.
+     * @param overlays           The requested chart overlays.
      * @param candleStickSubplot The Plot to which moving averages are added.
      */
-    private void addMovingAveragesPrice(final Instrument instrument, final boolean withEma21, final boolean withSma50,
-            final boolean withSma150, final boolean withSma200, final XYPlot candleStickSubplot) {
+    private void addMovingAveragesPrice(final Instrument instrument, final List<String> overlays,
+            final XYPlot candleStickSubplot) {
 
-        if (withEma21) {
-            this.addEma21(instrument, candleStickSubplot);
-        }
-
-        if (withSma50) {
-            this.addSma50(instrument, candleStickSubplot);
-        }
-
-        if (withSma150) {
-            this.addSma150(instrument, candleStickSubplot);
-        }
-
-        if (withSma200) {
-            this.addSma200(instrument, candleStickSubplot);
-        }
+//        if (withEma21) {
+//            this.addEma21(instrument, candleStickSubplot);
+//        }
+//
+//        if (withSma50) {
+//            this.addSma50(instrument, candleStickSubplot);
+//        }
+//
+//        if (withSma150) {
+//            this.addSma150(instrument, candleStickSubplot);
+//        }
+//
+//        if (withSma200) {
+//            this.addSma200(instrument, candleStickSubplot);
+//        }
     }
 
     /**

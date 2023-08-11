@@ -1,5 +1,7 @@
 package backend.webservice.rest;
 
+import java.util.List;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -120,10 +122,7 @@ public class ChartRestService {
      * Provides a chart of an Instrument marked with Pocket Pivots.
      *
      * @param instrumentId    The ID of the Instrument used for chart creation.
-     * @param withEma21       Show EMA(21) as overlay.
-     * @param withSma50       Show SMA(50) as overlay.
-     * @param withSma150      Show SMA(150) as overlay.
-     * @param withSma200      Show SMA(200) as overlay.
+     * @param overlays        The requested chart overlays.
      * @param withVolume      Show volume information.
      * @param withSma30Volume Show SMA(30) of volume.
      * @param indicator       The Indicator that is being displayed above the chart.
@@ -135,15 +134,13 @@ public class ChartRestService {
     @Path("/priceVolume/{instrumentId}")
     @Produces("image/png")
     public Response getPriceVolumeChart(@PathParam("instrumentId") final Integer instrumentId,
-            @QueryParam("withEma21") final boolean withEma21, @QueryParam("withSma50") final boolean withSma50,
-            @QueryParam("withSma150") final boolean withSma150, @QueryParam("withSma200") final boolean withSma200,
-            @QueryParam("withVolume") final boolean withVolume,
+            @QueryParam("overlays") final List<String> overlays, @QueryParam("withVolume") final boolean withVolume,
             @QueryParam("withSma30Volume") final boolean withSma30Volume,
             @QueryParam("indicator") final Indicator indicator,
             @QueryParam("rsInstrumentId") final Integer rsInstrumentId) {
 
         ChartService chartService = new ChartService();
-        return chartService.getPriceVolumeChart(instrumentId, withEma21, withSma50, withSma150, withSma200, withVolume,
-                withSma30Volume, indicator, rsInstrumentId);
+        return chartService.getPriceVolumeChart(instrumentId, overlays, withVolume, withSma30Volume, indicator,
+                rsInstrumentId);
     }
 }

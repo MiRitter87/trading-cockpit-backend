@@ -2,6 +2,7 @@ package backend.webservice.common;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import javax.ws.rs.WebApplicationException;
@@ -271,10 +272,7 @@ public class ChartService {
      * chart on demand.
      *
      * @param instrumentId    The ID of the Instrument used for chart creation.
-     * @param withEma21       Show EMA(21) as overlay.
-     * @param withSma50       Show SMA(50) as overlay.
-     * @param withSma150      Show SMA(150) as overlay.
-     * @param withSma200      Show SMA(200) as overlay.
+     * @param overlays        The requested chart overlays.
      * @param withVolume      Show volume information.
      * @param withSma30Volume Show SMA(30) of volume.
      * @param indicator       The Indicator that is being displayed above the chart.
@@ -282,17 +280,17 @@ public class ChartService {
      *                        RS_LINE).
      * @return A Response containing the generated chart.
      */
-    public Response getPriceVolumeChart(final Integer instrumentId, final boolean withEma21, final boolean withSma50,
-            final boolean withSma150, final boolean withSma200, final boolean withVolume, final boolean withSma30Volume,
-            final Indicator indicator, final Integer rsInstrumentId) {
+    public Response getPriceVolumeChart(final Integer instrumentId, final List<String> overlays,
+            final boolean withVolume, final boolean withSma30Volume, final Indicator indicator,
+            final Integer rsInstrumentId) {
 
         PriceVolumeChartController priceVolumeChartController = new PriceVolumeChartController();
         JFreeChart chart;
         StreamingOutput streamingOutput = null;
 
         try {
-            chart = priceVolumeChartController.getPriceVolumeChart(instrumentId, withEma21, withSma50, withSma150,
-                    withSma200, withVolume, withSma30Volume, indicator, rsInstrumentId);
+            chart = priceVolumeChartController.getPriceVolumeChart(instrumentId, overlays, withVolume, withSma30Volume,
+                    indicator, rsInstrumentId);
 
             streamingOutput = new StreamingOutput() {
                 @Override
