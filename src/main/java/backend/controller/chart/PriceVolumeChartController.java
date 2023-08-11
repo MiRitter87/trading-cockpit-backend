@@ -132,21 +132,25 @@ public class PriceVolumeChartController extends ChartController {
     private void addMovingAveragesPrice(final Instrument instrument, final List<String> overlays,
             final XYPlot candleStickSubplot) {
 
-//        if (withEma21) {
-//            this.addEma21(instrument, candleStickSubplot);
-//        }
-//
-//        if (withSma50) {
-//            this.addSma50(instrument, candleStickSubplot);
-//        }
-//
-//        if (withSma150) {
-//            this.addSma150(instrument, candleStickSubplot);
-//        }
-//
-//        if (withSma200) {
-//            this.addSma200(instrument, candleStickSubplot);
-//        }
+        if (overlays == null || overlays.isEmpty()) {
+            return;
+        }
+
+        if (overlays.contains(ChartOverlay.EMA_21.toString())) {
+            this.addEma21(instrument, candleStickSubplot);
+        }
+
+        if (overlays.contains(ChartOverlay.SMA_50.toString())) {
+            this.addSma50(instrument, candleStickSubplot);
+        }
+
+        if (overlays.contains(ChartOverlay.SMA_150.toString())) {
+            this.addSma150(instrument, candleStickSubplot);
+        }
+
+        if (overlays.contains(ChartOverlay.SMA_200.toString())) {
+            this.addSma200(instrument, candleStickSubplot);
+        }
     }
 
     /**
