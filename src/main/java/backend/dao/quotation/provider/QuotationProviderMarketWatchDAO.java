@@ -348,16 +348,10 @@ public class QuotationProviderMarketWatchDAO extends AbstractQuotationProviderDA
         NumberFormat numberFormat = NumberFormat.getInstance(Locale.US);
         BigDecimal priceResult;
         Number priceNumber = 0;
-        final int pencePerPound = 100;
 
         priceNumber = numberFormat.parse(priceCellValue);
         priceResult = new BigDecimal(priceNumber.floatValue());
-
-        if (currency == Currency.GBP) {
-            priceResult = priceResult.divide(BigDecimal.valueOf(pencePerPound), 2, RoundingMode.HALF_UP);
-        } else {
-            priceResult = priceResult.setScale(2, RoundingMode.HALF_UP);
-        }
+        priceResult = priceResult.setScale(2, RoundingMode.HALF_UP);
 
         return priceResult;
     }
