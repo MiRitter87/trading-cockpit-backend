@@ -29,6 +29,7 @@ public abstract class AbstractQuotationProviderDAO {
             return Currency.CAD;
         case NYSE:
         case NDQ:
+        case AMEX:
             return Currency.USD;
         case LSE:
             return Currency.GBP;

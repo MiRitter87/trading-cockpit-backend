@@ -32,6 +32,11 @@ public enum StockExchange {
     NDQ,
 
     /**
+     * NYSE American.
+     */
+    AMEX,
+
+    /**
      * London Stock Exchange.
      */
     LSE
