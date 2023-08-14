@@ -37,6 +37,11 @@ public enum StockExchange {
     AMEX,
 
     /**
+     * US OTC.
+     */
+    OTC,
+
+    /**
      * London Stock Exchange.
      */
     LSE

@@ -71,6 +71,9 @@ public class ScanControllerTest {
         dataProvider = dataProviders.get(StockExchange.AMEX);
         assertEquals(DataProvider.YAHOO, dataProvider);
 
+        dataProvider = dataProviders.get(StockExchange.OTC);
+        assertEquals(DataProvider.YAHOO, dataProvider);
+
         dataProvider = dataProviders.get(StockExchange.TSX);
         assertEquals(DataProvider.MARKETWATCH, dataProvider);
 

@@ -134,6 +134,25 @@ public class QuotationProviderCNBCDAOTest {
 
     @Test
     /**
+     * Tests the retrieval of the query URL for the current quotation of a stock listed at the US OTC.
+     */
+    public void testGetQueryUrlCurrentQuotationOTC() {
+        final String symbol = "BAYRY";
+        final StockExchange stockExchange = StockExchange.OTC;
+        final String expectedURL = "https://quote.cnbc.com/quote-html-webservice/restQuote/symbolType/symbol?symbols=BAYRY"
+                + "&requestMethod=itv&noform=1&partnerId=2&fund=1&exthrs=1&output=json&events=1";
+        String actualURL = "";
+
+        try {
+            actualURL = quotationProviderCNBCDAO.getQueryUrlCurrentQuotation(symbol, stockExchange);
+            assertEquals(expectedURL, actualURL);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    /**
      * Tests the retrieval of the query URL for the current quotation of a stock listed at the TSX.
      */
     public void testGetQueryUrlCurrentQuotationTSX() {

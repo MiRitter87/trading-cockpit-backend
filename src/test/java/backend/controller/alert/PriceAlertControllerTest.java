@@ -94,6 +94,9 @@ public class PriceAlertControllerTest {
         dataProvider = dataProviders.get(StockExchange.AMEX);
         assertEquals(DataProvider.YAHOO, dataProvider);
 
+        dataProvider = dataProviders.get(StockExchange.OTC);
+        assertEquals(DataProvider.YAHOO, dataProvider);
+
         dataProvider = dataProviders.get(StockExchange.TSX);
         assertEquals(DataProvider.INVESTING, dataProvider);
 

@@ -258,6 +258,21 @@ public class QuotationProviderYahooDAOTest {
 
     @Test
     /**
+     * Tests the retrieval of the query URL for historical quotations of a stock listed at the US OTC.
+     */
+    public void testGetQueryUrlQuotationHistoryOTC() {
+        final String symbol = "BAYRY";
+        final StockExchange stockExchange = StockExchange.OTC;
+        final Integer years = 1;
+        final String expectedURL = "https://query1.finance.yahoo.com/v7/finance/chart/BAYRY?range=1y&interval=1d&indicators=quote&includeTimestamps=true";
+        String actualURL = "";
+
+        actualURL = quotationProviderYahooDAO.getQueryUrlQuotationHistory(symbol, stockExchange, years);
+        assertEquals(expectedURL, actualURL);
+    }
+
+    @Test
+    /**
      * Tests the retrieval of the query URL for historical quotations of a stock listed at the LSE.
      */
     public void testGetQueryUrlQuotationHistoryLSE() {
@@ -512,6 +527,20 @@ public class QuotationProviderYahooDAOTest {
         final String symbol = "PRK";
         final StockExchange stockExchange = StockExchange.AMEX;
         final String expectedURL = "https://query1.finance.yahoo.com/v8/finance/chart/PRK";
+        String actualURL = "";
+
+        actualURL = quotationProviderYahooDAO.getQueryUrlCurrentQuotationChart(symbol, stockExchange);
+        assertEquals(expectedURL, actualURL);
+    }
+
+    @Test
+    /**
+     * Tests the retrieval of the query URL for the current quotation of a stock listed at the US OTC.
+     */
+    public void testGetQueryUrlCurrentQuotationChartOTC() {
+        final String symbol = "BAYRY";
+        final StockExchange stockExchange = StockExchange.OTC;
+        final String expectedURL = "https://query1.finance.yahoo.com/v8/finance/chart/BAYRY";
         String actualURL = "";
 
         actualURL = quotationProviderYahooDAO.getQueryUrlCurrentQuotationChart(symbol, stockExchange);

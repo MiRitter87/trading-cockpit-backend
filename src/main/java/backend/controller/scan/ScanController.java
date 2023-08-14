@@ -37,6 +37,11 @@ public class ScanController {
     protected static final String PROPERTY_DATA_PROVIDER_AMEX = "dataProvider.scan.amex";
 
     /**
+     * Property Key: Data Provider for stock exchange US OTC.
+     */
+    protected static final String PROPERTY_DATA_PROVIDER_OTC = "dataProvider.scan.otc";
+
+    /**
      * Property Key: Data Provider for stock exchange TSX.
      */
     protected static final String PROPERTY_DATA_PROVIDER_TSX = "dataProvider.scan.tsx";
@@ -144,6 +149,8 @@ public class ScanController {
                 MainController.getInstance().getDataProviderForProperty(PROPERTY_DATA_PROVIDER_NASDAQ));
         this.dataProviders.put(StockExchange.AMEX,
                 MainController.getInstance().getDataProviderForProperty(PROPERTY_DATA_PROVIDER_AMEX));
+        this.dataProviders.put(StockExchange.OTC,
+                MainController.getInstance().getDataProviderForProperty(PROPERTY_DATA_PROVIDER_OTC));
         this.dataProviders.put(StockExchange.TSX,
                 MainController.getInstance().getDataProviderForProperty(PROPERTY_DATA_PROVIDER_TSX));
         this.dataProviders.put(StockExchange.TSXV,
