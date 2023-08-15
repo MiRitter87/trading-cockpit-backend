@@ -57,13 +57,13 @@ The Trading Cockpit is based on the following technologies and frameworks
 
 ## Available Data Provider
 
-| Data Provider   			| Historical Quotations				| Real-Time Quotations			| Delayed Quotations	|
-|---------------------------|-----------------------------------|-------------------------------|-----------------------|
-| Yahoo				 		| NYSE, NDQ,  TSX, TSX/V, CSE, LSE	| NYSE, NDQ, TSX, TSX/V, CSE	| LSE					|
-| MarketWatch				| NYSE, NDQ,  TSX, TSX/V, CSE, LSE	|								|						|
-| Investing					|  									| NYSE, NDQ, TSX, LSE			| TSX/V, CSE			|
-| GlobeAndMail				| 									| TSX, TSX/V, CSE				|						|
-| CNBC						|									| NYSE, NDQ, LSE				| TSX, TSX/V			|
+| Data Provider   			| Historical Quotations							| Real-Time Quotations				| Delayed Quotations	|
+|---------------------------|-----------------------------------------------|-----------------------------------|-----------------------|
+| Yahoo				 		| NYSE, NDQ, AMEX, OTC, TSX, TSX/V, CSE, LSE	| NYSE, NDQ, AMEX, TSX, TSX/V, CSE	| OTC, LSE				|
+| MarketWatch				| NYSE, NDQ, AMEX, OTC, TSX, TSX/V, CSE, LSE	|									|						|
+| Investing					|  												| NYSE, NDQ, AMEX, TSX, LSE			| OTC, TSX/V, CSE		|
+| GlobeAndMail				| 												| TSX, CSE							| TSX/V					|
+| CNBC						|												| NYSE, NDQ, AMEX, OTC, LSE			| TSX, TSX/V			|
 
 
 ## Configuration
@@ -79,12 +79,16 @@ The configuration file "tradingCockpitBackend.properties" has multiple propertie
 | endTime.minute 				|  Application ends stock quote queries at this time 				| 0        		|
 | dataProvider.scan.nyse		|  Data provider for historical quotations of exchange NYSE			| YAHOO	   		|
 | dataProvider.scan.ndq			|  Data provider for historical quotations of exchange Nasdaq		| YAHOO	   		|
+| dataProvider.scan.amex		|  Data provider for historical quotations of exchange AMEX			| YAHOO	   		|
+| dataProvider.scan.otc			|  Data provider for historical quotations of exchange US OTC		| YAHOO	   		|
 | dataProvider.scan.tsx			|  Data provider for historical quotations of exchange TSX			| YAHOO	   		|
 | dataProvider.scan.tsxv		|  Data provider for historical quotations of exchange TSX/V		| YAHOO	   		|
 | dataProvider.scan.cse			|  Data provider for historical quotations of exchange CSE			| YAHOO	   		|
 | dataProvider.scan.lse			|  Data provider for historical quotations of exchange LSE			| YAHOO	   		|
 | dataProvider.priceAlert.nyse	|  Data provider for current quotations of exchange NYSE			| YAHOO	   		|
 | dataProvider.priceAlert.ndq	|  Data provider for current quotations of exchange Nasdaq			| YAHOO	   		|
+| dataProvider.priceAlert.amex	|  Data provider for current quotations of exchange AMEX			| YAHOO	   		|
+| dataProvider.priceAlert.otc	|  Data provider for current quotations of exchange US OTC			| YAHOO	   		|
 | dataProvider.priceAlert.tsx	|  Data provider for current quotations of exchange TSX				| YAHOO    		|
 | dataProvider.priceAlert.tsxv	|  Data provider for current quotations of exchange TSX/V			| YAHOO	   		|
 | dataProvider.priceAlert.cse	|  Data provider for current quotations of exchange CSE				| YAHOO    		|
