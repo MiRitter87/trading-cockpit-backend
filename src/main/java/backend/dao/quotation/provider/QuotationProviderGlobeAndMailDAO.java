@@ -32,7 +32,7 @@ public class QuotationProviderGlobeAndMailDAO extends AbstractQuotationProviderD
      * URL to quote theglobeandmail.com: Current quotation.
      */
     private static final String BASE_URL_CURRENT_QUOTATION = "https://www.theglobeandmail.com/investing/markets/stocks/"
-            + PLACEHOLDER_SYMBOL + "-" + PLACEHOLDER_EXCHANGE + "/";
+            + PLACEHOLDER_SYMBOL + PLACEHOLDER_EXCHANGE + "/";
 
     /**
      * Gets the current Quotation of the given Instrument.
@@ -114,10 +114,7 @@ public class QuotationProviderGlobeAndMailDAO extends AbstractQuotationProviderD
     protected String getQueryUrlCurrentQuotation(final Instrument instrument) throws Exception {
         String queryUrl = new String(BASE_URL_CURRENT_QUOTATION);
 
-        if (instrument.getStockExchange() == StockExchange.LSE || instrument.getStockExchange() == StockExchange.NYSE
-                || instrument.getStockExchange() == StockExchange.NDQ
-                || instrument.getStockExchange() == StockExchange.AMEX
-                || instrument.getStockExchange() == StockExchange.OTC) {
+        if (instrument.getStockExchange() == StockExchange.LSE) {
 
             throw new Error("The DAO for TheGlobeAndMail does not provide current quotations for the exchange: "
                     + instrument.getStockExchange());
@@ -137,12 +134,20 @@ public class QuotationProviderGlobeAndMailDAO extends AbstractQuotationProviderD
      */
     private String getExchangeForQueryURL(final Instrument instrument) {
         switch (instrument.getStockExchange()) {
+        case NYSE:
+            return "-N";
+        case NDQ:
+            return "-Q";
+        case AMEX:
+            return "-A";
+        case OTC:
+            return "";
         case TSX:
-            return "T";
+            return "-T";
         case TSXV:
-            return "X";
+            return "-X";
         case CSE:
-            return "CN";
+            return "-CN";
         default:
             return "";
         }
