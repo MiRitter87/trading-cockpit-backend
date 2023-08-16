@@ -62,7 +62,7 @@ The Trading Cockpit is based on the following technologies and frameworks
 | Yahoo				 		| NYSE, NDQ, AMEX, OTC, TSX, TSX/V, CSE, LSE	| NYSE, NDQ, AMEX, TSX, TSX/V, CSE	| OTC, LSE				|
 | MarketWatch				| NYSE, NDQ, AMEX, OTC, TSX, TSX/V, CSE, LSE	|									|						|
 | Investing					|  												| NYSE, NDQ, AMEX, TSX, LSE			| OTC, TSX/V, CSE		|
-| GlobeAndMail				| 												| TSX, CSE							| TSX/V					|
+| GlobeAndMail				| 												| NYSE, NDQ, AMEX, TSX, CSE			| OTC, TSX/V			|
 | CNBC						|												| NYSE, NDQ, AMEX, OTC, LSE			| TSX, TSX/V			|
 
 
