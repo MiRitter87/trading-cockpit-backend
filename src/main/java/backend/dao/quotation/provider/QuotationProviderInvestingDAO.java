@@ -45,6 +45,13 @@ public class QuotationProviderInvestingDAO extends AbstractQuotationProviderDAO 
     private static final String URL_TYPE_ETF = "etfs";
 
     /**
+     * Initializes the QuotationProviderInvestingDAO.
+     */
+    public QuotationProviderInvestingDAO() {
+        this.disableHtmlUnitLogging();
+    }
+
+    /**
      * Gets the current Quotation of the given Instrument.
      */
     @Override

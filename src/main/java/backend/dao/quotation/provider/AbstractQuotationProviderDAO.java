@@ -1,6 +1,7 @@
 package backend.dao.quotation.provider;
 
 import java.io.IOException;
+import java.util.logging.Level;
 
 import backend.model.Currency;
 import backend.model.StockExchange;
@@ -63,5 +64,19 @@ public abstract class AbstractQuotationProviderDAO {
         }
 
         return jsonResult;
+    }
+
+    /**
+     * Disables logging of the HTMLUnit sub-package "com.gargoylesoftware.htmlunit.html".
+     * <p>
+     *
+     * HTMLUnit fails to load iframes containing tracking URLS with the message:<br>
+     * "IOException when getting content for iframe: url=[https://www.googletagmanager.com/ns.html?id=GTM-TL4VHVZ]"
+     *
+     * Those errors do not compromise the function of the application. They only fill log files unnecessarily. Therefore
+     * the log messages from the defined package can be disabled using this method.
+     */
+    protected void disableHtmlUnitLogging() {
+        java.util.logging.Logger.getLogger("com.gargoylesoftware.htmlunit.html").setLevel(Level.OFF);
     }
 }

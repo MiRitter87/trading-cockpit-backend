@@ -35,6 +35,13 @@ public class QuotationProviderGlobeAndMailDAO extends AbstractQuotationProviderD
             + PLACEHOLDER_SYMBOL + PLACEHOLDER_EXCHANGE + "/";
 
     /**
+     * Initializes the QuotationProviderGlobeAndMailDAO.
+     */
+    public QuotationProviderGlobeAndMailDAO() {
+        this.disableHtmlUnitLogging();
+    }
+
+    /**
      * Gets the current Quotation of the given Instrument.
      */
     @Override
