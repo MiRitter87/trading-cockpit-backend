@@ -299,4 +299,21 @@ public class QuotationProviderGlobeAndMailDAOTest {
             fail(e.getMessage());
         }
     }
+
+    @Test
+    /**
+     * Tests the retrieval of the query URL for historical quotations of a stock listed at the NYSE.
+     */
+    public void testGetQueryUrlQuotationHistoryNYSE() {
+        final String symbol = "F";
+        final StockExchange stockExchange = StockExchange.NYSE;
+        final Integer years = 1;
+
+        String expectedUrl = "https://globeandmail.pl.barchart.com/proxies/timeseries/queryeod.ashx?"
+                + "symbol=F&data=daily&maxrecords=252&volume=contract&order=asc&dividends=false&backadjust=false";
+        String actualUrl = "";
+
+        actualUrl = quotationProviderGlobeAndMailDAO.getQueryUrlQuotationHistory(symbol, stockExchange, years);
+        assertEquals(expectedUrl, actualUrl);
+    }
 }

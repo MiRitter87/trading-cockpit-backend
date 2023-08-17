@@ -29,10 +29,22 @@ public class QuotationProviderGlobeAndMailDAO extends AbstractQuotationProviderD
     private static final String PLACEHOLDER_EXCHANGE = "{exchange}";
 
     /**
+     * Placeholder for the number of requested daily quotes in a query URL.
+     */
+    private static final String PLACEHOLDER_DAYS = "{days}";
+
+    /**
      * URL to quote theglobeandmail.com: Current quotation.
      */
     private static final String BASE_URL_CURRENT_QUOTATION = "https://www.theglobeandmail.com/investing/markets/stocks/"
             + PLACEHOLDER_SYMBOL + PLACEHOLDER_EXCHANGE + "/";
+
+    /**
+     * URL to quote theglobeandmail.com: Historical quotations.
+     */
+    private static final String BASE_URL_QUOTATION_HISTORY = "https://globeandmail.pl.barchart.com/proxies/timeseries/"
+            + "queryeod.ashx?symbol=" + PLACEHOLDER_SYMBOL + PLACEHOLDER_EXCHANGE + "&data=daily&maxrecords="
+            + PLACEHOLDER_DAYS + "&volume=contract&order=asc&dividends=false&backadjust=false";
 
     /**
      * Initializes the QuotationProviderGlobeAndMailDAO.
@@ -122,24 +134,48 @@ public class QuotationProviderGlobeAndMailDAO extends AbstractQuotationProviderD
         String queryUrl = new String(BASE_URL_CURRENT_QUOTATION);
 
         if (instrument.getStockExchange() == StockExchange.LSE) {
-
             throw new Error("The DAO for TheGlobeAndMail does not provide current quotations for the exchange: "
                     + instrument.getStockExchange());
         }
 
         queryUrl = queryUrl.replace(PLACEHOLDER_SYMBOL, instrument.getSymbol());
-        queryUrl = queryUrl.replace(PLACEHOLDER_EXCHANGE, this.getExchangeForQueryURL(instrument));
+        queryUrl = queryUrl.replace(PLACEHOLDER_EXCHANGE, this.getExchangeForQueryURLCurrent(instrument));
 
         return queryUrl;
     }
 
     /**
-     * Gets the stock exchange for construction of the query URL.
+     * Gets the query URL for the quotation history of the given symbol and stock exchange.
+     *
+     * @param symbol        The symbol to be queried.
+     * @param stockExchange The stock exchange where the symbol is listed.
+     * @param years         The number of years to be queried.
+     * @return The query URL.
+     */
+    protected String getQueryUrlQuotationHistory(final String symbol, final StockExchange stockExchange,
+            final Integer years) {
+
+        String queryUrl = new String(BASE_URL_QUOTATION_HISTORY);
+
+        if (stockExchange == StockExchange.LSE) {
+            throw new Error("The DAO for TheGlobeAndMail does not provide historical quotations for the exchange: "
+                    + stockExchange);
+        }
+
+        queryUrl = queryUrl.replace(PLACEHOLDER_SYMBOL, symbol);
+        queryUrl = queryUrl.replace(PLACEHOLDER_EXCHANGE, this.getExchangeForQueryURLHistory(stockExchange));
+        queryUrl = queryUrl.replace(PLACEHOLDER_DAYS, this.getDaysForQueryURLHistory(years));
+
+        return queryUrl;
+    }
+
+    /**
+     * Gets the stock exchange for construction of the query URL for current quotations.
      *
      * @param instrument The Instrument.
-     * @return The stock exchange used in the URL.
+     * @return The stock exchange as used in the URL for current Quotation.
      */
-    private String getExchangeForQueryURL(final Instrument instrument) {
+    private String getExchangeForQueryURLCurrent(final Instrument instrument) {
         switch (instrument.getStockExchange()) {
         case NYSE:
             return "-N";
@@ -158,5 +194,33 @@ public class QuotationProviderGlobeAndMailDAO extends AbstractQuotationProviderD
         default:
             return "";
         }
+    }
+
+    /**
+     * Gets the stock exchange for construction of the query URL for historical quotations.
+     *
+     * @param stockExchange The StockExchange the Instrument is listed at.
+     * @return The stock exchange as used in the URL for historical quotations.
+     */
+    private String getExchangeForQueryURLHistory(final StockExchange stockExchange) {
+        switch (stockExchange) {
+        case NYSE:
+            return "";
+        default:
+            return "";
+        }
+    }
+
+    /**
+     * Gets the number of days for construction of the query URL for historical quotations.
+     *
+     * @param years The number of years to be queried.
+     * @return The number of days.
+     */
+    private String getDaysForQueryURLHistory(final Integer years) {
+        final int tradingDaysPerYear = 252;
+        final Integer requestedDays = years * tradingDaysPerYear;
+
+        return requestedDays.toString();
     }
 }
