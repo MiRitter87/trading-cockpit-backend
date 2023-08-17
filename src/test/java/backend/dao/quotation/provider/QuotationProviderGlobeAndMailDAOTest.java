@@ -316,4 +316,106 @@ public class QuotationProviderGlobeAndMailDAOTest {
         actualUrl = quotationProviderGlobeAndMailDAO.getQueryUrlQuotationHistory(symbol, stockExchange, years);
         assertEquals(expectedUrl, actualUrl);
     }
+
+    @Test
+    /**
+     * Tests the retrieval of the query URL for historical quotations of a stock listed at the Nasdaq.
+     */
+    public void testGetQueryUrlQuotationHistoryNasdaq() {
+        final String symbol = "AMZN";
+        final StockExchange stockExchange = StockExchange.NDQ;
+        final Integer years = 1;
+
+        String expectedUrl = "https://globeandmail.pl.barchart.com/proxies/timeseries/queryeod.ashx?"
+                + "symbol=AMZN&data=daily&maxrecords=252&volume=contract&order=asc&dividends=false&backadjust=false";
+        String actualUrl = "";
+
+        actualUrl = quotationProviderGlobeAndMailDAO.getQueryUrlQuotationHistory(symbol, stockExchange, years);
+        assertEquals(expectedUrl, actualUrl);
+    }
+
+    @Test
+    /**
+     * Tests the retrieval of the query URL for historical quotations of a stock listed at the AMEX.
+     */
+    public void testGetQueryUrlQuotationHistoryAMEX() {
+        final String symbol = "PRK";
+        final StockExchange stockExchange = StockExchange.AMEX;
+        final Integer years = 1;
+
+        String expectedUrl = "https://globeandmail.pl.barchart.com/proxies/timeseries/queryeod.ashx?"
+                + "symbol=PRK&data=daily&maxrecords=252&volume=contract&order=asc&dividends=false&backadjust=false";
+        String actualUrl = "";
+
+        actualUrl = quotationProviderGlobeAndMailDAO.getQueryUrlQuotationHistory(symbol, stockExchange, years);
+        assertEquals(expectedUrl, actualUrl);
+    }
+
+    @Test
+    /**
+     * Tests the retrieval of the query URL for historical quotations of a stock listed at the US OTC.
+     */
+    public void testGetQueryUrlQuotationHistoryOTC() {
+        final String symbol = "BAYRY";
+        final StockExchange stockExchange = StockExchange.OTC;
+        final Integer years = 1;
+
+        String expectedUrl = "https://globeandmail.pl.barchart.com/proxies/timeseries/queryeod.ashx?"
+                + "symbol=BAYRY&data=daily&maxrecords=252&volume=contract&order=asc&dividends=false&backadjust=false";
+        String actualUrl = "";
+
+        actualUrl = quotationProviderGlobeAndMailDAO.getQueryUrlQuotationHistory(symbol, stockExchange, years);
+        assertEquals(expectedUrl, actualUrl);
+    }
+
+    @Test
+    /**
+     * Tests the retrieval of the query URL for historical quotations of a stock listed at the TSX.
+     */
+    public void testGetQueryUrlQuotationHistoryTSX() {
+        final String symbol = "DML";
+        final StockExchange stockExchange = StockExchange.TSX;
+        final Integer years = 1;
+
+        String expectedUrl = "https://globeandmail.pl.barchart.com/proxies/timeseries/queryeod.ashx?"
+                + "symbol=DML.TO&data=daily&maxrecords=252&volume=contract&order=asc&dividends=false&backadjust=false";
+        String actualUrl = "";
+
+        actualUrl = quotationProviderGlobeAndMailDAO.getQueryUrlQuotationHistory(symbol, stockExchange, years);
+        assertEquals(expectedUrl, actualUrl);
+    }
+
+    @Test
+    /**
+     * Tests the retrieval of the query URL for historical quotations of a stock listed at the TSX/V.
+     */
+    public void testGetQueryUrlQuotationHistoryTSXV() {
+        final String symbol = "RCK";
+        final StockExchange stockExchange = StockExchange.TSXV;
+        final Integer years = 1;
+
+        String expectedUrl = "https://globeandmail.pl.barchart.com/proxies/timeseries/queryeod.ashx?"
+                + "symbol=RCK.VN&data=daily&maxrecords=252&volume=contract&order=asc&dividends=false&backadjust=false";
+        String actualUrl = "";
+
+        actualUrl = quotationProviderGlobeAndMailDAO.getQueryUrlQuotationHistory(symbol, stockExchange, years);
+        assertEquals(expectedUrl, actualUrl);
+    }
+
+    @Test
+    /**
+     * Tests the retrieval of the query URL for historical quotations of a stock listed at the CSE.
+     */
+    public void testGetQueryUrlQuotationHistoryCSE() {
+        final String symbol = "AGN";
+        final StockExchange stockExchange = StockExchange.CSE;
+        final Integer years = 1;
+
+        String expectedUrl = "https://globeandmail.pl.barchart.com/proxies/timeseries/queryeod.ashx?"
+                + "symbol=AGN.CN&data=daily&maxrecords=252&volume=contract&order=asc&dividends=false&backadjust=false";
+        String actualUrl = "";
+
+        actualUrl = quotationProviderGlobeAndMailDAO.getQueryUrlQuotationHistory(symbol, stockExchange, years);
+        assertEquals(expectedUrl, actualUrl);
+    }
 }

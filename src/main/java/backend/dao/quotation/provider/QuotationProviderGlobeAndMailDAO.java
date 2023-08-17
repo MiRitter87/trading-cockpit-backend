@@ -205,7 +205,16 @@ public class QuotationProviderGlobeAndMailDAO extends AbstractQuotationProviderD
     private String getExchangeForQueryURLHistory(final StockExchange stockExchange) {
         switch (stockExchange) {
         case NYSE:
+        case NDQ:
+        case AMEX:
+        case OTC:
             return "";
+        case TSX:
+            return ".TO";
+        case TSXV:
+            return ".VN";
+        case CSE:
+            return ".CN";
         default:
             return "";
         }
