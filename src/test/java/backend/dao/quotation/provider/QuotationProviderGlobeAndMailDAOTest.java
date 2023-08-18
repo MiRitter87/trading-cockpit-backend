@@ -5,6 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -160,6 +164,53 @@ public class QuotationProviderGlobeAndMailDAOTest {
         quotation.setCurrency(Currency.CAD);
 
         return quotation;
+    }
+
+    /**
+     * Gets historical quotations of Denison Mines stock. The quotations of the three most recent trading days are
+     * provided.
+     *
+     * @return Historical quotations of Denison Mines stock
+     */
+    private List<Quotation> getDenisonMinesQuotationHistory() {
+        List<Quotation> historicalQuotations = new ArrayList<>();
+        Quotation quotation = new Quotation();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+
+        try {
+            quotation.setDate(dateFormat.parse("08/17/2023"));
+            quotation.setOpen(BigDecimal.valueOf(1.80));
+            quotation.setHigh(BigDecimal.valueOf(1.81));
+            quotation.setLow(BigDecimal.valueOf(1.74));
+            quotation.setClose(BigDecimal.valueOf(1.76));
+            quotation.setCurrency(Currency.CAD);
+            quotation.setVolume(949015);
+            historicalQuotations.add(quotation);
+
+            quotation = new Quotation();
+            quotation.setDate(dateFormat.parse("08/16/2023"));
+            quotation.setOpen(BigDecimal.valueOf(1.79));
+            quotation.setHigh(BigDecimal.valueOf(1.83));
+            quotation.setLow(BigDecimal.valueOf(1.78));
+            quotation.setClose(BigDecimal.valueOf(1.80));
+            quotation.setCurrency(Currency.CAD);
+            quotation.setVolume(831450);
+            historicalQuotations.add(quotation);
+
+            quotation = new Quotation();
+            quotation.setDate(dateFormat.parse("08/15/2023"));
+            quotation.setOpen(BigDecimal.valueOf(1.82));
+            quotation.setHigh(BigDecimal.valueOf(1.84));
+            quotation.setLow(BigDecimal.valueOf(1.78));
+            quotation.setClose(BigDecimal.valueOf(1.79));
+            quotation.setCurrency(Currency.CAD);
+            quotation.setVolume(1264235);
+            historicalQuotations.add(quotation);
+        } catch (ParseException e) {
+            fail(e.getMessage());
+        }
+
+        return historicalQuotations;
     }
 
     @Test
@@ -417,5 +468,39 @@ public class QuotationProviderGlobeAndMailDAOTest {
 
         actualUrl = quotationProviderGlobeAndMailDAO.getQueryUrlQuotationHistory(symbol, stockExchange, years);
         assertEquals(expectedUrl, actualUrl);
+    }
+
+
+    //@Test
+    /**
+     * Tests the retrieval of the quotation history of a stock traded at the TSX.
+     */
+    public void testGetQuotationHistoryTSX() {
+        List<Quotation> actualQuotationHistory, expectedQuotationHistory;
+        Quotation actualQuotation, expectedQuotation;
+
+        try {
+            actualQuotationHistory = quotationProviderGlobeAndMailDAO.getQuotationHistory("DML", StockExchange.TSX,
+                    InstrumentType.STOCK, 1);
+            expectedQuotationHistory = this.getDenisonMinesQuotationHistory();
+
+            // 252 Trading days of a full year.
+            assertEquals(252, actualQuotationHistory.size());
+
+            // Check the three most recent quotations.
+            actualQuotation = actualQuotationHistory.get(0);
+            expectedQuotation = expectedQuotationHistory.get(0);
+            assertEquals(expectedQuotation, actualQuotation);
+
+            actualQuotation = actualQuotationHistory.get(1);
+            expectedQuotation = expectedQuotationHistory.get(1);
+            assertEquals(expectedQuotation, actualQuotation);
+
+            actualQuotation = actualQuotationHistory.get(2);
+            expectedQuotation = expectedQuotationHistory.get(2);
+            assertEquals(expectedQuotation, actualQuotation);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
     }
 }
