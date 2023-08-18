@@ -147,7 +147,7 @@ public final class QuotationProviderDAOFactory {
      */
     private QuotationProviderGlobeAndMailDAO getQuotationProviderGlobeAndMailDAO() {
         if (this.globeAndMailDAO == null) {
-            this.globeAndMailDAO = new QuotationProviderGlobeAndMailDAO();
+            this.globeAndMailDAO = new QuotationProviderGlobeAndMailDAO(this.okHttpClient);
         }
 
         return this.globeAndMailDAO;

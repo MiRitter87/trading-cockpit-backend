@@ -1,8 +1,10 @@
 package backend.dao.quotation.provider;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -22,6 +24,9 @@ import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * Provides access to quotation data using the theglobeandmail.com website.
@@ -58,10 +63,25 @@ public class QuotationProviderGlobeAndMailDAO extends AbstractQuotationProviderD
             + PLACEHOLDER_DAYS + "&volume=contract&order=asc&dividends=false&backadjust=false";
 
     /**
+     * The HTTP client used for data queries.
+     */
+    private OkHttpClient httpClient;
+
+    /**
      * Initializes the QuotationProviderGlobeAndMailDAO.
      */
     public QuotationProviderGlobeAndMailDAO() {
         this.disableHtmlUnitLogging();
+    }
+
+    /**
+     * Initializes the QuotationProviderGlobeAndMailDAO.
+     *
+     * @param httpClient The HTTP client used for data queries.
+     */
+    public QuotationProviderGlobeAndMailDAO(final OkHttpClient httpClient) {
+        this.disableHtmlUnitLogging();
+        this.httpClient = httpClient;
     }
 
     /**
@@ -96,7 +116,15 @@ public class QuotationProviderGlobeAndMailDAO extends AbstractQuotationProviderD
     public List<Quotation> getQuotationHistory(final String symbol, final StockExchange stockExchange,
             final InstrumentType instrumentType, final Integer years) throws Exception {
 
-        throw new Exception("Method is not supported.");
+        String csvQuotationHistory = this.getQuotationHistoryCSVFromGlobeAndMail(symbol, stockExchange, years);
+
+        if ("".equals(csvQuotationHistory)) {
+            throw new Exception(MessageFormat.format("The server returned empty CSV data for symbol {0}.", symbol));
+        }
+
+        List<Quotation> quotationHistory = this.convertCSVToQuotations(csvQuotationHistory, stockExchange);
+
+        return quotationHistory;
     }
 
     /**
@@ -274,6 +302,34 @@ public class QuotationProviderGlobeAndMailDAO extends AbstractQuotationProviderD
     }
 
     /**
+     * Gets the quotation history data from GlobeAndMail as CSV String.
+     *
+     * @param symbol        The symbol.
+     * @param stockExchange The stock exchange.
+     * @param years         The number of years to be queried.
+     * @return The quotation history as CSV string.
+     * @throws Exception Quotation history determination failed.
+     */
+    private String getQuotationHistoryCSVFromGlobeAndMail(final String symbol, final StockExchange stockExchange,
+            final Integer years) throws Exception {
+
+        Request request = new Request.Builder().url(this.getQueryUrlQuotationHistory(symbol, stockExchange, years))
+                .header("Connection", "close").build();
+        Response response;
+        String csvResult;
+
+        try {
+            response = this.httpClient.newCall(request).execute();
+            csvResult = response.body().string();
+            response.close();
+        } catch (IOException e) {
+            throw new Exception(e);
+        }
+
+        return csvResult;
+    }
+
+    /**
      * Returns a Quotation based on the content of the given CSV line string.
      *
      * @param lineContent A CSV line containing Quotation data.
@@ -325,7 +381,7 @@ public class QuotationProviderGlobeAndMailDAO extends AbstractQuotationProviderD
      * @return The price.
      * @throws ParseException Error while trying to parse price data.
      */
-    protected BigDecimal getPrice(final String priceCellValue, final Currency currency) throws ParseException {
+    private BigDecimal getPrice(final String priceCellValue, final Currency currency) throws ParseException {
         NumberFormat numberFormat = NumberFormat.getInstance(Locale.US);
         BigDecimal priceResult;
         Number priceNumber = 0;
@@ -343,7 +399,7 @@ public class QuotationProviderGlobeAndMailDAO extends AbstractQuotationProviderD
      * @param volumeCellValue The value of the volume cell from the CSV file.
      * @return The volume.
      */
-    protected long getVolume(final String volumeCellValue) {
+    private long getVolume(final String volumeCellValue) {
         return Long.valueOf(volumeCellValue);
     }
 }
