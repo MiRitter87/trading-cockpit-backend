@@ -63,7 +63,6 @@ public class QuotationProviderGlobeAndMailDAOStub extends QuotationProviderGlobe
 
         String quotationHistoryCSV = Files.readString(Paths.get(csvPath));
 
-        return null;
-        // return this.convertCSVToQuotations(quotationHistoryCSV, stockExchange);
+        return this.convertCSVToQuotations(quotationHistoryCSV, stockExchange);
     }
 }

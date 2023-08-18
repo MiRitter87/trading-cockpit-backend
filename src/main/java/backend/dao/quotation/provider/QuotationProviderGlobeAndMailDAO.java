@@ -1,12 +1,23 @@
 package backend.dao.quotation.provider;
 
+import java.io.StringReader;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.opencsv.CSVReader;
 
+import backend.model.Currency;
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
@@ -124,6 +135,35 @@ public class QuotationProviderGlobeAndMailDAO extends AbstractQuotationProviderD
     }
 
     /**
+     * Converts a CSV string containing the quotation history into a List of Quotation objects.
+     *
+     * @param quotationHistoryAsCSV The quotation history as CSV String.
+     * @param stockExchange         The StockExchange at which the instrument is traded.
+     * @return A List of Quotation objects.
+     * @throws Exception Quotation conversion failed.
+     */
+    protected List<Quotation> convertCSVToQuotations(final String quotationHistoryAsCSV,
+            final StockExchange stockExchange) throws Exception {
+
+        StringReader stringReader = new StringReader(quotationHistoryAsCSV);
+        CSVReader csvReader = new CSVReader(stringReader);
+        Iterator<String[]> csvLineIterator = csvReader.iterator();
+        List<Quotation> quotations = new ArrayList<>();
+        Currency currency = this.getCurrencyForStockExchange(stockExchange);
+        Quotation quotation;
+
+        while (csvLineIterator.hasNext()) {
+            quotation = this.getQuotationFromCsvLine(csvLineIterator.next(), currency);
+            quotation.setCurrency(currency);
+            quotations.add(quotation);
+        }
+
+        csvReader.close();
+
+        return quotations;
+    }
+
+    /**
      * Gets the query URL for the current quotation of the given Instrument.
      *
      * @param instrument The Instrument for which the query URL is determined.
@@ -231,5 +271,79 @@ public class QuotationProviderGlobeAndMailDAO extends AbstractQuotationProviderD
         final Integer requestedDays = years * tradingDaysPerYear;
 
         return requestedDays.toString();
+    }
+
+    /**
+     * Returns a Quotation based on the content of the given CSV line string.
+     *
+     * @param lineContent A CSV line containing Quotation data.
+     * @param currency    The Currency.
+     * @return The Quotation.
+     * @throws ParseException Error while trying to parse data.
+     */
+    private Quotation getQuotationFromCsvLine(final String[] lineContent, final Currency currency)
+            throws ParseException {
+        Quotation quotation = new Quotation();
+        final int indexDate = 1;
+        final int indexOpen = 2;
+        final int indexHigh = 3;
+        final int indexLow = 4;
+        final int indexClose = 5;
+        final int indexVolume = 6;
+
+        quotation.setDate(this.getDate(lineContent[indexDate]));
+        quotation.setOpen(this.getPrice(lineContent[indexOpen], currency));
+        quotation.setHigh(this.getPrice(lineContent[indexHigh], currency));
+        quotation.setLow(this.getPrice(lineContent[indexLow], currency));
+        quotation.setClose(this.getPrice(lineContent[indexClose], currency));
+        quotation.setVolume(this.getVolume(lineContent[indexVolume]));
+
+        return quotation;
+    }
+
+    /**
+     * Gets the date of the given CSV cell value.
+     *
+     * @param dateCellValue The value of the date cell from the CSV file.
+     * @return The date.
+     * @throws ParseException Error while trying to parse date.
+     */
+    private Date getDate(final String dateCellValue) throws ParseException {
+        Date date;
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+        date = dateFormat.parse(dateCellValue);
+
+        return date;
+    }
+
+    /**
+     * Gets the price of the given CSV cell value.
+     *
+     * @param priceCellValue The value of the price cell from the CSV file.
+     * @param currency       The currency.
+     * @return The price.
+     * @throws ParseException Error while trying to parse price data.
+     */
+    protected BigDecimal getPrice(final String priceCellValue, final Currency currency) throws ParseException {
+        NumberFormat numberFormat = NumberFormat.getInstance(Locale.US);
+        BigDecimal priceResult;
+        Number priceNumber = 0;
+
+        priceNumber = numberFormat.parse(priceCellValue);
+        priceResult = new BigDecimal(priceNumber.floatValue());
+        priceResult = priceResult.setScale(2, RoundingMode.HALF_UP);
+
+        return priceResult;
+    }
+
+    /**
+     * Gets the volume of the given CSV cell value.
+     *
+     * @param volumeCellValue The value of the volume cell from the CSV file.
+     * @return The volume.
+     */
+    protected long getVolume(final String volumeCellValue) {
+        return Long.valueOf(volumeCellValue);
     }
 }

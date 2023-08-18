@@ -19,6 +19,7 @@ import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
+import backend.model.instrument.QuotationArray;
 
 /**
  * Tests the GlobeAndMail Quotation DAO.
@@ -470,33 +471,36 @@ public class QuotationProviderGlobeAndMailDAOTest {
         assertEquals(expectedUrl, actualUrl);
     }
 
-
-    //@Test
+    @Test
     /**
      * Tests the retrieval of the quotation history of a stock traded at the TSX.
      */
     public void testGetQuotationHistoryTSX() {
-        List<Quotation> actualQuotationHistory, expectedQuotationHistory;
-        Quotation actualQuotation, expectedQuotation;
+        QuotationArray actualQuotationHistory = new QuotationArray();
+        List<Quotation> expectedQuotationHistory;
+        Quotation actualQuotation;
+        Quotation expectedQuotation;
 
         try {
-            actualQuotationHistory = quotationProviderGlobeAndMailDAO.getQuotationHistory("DML", StockExchange.TSX,
-                    InstrumentType.STOCK, 1);
+            actualQuotationHistory.setQuotations(quotationProviderGlobeAndMailDAO.getQuotationHistory("DML",
+                    StockExchange.TSX, InstrumentType.STOCK, 1));
             expectedQuotationHistory = this.getDenisonMinesQuotationHistory();
 
+            actualQuotationHistory.sortQuotationsByDate();
+
             // 252 Trading days of a full year.
-            assertEquals(252, actualQuotationHistory.size());
+            assertEquals(252, actualQuotationHistory.getQuotations().size());
 
             // Check the three most recent quotations.
-            actualQuotation = actualQuotationHistory.get(0);
+            actualQuotation = actualQuotationHistory.getQuotations().get(0);
             expectedQuotation = expectedQuotationHistory.get(0);
             assertEquals(expectedQuotation, actualQuotation);
 
-            actualQuotation = actualQuotationHistory.get(1);
+            actualQuotation = actualQuotationHistory.getQuotations().get(1);
             expectedQuotation = expectedQuotationHistory.get(1);
             assertEquals(expectedQuotation, actualQuotation);
 
-            actualQuotation = actualQuotationHistory.get(2);
+            actualQuotation = actualQuotationHistory.getQuotations().get(2);
             expectedQuotation = expectedQuotationHistory.get(2);
             assertEquals(expectedQuotation, actualQuotation);
         } catch (Exception e) {

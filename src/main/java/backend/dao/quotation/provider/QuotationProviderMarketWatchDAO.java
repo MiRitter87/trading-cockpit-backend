@@ -312,11 +312,11 @@ public class QuotationProviderMarketWatchDAO extends AbstractQuotationProviderDA
      * Returns a Quotation based on the content of the given CSV line string.
      *
      * @param lineContent A CSV line containing Quotation data.
-     * @param currency     The Currency.
+     * @param currency    The Currency.
      * @return The Quotation.
      * @throws ParseException Error while trying to parse data.
      */
-    protected Quotation getQuotationFromCsvLine(final String[] lineContent, final Currency currency)
+    private Quotation getQuotationFromCsvLine(final String[] lineContent, final Currency currency)
             throws ParseException {
         Quotation quotation = new Quotation();
         final int indexDate = 0;
