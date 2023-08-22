@@ -54,5 +54,10 @@ public enum ScanTemplate {
     /**
      * Instruments having three weekly closes within a tight range.
      */
-    THREE_WEEKS_TIGHT
+    THREE_WEEKS_TIGHT,
+
+    /**
+     * Instruments having potentially build a high tight flag.
+     */
+    HIGH_TIGHT_FLAG
 }
