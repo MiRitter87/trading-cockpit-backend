@@ -342,6 +342,9 @@ public class QuotationHibernateDAO implements QuotationDAO {
             case NEAR_52_WEEK_LOW:
                 query = this.getQueryForNear52WeekLowTemplate(entityManager);
                 break;
+            case HIGH_TIGHT_FLAG:
+                query = this.getQueryForHighTightFlagTemplate(entityManager);
+                break;
             case ALL:
             case RS_SINCE_DATE:
             case THREE_WEEKS_TIGHT:
@@ -545,5 +548,17 @@ public class QuotationHibernateDAO implements QuotationDAO {
         return entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i JOIN q.indicator r WHERE "
                 + "quotation_id IN :quotationIds " + "AND q.indicator IS NOT NULL "
                 + "AND r.distanceTo52WeekLow <= 5 ");
+    }
+
+    /**
+     * Provides the Query for the "Hight Tight Flag" Template.
+     *
+     * @param entityManager The EntityManager used for Query creation.
+     * @return The Query.
+     */
+    private Query getQueryForHighTightFlagTemplate(final EntityManager entityManager) {
+        return entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i JOIN q.indicator r WHERE "
+                + "quotation_id IN :quotationIds " + "AND q.indicator IS NOT NULL "
+                + "AND r.distanceTo52WeekHigh >= -25 ");
     }
 }

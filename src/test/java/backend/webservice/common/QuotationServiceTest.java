@@ -1035,7 +1035,7 @@ public class QuotationServiceTest {
         assertEquals(0, quotations.getQuotations().size());
     }
 
-    //@Test
+    @Test
     /**
      * Tests the retrieval of the most recent quotations that match the "High Tight Flag" template. Only those
      * quotations should be returned that have an Indicator associated with them. Only instruments of InstrumentType
@@ -1048,21 +1048,20 @@ public class QuotationServiceTest {
         Quotation actualQuotation;
         Quotation quotation;
         List<Quotation> modifiedQuotations = new ArrayList<Quotation>();
-        IndicatorCalculator indicatorCalculator = new IndicatorCalculator();
 
         // Modify the test data to achieve a high tight flag.
         quotations = new QuotationArray(this.denisonMinesQuotations);
         quotations.sortQuotationsByDate();
 
-        // Double the closing price of the previous day.
+        // Assure a double in price vs. 14 weeks ago.
         quotation = quotations.getQuotations().get(1);
-        quotation.setClose(quotation.getClose().multiply(new BigDecimal(2)));
+        quotation.setClose(new BigDecimal(5));
         modifiedQuotations.add(quotation);
 
         // Make a -20% setback on the most recent day.
         quotation = quotations.getQuotations().get(0);
-        quotation.setClose(quotation.getClose().multiply(new BigDecimal(0.8)));
-        quotation = indicatorCalculator.calculateIndicators(this.denisonMinesStock, quotation, true);
+        quotation.setClose(new BigDecimal(4));
+        quotation.getIndicator().setDistanceTo52WeekHigh(-20);
         modifiedQuotations.add(quotation);
 
         // Persist the changes.
