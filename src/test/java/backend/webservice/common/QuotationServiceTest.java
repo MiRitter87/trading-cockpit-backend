@@ -1087,4 +1087,59 @@ public class QuotationServiceTest {
         expectedQuotation = this.denisonMinesQuotations.get(0);
         assertEquals(expectedQuotation, actualQuotation);
     }
+
+    //@Test
+    /**
+     * Tests the retrieval of the most recent quotations that match the "Swing Trading Environment" template. Only those
+     * quotations should be returned that have an Indicator associated with them. Only instruments of InstrumentType
+     * 'STOCK' are requested.
+     */
+    public void testGetQuotationsSwingTradingEnvironmentStock() {
+        QuotationArray quotations;
+        WebServiceResult getQuotationsResult;
+        Quotation expectedQuotation;
+        Quotation actualQuotation;
+        Quotation quotation;
+        List<Quotation> modifiedQuotations = new ArrayList<Quotation>();
+
+        // Modify the test data to match the SWING_TRADING_ENVIRONMENT template.
+        quotations = new QuotationArray(this.denisonMinesQuotations);
+        quotations.sortQuotationsByDate();
+
+        // Assure SMA(10) > SMA(20) and price above SMA(20)
+        quotation = quotations.getQuotations().get(0);
+        quotation.getIndicator().setSma10(1.33f);
+        quotation.getIndicator().setSma20(1.32f);
+        modifiedQuotations.add(quotation);
+
+        // Assure SMA(10) and SMA(20) are rising
+        quotation = quotations.getQuotations().get(1);
+        quotation.getIndicator().setSma10(1.32f);
+        quotation.getIndicator().setSma20(1.31f);
+        modifiedQuotations.add(quotation);
+
+        // Persist the changes.
+        try {
+            quotationDAO.updateQuotations(modifiedQuotations);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+
+        // Get the quotations.
+        QuotationService service = new QuotationService();
+        getQuotationsResult = service.getQuotations(ScanTemplate.SWING_TRADING_ENVIRONMENT, InstrumentType.STOCK, null,
+                null);
+        quotations = (QuotationArray) getQuotationsResult.getData();
+
+        // Assure no error message exists
+        assertTrue(WebServiceTools.resultContainsErrorMessage(getQuotationsResult) == false);
+
+        // Check if one Quotation is returned.
+        assertEquals(1, quotations.getQuotations().size());
+
+        // Check if the correct Quotation is returned.
+        actualQuotation = quotations.getQuotations().get(0);
+        expectedQuotation = this.denisonMinesQuotations.get(0);
+        assertEquals(expectedQuotation, actualQuotation);
+    }
 }

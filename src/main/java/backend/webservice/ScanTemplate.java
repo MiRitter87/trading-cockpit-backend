@@ -59,5 +59,11 @@ public enum ScanTemplate {
     /**
      * Instruments having potentially build a high tight flag.
      */
-    HIGH_TIGHT_FLAG
+    HIGH_TIGHT_FLAG,
+
+    /**
+     * Instruments (mainly Sectors, Industry Groups and Indices) trading in a way that is conductive to a breakout-style
+     * of Swing Trading.
+     */
+    SWING_TRADING_ENVIRONMENT
 }
