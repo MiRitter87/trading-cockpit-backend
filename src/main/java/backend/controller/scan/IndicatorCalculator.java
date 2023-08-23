@@ -71,6 +71,8 @@ public class IndicatorCalculator {
         QuotationArray sortedQuotations = new QuotationArray(instrument.getQuotationsSortedByDate());
         Indicator indicator;
         final int daysEma21 = 21;
+        final int daysSma10 = 10;
+        final int daysSma20 = 20;
         final int daysSma50 = 50;
         final int daysSma150 = 150;
         final int daysSma200 = 200;
@@ -94,6 +96,10 @@ public class IndicatorCalculator {
             indicator.setRsPercentSum(this.getRSPercentSum(quotation, sortedQuotations));
             indicator.setEma21(
                     this.movingAverageCalculator.getExponentialMovingAverage(daysEma21, quotation, sortedQuotations));
+            indicator.setSma10(
+                    this.movingAverageCalculator.getSimpleMovingAverage(daysSma10, quotation, sortedQuotations));
+            indicator.setSma20(
+                    this.movingAverageCalculator.getSimpleMovingAverage(daysSma20, quotation, sortedQuotations));
             indicator.setSma50(
                     this.movingAverageCalculator.getSimpleMovingAverage(daysSma50, quotation, sortedQuotations));
             indicator.setSma150(
@@ -118,6 +124,10 @@ public class IndicatorCalculator {
                     quotation, sortedQuotations));
         } else {
             // These indicators are calculated for historical quotations too.
+            indicator.setSma10(
+                    this.movingAverageCalculator.getSimpleMovingAverage(daysSma10, quotation, sortedQuotations));
+            indicator.setSma20(
+                    this.movingAverageCalculator.getSimpleMovingAverage(daysSma20, quotation, sortedQuotations));
             indicator.setSma50(
                     this.movingAverageCalculator.getSimpleMovingAverage(daysSma50, quotation, sortedQuotations));
             indicator.setSma150(
