@@ -54,6 +54,18 @@ public class Indicator {
     private float ema21;
 
     /**
+     * The simple moving average price of the last 10 trading days.
+     */
+    @Column(name = "SMA10")
+    private float sma10;
+
+    /**
+     * The simple moving average price of the last 20 trading days.
+     */
+    @Column(name = "SMA20")
+    private float sma20;
+
+    /**
      * The simple moving average price of the last 50 trading days.
      */
     @Column(name = "SMA50")
@@ -212,6 +224,34 @@ public class Indicator {
      */
     public void setBollingerBandWidth(final float bollingerBandWidth) {
         this.bollingerBandWidth = bollingerBandWidth;
+    }
+
+    /**
+     * @return the sma10
+     */
+    public float getSma10() {
+        return sma10;
+    }
+
+    /**
+     * @param sma10 the sma10 to set
+     */
+    public void setSma10(final float sma10) {
+        this.sma10 = sma10;
+    }
+
+    /**
+     * @return the sma20
+     */
+    public float getSma20() {
+        return sma20;
+    }
+
+    /**
+     * @param sma20 the sma20 to set
+     */
+    public void setSma20(final float sma20) {
+        this.sma20 = sma20;
     }
 
     /**
@@ -430,8 +470,9 @@ public class Indicator {
     @Override
     public int hashCode() {
         return Objects.hash(bollingerBandWidth, distanceTo52WeekHigh, distanceTo52WeekLow, ema21, id, rsNumber,
-                rsPercentSum, sma150, sma200, sma50, stage, volumeDifferential5Days, volumeDifferential10Days,
-                baseLengthWeeks, upDownVolumeRatio, performance5Days, liquidity20Days, sma30Volume);
+                rsPercentSum, sma150, sma200, sma50, sma10, sma20, stage, volumeDifferential5Days,
+                volumeDifferential10Days, baseLengthWeeks, upDownVolumeRatio, performance5Days, liquidity20Days,
+                sma30Volume);
     }
 
     /**
@@ -457,6 +498,8 @@ public class Indicator {
                 && Float.floatToIntBits(sma150) == Float.floatToIntBits(other.sma150)
                 && Float.floatToIntBits(sma200) == Float.floatToIntBits(other.sma200)
                 && Float.floatToIntBits(sma50) == Float.floatToIntBits(other.sma50)
+                && Float.floatToIntBits(sma10) == Float.floatToIntBits(other.sma10)
+                && Float.floatToIntBits(sma20) == Float.floatToIntBits(other.sma20)
                 && Float.floatToIntBits(ema21) == Float.floatToIntBits(other.ema21)
                 && Float.floatToIntBits(volumeDifferential5Days) == Float.floatToIntBits(other.volumeDifferential5Days)
                 && Float.floatToIntBits(volumeDifferential10Days) == Float
