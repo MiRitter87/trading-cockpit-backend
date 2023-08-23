@@ -123,6 +123,8 @@ public class ScanTemplateProcessor {
             this.postProcessingThreeWeeksTight(quotations);
         } else if (scanTemplate == ScanTemplate.HIGH_TIGHT_FLAG) {
             this.postProcessingHighTightFlag(quotations);
+        } else if (scanTemplate == ScanTemplate.SWING_TRADING_ENVIRONMENT) {
+            this.postProcessingSwingTradingEnvironment(quotations);
         }
     }
 
@@ -220,6 +222,30 @@ public class ScanTemplateProcessor {
     }
 
     /**
+     * Performs post processing tasks for the given quotations based on the ScanTemplate "SWING_TRADING_ENVIRONMENT".
+     * The method checks for each Instrument of the given quotations if the SMA(10) as well as the SMA(20) is rising.
+     * Those quotations that do not match the template are removed from the List of quotations.
+     *
+     * @param quotations The quotations on which the post processing is performed.
+     * @throws Exception Post processing failed.
+     */
+    private void postProcessingSwingTradingEnvironment(final List<Quotation> quotations) throws Exception {
+        Iterator<Quotation> quotationIterator = quotations.iterator();
+        QuotationArray quotationArray;
+        Quotation currentQuotation;
+
+        while (quotationIterator.hasNext()) {
+            currentQuotation = quotationIterator.next();
+            quotationArray = new QuotationArray(
+                    this.quotationHibernateDAO.getQuotationsOfInstrument(currentQuotation.getInstrument().getId()));
+
+            if (!this.isSwingTradingEnvironment(quotationArray)) {
+                quotationIterator.remove();
+            }
+        }
+    }
+
+    /**
      * Filters the given quotations by the minimum liquidity.
      *
      * @param minLiquidity The minimum trading liquidity that is required. Parameter can be omitted (null).
@@ -303,8 +329,8 @@ public class ScanTemplateProcessor {
     /**
      * Checks if the given quotations constitute the pattern of a Hight Tight Flag.
      *
-     * @param quotationArray The trading hisory of an Instrument.
-     * @return true, if trading history consitutes a High Tight Flag.
+     * @param quotationArray The trading history of an Instrument.
+     * @return true, if trading history constitutes a High Tight Flag.
      */
     private boolean isHighTightFlag(final QuotationArray quotationArray) {
         IndicatorCalculator indicatorCalculator = new IndicatorCalculator();
@@ -331,5 +357,35 @@ public class ScanTemplateProcessor {
         }
 
         return true;
+    }
+
+    /**
+     * Checks if the given quotations constitute a "Swing Trading Environment".
+     *
+     * @param quotationArray The trading history of an Instrument.
+     * @return true, if trading history constitutes a Swing Trading Environment.
+     */
+    private boolean isSwingTradingEnvironment(final QuotationArray quotationArray) {
+        Quotation currentQuotation;
+        Quotation previousQuotation;
+
+        if (quotationArray.getQuotations().size() < 2) {
+            return false;
+        }
+
+        quotationArray.sortQuotationsByDate();
+        currentQuotation = quotationArray.getQuotations().get(0);
+        previousQuotation = quotationArray.getQuotations().get(1);
+
+        if (currentQuotation.getIndicator() == null || previousQuotation.getIndicator() == null) {
+            return false;
+        }
+
+        if ((currentQuotation.getIndicator().getSma10() > previousQuotation.getIndicator().getSma10())
+                && (currentQuotation.getIndicator().getSma20() > previousQuotation.getIndicator().getSma20())) {
+            return true;
+        }
+
+        return false;
     }
 }

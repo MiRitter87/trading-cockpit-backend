@@ -1088,7 +1088,7 @@ public class QuotationServiceTest {
         assertEquals(expectedQuotation, actualQuotation);
     }
 
-    //@Test
+    @Test
     /**
      * Tests the retrieval of the most recent quotations that match the "Swing Trading Environment" template. Only those
      * quotations should be returned that have an Indicator associated with them. Only instruments of InstrumentType

@@ -345,6 +345,9 @@ public class QuotationHibernateDAO implements QuotationDAO {
             case HIGH_TIGHT_FLAG:
                 query = this.getQueryForHighTightFlagTemplate(entityManager);
                 break;
+            case SWING_TRADING_ENVIRONMENT:
+                query = this.getQueryForSwingTradingEnvironmentTemplate(entityManager);
+                break;
             case ALL:
             case RS_SINCE_DATE:
             case THREE_WEEKS_TIGHT:
@@ -551,7 +554,7 @@ public class QuotationHibernateDAO implements QuotationDAO {
     }
 
     /**
-     * Provides the Query for the "Hight Tight Flag" Template.
+     * Provides the Query for the "High Tight Flag" Template.
      *
      * @param entityManager The EntityManager used for Query creation.
      * @return The Query.
@@ -560,5 +563,17 @@ public class QuotationHibernateDAO implements QuotationDAO {
         return entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i JOIN q.indicator r WHERE "
                 + "quotation_id IN :quotationIds " + "AND q.indicator IS NOT NULL "
                 + "AND r.distanceTo52WeekHigh >= -25 ");
+    }
+
+    /**
+     * Provides the Query for the "Swing Trading Environment" Template.
+     *
+     * @param entityManager The EntityManager used for Query creation.
+     * @return The Query.
+     */
+    private Query getQueryForSwingTradingEnvironmentTemplate(final EntityManager entityManager) {
+        return entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i JOIN q.indicator r WHERE "
+                + "quotation_id IN :quotationIds " + "AND q.indicator IS NOT NULL " + "AND q.close > r.sma20 "
+                + "AND r.sma10 > r.sma20 ");
     }
 }
