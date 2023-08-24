@@ -1,7 +1,5 @@
 package backend.dao.quotation.persistence;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.persistence.EntityGraph;
@@ -13,7 +11,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 import backend.webservice.ScanTemplate;
@@ -223,6 +220,7 @@ public class QuotationHibernateDAO implements QuotationDAO {
         List<Quotation> quotations;
         Query query;
         List<Object> quotationIdsWithMaxDate;
+        QuotationQueryProvider quotationQueryProvider = new QuotationQueryProvider(entityManager);
 
         try {
             entityManager.getTransaction().begin();
@@ -231,11 +229,11 @@ public class QuotationHibernateDAO implements QuotationDAO {
              * The selection is split into two selects because JOINs with sub-queries are only possible in native SQL.
              * But the needed JOIN FETCH is not possible in native SQL.
              */
-            query = this.getQueryForQuotationIdsWithMaxDate(entityManager, instrumentType);
+            query = quotationQueryProvider.getQueryForQuotationIdsWithMaxDate(instrumentType);
             quotationIdsWithMaxDate = query.getResultList();
 
             // Now select final data using JOIN FETCH based on the Quotation IDs selected before.
-            query = this.getQueryForQuotationsWithInstrument(entityManager, true);
+            query = quotationQueryProvider.getQueryForQuotationsWithInstrument(true);
             query.setParameter("quotationIds", quotationIdsWithMaxDate);
             quotations = query.getResultList();
 
@@ -263,6 +261,7 @@ public class QuotationHibernateDAO implements QuotationDAO {
         List<Quotation> quotations;
         Query query;
         List<Object> quotationIdsWithMaxDate;
+        QuotationQueryProvider quotationQueryProvider = new QuotationQueryProvider(entityManager);
 
         try {
             entityManager.getTransaction().begin();
@@ -271,11 +270,11 @@ public class QuotationHibernateDAO implements QuotationDAO {
              * The selection is split into two selects because JOINs with sub-queries are only possible in native SQL.
              * But the needed JOIN FETCH is not possible in native SQL.
              */
-            query = this.getQueryForQuotationIdsWithMaxDateForList(entityManager, list);
+            query = quotationQueryProvider.getQueryForQuotationIdsWithMaxDateForList(list);
             quotationIdsWithMaxDate = query.getResultList();
 
             // Now select final data using JOIN FETCH based on the Quotation IDs selected before.
-            query = this.getQueryForQuotationsWithInstrument(entityManager, false);
+            query = quotationQueryProvider.getQueryForQuotationsWithInstrument(false);
             query.setParameter("quotationIds", quotationIdsWithMaxDate);
             quotations = query.getResultList();
 
@@ -306,6 +305,7 @@ public class QuotationHibernateDAO implements QuotationDAO {
         List<Quotation> quotations;
         Query query;
         List<Object> quotationIdsWithMaxDate;
+        QuotationQueryProvider quotationQueryProvider = new QuotationQueryProvider(entityManager);
 
         try {
             entityManager.getTransaction().begin();
@@ -314,7 +314,7 @@ public class QuotationHibernateDAO implements QuotationDAO {
              * The selection is split into two selects because JOINs with sub-queries are only possible in native SQL.
              * But the needed JOIN FETCH is not possible in native SQL.
              */
-            query = this.getQueryForQuotationIdsWithMaxDate(entityManager, instrumentType);
+            query = quotationQueryProvider.getQueryForQuotationIdsWithMaxDate(instrumentType);
             quotationIdsWithMaxDate = query.getResultList();
 
             // Find all quotations that have an Indicator defined and where the Quotation is the most recent one of an
@@ -322,36 +322,36 @@ public class QuotationHibernateDAO implements QuotationDAO {
             // Also fetch the Instrument data of those records. Apply the criteria of the given template.
             switch (scanTemplate) {
             case MINERVINI_TREND_TEMPLATE:
-                query = this.getQueryForMinerviniTrendTemplate(entityManager);
+                query = quotationQueryProvider.getQueryForMinerviniTrendTemplate();
                 break;
             case BREAKOUT_CANDIDATES:
-                query = this.getQueryForBreakoutCandidatesTemplate(entityManager);
+                query = quotationQueryProvider.getQueryForBreakoutCandidatesTemplate();
                 break;
             case VOLATILITY_CONTRACTION_10_DAYS:
-                query = this.getQueryForVolatilityContractionTemplate(entityManager);
+                query = quotationQueryProvider.getQueryForVolatilityContractionTemplate();
                 break;
             case UP_ON_VOLUME:
-                query = this.getQueryForUpOnVolumeTemplate(entityManager);
+                query = quotationQueryProvider.getQueryForUpOnVolumeTemplate();
                 break;
             case DOWN_ON_VOLUME:
-                query = this.getQueryForDownOnVolumeTemplate(entityManager);
+                query = quotationQueryProvider.getQueryForDownOnVolumeTemplate();
                 break;
             case NEAR_52_WEEK_HIGH:
-                query = this.getQueryForNear52WeekHighTemplate(entityManager);
+                query = quotationQueryProvider.getQueryForNear52WeekHighTemplate();
                 break;
             case NEAR_52_WEEK_LOW:
-                query = this.getQueryForNear52WeekLowTemplate(entityManager);
+                query = quotationQueryProvider.getQueryForNear52WeekLowTemplate();
                 break;
             case HIGH_TIGHT_FLAG:
-                query = this.getQueryForHighTightFlagTemplate(entityManager);
+                query = quotationQueryProvider.getQueryForHighTightFlagTemplate();
                 break;
             case SWING_TRADING_ENVIRONMENT:
-                query = this.getQueryForSwingTradingEnvironmentTemplate(entityManager);
+                query = quotationQueryProvider.getQueryForSwingTradingEnvironmentTemplate();
                 break;
             case ALL:
             case RS_SINCE_DATE:
             case THREE_WEEKS_TIGHT:
-                query = this.getQueryForQuotationsWithInstrument(entityManager, true);
+                query = quotationQueryProvider.getQueryForQuotationsWithInstrument(true);
                 break;
             default:
                 entityManager.getTransaction().commit();
@@ -378,202 +378,5 @@ public class QuotationHibernateDAO implements QuotationDAO {
         this.scanTemplateProcessor.templateBasedPostProcessing(scanTemplate, startDate, quotations);
 
         return quotations;
-    }
-
-    /**
-     * Provides a native Query that determines the IDs of the quotations with the newest date for each Instrument. Only
-     * those instruments are taken into account that match the given InstrumentType.
-     *
-     * @param entityManager  The EntityManager used for Query creation.
-     * @param instrumentType The InstrumentType.
-     * @return The Query.
-     */
-    @SuppressWarnings("unchecked")
-    private Query getQueryForQuotationIdsWithMaxDate(final EntityManager entityManager,
-            final InstrumentType instrumentType) {
-        List<Object> instrumentIdsOfGivenInstrumentType;
-        Query query;
-
-        // Get the IDs of all instruments of the given type.
-        query = entityManager.createQuery("SELECT id FROM Instrument i WHERE i.type = :instrumentType");
-        query.setParameter("instrumentType", instrumentType);
-        instrumentIdsOfGivenInstrumentType = query.getResultList();
-
-        // Get the IDs of all Quotations with the newest date for each Instrument.
-        query = entityManager.createNativeQuery("SELECT quotation_id FROM Quotation q INNER JOIN "
-                + "(SELECT max(date) AS maxdate, instrument_id FROM Quotation GROUP BY instrument_id) jointable "
-                + "ON q.instrument_id = jointable.instrument_id AND q.date = jointable.maxdate "
-                + "WHERE q.instrument_id IN :instrumentIds");
-        query.setParameter("instrumentIds", instrumentIdsOfGivenInstrumentType);
-
-        return query;
-    }
-
-    /**
-     * Provides a native Query that determines the IDs of the quotations with the newest date for each Instrument of the
-     * given List.
-     *
-     * @param entityManager The EntityManager used for Query creation.
-     * @param list          The List defining all instruments for which the quotations have to be determined.
-     * @return The Query.
-     */
-    private Query getQueryForQuotationIdsWithMaxDateForList(final EntityManager entityManager,
-            final backend.model.list.List list) {
-        List<Object> instrumentIds = new ArrayList<>();
-        Iterator<Instrument> instrumentIterator;
-        Instrument instrument;
-        Query query;
-
-        instrumentIterator = list.getInstruments().iterator();
-
-        // Get the IDs of all instruments of the given List.
-        while (instrumentIterator.hasNext()) {
-            instrument = instrumentIterator.next();
-            instrumentIds.add(instrument.getId());
-        }
-
-        // Prepare Query for most recent Quotation of each Instrument.
-        query = entityManager.createNativeQuery("SELECT quotation_id FROM Quotation q INNER JOIN "
-                + "(SELECT max(date) AS maxdate, instrument_id FROM Quotation GROUP BY instrument_id) jointable "
-                + "ON q.instrument_id = jointable.instrument_id AND q.date = jointable.maxdate "
-                + "AND jointable.instrument_id IN :instrumentIds");
-
-        query.setParameter("instrumentIds", instrumentIds);
-
-        return query;
-    }
-
-    /**
-     * Provides a Query that determines all quotations with their referenced Instrument (and Indicator) based on the
-     * given Quotation IDs.
-     *
-     * @param entityManager        The EntityManager used for Query creation.
-     * @param withIndicatorNotNull Only those quotations are fetched that have Indicator data referenced, if set to
-     *                             true.
-     * @return The Query.
-     */
-    private Query getQueryForQuotationsWithInstrument(final EntityManager entityManager,
-            final boolean withIndicatorNotNull) {
-        Query query;
-
-        if (withIndicatorNotNull) {
-            query = entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i "
-                    + "WHERE quotation_id IN :quotationIds AND q.indicator IS NOT NULL");
-        } else {
-            query = entityManager.createQuery(
-                    "SELECT q FROM Quotation q JOIN FETCH q.instrument i " + "WHERE quotation_id IN :quotationIds");
-        }
-
-        return query;
-    }
-
-    /**
-     * Provides the Query for the "Minervini Trend Template".
-     *
-     * @param entityManager The EntityManager used for Query creation.
-     * @return The Query.
-     */
-    private Query getQueryForMinerviniTrendTemplate(final EntityManager entityManager) {
-        return entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i JOIN q.indicator r WHERE "
-                + "quotation_id IN :quotationIds " + "AND q.indicator IS NOT NULL " + "AND q.close > r.sma50 "
-                + "AND r.sma50 > r.sma150 " + "AND r.sma150 > r.sma200 " + "AND r.distanceTo52WeekLow >= 30 "
-                + "AND r.distanceTo52WeekHigh >= -25 " + "AND r.rsNumber >= 70");
-    }
-
-    /**
-     * Provides the Query for the "Volatility Contraction" Template.
-     *
-     * @param entityManager The EntityManager used for Query creation.
-     * @return The Query.
-     */
-    private Query getQueryForVolatilityContractionTemplate(final EntityManager entityManager) {
-        return entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i JOIN q.indicator r WHERE "
-                + "quotation_id IN :quotationIds " + "AND q.indicator IS NOT NULL "
-                + "AND r.volumeDifferential10Days < 0" + "AND r.bollingerBandWidth < 10");
-    }
-
-    /**
-     * Provides the Query for the "Breakout Candidates" Template.
-     *
-     * @param entityManager The EntityManager used for Query creation.
-     * @return The Query.
-     */
-    private Query getQueryForBreakoutCandidatesTemplate(final EntityManager entityManager) {
-        return entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i JOIN q.indicator r WHERE "
-                + "quotation_id IN :quotationIds " + "AND q.indicator IS NOT NULL "
-                + "AND r.volumeDifferential10Days < 0" + "AND r.bollingerBandWidth < 10" + "AND r.baseLengthWeeks >= 3"
-                + "AND r.distanceTo52WeekHigh >= -10");
-    }
-
-    /**
-     * Provides the Query for the "Up on Volume" Template.
-     *
-     * @param entityManager The EntityManager used for Query creation.
-     * @return The Query.
-     */
-    private Query getQueryForUpOnVolumeTemplate(final EntityManager entityManager) {
-        return entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i JOIN q.indicator r WHERE "
-                + "quotation_id IN :quotationIds " + "AND q.indicator IS NOT NULL "
-                + "AND r.volumeDifferential5Days >= 25" + "AND r.performance5Days >= 10");
-    }
-
-    /**
-     * Provides the Query for the "Down on Volume" Template.
-     *
-     * @param entityManager The EntityManager used for Query creation.
-     * @return The Query.
-     */
-    private Query getQueryForDownOnVolumeTemplate(final EntityManager entityManager) {
-        return entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i JOIN q.indicator r WHERE "
-                + "quotation_id IN :quotationIds " + "AND q.indicator IS NOT NULL "
-                + "AND r.volumeDifferential5Days >= 25" + "AND r.performance5Days <= -10");
-    }
-
-    /**
-     * Provides the Query for the "Near 52-week High" Template.
-     *
-     * @param entityManager The EntityManager used for Query creation.
-     * @return The Query.
-     */
-    private Query getQueryForNear52WeekHighTemplate(final EntityManager entityManager) {
-        return entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i JOIN q.indicator r WHERE "
-                + "quotation_id IN :quotationIds " + "AND q.indicator IS NOT NULL "
-                + "AND r.distanceTo52WeekHigh >= -5 ");
-    }
-
-    /**
-     * Provides the Query for the "Near 52-week Low" Template.
-     *
-     * @param entityManager The EntityManager used for Query creation.
-     * @return The Query.
-     */
-    private Query getQueryForNear52WeekLowTemplate(final EntityManager entityManager) {
-        return entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i JOIN q.indicator r WHERE "
-                + "quotation_id IN :quotationIds " + "AND q.indicator IS NOT NULL "
-                + "AND r.distanceTo52WeekLow <= 5 ");
-    }
-
-    /**
-     * Provides the Query for the "High Tight Flag" Template.
-     *
-     * @param entityManager The EntityManager used for Query creation.
-     * @return The Query.
-     */
-    private Query getQueryForHighTightFlagTemplate(final EntityManager entityManager) {
-        return entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i JOIN q.indicator r WHERE "
-                + "quotation_id IN :quotationIds " + "AND q.indicator IS NOT NULL "
-                + "AND r.distanceTo52WeekHigh >= -25 ");
-    }
-
-    /**
-     * Provides the Query for the "Swing Trading Environment" Template.
-     *
-     * @param entityManager The EntityManager used for Query creation.
-     * @return The Query.
-     */
-    private Query getQueryForSwingTradingEnvironmentTemplate(final EntityManager entityManager) {
-        return entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i JOIN q.indicator r WHERE "
-                + "quotation_id IN :quotationIds " + "AND q.indicator IS NOT NULL " + "AND q.close > r.sma20 "
-                + "AND r.sma10 > r.sma20 ");
     }
 }
