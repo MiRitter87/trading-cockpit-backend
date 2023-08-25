@@ -34,6 +34,76 @@ public class IndicatorCalculator {
     private static final int HUNDRED_PERCENT = 100;
 
     /**
+     * Number of days used to calculate the EMA(21).
+     */
+    private static final int DAYS_EMA21 = 21;
+
+    /**
+     * Number of days used to calculate the SMA(10).
+     */
+    private static final int DAYS_SMA10 = 10;
+
+    /**
+     * Number of days used to calculate the SMA(20).
+     */
+    private static final int DAYS_SMA20 = 20;
+
+    /**
+     * Number of days used to calculate the SMA(50).
+     */
+    private static final int DAYS_SMA50 = 50;
+
+    /**
+     * Number of days used to calculate the SMA(150).
+     */
+    private static final int DAYS_SMA150 = 150;
+
+    /**
+     * Number of days used to calculate the SMA(200).
+     */
+    private static final int DAYS_SMA200 = 200;
+
+    /**
+     * Number of days used to calculate the Bollinger BandWidth(10,2).
+     */
+    private static final int DAYS_BBW10 = 10;
+
+    /**
+     * Number of days used for the long period of the volume differential.
+     */
+    private static final int DAYS_LONG_PERIOD_VOLUME_DIFFERENTIAL = 30;
+
+    /**
+     * Number of days used for 5-day period of the volume differential.
+     */
+    private static final int DAYS_VOLUME_DIFFERENTIAL_5 = 5;
+
+    /**
+     * Number of days used for 10-day period of the volume differential.
+     */
+    private static final int DAYS_VOLUME_DIFFERENTIAL_10 = 10;
+
+    /**
+     * Number of days used to calculate the Up/Down Volume Ratio.
+     */
+    private static final int DAYS_UP_DOWN_VOLUME_RATIO = 50;
+
+    /**
+     * Number of days used to calculate the 5 day price performance.
+     */
+    private static final int DAYS_PERFORMANCE_5 = 5;
+
+    /**
+     * Number of days used to calculate the 20 day liquidity.
+     */
+    private static final int DAYS_LIQUIDITY_20 = 20;
+
+    /**
+     * Number of days used to calculate the SMA(30) of the volume.
+     */
+    private static final int DAYS_SMA_VOLUME_30 = 30;
+
+    /**
      * Calculator for moving averages of price and volume.
      */
     private MovingAverageCalculator movingAverageCalculator;
@@ -68,22 +138,9 @@ public class IndicatorCalculator {
      */
     public Quotation calculateIndicators(final Instrument instrument, final Quotation quotation,
             final boolean mostRecent) {
+
         QuotationArray sortedQuotations = new QuotationArray(instrument.getQuotationsSortedByDate());
         Indicator indicator;
-        final int daysEma21 = 21;
-        final int daysSma10 = 10;
-        final int daysSma20 = 20;
-        final int daysSma50 = 50;
-        final int daysSma150 = 150;
-        final int daysSma200 = 200;
-        final int daysBbw = 10;
-        final int daysLongPeriodVolumeDifferential = 30;
-        final int daysVolumeDifferential5 = 5;
-        final int daysVolumeDifferential10 = 10;
-        final int daysUpDownVolumeRatio = 50;
-        final int daysPerformance5 = 5;
-        final int daysLiquidity20 = 20;
-        final int daysSmaVolume30 = 30;
 
         if (quotation.getIndicator() == null) {
             indicator = new Indicator();
@@ -92,57 +149,81 @@ public class IndicatorCalculator {
         }
 
         if (mostRecent) {
-            // These indicators are calculated only for the most recent Quotation.
-            indicator.setRsPercentSum(this.performanceCalculator.getRSPercentSum(quotation, sortedQuotations));
-            indicator.setEma21(
-                    this.movingAverageCalculator.getExponentialMovingAverage(daysEma21, quotation, sortedQuotations));
-            indicator.setSma10(
-                    this.movingAverageCalculator.getSimpleMovingAverage(daysSma10, quotation, sortedQuotations));
-            indicator.setSma20(
-                    this.movingAverageCalculator.getSimpleMovingAverage(daysSma20, quotation, sortedQuotations));
-            indicator.setSma50(
-                    this.movingAverageCalculator.getSimpleMovingAverage(daysSma50, quotation, sortedQuotations));
-            indicator.setSma150(
-                    this.movingAverageCalculator.getSimpleMovingAverage(daysSma150, quotation, sortedQuotations));
-            indicator.setSma200(
-                    this.movingAverageCalculator.getSimpleMovingAverage(daysSma200, quotation, sortedQuotations));
-            indicator.setDistanceTo52WeekHigh(this.getDistanceTo52WeekHigh(quotation, sortedQuotations));
-            indicator.setDistanceTo52WeekLow(this.getDistanceTo52WeekLow(quotation, sortedQuotations));
-            indicator.setBollingerBandWidth(
-                    this.bollingerCalculator.getBollingerBandWidth(daysBbw, 2, quotation, sortedQuotations));
-            indicator.setVolumeDifferential5Days(this.getVolumeDifferential(daysLongPeriodVolumeDifferential,
-                    daysVolumeDifferential5, quotation, sortedQuotations));
-            indicator.setVolumeDifferential10Days(this.getVolumeDifferential(daysLongPeriodVolumeDifferential,
-                    daysVolumeDifferential10, quotation, sortedQuotations));
-            indicator.setBaseLengthWeeks(this.getBaseLengthWeeks(quotation, sortedQuotations));
-            indicator.setUpDownVolumeRatio(
-                    this.getUpDownVolumeRatio(daysUpDownVolumeRatio, quotation, sortedQuotations));
-            indicator.setPerformance5Days(this.performanceCalculator.getPricePerformanceForDays(daysPerformance5,
-                    quotation, sortedQuotations));
-            indicator.setLiquidity20Days(this.getLiquidityForDays(daysLiquidity20, quotation, sortedQuotations));
-            indicator.setSma30Volume(this.movingAverageCalculator.getSimpleMovingAverageVolume(daysSmaVolume30,
-                    quotation, sortedQuotations));
+            this.calculateMostRecentIndicators(indicator, sortedQuotations, quotation);
         } else {
-            // These indicators are calculated for historical quotations too.
-            indicator.setSma10(
-                    this.movingAverageCalculator.getSimpleMovingAverage(daysSma10, quotation, sortedQuotations));
-            indicator.setSma20(
-                    this.movingAverageCalculator.getSimpleMovingAverage(daysSma20, quotation, sortedQuotations));
-            indicator.setSma50(
-                    this.movingAverageCalculator.getSimpleMovingAverage(daysSma50, quotation, sortedQuotations));
-            indicator.setSma150(
-                    this.movingAverageCalculator.getSimpleMovingAverage(daysSma150, quotation, sortedQuotations));
-            indicator.setSma200(
-                    this.movingAverageCalculator.getSimpleMovingAverage(daysSma200, quotation, sortedQuotations));
-            indicator.setEma21(
-                    this.movingAverageCalculator.getExponentialMovingAverage(daysEma21, quotation, sortedQuotations));
-            indicator.setSma30Volume(this.movingAverageCalculator.getSimpleMovingAverageVolume(daysSmaVolume30,
-                    quotation, sortedQuotations));
+            this.calculateHistoricalIndicators(indicator, sortedQuotations, quotation);
         }
 
         quotation.setIndicator(indicator);
 
         return quotation;
+    }
+
+    /**
+     * Calculates the indicators that are only relevant for the most recent Quotation.
+     *
+     * @param indicator        The Indicator whose values are calculated.
+     * @param sortedQuotations The quotations that build the trading history.
+     * @param quotation        The Quotation for which indicators are calculated.
+     */
+    private void calculateMostRecentIndicators(final Indicator indicator, final QuotationArray sortedQuotations,
+            final Quotation quotation) {
+
+        indicator.setRsPercentSum(this.performanceCalculator.getRSPercentSum(quotation, sortedQuotations));
+        indicator.setEma21(
+                this.movingAverageCalculator.getExponentialMovingAverage(DAYS_EMA21, quotation, sortedQuotations));
+        indicator
+                .setSma10(this.movingAverageCalculator.getSimpleMovingAverage(DAYS_SMA10, quotation, sortedQuotations));
+        indicator
+                .setSma20(this.movingAverageCalculator.getSimpleMovingAverage(DAYS_SMA20, quotation, sortedQuotations));
+        indicator
+                .setSma50(this.movingAverageCalculator.getSimpleMovingAverage(DAYS_SMA50, quotation, sortedQuotations));
+        indicator.setSma150(
+                this.movingAverageCalculator.getSimpleMovingAverage(DAYS_SMA150, quotation, sortedQuotations));
+        indicator.setSma200(
+                this.movingAverageCalculator.getSimpleMovingAverage(DAYS_SMA200, quotation, sortedQuotations));
+        indicator.setDistanceTo52WeekHigh(this.getDistanceTo52WeekHigh(quotation, sortedQuotations));
+        indicator.setDistanceTo52WeekLow(this.getDistanceTo52WeekLow(quotation, sortedQuotations));
+        indicator.setBollingerBandWidth(
+                this.bollingerCalculator.getBollingerBandWidth(DAYS_BBW10, 2, quotation, sortedQuotations));
+        indicator.setVolumeDifferential5Days(this.getVolumeDifferential(DAYS_LONG_PERIOD_VOLUME_DIFFERENTIAL,
+                DAYS_VOLUME_DIFFERENTIAL_5, quotation, sortedQuotations));
+        indicator.setVolumeDifferential10Days(this.getVolumeDifferential(DAYS_LONG_PERIOD_VOLUME_DIFFERENTIAL,
+                DAYS_VOLUME_DIFFERENTIAL_10, quotation, sortedQuotations));
+        indicator.setBaseLengthWeeks(this.getBaseLengthWeeks(quotation, sortedQuotations));
+        indicator.setUpDownVolumeRatio(
+                this.getUpDownVolumeRatio(DAYS_UP_DOWN_VOLUME_RATIO, quotation, sortedQuotations));
+        indicator.setPerformance5Days(
+                this.performanceCalculator.getPricePerformanceForDays(DAYS_PERFORMANCE_5, quotation, sortedQuotations));
+        indicator.setLiquidity20Days(this.getLiquidityForDays(DAYS_LIQUIDITY_20, quotation, sortedQuotations));
+        indicator.setSma30Volume(this.movingAverageCalculator.getSimpleMovingAverageVolume(DAYS_SMA_VOLUME_30,
+                quotation, sortedQuotations));
+    }
+
+    /**
+     * Calculates the indicators that are relevant for historical quotations.
+     *
+     * @param indicator        The Indicator whose values are calculated.
+     * @param sortedQuotations The quotations that build the trading history.
+     * @param quotation        The Quotation for which indicators are calculated.
+     */
+    private void calculateHistoricalIndicators(final Indicator indicator, final QuotationArray sortedQuotations,
+            final Quotation quotation) {
+
+        indicator
+                .setSma10(this.movingAverageCalculator.getSimpleMovingAverage(DAYS_SMA10, quotation, sortedQuotations));
+        indicator
+                .setSma20(this.movingAverageCalculator.getSimpleMovingAverage(DAYS_SMA20, quotation, sortedQuotations));
+        indicator
+                .setSma50(this.movingAverageCalculator.getSimpleMovingAverage(DAYS_SMA50, quotation, sortedQuotations));
+        indicator.setSma150(
+                this.movingAverageCalculator.getSimpleMovingAverage(DAYS_SMA150, quotation, sortedQuotations));
+        indicator.setSma200(
+                this.movingAverageCalculator.getSimpleMovingAverage(DAYS_SMA200, quotation, sortedQuotations));
+        indicator.setEma21(
+                this.movingAverageCalculator.getExponentialMovingAverage(DAYS_EMA21, quotation, sortedQuotations));
+        indicator.setSma30Volume(this.movingAverageCalculator.getSimpleMovingAverageVolume(DAYS_SMA_VOLUME_30,
+                quotation, sortedQuotations));
     }
 
     /**
