@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import backend.controller.scan.IndicatorCalculator;
+import backend.controller.scan.PerformanceCalculator;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
 import backend.model.protocol.ProtocolEntry;
@@ -56,15 +56,15 @@ public class InstrumentCheckPatternController {
     private ResourceBundle resources = ResourceBundle.getBundle("backend");
 
     /**
-     * Indicator calculator.
+     * Performance calculator.
      */
-    private IndicatorCalculator indicatorCalculator;
+    private PerformanceCalculator performanceCalculator;
 
     /**
      * Default constructor.
      */
     public InstrumentCheckPatternController() {
-        this.indicatorCalculator = new IndicatorCalculator();
+        this.performanceCalculator = new PerformanceCalculator();
     }
 
     /**
@@ -200,7 +200,7 @@ public class InstrumentCheckPatternController {
                 throw new Exception("No indicator is defined for Quotation with ID: " + currentQuotation.getId());
             }
 
-            performance = this.indicatorCalculator.getPerformance(currentQuotation, previousQuotation);
+            performance = this.performanceCalculator.getPerformance(currentQuotation, previousQuotation);
 
             if (performance <= CHURNING_UP_THRESHOLD && performance >= CHURNING_DOWN_THRESHOLD
                     && currentQuotation.getVolume() > currentQuotation.getIndicator().getSma30Volume()) {
@@ -270,7 +270,7 @@ public class InstrumentCheckPatternController {
             throw new Exception("No indicator is defined for Quotation with ID: " + currentQuotation.getId());
         }
 
-        performance = this.indicatorCalculator.getPerformance(currentQuotation, previousQuotation);
+        performance = this.performanceCalculator.getPerformance(currentQuotation, previousQuotation);
 
         if (performance >= UP_PERFORMANCE_THRESHOLD
                 && currentQuotation.getVolume() > currentQuotation.getIndicator().getSma30Volume()) {
@@ -296,7 +296,7 @@ public class InstrumentCheckPatternController {
             throw new Exception("No indicator is defined for Quotation with ID: " + currentQuotation.getId());
         }
 
-        performance = this.indicatorCalculator.getPerformance(currentQuotation, previousQuotation);
+        performance = this.performanceCalculator.getPerformance(currentQuotation, previousQuotation);
 
         if (performance <= DOWN_PERFORMANCE_THRESHOLD
                 && currentQuotation.getVolume() > currentQuotation.getIndicator().getSma30Volume()) {

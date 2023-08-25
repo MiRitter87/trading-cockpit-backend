@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import backend.controller.scan.IndicatorCalculator;
+import backend.controller.scan.PerformanceCalculator;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
 import backend.model.protocol.ProtocolEntry;
@@ -26,15 +26,15 @@ public class InstrumentCheckExtremumController {
     private ResourceBundle resources = ResourceBundle.getBundle("backend");
 
     /**
-     * Indicator calculator.
+     * Performance calculator.
      */
-    private IndicatorCalculator indicatorCalculator;
+    private PerformanceCalculator performanceCalculator;
 
     /**
      * Default constructor.
      */
     public InstrumentCheckExtremumController() {
-        this.indicatorCalculator = new IndicatorCalculator();
+        this.performanceCalculator = new PerformanceCalculator();
     }
 
     /**
@@ -54,7 +54,7 @@ public class InstrumentCheckExtremumController {
         float largestDownDayPerformance;
 
         largestDownQuotation = this.getLargestDownDay(sortedQuotations);
-        largestDownDayPerformance = this.indicatorCalculator.getPricePerformanceForDays(1, largestDownQuotation,
+        largestDownDayPerformance = this.performanceCalculator.getPricePerformanceForDays(1, largestDownQuotation,
                 sortedQuotations);
 
         if (largestDownQuotation.getDate().getTime() >= startDate.getTime()) {
@@ -86,7 +86,7 @@ public class InstrumentCheckExtremumController {
         float largestUpDayPerformance;
 
         largestUpQuotation = this.getLargestUpDay(sortedQuotations);
-        largestUpDayPerformance = this.indicatorCalculator.getPricePerformanceForDays(1, largestUpQuotation,
+        largestUpDayPerformance = this.performanceCalculator.getPricePerformanceForDays(1, largestUpQuotation,
                 sortedQuotations);
 
         if (largestUpQuotation.getDate().getTime() >= startDate.getTime()) {
@@ -175,7 +175,7 @@ public class InstrumentCheckExtremumController {
             currentQuotation = sortedQuotations.getQuotations().get(i);
             previousQuotation = sortedQuotations.getQuotations().get(i + 1);
 
-            performance = this.indicatorCalculator.getPerformance(currentQuotation, previousQuotation);
+            performance = this.performanceCalculator.getPerformance(currentQuotation, previousQuotation);
 
             if (performance < largestDownPerformance) {
                 largestDownPerformance = performance;
@@ -204,7 +204,7 @@ public class InstrumentCheckExtremumController {
             currentQuotation = sortedQuotations.getQuotations().get(i);
             previousQuotation = sortedQuotations.getQuotations().get(i + 1);
 
-            performance = this.indicatorCalculator.getPerformance(currentQuotation, previousQuotation);
+            performance = this.performanceCalculator.getPerformance(currentQuotation, previousQuotation);
 
             if (performance > largestUpPerformance) {
                 largestUpPerformance = performance;

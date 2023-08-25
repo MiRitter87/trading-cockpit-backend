@@ -31,7 +31,7 @@ import org.jfree.data.xy.IntervalXYDataset;
 import org.jfree.data.xy.OHLCDataset;
 
 import backend.controller.NoQuotationsExistException;
-import backend.controller.scan.IndicatorCalculator;
+import backend.controller.scan.PerformanceCalculator;
 import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
 import backend.dao.list.ListDAO;
@@ -67,9 +67,9 @@ public abstract class ChartController {
     private ListDAO listDAO;
 
     /**
-     * Indicator calculator.
+     * Performance calculator.
      */
-    private IndicatorCalculator indicatorCalculator;
+    private PerformanceCalculator performanceCalculator;
 
     /**
      * Access to localized application resources.
@@ -84,7 +84,7 @@ public abstract class ChartController {
         this.quotationDAO = DAOManager.getInstance().getQuotationDAO();
         this.listDAO = DAOManager.getInstance().getListDAO();
 
-        this.indicatorCalculator = new IndicatorCalculator();
+        this.performanceCalculator = new PerformanceCalculator();
     }
 
     /**
@@ -109,10 +109,10 @@ public abstract class ChartController {
     }
 
     /**
-     * @return the indicatorCalculator
+     * @return the performanceCalculator
      */
-    public IndicatorCalculator getIndicatorCalculator() {
-        return indicatorCalculator;
+    public PerformanceCalculator getPerformanceCalculator() {
+        return performanceCalculator;
     }
 
     /**
@@ -243,7 +243,7 @@ public abstract class ChartController {
     protected boolean isDistributionDay(final Quotation currentQuotation, final Quotation previousQuotation) {
         float performance;
 
-        performance = this.indicatorCalculator.getPerformance(currentQuotation, previousQuotation);
+        performance = this.performanceCalculator.getPerformance(currentQuotation, previousQuotation);
 
         if (performance < DD_PERCENT_THRESHOLD && (currentQuotation.getVolume() > previousQuotation.getVolume())) {
             return true;

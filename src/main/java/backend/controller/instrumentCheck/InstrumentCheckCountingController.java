@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import backend.controller.scan.IndicatorCalculator;
+import backend.controller.scan.PerformanceCalculator;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
 import backend.model.protocol.ProtocolEntry;
@@ -54,15 +54,15 @@ public class InstrumentCheckCountingController {
     private ResourceBundle resources = ResourceBundle.getBundle("backend");
 
     /**
-     * Indicator calculator.
+     * Performance calculator.
      */
-    private IndicatorCalculator indicatorCalculator;
+    private PerformanceCalculator performanceCalculator;
 
     /**
      * Default constructor.
      */
     public InstrumentCheckCountingController() {
-        this.indicatorCalculator = new IndicatorCalculator();
+        this.performanceCalculator = new PerformanceCalculator();
     }
 
     /**
@@ -375,7 +375,7 @@ public class InstrumentCheckCountingController {
 
             // Count the number of lower closes within the last three trading days.
             for (int j = 0; j < thresholdDaysWithLowerLows; j++) {
-                performance = this.indicatorCalculator.getPerformance(sortedQuotations.getQuotations().get(i + j),
+                performance = this.performanceCalculator.getPerformance(sortedQuotations.getQuotations().get(i + j),
                         sortedQuotations.getQuotations().get(i + j + 1));
 
                 if (performance < 0) {
@@ -484,7 +484,7 @@ public class InstrumentCheckCountingController {
 
             previousQuotation = sortedQuotations.getQuotations().get(i + 1);
             currentQuotation = sortedQuotations.getQuotations().get(i);
-            performance = this.indicatorCalculator.getPerformance(currentQuotation, previousQuotation);
+            performance = this.performanceCalculator.getPerformance(currentQuotation, previousQuotation);
 
             if (performance > 0) {
                 numberOfUpDays++;

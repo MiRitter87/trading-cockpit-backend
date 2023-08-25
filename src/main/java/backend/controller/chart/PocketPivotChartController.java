@@ -123,7 +123,7 @@ public class PocketPivotChartController extends ChartController {
         currentQuotation = quotationsSortedByDate.get(quotationIndex);
         previousQuotation = quotationsSortedByDate.get(quotationIndex + 1);
 
-        performance = this.getIndicatorCalculator().getPerformance(currentQuotation, previousQuotation);
+        performance = this.getPerformanceCalculator().getPerformance(currentQuotation, previousQuotation);
         if (performance <= 0) {
             return false; // A Pocket Pivot only occurs on up-days.
         }
@@ -136,7 +136,7 @@ public class PocketPivotChartController extends ChartController {
         for (int i = quotationIndex + 1; i <= quotationIndex + lookbackDaysForVolume; i++) {
             currentQuotation = quotationsSortedByDate.get(i);
             previousQuotation = quotationsSortedByDate.get(i + 1);
-            performance = this.getIndicatorCalculator().getPerformance(currentQuotation, previousQuotation);
+            performance = this.getPerformanceCalculator().getPerformance(currentQuotation, previousQuotation);
 
             if (performance < 0 && currentQuotation.getVolume() > largestDownVolume) {
                 largestDownVolume = currentQuotation.getVolume();

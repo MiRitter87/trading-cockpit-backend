@@ -49,11 +49,17 @@ public class IndicatorCalculator {
     private BollingerCalculator bollingerCalculator;
 
     /**
+     * Calculator for price performance.
+     */
+    private PerformanceCalculator performanceCalculator;
+
+    /**
      * Default constructor.
      */
     public IndicatorCalculator() {
         this.movingAverageCalculator = new MovingAverageCalculator();
         this.bollingerCalculator = new BollingerCalculator();
+        this.performanceCalculator = new PerformanceCalculator();
     }
 
     /**
@@ -116,8 +122,8 @@ public class IndicatorCalculator {
             indicator.setBaseLengthWeeks(this.getBaseLengthWeeks(quotation, sortedQuotations));
             indicator.setUpDownVolumeRatio(
                     this.getUpDownVolumeRatio(daysUpDownVolumeRatio, quotation, sortedQuotations));
-            indicator.setPerformance5Days(
-                    this.getPricePerformanceForDays(daysPerformance5, quotation, sortedQuotations));
+            indicator.setPerformance5Days(this.performanceCalculator.getPricePerformanceForDays(daysPerformance5,
+                    quotation, sortedQuotations));
             indicator.setLiquidity20Days(this.getLiquidityForDays(daysLiquidity20, quotation, sortedQuotations));
             indicator.setSma30Volume(this.movingAverageCalculator.getSimpleMovingAverageVolume(daysSmaVolume30,
                     quotation, sortedQuotations));
@@ -353,7 +359,7 @@ public class IndicatorCalculator {
         for (int i = indexOf52WeekHigh + 1; i < (TRADING_DAYS_PER_YEAR + indexOfQuotation)
                 && i < sortedQuotations.getQuotations().size(); i++) {
             tempQuotation = sortedQuotations.getQuotations().get(i);
-            performance = this.getPerformance(tempQuotation, quotation52WeekHigh);
+            performance = this.performanceCalculator.getPerformance(tempQuotation, quotation52WeekHigh);
 
             if (performance >= thresholdPercentOff52wHigh) {
                 indexOf52WeekHigh = i;
@@ -421,39 +427,6 @@ public class IndicatorCalculator {
     }
 
     /**
-     * Provides the price performance for the given number of days.
-     *
-     * @param days             The number of days for performance calculation.
-     * @param quotation        The Quotation for which the price performance is calculated.
-     * @param sortedQuotations A list of quotations sorted by date that build the trading history used for price
-     *                         performance calculation.
-     * @return The performance of the given interval in percent.
-     */
-    public float getPricePerformanceForDays(final int days, final Quotation quotation,
-            final QuotationArray sortedQuotations) {
-        BigDecimal divisionResult = BigDecimal.valueOf(0);
-        int indexOfQuotation = 0;
-        final int scale = 4;
-
-        // Get the starting point of price performance calculation.
-        indexOfQuotation = sortedQuotations.getQuotations().indexOf(quotation);
-
-        // Check if enough quotations exist for price performance calculation.
-        // The -1 is needed because a performance can only be calculated against a previous day. Therefore an additional
-        // Quotation has to exist.
-        if ((sortedQuotations.getQuotations().size() - days - indexOfQuotation - 1) < 0) {
-            return 0;
-        }
-
-        divisionResult = sortedQuotations.getQuotations().get(indexOfQuotation).getClose().divide(
-                sortedQuotations.getQuotations().get(indexOfQuotation + days).getClose(), scale, RoundingMode.HALF_UP);
-        divisionResult = divisionResult.subtract(BigDecimal.valueOf(1));
-        divisionResult = divisionResult.multiply(BigDecimal.valueOf(HUNDRED_PERCENT));
-
-        return divisionResult.floatValue();
-    }
-
-    /**
      * Provides the average trading liquidity for the given number of days.
      *
      * @param days             The number of days for liquidity calculation.
@@ -479,24 +452,6 @@ public class IndicatorCalculator {
         }
 
         return liquidity;
-    }
-
-    /**
-     * Calculates the price performance between the current Quotation and the previous Quotation.
-     *
-     * @param currentQuotation  The current Quotation.
-     * @param previousQuotation The previous Quotation.
-     * @return The price performance.
-     */
-    public float getPerformance(final Quotation currentQuotation, final Quotation previousQuotation) {
-        float performance;
-        final int scale = 4;
-
-        performance = currentQuotation.getClose().divide(previousQuotation.getClose(), scale, RoundingMode.HALF_UP)
-                .floatValue() - 1;
-        performance = performance * HUNDRED_PERCENT; // Get performance in percent.
-
-        return performance;
     }
 
     /**

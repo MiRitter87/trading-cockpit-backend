@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import backend.controller.scan.IndicatorCalculator;
+import backend.controller.scan.PerformanceCalculator;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
@@ -149,7 +150,9 @@ public class ScanTemplateProcessor {
      */
     private void postProcessingRsSinceDate(final String startDateAsString, final List<Quotation> quotations)
             throws Exception {
+
         IndicatorCalculator indicatorCalculator = new IndicatorCalculator();
+        PerformanceCalculator performanceCalculator = new PerformanceCalculator();
         Date startDate = DateTools.convertStringToDate(startDateAsString);
         QuotationArray quotationsOfInstrument = new QuotationArray();
         Quotation quotationOfDate;
@@ -163,7 +166,7 @@ public class ScanTemplateProcessor {
             quotationOfDateIndex = quotationsOfInstrument.getIndexOfQuotationWithDate(startDate);
             quotationOfDate = quotationsOfInstrument.getQuotations().get(quotationOfDateIndex);
 
-            rsPercent = indicatorCalculator.getPerformance(currentQuotation, quotationOfDate);
+            rsPercent = performanceCalculator.getPerformance(currentQuotation, quotationOfDate);
             currentQuotation.getIndicator().setRsPercentSum(rsPercent);
         }
 
@@ -333,7 +336,7 @@ public class ScanTemplateProcessor {
      * @return true, if trading history constitutes a High Tight Flag.
      */
     private boolean isHighTightFlag(final QuotationArray quotationArray) {
-        IndicatorCalculator indicatorCalculator = new IndicatorCalculator();
+        PerformanceCalculator performanceCalculator = new PerformanceCalculator();
         final int tradingDaysPerWeek = 5;
         final int maxWeeksForPattern = 14;
         final int maxDaysForPattern = tradingDaysPerWeek * maxWeeksForPattern;
@@ -350,7 +353,7 @@ public class ScanTemplateProcessor {
         currentQuotation = quotationArray.getQuotations().get(0);
         maxQuotationForPattern = quotationArray.getQuotations().get(maxDaysForPattern);
 
-        performanceMaxQuotation = indicatorCalculator.getPerformance(currentQuotation, maxQuotationForPattern);
+        performanceMaxQuotation = performanceCalculator.getPerformance(currentQuotation, maxQuotationForPattern);
 
         if (performanceMaxQuotation < HIGH_TIGHT_FLAG_THRESHOLD) {
             return false;

@@ -275,7 +275,7 @@ public class FollowThroughDaysChartController extends ChartController {
     private boolean isFollowThroughDay(final Quotation currentQuotation, final Quotation previousQuotation) {
         float performance;
 
-        performance = this.getIndicatorCalculator().getPerformance(currentQuotation, previousQuotation);
+        performance = this.getPerformanceCalculator().getPerformance(currentQuotation, previousQuotation);
 
         if (performance >= FTD_PERCENT_THRESHOLD && (currentQuotation.getVolume() > previousQuotation.getVolume())) {
             return true;

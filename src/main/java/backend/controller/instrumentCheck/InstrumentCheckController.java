@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import backend.controller.NoQuotationsExistException;
-import backend.controller.scan.IndicatorCalculator;
+import backend.controller.scan.PerformanceCalculator;
 import backend.dao.DAOManager;
 import backend.dao.quotation.persistence.QuotationDAO;
 import backend.model.instrument.Quotation;
@@ -44,9 +44,9 @@ public class InstrumentCheckController {
     private QuotationDAO quotationDAO;
 
     /**
-     * Indicator calculator.
+     * Performance calculator.
      */
-    private IndicatorCalculator indicatorCalculator;
+    private PerformanceCalculator performanceCalculator;
 
     /**
      * Controller used for counting-related Instrument health checks.
@@ -69,7 +69,7 @@ public class InstrumentCheckController {
     public InstrumentCheckController() {
         this.quotationDAO = DAOManager.getInstance().getQuotationDAO();
 
-        this.indicatorCalculator = new IndicatorCalculator();
+        this.performanceCalculator = new PerformanceCalculator();
 
         this.instrumentCheckCountingController = new InstrumentCheckCountingController();
         this.instrumentCheckExtremumController = new InstrumentCheckExtremumController();
@@ -285,7 +285,7 @@ public class InstrumentCheckController {
                 throw new Exception("No indicator is defined for Quotation with ID: " + currentDayQuotation.getId());
             }
 
-            performanceOneWeek = this.indicatorCalculator.getPricePerformanceForDays(daysInWeek, currentDayQuotation,
+            performanceOneWeek = this.performanceCalculator.getPricePerformanceForDays(daysInWeek, currentDayQuotation,
                     sortedQuotations);
 
             if (performanceOneWeek >= CLIMAX_ONE_WEEK_THRESHOLD) {
@@ -331,7 +331,7 @@ public class InstrumentCheckController {
                 throw new Exception("No indicator is defined for Quotation with ID: " + currentDayQuotation.getId());
             }
 
-            performanceThreeWeeks = this.indicatorCalculator.getPricePerformanceForDays(daysInThreeWeeks,
+            performanceThreeWeeks = this.performanceCalculator.getPricePerformanceForDays(daysInThreeWeeks,
                     currentDayQuotation, sortedQuotations);
 
             if (performanceThreeWeeks >= CLIMAX_THREE_WEEKS_THRESHOLD) {

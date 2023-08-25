@@ -193,7 +193,7 @@ public class DistributionDaysChartController extends ChartController {
 
         for (int i = indexStart; i >= indexEnd; i--) {
             futureQuotation = quotationsSortedByDate.get(i);
-            performance = this.getIndicatorCalculator().getPerformance(futureQuotation, currentQuotation);
+            performance = this.getPerformanceCalculator().getPerformance(futureQuotation, currentQuotation);
 
             if (performance >= percent) {
                 return true;

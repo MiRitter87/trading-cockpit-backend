@@ -334,20 +334,6 @@ public class IndicatorCalculatorTest {
 
     @Test
     /**
-     * Tests the calculation of the price performance of the given daily interval.
-     */
-    public void testGetPricePerformanceForDays() {
-        QuotationArray sortedQuotations = new QuotationArray(this.dmlStock.getQuotationsSortedByDate());
-        float expectedPerformance = (float) 6.25, actualPerformance;
-
-        actualPerformance = this.indicatorCalculator.getPricePerformanceForDays(20,
-                sortedQuotations.getQuotations().get(0), sortedQuotations);
-
-        assertEquals(expectedPerformance, actualPerformance);
-    }
-
-    @Test
-    /**
      * Tests the calculation of the trading liquidity for the given daily interval.
      */
     public void testGetLiquidityForDays() {
