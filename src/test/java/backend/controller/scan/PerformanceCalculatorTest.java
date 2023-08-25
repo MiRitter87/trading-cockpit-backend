@@ -132,4 +132,53 @@ public class PerformanceCalculatorTest {
 
         assertEquals(expectedPerformance, actualPerformance);
     }
+
+    @Test
+    /**
+     * Tests the calculation of the RS percentage sum.
+     */
+    public void testGetRSPercentSum() {
+        QuotationArray sortedQuotations = new QuotationArray(this.dmlStock.getQuotationsSortedByDate());
+        float expectedRSPercentSum, actualRSPercentSum;
+
+        // Actual price: 1,36
+        // Three months ago price: 1,75
+        // Six months ago price: 1,49
+        // Nine months ago price: 2,30
+        // Twelve months ago price: 1,30
+        // Expected rsPercentSum = 3 month performance + 3 month perf. + 6 month perf. + 9 month perf + 12 month perf.
+        // = -22,29% -22,29% -8,72% -40,87% +4,62% = -89,55%
+        expectedRSPercentSum = (float) -89.55;
+
+        actualRSPercentSum = this.performanceCalculator.getRSPercentSum(sortedQuotations.getQuotations().get(0),
+                sortedQuotations);
+
+        assertEquals(expectedRSPercentSum, actualRSPercentSum);
+    }
+
+    @Test
+    /**
+     * Tests the calculation of the RS percentage sum, if the quotation history is smaller than a year.
+     */
+    public void testGetRSPercentSumOfIncompleteHistory() {
+        QuotationArray sortedQuotations = new QuotationArray(this.dmlStock.getQuotationsSortedByDate());
+        float expectedRSPercentSum, actualRSPercentSum;
+
+        // Remove the last quote from the instrument. The 12 month performance can't be calculated then.
+        sortedQuotations.getQuotations().remove(sortedQuotations.getQuotations().size() - 1);
+
+        // Actual price: 1,36
+        // Three months ago price: 1,75
+        // Six months ago price: 1,49
+        // Nine months ago price: 2,30
+        // Twelve months ago price: unknown
+        // Expected rsPercentSum = 3 month performance + 3 month perf. + 6 month perf. + 9 month perf.
+        // = -22,29% -22,29% -8,72% -40,87% = -94,17%
+        expectedRSPercentSum = (float) -94.17;
+
+        actualRSPercentSum = this.performanceCalculator.getRSPercentSum(sortedQuotations.getQuotations().get(0),
+                sortedQuotations);
+
+        assertEquals(expectedRSPercentSum, actualRSPercentSum);
+    }
 }
