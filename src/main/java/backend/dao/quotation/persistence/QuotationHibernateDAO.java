@@ -2,14 +2,14 @@ package backend.dao.quotation.persistence;
 
 import java.util.List;
 
-import javax.persistence.EntityGraph;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.EntityGraph;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
@@ -158,7 +158,7 @@ public class QuotationHibernateDAO implements QuotationDAO {
             criteriaQuery.select(criteria);
             criteriaQuery.where(criteriaBuilder.equal(criteria.get("instrument"), instrumentId));
             TypedQuery<Quotation> typedQuery = entityManager.createQuery(criteriaQuery);
-            typedQuery.setHint("javax.persistence.loadgraph", graph); // Also fetch all instrument and indicator data.
+            typedQuery.setHint("jakarta.persistence.loadgraph", graph); // Also fetch all instrument and indicator data.
             quotations = typedQuery.getResultList();
 
             entityManager.getTransaction().commit();

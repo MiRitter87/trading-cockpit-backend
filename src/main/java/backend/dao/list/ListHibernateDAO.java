@@ -3,14 +3,14 @@ package backend.dao.list;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.EntityGraph;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.EntityGraph;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 
 import backend.dao.ObjectUnchangedException;
 import backend.model.ObjectInUseException;
@@ -109,7 +109,7 @@ public class ListHibernateDAO implements ListDAO {
             criteriaQuery.select(criteria);
             criteriaQuery.orderBy(criteriaBuilder.asc(criteria.get("id"))); // Order by id ascending
             TypedQuery<List> typedQuery = entityManager.createQuery(criteriaQuery);
-            typedQuery.setHint("javax.persistence.loadgraph", graph); // Also fetch all instrument data.
+            typedQuery.setHint("jakarta.persistence.loadgraph", graph); // Also fetch all instrument data.
             lists = typedQuery.getResultList();
 
             entityManager.getTransaction().commit();
@@ -137,7 +137,7 @@ public class ListHibernateDAO implements ListDAO {
         EntityGraph<List> graph = entityManager.createEntityGraph(List.class);
         graph.addAttributeNodes("instruments");
         Map<String, Object> hints = new HashMap<String, Object>();
-        hints.put("javax.persistence.loadgraph", graph);
+        hints.put("jakarta.persistence.loadgraph", graph);
 
         entityManager.getTransaction().begin();
         List list = entityManager.find(List.class, id, hints);

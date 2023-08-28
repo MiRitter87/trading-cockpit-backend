@@ -3,8 +3,8 @@ package backend.dao;
 import java.io.Closeable;
 import java.io.IOException;
 
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
 
 import backend.dao.chart.ChartObjectDAO;
 import backend.dao.chart.ChartObjectHibernateDAO;

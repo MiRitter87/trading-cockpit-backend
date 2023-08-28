@@ -5,14 +5,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.EntityGraph;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.EntityGraph;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 
 import backend.dao.ObjectUnchangedException;
 import backend.model.instrument.Instrument;
@@ -111,7 +111,7 @@ public class ScanHibernateDAO implements ScanDAO {
             criteriaQuery.select(criteria);
             criteriaQuery.orderBy(criteriaBuilder.asc(criteria.get("id"))); // Order by id ascending
             TypedQuery<Scan> typedQuery = entityManager.createQuery(criteriaQuery);
-            typedQuery.setHint("javax.persistence.loadgraph", graph); // Also fetch all instrument data.
+            typedQuery.setHint("jakarta.persistence.loadgraph", graph); // Also fetch all instrument data.
             scans = typedQuery.getResultList();
 
             entityManager.getTransaction().commit();
@@ -140,7 +140,7 @@ public class ScanHibernateDAO implements ScanDAO {
         graph.addAttributeNodes("lists");
         graph.addAttributeNodes("incompleteInstruments");
         Map<String, Object> hints = new HashMap<String, Object>();
-        hints.put("javax.persistence.loadgraph", graph);
+        hints.put("jakarta.persistence.loadgraph", graph);
 
         entityManager.getTransaction().begin();
         Scan scan = entityManager.find(Scan.class, id, hints);
