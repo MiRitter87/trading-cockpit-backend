@@ -251,7 +251,7 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
     @SuppressWarnings("unchecked")
     private void checkQuotationsExist(final Instrument instrument, final EntityManager entityManager)
             throws ObjectInUseException {
-        Query query = entityManager.createQuery("SELECT q FROM Quotation q WHERE INSTRUMENT_ID = :instrumentId");
+        Query query = entityManager.createQuery("SELECT q FROM Quotation q WHERE q.instrument.id = :instrumentId");
         List<Quotation> quotations;
 
         query.setParameter("instrumentId", instrument.getId());
@@ -272,7 +272,7 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
     @SuppressWarnings("unchecked")
     private void checkHorizontalLinesExist(final Instrument instrument, final EntityManager entityManager)
             throws ObjectInUseException {
-        Query query = entityManager.createQuery("SELECT h FROM HorizontalLine h WHERE INSTRUMENT_ID = :instrumentId");
+        Query query = entityManager.createQuery("SELECT h FROM HorizontalLine h WHERE h.instrument.id = :instrumentId");
         List<HorizontalLine> horizontalLines;
 
         query.setParameter("instrumentId", instrument.getId());
@@ -338,7 +338,7 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
     private void checkInstrumentUsedAsSectorOrIg(final Instrument instrument, final EntityManager entityManager)
             throws ObjectInUseException {
         Query query = entityManager.createQuery(
-                "Select i FROM Instrument i WHERE sector_id = :instrumentId OR industry_group_id = :instrumentId");
+                "Select i FROM Instrument i WHERE i.sector.id = :instrumentId OR i.industryGroup.id = :instrumentId");
         List<Instrument> instruments;
 
         query.setParameter("instrumentId", instrument.getId());

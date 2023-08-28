@@ -156,7 +156,7 @@ public class QuotationHibernateDAO implements QuotationDAO {
             CriteriaQuery<Quotation> criteriaQuery = criteriaBuilder.createQuery(Quotation.class);
             Root<Quotation> criteria = criteriaQuery.from(Quotation.class);
             criteriaQuery.select(criteria);
-            criteriaQuery.where(criteriaBuilder.equal(criteria.get("instrument"), instrumentId));
+            criteriaQuery.where(criteriaBuilder.equal(criteria.get("instrument").get("id"), instrumentId));
             TypedQuery<Quotation> typedQuery = entityManager.createQuery(criteriaQuery);
             typedQuery.setHint("jakarta.persistence.loadgraph", graph); // Also fetch all instrument and indicator data.
             quotations = typedQuery.getResultList();
