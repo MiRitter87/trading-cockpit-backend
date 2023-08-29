@@ -1,9 +1,17 @@
 package backend.dao.priceAlert;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
+import backend.dao.ObjectUnchangedException;
+import backend.model.LocalizedException;
+import backend.model.priceAlert.ConfirmationStatus;
+import backend.model.priceAlert.PriceAlert;
+import backend.model.priceAlert.TriggerStatus;
+import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.TypedQuery;
@@ -11,12 +19,6 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-
-import backend.dao.ObjectUnchangedException;
-import backend.model.LocalizedException;
-import backend.model.priceAlert.ConfirmationStatus;
-import backend.model.priceAlert.PriceAlert;
-import backend.model.priceAlert.TriggerStatus;
 
 /**
  * Provides access to price alert database persistence using Hibernate.
@@ -97,6 +99,11 @@ public class PriceAlertHibernateDAO implements PriceAlertDAO {
 
         List<PriceAlert> priceAlerts = null;
         EntityManager entityManager = this.sessionFactory.createEntityManager();
+
+        // Use entity graphs to load data of referenced Instrument instances.
+        EntityGraph<PriceAlert> graph = entityManager.createEntityGraph(PriceAlert.class);
+        graph.addAttributeNodes("instrument");
+
         entityManager.getTransaction().begin();
 
         try {
@@ -122,6 +129,7 @@ public class PriceAlertHibernateDAO implements PriceAlertDAO {
             this.applyPriceAlertOrderAttribute(priceAlertOrderAttribute, criteriaQuery, criteriaBuilder, criteria);
 
             TypedQuery<PriceAlert> typedQuery = entityManager.createQuery(criteriaQuery);
+            typedQuery.setHint("jakarta.persistence.loadgraph", graph); // Also fetch all Instrument data.
             priceAlerts = typedQuery.getResultList();
 
             entityManager.getTransaction().commit();
@@ -145,8 +153,14 @@ public class PriceAlertHibernateDAO implements PriceAlertDAO {
     public PriceAlert getPriceAlert(final Integer id) throws Exception {
         EntityManager entityManager = this.sessionFactory.createEntityManager();
 
+        // Use entity graphs to load data of referenced instrument instance.
+        EntityGraph<PriceAlert> graph = entityManager.createEntityGraph(PriceAlert.class);
+        graph.addAttributeNodes("instrument");
+        Map<String, Object> hints = new HashMap<String, Object>();
+        hints.put("jakarta.persistence.loadgraph", graph);
+
         entityManager.getTransaction().begin();
-        PriceAlert priceAlert = entityManager.find(PriceAlert.class, id);
+        PriceAlert priceAlert = entityManager.find(PriceAlert.class, id, hints);
         entityManager.getTransaction().commit();
         entityManager.close();
 

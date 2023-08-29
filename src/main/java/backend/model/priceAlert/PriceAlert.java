@@ -5,17 +5,6 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.Set;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.SequenceGenerator;
-import jakarta.persistence.Table;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -31,6 +20,18 @@ import org.hibernate.validator.messageinterpolation.ExpressionLanguageFeatureLev
 import backend.model.Currency;
 import backend.model.LocalizedException;
 import backend.model.instrument.Instrument;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 
 /**
  * An alert that a stock has reached a certain price at a stock exchange.
@@ -62,7 +63,7 @@ public class PriceAlert {
     private static final int MAX_MAIL_ADDRESS_LENGTH = 254;
 
     /**
-     * The mimimum e-mail address field length allowed.
+     * The minimum e-mail address field length allowed.
      */
     private static final int MIN_MAIL_ADDRESS_LENGTH = 5;
 
@@ -78,7 +79,7 @@ public class PriceAlert {
     /**
      * The Instrument.
      */
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "INSTRUMENT_ID")
     @NotNull(message = "{priceAlert.instrument.notNull.message}")
     private Instrument instrument;
