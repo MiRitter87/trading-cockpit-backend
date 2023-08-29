@@ -202,7 +202,7 @@ public class ChartObjectHibernateDAO implements ChartObjectDAO {
         Predicate predicate;
 
         if (instrumentId != null) {
-            predicate = criteriaBuilder.equal(criteria.get("instrument"), instrumentId);
+            predicate = criteriaBuilder.equal(criteria.get("instrument").get("id"), instrumentId);
         } else {
             predicate = null;
         }
