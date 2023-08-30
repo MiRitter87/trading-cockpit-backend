@@ -153,10 +153,10 @@ public class QuotationQueryProvider {
 
         if (withIndicatorNotNull) {
             query = this.entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i "
-                    + "WHERE quotation_id IN :quotationIds AND q.indicator IS NOT NULL");
+                    + "WHERE q.id IN :quotationIds AND q.indicator IS NOT NULL");
         } else {
             query = this.entityManager.createQuery(
-                    "SELECT q FROM Quotation q JOIN FETCH q.instrument i WHERE quotation_id IN :quotationIds");
+                    "SELECT q FROM Quotation q JOIN FETCH q.instrument i WHERE q.id IN :quotationIds");
         }
 
         return query;
