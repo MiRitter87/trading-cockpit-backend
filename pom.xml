@@ -20,9 +20,8 @@
 		<hsql.version>2.5.2</hsql.version>	<!-- Version 2.6 needs JRE 11 or newer -->
 		<hibernate.core.version>6.2.7.Final</hibernate.core.version>
 		<hibernate.validator.version>8.0.1.Final</hibernate.validator.version>
+		<jakarta.el.version>5.0.0</jakarta.el.version>
 		<junit.jupiter.version>5.8.2</junit.jupiter.version>
-		<javax.el.version>3.0.0</javax.el.version>
-		<glassfish.el.version>2.2.6</glassfish.el.version>
 		<log4j2.version>2.17.2</log4j2.version>
 		<jersey.version>2.35</jersey.version>
 		<javax.servlet.version>4.0.1</javax.servlet.version>
@@ -75,17 +74,11 @@
   			<scope>test</scope>
 		</dependency>
 		
-		<!-- Expression Language dependencies needed by the Validation API. -->
+		<!-- Expression Language dependencies needed by the Hibernate Validation API. -->
 		<dependency>
-		    <groupId>javax.el</groupId>
-		    <artifactId>javax.el-api</artifactId>
-		    <version>${javax.el.version}</version>
-		</dependency>
-		
-		<dependency>
-	   		<groupId>org.glassfish.web</groupId>
-	    	<artifactId>javax.el</artifactId>
-	    	<version>${glassfish.el.version}</version>
+		    <groupId>org.glassfish.expressly</groupId>
+		    <artifactId>expressly</artifactId>
+		    <version>${jakarta.el.version}</version>
 		</dependency>
 		
 		<!-- Log4J Logging -->
