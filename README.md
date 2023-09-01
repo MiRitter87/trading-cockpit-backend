@@ -49,6 +49,8 @@ The Trading Cockpit is based on the following technologies and frameworks
  - **Apache Maven** as build system
 
 ## Installation
+The application uses Servlet Version 6 and Expression Language Version 5. The WebServer has to support those.
+[Apache Tomcat](https://tomcat.apache.org/whichversion.html) Version 10.1.x supports the specifications and can be used to run the application.
 
 1. Build the project using the Maven run configuration "trading-cockpit-backend (clean install).launch"
 2. Deploy the ".war"-file to your WebServer. The application name has to be "trading-cockpit-backend". The frontend expects the WebServices under this path.
