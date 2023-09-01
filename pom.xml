@@ -14,9 +14,10 @@
   	<description>Backend of the Trading Cockpit.</description>
   
   	<properties>
-		<maven.compiler.version>3.10.0</maven.compiler.version>
-		<maven.surefire.version>3.0.0-M5</maven.surefire.version>
-		<maven.war.version>3.3.2</maven.war.version>
+		<maven.compiler.version>3.11.0</maven.compiler.version>
+		<maven.surefire.version>3.1.2</maven.surefire.version>
+		<maven.war.version>3.4.0</maven.war.version>
+		<maven.checkstyle.version>3.3.0</maven.checkstyle.version>
 		<hsql.version>2.7.2</hsql.version>
 		<hibernate.core.version>6.2.7.Final</hibernate.core.version>
 		<hibernate.validator.version>8.0.1.Final</hibernate.validator.version>
@@ -31,7 +32,6 @@
 		<jfreechart.version>1.5.3</jfreechart.version>
 		<htmlunit.version>2.70.0</htmlunit.version>
 		<angus.mail.version>2.0.2</angus.mail.version>
-		<maven.checkstyle.version>3.3.0</maven.checkstyle.version>
 				
 		<!-- Define the location of the custom ruleset of Apache Checkstyle plugin. -->
     	<checkstyle.config.location>checkstyle/checkstyle.xml</checkstyle.config.location>
@@ -194,7 +194,7 @@
     			<version>${maven.war.version}</version>
 			</plugin>
 			
-			<!-- This plugin executes JUnit 5 tests in the test phase of the build . -->
+			<!-- This plugin executes JUnit 5 tests in the test phase of the build. -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
