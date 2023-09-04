@@ -8,3 +8,6 @@
 
 # Local application testing
 /database
+
+# Log Files
+tradingCockpitBackend.log
