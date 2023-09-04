@@ -1,7 +1,8 @@
-<persistence xmlns="http://java.sun.com/xml/ns/persistence"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
-        version="2.0">
+<persistence version="3.0" xmlns="https://jakarta.ee/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence 
+             https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd">
+	
     <persistence-unit name="my-persistence-unit">
     	<!-- The classes that are persisted -->
         <class>backend.model.priceAlert.PriceAlert</class>
@@ -16,16 +17,16 @@
         <!-- Several configuration properties -->
         <properties>
         	<!-- Database access -->
-	        <property name="javax.persistence.jdbc.driver" value="org.hsqldb.jdbcDriver" />
-	        <property name="javax.persistence.jdbc.url" value="jdbc:hsqldb:file:database/tradingCockpitBackend;shutdown=true" />
-	        <property name="javax.persistence.jdbc.user" value="SA" />
-	        <property name="javax.persistence.jdbc.password" value="" />
+	        <property name="jakarta.persistence.jdbc.driver" value="org.hsqldb.jdbcDriver" />
+	        <property name="jakarta.persistence.jdbc.url" value="jdbc:hsqldb:file:database/tradingCockpitBackend;shutdown=true" />
+	        <property name="jakarta.persistence.jdbc.user" value="SA" />
+	        <property name="jakarta.persistence.jdbc.password" value="" />
 	        
 	        <!-- Dialect of underlying database -->
 	        <property name="hibernate.dialect" value="org.hibernate.dialect.HSQLDialect"/>
 	        
 	        <!-- Should not be used in production! Only for development! Use proper creation/migration scripts in production -->
-	        <property name="javax.persistence.schema-generation.database.action" value="create"/>
+	        <property name="jakarta.persistence.schema-generation.database.action" value="create"/>
         </properties>
     </persistence-unit>
 </persistence>
