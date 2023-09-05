@@ -40,76 +40,76 @@ import backend.tools.WebServiceTools;
 
 /**
  * Tests the instrument service.
- * 
+ *
  * @author Michael
  */
 public class InstrumentServiceTest {
 	/**
 	 * Access to localized application resources.
 	 */
-	private ResourceBundle resources = ResourceBundle.getBundle("backend");	
-	
+	private ResourceBundle resources = ResourceBundle.getBundle("backend");
+
 	/**
 	 * DAO to access instrument data.
 	 */
 	private static InstrumentDAO instrumentDAO;
-	
+
 	/**
 	 * DAO to access Quotation data.
 	 */
 	private static QuotationDAO quotationDAO;
-	
+
 	/**
 	 * DAO to access List data.
 	 */
 	private static ListDAO listDAO;
-	
+
 	/**
 	 * DAO to access PriceAlert data.
 	 */
 	private static PriceAlertDAO priceAlertDAO;
-	
+
 	/**
 	 * The stock of Apple.
 	 */
 	private Instrument appleStock;
-	
+
 	/**
 	 * The stock of Microsoft.
 	 */
 	private Instrument microsoftStock;
-	
+
 	/**
 	 * The stock of NVidia.
 	 */
 	private Instrument nvidiaStock;
-	
+
 	/**
 	 * A Quotation of the Apple stock.
 	 */
 	private Quotation appleQuotation1;
-	
+
 	/**
 	 * A List of instruments.
 	 */
 	private backend.model.list.List list;
-	
+
 	/**
 	 * A PriceAlert for the Apple stock.
 	 */
 	private PriceAlert nvidiaAlert;
-	
+
 	/**
 	 * The technology sector.
 	 */
 	private Instrument technologySector;
-	
+
 	/**
 	 * Copper Miners Industry Group.
 	 */
 	private Instrument copperIndustryGroup;
-	
-	
+
+
 	@BeforeAll
 	/**
 	 * Tasks to be performed once at startup of test class.
@@ -120,8 +120,8 @@ public class InstrumentServiceTest {
 		listDAO = DAOManager.getInstance().getListDAO();
 		priceAlertDAO = DAOManager.getInstance().getPriceAlertDAO();
 	}
-	
-	
+
+
 	@AfterAll
 	/**
 	 * Tasks to be performed once at end of test class.
@@ -133,8 +133,8 @@ public class InstrumentServiceTest {
 			fail(e.getMessage());
 		}
 	}
-	
-	
+
+
 	@BeforeEach
 	/**
 	 * Tasks to be performed before each test is run.
@@ -145,8 +145,8 @@ public class InstrumentServiceTest {
 		this.createDummyLists();
 		this.createDummyPriceAlerts();
 	}
-	
-	
+
+
 	@AfterEach
 	/**
 	 * Tasks to be performed after each test has been run.
@@ -157,131 +157,132 @@ public class InstrumentServiceTest {
 		this.deleteDummyQuotations();
 		this.deleteDummyInstruments();
 	}
-	
-	
+
+
 	/**
 	 * Initializes the database with dummy instruments.
 	 */
 	private void createDummyInstruments() {
+	    this.technologySector = this.getTechnologySector();
+	    this.copperIndustryGroup = this.getCopperIndustryGroup();
 		this.appleStock = this.getAppleStock();
 		this.microsoftStock = this.getMicrosoftStock();
 		this.nvidiaStock = this.getNvidiaStock();
-		this.technologySector = this.getTechnologySector();
-		this.copperIndustryGroup = this.getCopperIndustryGroup();
-		
+
 		try {
+		    instrumentDAO.insertInstrument(this.technologySector);
+		    instrumentDAO.insertInstrument(this.copperIndustryGroup);
 			instrumentDAO.insertInstrument(this.appleStock);
 			instrumentDAO.insertInstrument(this.microsoftStock);
 			instrumentDAO.insertInstrument(this.nvidiaStock);
-			instrumentDAO.insertInstrument(this.technologySector);
-			instrumentDAO.insertInstrument(this.copperIndustryGroup);
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
 	}
-	
-	
+
+
 	/**
 	 * Deletes the dummy instruments from the database.
 	 */
 	private void deleteDummyInstruments() {
 		try {
-			instrumentDAO.deleteInstrument(this.copperIndustryGroup);
-			instrumentDAO.deleteInstrument(this.technologySector);
 			instrumentDAO.deleteInstrument(this.nvidiaStock);
 			instrumentDAO.deleteInstrument(this.microsoftStock);
 			instrumentDAO.deleteInstrument(this.appleStock);
+			instrumentDAO.deleteInstrument(this.copperIndustryGroup);
+			instrumentDAO.deleteInstrument(this.technologySector);
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
 	}
-	
-	
+
+
 	/**
 	 * Gets the instrument of the Apple stock.
-	 * 
+	 *
 	 * @return The instrument of the Apple stock.
 	 */
 	private Instrument getAppleStock() {
 		Instrument instrument = new Instrument();
-		
+
 		instrument.setSymbol("AAPL");
 		instrument.setName("Apple");
 		instrument.setStockExchange(StockExchange.NDQ);
 		instrument.setType(InstrumentType.STOCK);
-		
+		instrument.setSector(this.technologySector);
+
 		return instrument;
 	}
-	
-	
+
+
 	/**
 	 * Gets the instrument of the Microsoft stock.
-	 * 
+	 *
 	 * @return The instrument of the Microsoft stock.
 	 */
 	private Instrument getMicrosoftStock() {
 		Instrument instrument = new Instrument();
-		
+
 		instrument.setSymbol("MSFT");
 		instrument.setName("Microsoft");
 		instrument.setStockExchange(StockExchange.NDQ);
 		instrument.setType(InstrumentType.STOCK);
-		
+
 		return instrument;
 	}
-	
-	
+
+
 	/**
 	 * Gets the instrument of the NVidia stock.
-	 * 
+	 *
 	 * @return The instrument of the NVidia stock.
 	 */
 	private Instrument getNvidiaStock() {
 		Instrument instrument = new Instrument();
-		
+
 		instrument.setSymbol("NVDA");
 		instrument.setName("NVIDIA");
 		instrument.setStockExchange(StockExchange.NDQ);
 		instrument.setType(InstrumentType.STOCK);
-		
+
 		return instrument;
 	}
-	
-	
+
+
 	/**
 	 * Gets the Instrument of the technology sector.
-	 * 
+	 *
 	 * @return The Instrument of the technology sector.
 	 */
 	private Instrument getTechnologySector() {
 		Instrument instrument = new Instrument();
-		
+
 		instrument.setSymbol("XLK");
 		instrument.setName("Technology Select Sector SPDR Fund");
 		instrument.setStockExchange(StockExchange.NYSE);
 		instrument.setType(InstrumentType.SECTOR);
-		
+
 		return instrument;
 	}
-	
-	
+
+
 	/**
 	 * Gets the Instrument of the Copper Industry Group.
-	 * 
+	 *
 	 * @return The Instrument of the Copper Industry Group.
 	 */
 	private Instrument getCopperIndustryGroup() {
 		Instrument instrument = new Instrument();
-		
+
 		instrument.setSymbol("COPX");
 		instrument.setName("Global X Copper Miners ETF");
 		instrument.setStockExchange(StockExchange.NYSE);
 		instrument.setType(InstrumentType.IND_GROUP);
-		
+
 		return instrument;
 	}
-	
-	
+
+
 	/**
 	 * Initializes the database with dummy quotations.
 	 */
@@ -289,62 +290,62 @@ public class InstrumentServiceTest {
 		List<Quotation> quotations = new ArrayList<>();
 		this.appleQuotation1 = this.getAppleQuotation();
 		quotations.add(this.appleQuotation1);
-		
+
 		try {
 			quotationDAO.insertQuotations(quotations);
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
 	}
-	
-	
+
+
 	/**
 	 * Deletes the dummy quotations from the database.
 	 */
 	private void deleteDummyQuotations() {
 		List<Quotation> quotations = new ArrayList<>();
 		quotations.add(this.appleQuotation1);
-		
+
 		try {
 			quotationDAO.deleteQuotations(quotations);
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
 	}
-	
-	
+
+
 	/**
 	 * Gets the Quotation of the Apple stock.
-	 * 
+	 *
 	 * @return The Quotation of the Apple stock.
 	 */
 	private Quotation getAppleQuotation() {
 		Quotation quotation = new Quotation();
-		
+
 		quotation.setDate(new Date());
 		quotation.setClose(BigDecimal.valueOf(78.54));
 		quotation.setCurrency(Currency.USD);
 		quotation.setVolume(28973654);
 		quotation.setInstrument(this.appleStock);
-		
+
 		return quotation;
 	}
-	
-	
+
+
 	/**
 	 * Initializes the database with dummy lists.
 	 */
 	private void createDummyLists() {
 		this.list = this.getList();
-		
+
 		try {
 			listDAO.insertList(this.list);
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
 	}
-	
-	
+
+
 	/**
 	 * Deletes the dummy lists from the database.
 	 */
@@ -355,38 +356,38 @@ public class InstrumentServiceTest {
 			fail(e.getMessage());
 		}
 	}
-	
-	
+
+
 	/**
 	 * Gets the List.
-	 * 
+	 *
 	 * @return The List.
 	 */
 	private backend.model.list.List getList() {
 		backend.model.list.List list = new backend.model.list.List();
-		
+
 		list.setName("Dummy List");
 		list.setDescription("Some Description");
 		list.addInstrument(this.microsoftStock);
-		
+
 		return list;
 	}
-	
-	
+
+
 	/**
 	 * Initializes the database with dummy price alerts.
 	 */
 	private void createDummyPriceAlerts() {
 		this.nvidiaAlert = this.getNvidiaAlert();
-		
+
 		try {
 			priceAlertDAO.insertPriceAlert(this.nvidiaAlert);
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}
 	}
-	
-	
+
+
 	/**
 	 * Deletes the dummy price alerts from the database.
 	 */
@@ -397,25 +398,25 @@ public class InstrumentServiceTest {
 			fail(e.getMessage());
 		}
 	}
-	
-	
+
+
 	/**
 	 * Gets a PriceAlert for the NVIDIA stock.
-	 * 
+	 *
 	 * @return A PriceAlert for the NVIDIA stock.
 	 */
 	private PriceAlert getNvidiaAlert() {
 		PriceAlert alert = new PriceAlert();
-		
+
 		alert.setInstrument(this.nvidiaStock);
 		alert.setAlertType(PriceAlertType.LESS_OR_EQUAL);
 		alert.setPrice(BigDecimal.valueOf(120.00));
 		alert.setCurrency(Currency.USD);
-		
+
 		return alert;
 	}
-	
-	
+
+
 	@Test
 	/**
 	 * Tests the retrieval of an instrument.
@@ -423,24 +424,24 @@ public class InstrumentServiceTest {
 	public void testGetInstrument() {
 		WebServiceResult getInstrumentResult;
 		Instrument instrument;
-		
+
 		//Get the instrument.
 		InstrumentService service = new InstrumentService();
 		getInstrumentResult = service.getInstrument(this.appleStock.getId());
-		
+
 		//Assure no error message exists
 		assertTrue(WebServiceTools.resultContainsErrorMessage(getInstrumentResult) == false);
-		
+
 		//Assure that an instrument is returned
 		assertTrue(getInstrumentResult.getData() instanceof Instrument);
-		
+
 		instrument = (Instrument) getInstrumentResult.getData();
-		
+
 		//Check each attribute of the instrument.
 		assertEquals(this.appleStock, instrument);
 	}
-	
-	
+
+
 	@Test
 	/**
 	 * Tests the retrieval of an instrument with an id that is unknown.
@@ -449,25 +450,25 @@ public class InstrumentServiceTest {
 		WebServiceResult getInstrumentResult;
 		final Integer unknownInstrumentId = 0;
 		String expectedErrorMessage, actualErrorMessage;
-		
+
 		//Get the instrument.
 		InstrumentService service = new InstrumentService();
 		getInstrumentResult = service.getInstrument(unknownInstrumentId);
-		
+
 		//Assure that no instrument is returned
 		assertNull(getInstrumentResult.getData());
-				
+
 		//There should be a return message of type E.
 		assertTrue(getInstrumentResult.getMessages().size() == 1);
 		assertTrue(getInstrumentResult.getMessages().get(0).getType() == WebServiceMessageType.E);
-		
+
 		//Verify the expected error message.
 		expectedErrorMessage = MessageFormat.format(this.resources.getString("instrument.notFound"), unknownInstrumentId);
 		actualErrorMessage = getInstrumentResult.getMessages().get(0).getText();
 		assertEquals(expectedErrorMessage, actualErrorMessage);
 	}
-	
-	
+
+
 	@Test
 	/**
 	 * Tests the retrieval of all instruments without quotations.
@@ -476,36 +477,36 @@ public class InstrumentServiceTest {
 		WebServiceResult getInstrumentsResult;
 		InstrumentArray instruments;
 		Instrument instrument;
-		
+
 		//Get the instruments.
 		InstrumentService service = new InstrumentService();
 		getInstrumentsResult = service.getInstruments(null);
 		instruments = (InstrumentArray) getInstrumentsResult.getData();
-		
+
 		//Assure no error message exists
 		assertTrue(WebServiceTools.resultContainsErrorMessage(getInstrumentsResult) == false);
-		
+
 		//Check if five instruments are returned.
 		assertEquals(5, instruments.getInstruments().size());
-		
+
 		//Check all instruments by each attribute.
 		instrument = instruments.getInstruments().get(0);
-		assertEquals(this.appleStock, instrument);
-		
-		instrument = instruments.getInstruments().get(1);
-		assertEquals(this.microsoftStock, instrument);
-		
-		instrument = instruments.getInstruments().get(2);
-		assertEquals(this.nvidiaStock, instrument);
-		
-		instrument = instruments.getInstruments().get(3);
 		assertEquals(this.technologySector, instrument);
-		
-		instrument = instruments.getInstruments().get(4);
+
+		instrument = instruments.getInstruments().get(1);
 		assertEquals(this.copperIndustryGroup, instrument);
+
+		instrument = instruments.getInstruments().get(2);
+		assertEquals(this.appleStock, instrument);
+
+		instrument = instruments.getInstruments().get(3);
+		assertEquals(this.microsoftStock, instrument);
+
+		instrument = instruments.getInstruments().get(4);
+		assertEquals(this.nvidiaStock, instrument);
 	}
-	
-	
+
+
 	@Test
 	/**
 	 * Tests the retrieval of all instruments of type industry group.
@@ -514,24 +515,24 @@ public class InstrumentServiceTest {
 		WebServiceResult getInstrumentsResult;
 		InstrumentArray instruments;
 		Instrument instrument;
-		
+
 		//Get the instruments.
 		InstrumentService service = new InstrumentService();
 		getInstrumentsResult = service.getInstruments(InstrumentType.IND_GROUP);
 		instruments = (InstrumentArray) getInstrumentsResult.getData();
-		
+
 		//Assure no error message exists
 		assertTrue(WebServiceTools.resultContainsErrorMessage(getInstrumentsResult) == false);
-		
+
 		//Check if one Instrument is returned.
 		assertEquals(1, instruments.getInstruments().size());
-		
+
 		//Check the Instrument by each attribute.
 		instrument = instruments.getInstruments().get(0);
 		assertEquals(this.copperIndustryGroup, instrument);
 	}
-	
-	
+
+
 	@Test
 	/**
 	 * Tests deletion of an instrument.
@@ -540,25 +541,25 @@ public class InstrumentServiceTest {
 		WebServiceResult deleteInstrumentResult;
 		Instrument deletedInstrument;
 		Quotation databaseQuotation;
-		
-		try {			
+
+		try {
 			//Delete Apple Instrument using the service.
 			InstrumentService service = new InstrumentService();
 			deleteInstrumentResult = service.deleteInstrument(this.appleStock.getId());
-			
+
 			//There should be no error messages
 			assertTrue(WebServiceTools.resultContainsErrorMessage(deleteInstrumentResult) == false);
-			
+
 			//There should be a success message
 			assertTrue(deleteInstrumentResult.getMessages().size() == 1);
 			assertTrue(deleteInstrumentResult.getMessages().get(0).getType() == WebServiceMessageType.S);
-			
+
 			//Check if Apple Instrument is missing using the DAO.
 			deletedInstrument = instrumentDAO.getInstrument(this.appleStock.getId());
-			
+
 			if(deletedInstrument != null)
 				fail("Apple instrument is still persisted but should have been deleted by the WebService operation 'deleteInstrument'.");
-			
+
 			//The Quotation of the Apple stock should have been deleted too.
 			databaseQuotation = quotationDAO.getQuotation(this.appleQuotation1.getId());
 			if(databaseQuotation != null)
@@ -572,14 +573,14 @@ public class InstrumentServiceTest {
 			try {
 				this.appleStock = this.getAppleStock();
 				instrumentDAO.insertInstrument(this.appleStock);
-			} 
+			}
 			catch (Exception e) {
 				fail(e.getMessage());
 			}
 		}
 	}
-	
-	
+
+
 	@Test
 	/**
 	 * Tests deletion of an instrument with an unknown ID.
@@ -588,22 +589,22 @@ public class InstrumentServiceTest {
 		WebServiceResult deleteInstrumentResult;
 		final Integer unknownInstrumentId = 0;
 		String expectedErrorMessage, actualErrorMessage;
-		
+
 		//Delete the instrument.
 		InstrumentService service = new InstrumentService();
 		deleteInstrumentResult = service.deleteInstrument(unknownInstrumentId);
-		
+
 		//There should be a return message of type E.
 		assertTrue(deleteInstrumentResult.getMessages().size() == 1);
 		assertTrue(deleteInstrumentResult.getMessages().get(0).getType() == WebServiceMessageType.E);
-		
+
 		//Verify the expected error message.
 		expectedErrorMessage = MessageFormat.format(this.resources.getString("instrument.notFound"), unknownInstrumentId);
 		actualErrorMessage = deleteInstrumentResult.getMessages().get(0).getText();
 		assertEquals(expectedErrorMessage, actualErrorMessage);
 	}
-	
-	
+
+
 	@Test
 	/**
 	 * Tests deletion of an Instrument that is used in a List.
@@ -611,23 +612,23 @@ public class InstrumentServiceTest {
 	public void testDeleteInstrumentUsedInList() {
 		WebServiceResult deleteInstrumentResult;
 		String expectedErrorMessage, actualErrorMessage;
-		
+
 		//Delete the instrument.
 		InstrumentService service = new InstrumentService();
 		deleteInstrumentResult = service.deleteInstrument(this.microsoftStock.getId());
-		
+
 		//There should be a return message of type E.
 		assertTrue(deleteInstrumentResult.getMessages().size() == 1);
 		assertTrue(deleteInstrumentResult.getMessages().get(0).getType() == WebServiceMessageType.E);
-		
+
 		//Verify the expected error message.
-		expectedErrorMessage = MessageFormat.format(this.resources.getString("instrument.deleteUsedInList"), 
+		expectedErrorMessage = MessageFormat.format(this.resources.getString("instrument.deleteUsedInList"),
 				this.microsoftStock.getId(), this.list.getId());
 		actualErrorMessage = deleteInstrumentResult.getMessages().get(0).getText();
 		assertEquals(expectedErrorMessage, actualErrorMessage);
 	}
-	
-	
+
+
 	@Test
 	/**
 	 * Tests deletion of an Instrument that is used in a PriceAlert.
@@ -635,23 +636,23 @@ public class InstrumentServiceTest {
 	public void testDeleteInstrumentUsedInPriceAlert() {
 		WebServiceResult deleteInstrumentResult;
 		String expectedErrorMessage, actualErrorMessage;
-		
+
 		//Delete the instrument.
 		InstrumentService service = new InstrumentService();
 		deleteInstrumentResult = service.deleteInstrument(this.nvidiaStock.getId());
-		
+
 		//There should be a return message of type E.
 		assertTrue(deleteInstrumentResult.getMessages().size() == 1);
 		assertTrue(deleteInstrumentResult.getMessages().get(0).getType() == WebServiceMessageType.E);
-		
+
 		//Verify the expected error message.
-		expectedErrorMessage = MessageFormat.format(this.resources.getString("instrument.deleteUsedInPriceAlert"), 
+		expectedErrorMessage = MessageFormat.format(this.resources.getString("instrument.deleteUsedInPriceAlert"),
 				this.nvidiaStock.getId(), this.nvidiaAlert.getId());
 		actualErrorMessage = deleteInstrumentResult.getMessages().get(0).getText();
 		assertEquals(expectedErrorMessage, actualErrorMessage);
 	}
-	
-	
+
+
 	@Test
 	/**
 	 * Tests deletion of an Instrument that is used as sector of another Instrument.
@@ -660,25 +661,21 @@ public class InstrumentServiceTest {
 		WebServiceResult deleteInstrumentResult;
 		String expectedErrorMessage, actualErrorMessage;
 		InstrumentService service = new InstrumentService();
-		
+
 		try {
-			//Link a stock to a sector.
-			this.appleStock.setSector(this.technologySector);
-			instrumentDAO.updateInstrument(this.appleStock);
-			
 			//Try to delete the sector.
 			deleteInstrumentResult = service.deleteInstrument(this.technologySector.getId());
-			
+
 			//There should be a return message of type E.
 			assertTrue(deleteInstrumentResult.getMessages().size() == 1);
 			assertTrue(deleteInstrumentResult.getMessages().get(0).getType() == WebServiceMessageType.E);
-			
+
 			//Verify the expected error message.
-			expectedErrorMessage = MessageFormat.format(this.resources.getString("instrument.deleteUsedInInstrument"), 
+			expectedErrorMessage = MessageFormat.format(this.resources.getString("instrument.deleteUsedInInstrument"),
 					this.technologySector.getId(), this.appleStock.getId());
 			actualErrorMessage = deleteInstrumentResult.getMessages().get(0).getText();
 			assertEquals(expectedErrorMessage, actualErrorMessage);
-		} 
+		}
 		catch (Exception e) {
 			fail(e.getMessage());
 		}
@@ -692,8 +689,8 @@ public class InstrumentServiceTest {
 			}
 		}
 	}
-	
-	
+
+
 	@Test
 	/**
 	 * Tests deletion of an Instrument that is used as industry group of another Instrument.
@@ -702,25 +699,25 @@ public class InstrumentServiceTest {
 		WebServiceResult deleteInstrumentResult;
 		String expectedErrorMessage, actualErrorMessage;
 		InstrumentService service = new InstrumentService();
-		
+
 		try {
 			//Link a stock to an industry group.
 			this.appleStock.setIndustryGroup(this.copperIndustryGroup);
 			instrumentDAO.updateInstrument(this.appleStock);
-			
+
 			//Try to delete the industry group.
 			deleteInstrumentResult = service.deleteInstrument(this.copperIndustryGroup.getId());
-			
+
 			//There should be a return message of type E.
 			assertTrue(deleteInstrumentResult.getMessages().size() == 1);
 			assertTrue(deleteInstrumentResult.getMessages().get(0).getType() == WebServiceMessageType.E);
-			
+
 			//Verify the expected error message.
-			expectedErrorMessage = MessageFormat.format(this.resources.getString("instrument.deleteUsedInInstrument"), 
+			expectedErrorMessage = MessageFormat.format(this.resources.getString("instrument.deleteUsedInInstrument"),
 					this.copperIndustryGroup.getId(), this.appleStock.getId());
 			actualErrorMessage = deleteInstrumentResult.getMessages().get(0).getText();
 			assertEquals(expectedErrorMessage, actualErrorMessage);
-		} 
+		}
 		catch (Exception e) {
 			fail(e.getMessage());
 		}
@@ -734,8 +731,8 @@ public class InstrumentServiceTest {
 			}
 		}
 	}
-	
-	
+
+
 	@Test
 	/**
 	 * Tests updating an instrument with valid data.
@@ -744,18 +741,18 @@ public class InstrumentServiceTest {
 		WebServiceResult updateInstrumentResult;
 		Instrument updatedInstrument;
 		InstrumentService service = new InstrumentService();
-		
+
 		//Update the name.
 		this.appleStock.setName("Apple Inc.");
 		updateInstrumentResult = service.updateInstrument(this.convertToWsInstrument(this.appleStock));
-		
+
 		//Assure no error message exists
 		assertTrue(WebServiceTools.resultContainsErrorMessage(updateInstrumentResult) == false);
-		
+
 		//There should be a success message
 		assertTrue(updateInstrumentResult.getMessages().size() == 1);
 		assertTrue(updateInstrumentResult.getMessages().get(0).getType() == WebServiceMessageType.S);
-		
+
 		//Retrieve the updated instrument and check if the changes have been persisted.
 		try {
 			updatedInstrument = instrumentDAO.getInstrument(this.appleStock.getId());
@@ -764,8 +761,8 @@ public class InstrumentServiceTest {
 			fail(e.getMessage());
 		}
 	}
-	
-	
+
+
 	@Test
 	/**
 	 * Tests updating an instrument with invalid data.
@@ -774,23 +771,23 @@ public class InstrumentServiceTest {
 		WebServiceResult updateInstrumentResult;
 		InstrumentService service = new InstrumentService();
 		String actualErrorMessage, expectedErrorMessage;
-		
+
 		//Remove the symbol.
 		this.microsoftStock.setSymbol("");
 		updateInstrumentResult = service.updateInstrument(this.convertToWsInstrument(this.microsoftStock));
-		
+
 		//There should be a return message of type E.
 		assertTrue(updateInstrumentResult.getMessages().size() == 1);
 		assertTrue(updateInstrumentResult.getMessages().get(0).getType() == WebServiceMessageType.E);
-		
+
 		//A proper message should be provided.
-		expectedErrorMessage = MessageFormat.format(this.resources.getString("instrument.symbol.size.message"), 
+		expectedErrorMessage = MessageFormat.format(this.resources.getString("instrument.symbol.size.message"),
 				this.microsoftStock.getSymbol().length(), "1", "6");
 		actualErrorMessage = updateInstrumentResult.getMessages().get(0).getText();
 		assertEquals(expectedErrorMessage, actualErrorMessage);
 	}
-	
-	
+
+
 	@Test
 	/**
 	 * Tests updating an instrument without changing any data.
@@ -799,21 +796,21 @@ public class InstrumentServiceTest {
 		WebServiceResult updateInstrumentResult;
 		InstrumentService service = new InstrumentService();
 		String actualErrorMessage, expectedErrorMessage;
-		
+
 		//Update instrument without changing any data.
 		updateInstrumentResult = service.updateInstrument(this.convertToWsInstrument(this.microsoftStock));
-		
+
 		//There should be a return message of type I
 		assertTrue(updateInstrumentResult.getMessages().size() == 1);
 		assertTrue(updateInstrumentResult.getMessages().get(0).getType() == WebServiceMessageType.I);
-		
+
 		//A proper message should be provided.
 		expectedErrorMessage = MessageFormat.format(this.resources.getString("instrument.updateUnchanged"), this.microsoftStock.getId());
 		actualErrorMessage = updateInstrumentResult.getMessages().get(0).getText();
 		assertEquals(expectedErrorMessage, actualErrorMessage);
 	}
-	
-	
+
+
 	@Test
 	/**
 	 * Tests updating an instrument where the update causes a duplicate instrument.
@@ -823,23 +820,23 @@ public class InstrumentServiceTest {
 		WebServiceResult updateInstrumentResult;
 		InstrumentService service = new InstrumentService();
 		String actualErrorMessage, expectedErrorMessage;
-		
+
 		//Change an existing instrument in a way that a duplicate instrument will be created.
 		this.microsoftStock.setSymbol("AAPL");
-		
+
 		//Update the instrument at the database via WebService.
 		updateInstrumentResult = service.updateInstrument(this.convertToWsInstrument(this.microsoftStock));
-		
+
 		//There should be a return message of type E.
 		assertTrue(updateInstrumentResult.getMessages().size() == 1);
 		assertTrue(updateInstrumentResult.getMessages().get(0).getType() == WebServiceMessageType.E);
-		
+
 		//A proper message should be provided.
-		expectedErrorMessage = MessageFormat.format(this.resources.getString("instrument.updateDuplicate"), 
+		expectedErrorMessage = MessageFormat.format(this.resources.getString("instrument.updateDuplicate"),
 				this.appleStock.getSymbol(), this.appleStock.getStockExchange());
 		actualErrorMessage = updateInstrumentResult.getMessages().get(0).getText();
 		assertEquals(expectedErrorMessage, actualErrorMessage);
-		
+
 		//The symbol change should not have been persisted.
 		try {
 			databaseInstrument = instrumentDAO.getInstrument(this.microsoftStock.getId());
@@ -848,8 +845,8 @@ public class InstrumentServiceTest {
 			fail(e.getMessage());
 		}
 	}
-	
-	
+
+
 	@Test
 	/**
 	 * Tests updating an Instrument with a sector reference. The referenced Instrument is not of type 'SECTOR'.
@@ -859,22 +856,22 @@ public class InstrumentServiceTest {
 		WebServiceResult updateInstrumentResult;
 		InstrumentService service = new InstrumentService();
 		String actualErrorMessage, expectedErrorMessage;
-		
+
 		//Set the sector of the instrument to another instrument of type 'STOCK'.
 		this.microsoftStock.setSector(this.appleStock);
-		
+
 		//Update the instrument at the database via WebService.
 		updateInstrumentResult = service.updateInstrument(this.convertToWsInstrument(this.microsoftStock));
-		
+
 		//There should be a return message of type E.
 		assertTrue(updateInstrumentResult.getMessages().size() == 1);
 		assertTrue(updateInstrumentResult.getMessages().get(0).getType() == WebServiceMessageType.E);
-		
+
 		//A proper message should be provided.
 		expectedErrorMessage = this.resources.getString("instrument.wrongSectorReference");
 		actualErrorMessage = updateInstrumentResult.getMessages().get(0).getText();
 		assertEquals(expectedErrorMessage, actualErrorMessage);
-		
+
 		//The sector change should not have been persisted.
 		try {
 			databaseInstrument = instrumentDAO.getInstrument(this.microsoftStock.getId());
@@ -883,8 +880,8 @@ public class InstrumentServiceTest {
 			fail(e.getMessage());
 		}
 	}
-	
-	
+
+
 	@Test
 	/**
 	 * Tests updating an Instrument with an industry group reference. The referenced Instrument is not of type 'INDUSTRY_GROUP'.
@@ -894,22 +891,22 @@ public class InstrumentServiceTest {
 		WebServiceResult updateInstrumentResult;
 		InstrumentService service = new InstrumentService();
 		String actualErrorMessage, expectedErrorMessage;
-		
+
 		//Set the industry group of the instrument to another instrument of type 'STOCK'.
 		this.microsoftStock.setIndustryGroup(this.appleStock);
-		
+
 		//Update the instrument at the database via WebService.
 		updateInstrumentResult = service.updateInstrument(this.convertToWsInstrument(this.microsoftStock));
-		
+
 		//There should be a return message of type E.
 		assertTrue(updateInstrumentResult.getMessages().size() == 1);
 		assertTrue(updateInstrumentResult.getMessages().get(0).getType() == WebServiceMessageType.E);
-		
+
 		//A proper message should be provided.
 		expectedErrorMessage = this.resources.getString("instrument.wrongIndustryGroupReference");
 		actualErrorMessage = updateInstrumentResult.getMessages().get(0).getText();
 		assertEquals(expectedErrorMessage, actualErrorMessage);
-		
+
 		//The industry group change should not have been persisted.
 		try {
 			databaseInstrument = instrumentDAO.getInstrument(this.microsoftStock.getId());
@@ -918,8 +915,8 @@ public class InstrumentServiceTest {
 			fail(e.getMessage());
 		}
 	}
-	
-	
+
+
 	@Test
 	/**
 	 * Tests adding of a new instrument.
@@ -929,32 +926,32 @@ public class InstrumentServiceTest {
 		Instrument addedInstrument;
 		WebServiceResult addInstrumentResult;
 		InstrumentService service = new InstrumentService();
-		
+
 		//Define the new instrument.
 		newInstrument.setSymbol("TSLA");
 		newInstrument.setName("Tesla Inc.");
 		newInstrument.setStockExchange(StockExchange.NDQ);
 		newInstrument.setType(InstrumentType.STOCK);
-		
+
 		//Add the new instrument to the database via WebService
 		addInstrumentResult = service.addInstrument(this.convertToWsInstrument(newInstrument));
-		
+
 		//Assure no error message exists
 		assertTrue(WebServiceTools.resultContainsErrorMessage(addInstrumentResult) == false);
-		
+
 		//There should be a success message
 		assertTrue(addInstrumentResult.getMessages().size() == 1);
 		assertTrue(addInstrumentResult.getMessages().get(0).getType() == WebServiceMessageType.S);
-		
+
 		//The ID of the newly created instrument should be provided in the data part of the WebService return.
 		assertNotNull(addInstrumentResult.getData());
 		assertTrue(addInstrumentResult.getData() instanceof Integer);
 		newInstrument.setId((Integer) addInstrumentResult.getData());
-		
+
 		//Read the persisted instrument via DAO
 		try {
 			addedInstrument = instrumentDAO.getInstrument(newInstrument.getId());
-			
+
 			//Check if the instrument read by the DAO equals the instrument inserted using the WebService in each attribute.
 			assertEquals(newInstrument, addedInstrument);
 		} catch (Exception e) {
@@ -964,14 +961,14 @@ public class InstrumentServiceTest {
 			//Delete the newly added price alert.
 			try {
 				instrumentDAO.deleteInstrument(newInstrument);
-			} 
+			}
 			catch (Exception e) {
 				fail(e.getMessage());
 			}
-		}		
+		}
 	}
-	
-	
+
+
 	@Test
 	/**
 	 * Tests adding of an invalid instrument.
@@ -980,24 +977,24 @@ public class InstrumentServiceTest {
 		Instrument newInstrument = new Instrument();
 		WebServiceResult addInstrumentResult;
 		InstrumentService service = new InstrumentService();
-		
+
 		//Define the new instrument without a type.
 		newInstrument.setSymbol("TSLA");
 		newInstrument.setName("Tesla Inc.");
 		newInstrument.setStockExchange(StockExchange.NDQ);
-		
+
 		//Add a new instrument to the database via WebService
 		addInstrumentResult = service.addInstrument(this.convertToWsInstrument(newInstrument));
-		
+
 		//There should be a return message of type E.
 		assertTrue(addInstrumentResult.getMessages().size() == 1);
 		assertTrue(addInstrumentResult.getMessages().get(0).getType() == WebServiceMessageType.E);
-		
+
 		//The new instrument should not have been persisted
 		assertNull(newInstrument.getId());
 	}
-	
-	
+
+
 	@Test
 	/**
 	 * Tests adding an instrument which already exists (Symbol / Stock Exchange combination has to be distinct).
@@ -1007,40 +1004,40 @@ public class InstrumentServiceTest {
 		WebServiceResult addInstrumentResult;
 		InstrumentService service = new InstrumentService();
 		String actualErrorMessage, expectedErrorMessage;
-		
+
 		//Define the new instrument without a type.
 		newInstrument.setSymbol("AAPL");
 		newInstrument.setName("Apple Computer");
 		newInstrument.setStockExchange(StockExchange.NDQ);
 		newInstrument.setType(InstrumentType.STOCK);
-		
+
 		//Add a new instrument to the database via WebService.
 		addInstrumentResult = service.addInstrument(this.convertToWsInstrument(newInstrument));
-		
+
 		//There should be a return message of type E.
 		assertTrue(addInstrumentResult.getMessages().size() == 1);
 		assertTrue(addInstrumentResult.getMessages().get(0).getType() == WebServiceMessageType.E);
-		
+
 		//A proper message should be provided.
-		expectedErrorMessage = MessageFormat.format(this.resources.getString("instrument.createDuplicate"), 
+		expectedErrorMessage = MessageFormat.format(this.resources.getString("instrument.createDuplicate"),
 				this.appleStock.getSymbol(), this.appleStock.getStockExchange());
 		actualErrorMessage = addInstrumentResult.getMessages().get(0).getText();
 		assertEquals(expectedErrorMessage, actualErrorMessage);
-		
+
 		//The new instrument should not have been persisted.
 		assertNull(newInstrument.getId());
 	}
-	
-	
+
+
 	/**
 	 * Converts an Instrument to the lean WebService representation.
-	 * 
+	 *
 	 * @param instrument The Instrument to be converted.
 	 * @return The lean WebService representation of the Instrument.
 	 */
 	private InstrumentWS convertToWsInstrument(final Instrument instrument) {
 		InstrumentWS instrumentWS = new InstrumentWS();
-		
+
 		//Simple object attributes.
 		instrumentWS.setId(instrument.getId());
 		instrumentWS.setSymbol(instrument.getSymbol());
@@ -1048,11 +1045,11 @@ public class InstrumentServiceTest {
 		instrumentWS.setStockExchange(instrument.getStockExchange());
 		instrumentWS.setName(instrument.getName());
 		instrumentWS.setCompanyPathInvestingCom(instrument.getCompanyPathInvestingCom());
-		
+
 		//Object references.
 		if(instrument.getSector() != null)
 			instrumentWS.setSectorId(instrument.getSector().getId());
-		
+
 		if(instrument.getIndustryGroup() != null)
 			instrumentWS.setIndustryGroupId(instrument.getIndustryGroup().getId());
 

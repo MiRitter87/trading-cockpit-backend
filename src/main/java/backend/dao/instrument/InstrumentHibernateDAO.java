@@ -1,16 +1,9 @@
 package backend.dao.instrument;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Query;
-import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import java.util.Map;
 
 import backend.dao.ObjectUnchangedException;
 import backend.model.ObjectInUseException;
@@ -20,6 +13,15 @@ import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 import backend.model.priceAlert.PriceAlert;
+import jakarta.persistence.EntityGraph;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 /**
  * Provides access to Instrument database persistence using Hibernate.
@@ -104,6 +106,10 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
         List<Instrument> instruments = null;
         EntityManager entityManager = this.sessionFactory.createEntityManager();
 
+        // Use entity graphs to load data of referenced sector instances.
+        EntityGraph<Instrument> graph = entityManager.createEntityGraph(Instrument.class);
+        graph.addAttributeNodes("sector");
+
         entityManager.getTransaction().begin();
 
         try {
@@ -121,8 +127,9 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
 
             criteriaQuery.where(predicates.toArray(new Predicate[predicates.size()]));
             criteriaQuery.orderBy(criteriaBuilder.asc(criteria.get("id"))); // Order by id ascending
-            TypedQuery<Instrument> typedQuery = entityManager.createQuery(criteriaQuery);
 
+            TypedQuery<Instrument> typedQuery = entityManager.createQuery(criteriaQuery);
+            typedQuery.setHint("jakarta.persistence.loadgraph", graph); // Also fetch all sector data.
             instruments = typedQuery.getResultList();
             entityManager.getTransaction().commit();
         } catch (Exception exception) {
@@ -145,8 +152,14 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
     public Instrument getInstrument(final Integer id) throws Exception {
         EntityManager entityManager = this.sessionFactory.createEntityManager();
 
+        // Use entity graphs to load data of referenced sector instance.
+        EntityGraph<Instrument> graph = entityManager.createEntityGraph(Instrument.class);
+        graph.addAttributeNodes("sector");
+        Map<String, Object> hints = new HashMap<String, Object>();
+        hints.put("jakarta.persistence.loadgraph", graph);
+
         entityManager.getTransaction().begin();
-        Instrument instrument = entityManager.find(Instrument.class, id);
+        Instrument instrument = entityManager.find(Instrument.class, id, hints);
         entityManager.getTransaction().commit();
         entityManager.close();
 
