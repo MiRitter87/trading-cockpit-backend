@@ -91,6 +91,11 @@ public class QuotationServiceTest {
     private Instrument xlfETF;
 
     /**
+     * Sector: Industrial.
+     */
+    private Instrument xliSector;
+
+    /**
      * A Quotation of the Apple stock.
      */
     private Quotation appleQuotation1;
@@ -201,6 +206,7 @@ public class QuotationServiceTest {
      * Initializes the database with dummy instruments.
      */
     private void createDummyInstruments() {
+        this.xliSector = this.getXliSector();
         this.appleStock = this.getAppleStock();
         this.microsoftStock = this.getMicrosoftStock();
         this.fordStock = this.getFordStock();
@@ -210,6 +216,7 @@ public class QuotationServiceTest {
         this.xlfETF = this.getXlfEtf();
 
         try {
+            instrumentDAO.insertInstrument(this.xliSector);
             instrumentDAO.insertInstrument(this.appleStock);
             instrumentDAO.insertInstrument(this.microsoftStock);
             instrumentDAO.insertInstrument(this.fordStock);
@@ -234,6 +241,7 @@ public class QuotationServiceTest {
             instrumentDAO.deleteInstrument(this.fordStock);
             instrumentDAO.deleteInstrument(this.microsoftStock);
             instrumentDAO.deleteInstrument(this.appleStock);
+            instrumentDAO.deleteInstrument(this.xliSector);
         } catch (Exception e) {
             fail(e.getMessage());
         }
@@ -251,6 +259,7 @@ public class QuotationServiceTest {
         instrument.setName("Apple");
         instrument.setStockExchange(StockExchange.NDQ);
         instrument.setType(InstrumentType.STOCK);
+        instrument.setSector(this.xliSector);
 
         return instrument;
     }
@@ -267,6 +276,7 @@ public class QuotationServiceTest {
         instrument.setName("Microsoft");
         instrument.setStockExchange(StockExchange.NDQ);
         instrument.setType(InstrumentType.STOCK);
+        instrument.setSector(this.xliSector);
 
         return instrument;
     }
@@ -283,6 +293,7 @@ public class QuotationServiceTest {
         instrument.setName("Ford Motor Company");
         instrument.setStockExchange(StockExchange.NYSE);
         instrument.setType(InstrumentType.STOCK);
+        instrument.setSector(this.xliSector);
 
         return instrument;
     }
@@ -299,6 +310,7 @@ public class QuotationServiceTest {
         instrument.setStockExchange(StockExchange.TSX);
         instrument.setType(InstrumentType.STOCK);
         instrument.setName("Denison Mines");
+        instrument.setSector(this.xliSector);
 
         return instrument;
     }
@@ -315,6 +327,7 @@ public class QuotationServiceTest {
         instrument.setName("Energy Select Sector SPDR Fund");
         instrument.setStockExchange(StockExchange.NYSE);
         instrument.setType(InstrumentType.ETF);
+        instrument.setSector(this.xliSector);
 
         return instrument;
     }
@@ -331,6 +344,7 @@ public class QuotationServiceTest {
         instrument.setName("Materials Select Sector SPDR Fund");
         instrument.setStockExchange(StockExchange.NYSE);
         instrument.setType(InstrumentType.ETF);
+        instrument.setSector(this.xliSector);
 
         return instrument;
     }
@@ -347,6 +361,23 @@ public class QuotationServiceTest {
         instrument.setName("Financial Select Sector SPDR Fund");
         instrument.setStockExchange(StockExchange.NYSE);
         instrument.setType(InstrumentType.ETF);
+        instrument.setSector(this.xliSector);
+
+        return instrument;
+    }
+
+    /**
+     * Gets the Instrument of the Industrial Sector.
+     *
+     * @return The Instrument of the Industrial Sector.
+     */
+    private Instrument getXliSector() {
+        Instrument instrument = new Instrument();
+
+        instrument.setSymbol("XLI");
+        instrument.setName("Industrial Select Sector SPDR Fund");
+        instrument.setStockExchange(StockExchange.NYSE);
+        instrument.setType(InstrumentType.SECTOR);
 
         return instrument;
     }
