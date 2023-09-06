@@ -96,6 +96,11 @@ public class QuotationServiceTest {
     private Instrument xliSector;
 
     /**
+     * Industry Group: Copper Miners.
+     */
+    private Instrument copperIndustryGroup;
+
+    /**
      * A Quotation of the Apple stock.
      */
     private Quotation appleQuotation1;
@@ -207,6 +212,7 @@ public class QuotationServiceTest {
      */
     private void createDummyInstruments() {
         this.xliSector = this.getXliSector();
+        this.copperIndustryGroup = this.getCopperIndustryGroup();
         this.appleStock = this.getAppleStock();
         this.microsoftStock = this.getMicrosoftStock();
         this.fordStock = this.getFordStock();
@@ -217,6 +223,7 @@ public class QuotationServiceTest {
 
         try {
             instrumentDAO.insertInstrument(this.xliSector);
+            instrumentDAO.insertInstrument(this.copperIndustryGroup);
             instrumentDAO.insertInstrument(this.appleStock);
             instrumentDAO.insertInstrument(this.microsoftStock);
             instrumentDAO.insertInstrument(this.fordStock);
@@ -241,6 +248,7 @@ public class QuotationServiceTest {
             instrumentDAO.deleteInstrument(this.fordStock);
             instrumentDAO.deleteInstrument(this.microsoftStock);
             instrumentDAO.deleteInstrument(this.appleStock);
+            instrumentDAO.deleteInstrument(this.copperIndustryGroup);
             instrumentDAO.deleteInstrument(this.xliSector);
         } catch (Exception e) {
             fail(e.getMessage());
@@ -260,6 +268,7 @@ public class QuotationServiceTest {
         instrument.setStockExchange(StockExchange.NDQ);
         instrument.setType(InstrumentType.STOCK);
         instrument.setSector(this.xliSector);
+        instrument.setIndustryGroup(this.copperIndustryGroup);
 
         return instrument;
     }
@@ -277,6 +286,7 @@ public class QuotationServiceTest {
         instrument.setStockExchange(StockExchange.NDQ);
         instrument.setType(InstrumentType.STOCK);
         instrument.setSector(this.xliSector);
+        instrument.setIndustryGroup(this.copperIndustryGroup);
 
         return instrument;
     }
@@ -294,6 +304,7 @@ public class QuotationServiceTest {
         instrument.setStockExchange(StockExchange.NYSE);
         instrument.setType(InstrumentType.STOCK);
         instrument.setSector(this.xliSector);
+        instrument.setIndustryGroup(this.copperIndustryGroup);
 
         return instrument;
     }
@@ -311,6 +322,7 @@ public class QuotationServiceTest {
         instrument.setType(InstrumentType.STOCK);
         instrument.setName("Denison Mines");
         instrument.setSector(this.xliSector);
+        instrument.setIndustryGroup(this.copperIndustryGroup);
 
         return instrument;
     }
@@ -328,6 +340,7 @@ public class QuotationServiceTest {
         instrument.setStockExchange(StockExchange.NYSE);
         instrument.setType(InstrumentType.ETF);
         instrument.setSector(this.xliSector);
+        instrument.setIndustryGroup(this.copperIndustryGroup);
 
         return instrument;
     }
@@ -345,6 +358,7 @@ public class QuotationServiceTest {
         instrument.setStockExchange(StockExchange.NYSE);
         instrument.setType(InstrumentType.ETF);
         instrument.setSector(this.xliSector);
+        instrument.setIndustryGroup(this.copperIndustryGroup);
 
         return instrument;
     }
@@ -362,6 +376,7 @@ public class QuotationServiceTest {
         instrument.setStockExchange(StockExchange.NYSE);
         instrument.setType(InstrumentType.ETF);
         instrument.setSector(this.xliSector);
+        instrument.setIndustryGroup(this.copperIndustryGroup);
 
         return instrument;
     }
@@ -378,6 +393,22 @@ public class QuotationServiceTest {
         instrument.setName("Industrial Select Sector SPDR Fund");
         instrument.setStockExchange(StockExchange.NYSE);
         instrument.setType(InstrumentType.SECTOR);
+
+        return instrument;
+    }
+
+    /**
+     * Gets the Instrument of the Copper Miners Industry Group.
+     *
+     * @return The Instrument of the Copper Miners Industry Group.
+     */
+    private Instrument getCopperIndustryGroup() {
+        Instrument instrument = new Instrument();
+
+        instrument.setSymbol("COPX");
+        instrument.setName("Global X Copper Miners ETF");
+        instrument.setStockExchange(StockExchange.NYSE);
+        instrument.setType(InstrumentType.IND_GROUP);
 
         return instrument;
     }
