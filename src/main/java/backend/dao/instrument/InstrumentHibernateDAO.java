@@ -106,9 +106,10 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
         List<Instrument> instruments = null;
         EntityManager entityManager = this.sessionFactory.createEntityManager();
 
-        // Use entity graphs to load data of referenced sector instances.
+        // Use entity graphs to load data of referenced object instances.
         EntityGraph<Instrument> graph = entityManager.createEntityGraph(Instrument.class);
         graph.addAttributeNodes("sector");
+        graph.addAttributeNodes("industryGroup");
 
         entityManager.getTransaction().begin();
 
@@ -129,7 +130,7 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
             criteriaQuery.orderBy(criteriaBuilder.asc(criteria.get("id"))); // Order by id ascending
 
             TypedQuery<Instrument> typedQuery = entityManager.createQuery(criteriaQuery);
-            typedQuery.setHint("jakarta.persistence.loadgraph", graph); // Also fetch all sector data.
+            typedQuery.setHint("jakarta.persistence.loadgraph", graph); // Also fetch referenced data.
             instruments = typedQuery.getResultList();
             entityManager.getTransaction().commit();
         } catch (Exception exception) {
@@ -155,6 +156,7 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
         // Use entity graphs to load data of referenced sector instance.
         EntityGraph<Instrument> graph = entityManager.createEntityGraph(Instrument.class);
         graph.addAttributeNodes("sector");
+        graph.addAttributeNodes("industryGroup");
         Map<String, Object> hints = new HashMap<String, Object>();
         hints.put("jakarta.persistence.loadgraph", graph);
 

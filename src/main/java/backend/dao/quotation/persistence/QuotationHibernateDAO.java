@@ -148,7 +148,7 @@ public class QuotationHibernateDAO implements QuotationDAO {
         EntityGraph<Quotation> graph = entityManager.createEntityGraph(Quotation.class);
         graph.addAttributeNodes("instrument");
         graph.addAttributeNodes("indicator");
-        graph.addSubgraph("instrument").addAttributeNodes("sector");
+        graph.addSubgraph("instrument").addAttributeNodes("sector", "industryGroup");
 
         entityManager.getTransaction().begin();
 

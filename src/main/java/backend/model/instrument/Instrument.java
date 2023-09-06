@@ -118,7 +118,7 @@ public class Instrument {
     /**
      * The industry group the Instrument is part of.
      */
-    @OneToOne(targetEntity = Instrument.class)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "INDUSTRY_GROUP_ID")
     private Instrument industryGroup;
 
