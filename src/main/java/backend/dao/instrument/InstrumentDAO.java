@@ -3,7 +3,7 @@ package backend.dao.instrument;
 import java.util.List;
 
 import backend.dao.ObjectUnchangedException;
-import backend.model.ObjectInUseException;
+import backend.model.LocalizedException;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 
@@ -26,10 +26,10 @@ public interface InstrumentDAO {
      * Deletes an instrument.
      *
      * @param instrument The instrument to be deleted.
-     * @throws ObjectInUseException The Instrument is still used by other objects and can't be deleted.
-     * @throws Exception            Deletion failed.
+     * @throws LocalizedException A general exception containing a localized message.
+     * @throws Exception          Deletion failed.
      */
-    void deleteInstrument(Instrument instrument) throws ObjectInUseException, Exception;
+    void deleteInstrument(Instrument instrument) throws LocalizedException, Exception;
 
     /**
      * Gets all instruments of the given InstrumentType.

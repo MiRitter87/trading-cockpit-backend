@@ -85,9 +85,14 @@ public class InstrumentServiceTest {
     private Instrument nvidiaStock;
 
     /**
-     * The ratio between Apple and Nvidia.
+     * The stock of Tesla.
      */
-    private Instrument appleNvidiaRatio;
+    private Instrument teslaStock;
+
+    /**
+     * The ratio between Apple and Tesla.
+     */
+    private Instrument appleTeslaRatio;
 
     /**
      * A Quotation of the Microsoft stock.
@@ -168,7 +173,8 @@ public class InstrumentServiceTest {
         this.appleStock = this.getAppleStock();
         this.microsoftStock = this.getMicrosoftStock();
         this.nvidiaStock = this.getNvidiaStock();
-        this.appleNvidiaRatio = this.getAppleNvidiaRatio();
+        this.teslaStock = this.getTeslaStock();
+        this.appleTeslaRatio = this.getAppleTeslaRatio();
 
         try {
             instrumentDAO.insertInstrument(this.technologySector);
@@ -176,7 +182,8 @@ public class InstrumentServiceTest {
             instrumentDAO.insertInstrument(this.appleStock);
             instrumentDAO.insertInstrument(this.microsoftStock);
             instrumentDAO.insertInstrument(this.nvidiaStock);
-            instrumentDAO.insertInstrument(this.appleNvidiaRatio);
+            instrumentDAO.insertInstrument(this.teslaStock);
+            instrumentDAO.insertInstrument(this.appleTeslaRatio);
         } catch (Exception e) {
             fail(e.getMessage());
         }
@@ -187,7 +194,8 @@ public class InstrumentServiceTest {
      */
     private void deleteDummyInstruments() {
         try {
-            instrumentDAO.deleteInstrument(this.appleNvidiaRatio);
+            instrumentDAO.deleteInstrument(this.appleTeslaRatio);
+            instrumentDAO.deleteInstrument(this.teslaStock);
             instrumentDAO.deleteInstrument(this.nvidiaStock);
             instrumentDAO.deleteInstrument(this.microsoftStock);
             instrumentDAO.deleteInstrument(this.appleStock);
@@ -249,17 +257,33 @@ public class InstrumentServiceTest {
     }
 
     /**
-     * Gets the Instrument of the Apple/Nvidia ratio.
+     * Gets the Instrument of the Tesla stock.
      *
-     * @return The Instrument of the Apple/Nvidia ratio.
+     * @return The instrument of the Tesla stock.
      */
-    private Instrument getAppleNvidiaRatio() {
+    private Instrument getTeslaStock() {
         Instrument instrument = new Instrument();
 
-        instrument.setName("Apple/Nvidia");
+        instrument.setSymbol("TSLA");
+        instrument.setName("Tesla");
+        instrument.setStockExchange(StockExchange.NDQ);
+        instrument.setType(InstrumentType.STOCK);
+
+        return instrument;
+    }
+
+    /**
+     * Gets the Instrument of the Apple/Tesla ratio.
+     *
+     * @return The Instrument of the Apple/Tesla ratio.
+     */
+    private Instrument getAppleTeslaRatio() {
+        Instrument instrument = new Instrument();
+
+        instrument.setName("Apple/Tesla");
         instrument.setType(InstrumentType.RATIO);
         instrument.setDividend(this.appleStock);
-        instrument.setDivisor(this.nvidiaStock);
+        instrument.setDivisor(this.teslaStock);
 
         return instrument;
     }
@@ -449,7 +473,7 @@ public class InstrumentServiceTest {
      * Tests the retrieval of an Instrument that constitutes a ratio.
      */
     public void testGetInstrumentRatio() {
-        //TODO Implement unit test trying to get a ratio (dividend and divisor need to be loaded by DAO)
+        // TODO Implement unit test trying to get a ratio (dividend and divisor need to be loaded by DAO)
     }
 
     @Test
@@ -496,8 +520,8 @@ public class InstrumentServiceTest {
         // Assure no error message exists
         assertTrue(WebServiceTools.resultContainsErrorMessage(getInstrumentsResult) == false);
 
-        // Check if six instruments are returned.
-        assertEquals(6, instruments.getInstruments().size());
+        // Check if all instruments are returned.
+        assertEquals(7, instruments.getInstruments().size());
 
         // Check all instruments by each attribute.
         instrument = instruments.getInstruments().get(0);
@@ -516,7 +540,10 @@ public class InstrumentServiceTest {
         assertEquals(this.nvidiaStock, instrument);
 
         instrument = instruments.getInstruments().get(5);
-        assertEquals(this.appleNvidiaRatio, instrument);
+        assertEquals(this.teslaStock, instrument);
+
+        instrument = instruments.getInstruments().get(6);
+        assertEquals(this.appleTeslaRatio, instrument);
     }
 
     @Test
@@ -730,6 +757,34 @@ public class InstrumentServiceTest {
 
     @Test
     /**
+     * Tests deletion of an Instrument that is used as dividend or divisor of another Instrument that constitutes a
+     * ratio.
+     */
+    public void testDeleteInstrumentUsedInRatio() {
+        WebServiceResult deleteInstrumentResult;
+        String expectedErrorMessage, actualErrorMessage;
+        InstrumentService service = new InstrumentService();
+
+        try {
+            // Try to delete Tesla stock that is used as divisor of a ratio.
+            deleteInstrumentResult = service.deleteInstrument(this.teslaStock.getId());
+
+            // There should be a return message of type E.
+            assertTrue(deleteInstrumentResult.getMessages().size() == 1);
+            assertTrue(deleteInstrumentResult.getMessages().get(0).getType() == WebServiceMessageType.E);
+
+            // Verify the expected error message.
+            expectedErrorMessage = MessageFormat.format(this.resources.getString("instrument.deleteUsedInRatio"),
+                    this.teslaStock.getId(), this.appleTeslaRatio.getId());
+            actualErrorMessage = deleteInstrumentResult.getMessages().get(0).getText();
+            assertEquals(expectedErrorMessage, actualErrorMessage);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    /**
      * Tests updating an instrument with valid data.
      */
     public void testUpdateValidInstrument() {
@@ -919,8 +974,8 @@ public class InstrumentServiceTest {
         InstrumentService service = new InstrumentService();
 
         // Define the new instrument.
-        newInstrument.setSymbol("TSLA");
-        newInstrument.setName("Tesla Inc.");
+        newInstrument.setSymbol("AMZN");
+        newInstrument.setName("Amazon");
         newInstrument.setStockExchange(StockExchange.NDQ);
         newInstrument.setType(InstrumentType.STOCK);
 

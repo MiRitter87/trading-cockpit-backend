@@ -18,14 +18,12 @@ import backend.dao.instrument.DuplicateInstrumentException;
 import backend.dao.instrument.InstrumentDAO;
 import backend.dao.quotation.persistence.QuotationDAO;
 import backend.model.LocalizedException;
-import backend.model.ObjectInUseException;
 import backend.model.chart.HorizontalLine;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentArray;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.InstrumentWS;
 import backend.model.instrument.Quotation;
-import backend.model.priceAlert.PriceAlert;
 import backend.model.protocol.Protocol;
 import backend.model.webservice.WebServiceMessage;
 import backend.model.webservice.WebServiceMessageType;
@@ -198,8 +196,9 @@ public class InstrumentService {
                 deleteInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
                         MessageFormat.format(this.resources.getString("instrument.notFound"), id)));
             }
-        } catch (ObjectInUseException objectInUseException) {
-            this.handleObjectInUseDeletion(id, objectInUseException, deleteInstrumentResult);
+        } catch (LocalizedException localizedException) {
+            deleteInstrumentResult.addMessage(
+                    new WebServiceMessage(WebServiceMessageType.E, localizedException.getLocalizedMessage()));
         } catch (Exception e) {
             deleteInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
                     MessageFormat.format(this.resources.getString("instrument.deleteError"), id)));
@@ -367,40 +366,5 @@ public class InstrumentService {
             this.chartObjectDAO.deleteHorizontalLine(horizontalLine);
         }
 
-    }
-
-    /**
-     * Handling of the ObjectInUseException during deletion of an Instrument.
-     *
-     * @param id                     The Instrument id.
-     * @param objectInUseException   The ObjectInUseException.
-     * @param deleteInstrumentResult The WebServiceResult of the delete operation.
-     */
-    private void handleObjectInUseDeletion(final Integer id, final ObjectInUseException objectInUseException,
-            final WebServiceResult deleteInstrumentResult) {
-        if (objectInUseException.getUsedByObject() instanceof backend.model.list.List) {
-            deleteInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, MessageFormat.format(
-                    this.resources.getString("instrument.deleteUsedInList"), id, objectInUseException.getUsedById())));
-        } else if (objectInUseException.getUsedByObject() instanceof PriceAlert) {
-            deleteInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
-                    MessageFormat.format(this.resources.getString("instrument.deleteUsedInPriceAlert"), id,
-                            objectInUseException.getUsedById())));
-        } else if (objectInUseException.getUsedByObject() instanceof Instrument) {
-            deleteInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
-                    MessageFormat.format(this.resources.getString("instrument.deleteUsedInInstrument"), id,
-                            objectInUseException.getUsedById())));
-        } else if (objectInUseException.getUsedByObject() instanceof Quotation) {
-            deleteInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
-                    MessageFormat.format(this.resources.getString("instrument.deleteError"), id)));
-
-            // This is an error the user can not fix. Therefore it is logged.
-            LOGGER.error(MessageFormat.format(this.resources.getString("instrument.deleteUsedInQuotation"), id));
-        } else if (objectInUseException.getUsedByObject() instanceof HorizontalLine) {
-            deleteInstrumentResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
-                    MessageFormat.format(this.resources.getString("instrument.deleteError"), id)));
-
-            // This is an error the user can not fix. Therefore it is logged.
-            LOGGER.error(MessageFormat.format(this.resources.getString("instrument.deleteUsedInHorizontalLine"), id));
-        }
     }
 }

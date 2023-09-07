@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import backend.dao.ObjectUnchangedException;
-import backend.model.ObjectInUseException;
+import backend.model.LocalizedException;
 import backend.model.StockExchange;
 import backend.model.chart.HorizontalLine;
 import backend.model.instrument.Instrument;
@@ -73,7 +73,7 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
      * Deletes an Instrument.
      */
     @Override
-    public void deleteInstrument(final Instrument instrument) throws ObjectInUseException, Exception {
+    public void deleteInstrument(final Instrument instrument) throws LocalizedException, Exception {
         EntityManager entityManager = this.sessionFactory.createEntityManager();
 
         this.checkInstrumentInUse(instrument, entityManager);
@@ -245,15 +245,16 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
      *
      * @param instrument    The instrument which is checked.
      * @param entityManager The active EntityManager used for data access.
-     * @throws ObjectInUseException In case the Instrument is in use.
+     * @throws LocalizedException A general exception containing a localized message.
      */
     private void checkInstrumentInUse(final Instrument instrument, final EntityManager entityManager)
-            throws ObjectInUseException {
+            throws LocalizedException {
         this.checkQuotationsExist(instrument, entityManager);
         this.checkHorizontalLinesExist(instrument, entityManager);
         this.checkInstrumentUsedInList(instrument, entityManager);
         this.checkInstrumentUsedInPriceAlert(instrument, entityManager);
         this.checkInstrumentUsedAsSectorOrIg(instrument, entityManager);
+        this.checkInstrumentUsedAsDividendOrDivisor(instrument, entityManager);
     }
 
     /**
@@ -261,11 +262,11 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
      *
      * @param entityManager The EntityManager used to check for existing quotations.
      * @param instrument    The Instrument whose quotations are checked.
-     * @throws ObjectInUseException In case the Instrument has quotations referenced.
+     * @throws LocalizedException A general exception containing a localized message.
      */
     @SuppressWarnings("unchecked")
     private void checkQuotationsExist(final Instrument instrument, final EntityManager entityManager)
-            throws ObjectInUseException {
+            throws LocalizedException {
         Query query = entityManager.createQuery("SELECT q FROM Quotation q WHERE q.instrument.id = :instrumentId");
         List<Quotation> quotations;
 
@@ -273,7 +274,7 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
         quotations = query.getResultList();
 
         if (quotations.size() > 0) {
-            throw new ObjectInUseException(instrument.getId(), quotations.get(0).getId(), quotations.get(0));
+            throw new LocalizedException("instrument.deleteUsedInQuotation", instrument.getId());
         }
     }
 
@@ -282,11 +283,11 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
      *
      * @param entityManager The EntityManager used to check for existing horizontal lines.
      * @param instrument    The Instrument whose horizontal lines are checked.
-     * @throws ObjectInUseException In case the Instrument has horizontal lines referenced.
+     * @throws LocalizedException A general exception containing a localized message.
      */
     @SuppressWarnings("unchecked")
     private void checkHorizontalLinesExist(final Instrument instrument, final EntityManager entityManager)
-            throws ObjectInUseException {
+            throws LocalizedException {
         Query query = entityManager.createQuery("SELECT h FROM HorizontalLine h WHERE h.instrument.id = :instrumentId");
         List<HorizontalLine> horizontalLines;
 
@@ -294,7 +295,7 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
         horizontalLines = query.getResultList();
 
         if (horizontalLines.size() > 0) {
-            throw new ObjectInUseException(instrument.getId(), horizontalLines.get(0).getId(), horizontalLines.get(0));
+            throw new LocalizedException("instrument.deleteUsedInHorizontalLine", instrument.getId());
         }
     }
 
@@ -303,11 +304,11 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
      *
      * @param instrument    The Instrument which is checked.
      * @param entityManager The EntityManager used to execute queries.
-     * @throws ObjectInUseException In case the Instrument is in use.
+     * @throws LocalizedException A general exception containing a localized message.
      */
     @SuppressWarnings("unchecked")
     private void checkInstrumentUsedInList(final Instrument instrument, final EntityManager entityManager)
-            throws ObjectInUseException {
+            throws LocalizedException {
         Query query = entityManager.createQuery(
                 "SELECT l FROM List l INNER JOIN l.instruments instrument WHERE instrument.id = :instrumentId");
         List<backend.model.list.List> lists;
@@ -316,7 +317,7 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
         lists = query.getResultList();
 
         if (lists.size() > 0) {
-            throw new ObjectInUseException(instrument.getId(), lists.get(0).getId(), lists.get(0));
+            throw new LocalizedException("instrument.deleteUsedInList", instrument.getId(), lists.get(0).getId());
         }
     }
 
@@ -325,11 +326,11 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
      *
      * @param instrument    The Instrument which is checked.
      * @param entityManager The EntityManager used to execute queries.
-     * @throws ObjectInUseException In case the Instrument is in use.
+     * @throws LocalizedException A general exception containing a localized message.
      */
     @SuppressWarnings("unchecked")
     private void checkInstrumentUsedInPriceAlert(final Instrument instrument, final EntityManager entityManager)
-            throws ObjectInUseException {
+            throws LocalizedException {
         Query query = entityManager
                 .createQuery("SELECT p FROM PriceAlert p INNER JOIN p.instrument i WHERE i.id = :instrumentId");
         List<PriceAlert> priceAlerts;
@@ -338,7 +339,8 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
         priceAlerts = query.getResultList();
 
         if (priceAlerts.size() > 0) {
-            throw new ObjectInUseException(instrument.getId(), priceAlerts.get(0).getId(), priceAlerts.get(0));
+            throw new LocalizedException("instrument.deleteUsedInPriceAlert", instrument.getId(),
+                    priceAlerts.get(0).getId());
         }
     }
 
@@ -347,11 +349,11 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
      *
      * @param instrument    The Instrument which is checked.
      * @param entityManager The EntityManager used to execute queries.
-     * @throws ObjectInUseException In case the Instrument is in use.
+     * @throws LocalizedException A general exception containing a localized message.
      */
     @SuppressWarnings("unchecked")
     private void checkInstrumentUsedAsSectorOrIg(final Instrument instrument, final EntityManager entityManager)
-            throws ObjectInUseException {
+            throws LocalizedException {
         Query query = entityManager.createQuery(
                 "Select i FROM Instrument i WHERE i.sector.id = :instrumentId OR i.industryGroup.id = :instrumentId");
         List<Instrument> instruments;
@@ -360,7 +362,31 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
         instruments = query.getResultList();
 
         if (instruments.size() > 0) {
-            throw new ObjectInUseException(instrument.getId(), instruments.get(0).getId(), instruments.get(0));
+            throw new LocalizedException("instrument.deleteUsedInInstrument", instrument.getId(),
+                    instruments.get(0).getId());
+        }
+    }
+
+    /**
+     * Checks if the Instrument is used as dividend or divisor in another Instrument.
+     *
+     * @param instrument    The Instrument which is checked.
+     * @param entityManager The EntityManager used to execute queries.
+     * @throws LocalizedException A general exception containing a localized message.
+     */
+    @SuppressWarnings("unchecked")
+    private void checkInstrumentUsedAsDividendOrDivisor(final Instrument instrument, final EntityManager entityManager)
+            throws LocalizedException {
+        Query query = entityManager.createQuery(
+                "Select i FROM Instrument i WHERE i.dividend.id = :instrumentId OR i.divisor.id = :instrumentId");
+        List<Instrument> instruments;
+
+        query.setParameter("instrumentId", instrument.getId());
+        instruments = query.getResultList();
+
+        if (instruments.size() > 0) {
+            throw new LocalizedException("instrument.deleteUsedInRatio", instrument.getId(),
+                    instruments.get(0).getId());
         }
     }
 
