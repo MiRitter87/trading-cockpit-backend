@@ -370,6 +370,8 @@ public class Instrument {
         result = prime * result + ((type == null) ? 0 : type.hashCode());
         result = prime * result + ((sector == null) ? 0 : sector.hashCode());
         result = prime * result + ((industryGroup == null) ? 0 : industryGroup.hashCode());
+        result = prime * result + ((dividend == null) ? 0 : dividend.hashCode());
+        result = prime * result + ((divisor == null) ? 0 : divisor.hashCode());
         result = prime * result + ((companyPathInvestingCom == null) ? 0 : companyPathInvestingCom.hashCode());
         return result;
     }
@@ -428,6 +430,20 @@ public class Instrument {
                 return false;
             }
         } else if (!industryGroup.equals(other.industryGroup)) {
+            return false;
+        }
+        if (dividend == null) {
+            if (other.dividend != null) {
+                return false;
+            }
+        } else if (!dividend.equals(other.dividend)) {
+            return false;
+        }
+        if (divisor == null) {
+            if (other.divisor != null) {
+                return false;
+            }
+        } else if (!divisor.equals(other.divisor)) {
             return false;
         }
         if (companyPathInvestingCom == null) {
