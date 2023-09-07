@@ -85,9 +85,14 @@ public class InstrumentServiceTest {
     private Instrument nvidiaStock;
 
     /**
-     * A Quotation of the Apple stock.
+     * The ratio between Apple and Nvidia.
      */
-    private Quotation appleQuotation1;
+    private Instrument appleNvidiaRatio;
+
+    /**
+     * A Quotation of the Microsoft stock.
+     */
+    private Quotation microsoftQuotation1;
 
     /**
      * A List of instruments.
@@ -163,6 +168,7 @@ public class InstrumentServiceTest {
         this.appleStock = this.getAppleStock();
         this.microsoftStock = this.getMicrosoftStock();
         this.nvidiaStock = this.getNvidiaStock();
+        this.appleNvidiaRatio = this.getAppleNvidiaRatio();
 
         try {
             instrumentDAO.insertInstrument(this.technologySector);
@@ -170,6 +176,7 @@ public class InstrumentServiceTest {
             instrumentDAO.insertInstrument(this.appleStock);
             instrumentDAO.insertInstrument(this.microsoftStock);
             instrumentDAO.insertInstrument(this.nvidiaStock);
+            instrumentDAO.insertInstrument(this.appleNvidiaRatio);
         } catch (Exception e) {
             fail(e.getMessage());
         }
@@ -180,6 +187,7 @@ public class InstrumentServiceTest {
      */
     private void deleteDummyInstruments() {
         try {
+            instrumentDAO.deleteInstrument(this.appleNvidiaRatio);
             instrumentDAO.deleteInstrument(this.nvidiaStock);
             instrumentDAO.deleteInstrument(this.microsoftStock);
             instrumentDAO.deleteInstrument(this.appleStock);
@@ -241,6 +249,22 @@ public class InstrumentServiceTest {
     }
 
     /**
+     * Gets the Instrument of the Apple/Nvidia ratio.
+     *
+     * @return The Instrument of the Apple/Nvidia ratio.
+     */
+    private Instrument getAppleNvidiaRatio() {
+        Instrument instrument = new Instrument();
+
+        instrument.setName("Apple/Nvidia");
+        instrument.setType(InstrumentType.RATIO);
+        instrument.setDividend(this.appleStock);
+        instrument.setDivisor(this.nvidiaStock);
+
+        return instrument;
+    }
+
+    /**
      * Gets the Instrument of the technology sector.
      *
      * @return The Instrument of the technology sector.
@@ -277,8 +301,8 @@ public class InstrumentServiceTest {
      */
     private void createDummyQuotations() {
         List<Quotation> quotations = new ArrayList<>();
-        this.appleQuotation1 = this.getAppleQuotation();
-        quotations.add(this.appleQuotation1);
+        this.microsoftQuotation1 = this.getMicrosoftQuotation();
+        quotations.add(this.microsoftQuotation1);
 
         try {
             quotationDAO.insertQuotations(quotations);
@@ -292,7 +316,7 @@ public class InstrumentServiceTest {
      */
     private void deleteDummyQuotations() {
         List<Quotation> quotations = new ArrayList<>();
-        quotations.add(this.appleQuotation1);
+        quotations.add(this.microsoftQuotation1);
 
         try {
             quotationDAO.deleteQuotations(quotations);
@@ -302,18 +326,18 @@ public class InstrumentServiceTest {
     }
 
     /**
-     * Gets the Quotation of the Apple stock.
+     * Gets the Quotation of the Microsoft stock.
      *
-     * @return The Quotation of the Apple stock.
+     * @return The Quotation of the Microsoft stock.
      */
-    private Quotation getAppleQuotation() {
+    private Quotation getMicrosoftQuotation() {
         Quotation quotation = new Quotation();
 
         quotation.setDate(new Date());
-        quotation.setClose(BigDecimal.valueOf(78.54));
+        quotation.setClose(BigDecimal.valueOf(332.88));
         quotation.setCurrency(Currency.USD);
-        quotation.setVolume(28973654);
-        quotation.setInstrument(this.appleStock);
+        quotation.setVolume(17540000);
+        quotation.setInstrument(this.microsoftStock);
 
         return quotation;
     }
@@ -352,7 +376,7 @@ public class InstrumentServiceTest {
 
         list.setName("Dummy List");
         list.setDescription("Some Description");
-        list.addInstrument(this.microsoftStock);
+        list.addInstrument(this.appleStock);
 
         return list;
     }
@@ -399,7 +423,7 @@ public class InstrumentServiceTest {
 
     @Test
     /**
-     * Tests the retrieval of an instrument.
+     * Tests the retrieval of an Instrument.
      */
     public void testGetInstrument() {
         WebServiceResult getInstrumentResult;
@@ -419,6 +443,13 @@ public class InstrumentServiceTest {
 
         // Check each attribute of the instrument.
         assertEquals(this.appleStock, instrument);
+    }
+
+    /**
+     * Tests the retrieval of an Instrument that constitutes a ratio.
+     */
+    public void testGetInstrumentRatio() {
+        //TODO Implement unit test trying to get a ratio (dividend and divisor need to be loaded by DAO)
     }
 
     @Test
@@ -465,8 +496,8 @@ public class InstrumentServiceTest {
         // Assure no error message exists
         assertTrue(WebServiceTools.resultContainsErrorMessage(getInstrumentsResult) == false);
 
-        // Check if five instruments are returned.
-        assertEquals(5, instruments.getInstruments().size());
+        // Check if six instruments are returned.
+        assertEquals(6, instruments.getInstruments().size());
 
         // Check all instruments by each attribute.
         instrument = instruments.getInstruments().get(0);
@@ -483,6 +514,9 @@ public class InstrumentServiceTest {
 
         instrument = instruments.getInstruments().get(4);
         assertEquals(this.nvidiaStock, instrument);
+
+        instrument = instruments.getInstruments().get(5);
+        assertEquals(this.appleNvidiaRatio, instrument);
     }
 
     @Test
@@ -520,9 +554,9 @@ public class InstrumentServiceTest {
         Quotation databaseQuotation;
 
         try {
-            // Delete Apple Instrument using the service.
+            // Delete Microsoft Instrument using the service.
             InstrumentService service = new InstrumentService();
-            deleteInstrumentResult = service.deleteInstrument(this.appleStock.getId());
+            deleteInstrumentResult = service.deleteInstrument(this.microsoftStock.getId());
 
             // There should be no error messages
             assertTrue(WebServiceTools.resultContainsErrorMessage(deleteInstrumentResult) == false);
@@ -531,23 +565,23 @@ public class InstrumentServiceTest {
             assertTrue(deleteInstrumentResult.getMessages().size() == 1);
             assertTrue(deleteInstrumentResult.getMessages().get(0).getType() == WebServiceMessageType.S);
 
-            // Check if Apple Instrument is missing using the DAO.
-            deletedInstrument = instrumentDAO.getInstrument(this.appleStock.getId());
+            // Check if Microsoft Instrument is missing using the DAO.
+            deletedInstrument = instrumentDAO.getInstrument(this.microsoftStock.getId());
 
             if (deletedInstrument != null)
-                fail("Apple instrument is still persisted but should have been deleted by the WebService operation 'deleteInstrument'.");
+                fail("Microsoft instrument is still persisted but should have been deleted by the WebService operation 'deleteInstrument'.");
 
-            // The Quotation of the Apple stock should have been deleted too.
-            databaseQuotation = quotationDAO.getQuotation(this.appleQuotation1.getId());
+            // The Quotation of the Microsoft stock should have been deleted too.
+            databaseQuotation = quotationDAO.getQuotation(this.microsoftQuotation1.getId());
             if (databaseQuotation != null)
-                fail("Apple quotation is still persisted but should have been deleted by the WebService operation 'deleteInstrument'.");
+                fail("Microsoft quotation is still persisted but should have been deleted by the WebService operation 'deleteInstrument'.");
         } catch (Exception e) {
             fail(e.getMessage());
         } finally {
             // Restore old database state by adding the instrument that has been deleted previously.
             try {
-                this.appleStock = this.getAppleStock();
-                instrumentDAO.insertInstrument(this.appleStock);
+                this.microsoftStock = this.getMicrosoftStock();
+                instrumentDAO.insertInstrument(this.microsoftStock);
             } catch (Exception e) {
                 fail(e.getMessage());
             }
@@ -558,7 +592,7 @@ public class InstrumentServiceTest {
     /**
      * Tests deletion of an instrument with an unknown ID.
      */
-    public void testeDeleteInstrumentWithUnknownId() {
+    public void testDeleteInstrumentWithUnknownId() {
         WebServiceResult deleteInstrumentResult;
         final Integer unknownInstrumentId = 0;
         String expectedErrorMessage, actualErrorMessage;
@@ -588,7 +622,7 @@ public class InstrumentServiceTest {
 
         // Delete the instrument.
         InstrumentService service = new InstrumentService();
-        deleteInstrumentResult = service.deleteInstrument(this.microsoftStock.getId());
+        deleteInstrumentResult = service.deleteInstrument(this.appleStock.getId());
 
         // There should be a return message of type E.
         assertTrue(deleteInstrumentResult.getMessages().size() == 1);
@@ -596,7 +630,7 @@ public class InstrumentServiceTest {
 
         // Verify the expected error message.
         expectedErrorMessage = MessageFormat.format(this.resources.getString("instrument.deleteUsedInList"),
-                this.microsoftStock.getId(), this.list.getId());
+                this.appleStock.getId(), this.list.getId());
         actualErrorMessage = deleteInstrumentResult.getMessages().get(0).getText();
         assertEquals(expectedErrorMessage, actualErrorMessage);
     }
