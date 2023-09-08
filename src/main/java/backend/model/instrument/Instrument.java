@@ -7,6 +7,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.hibernate.validator.HibernateValidator;
+import org.hibernate.validator.messageinterpolation.ExpressionLanguageFeatureLevel;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import backend.model.LocalizedException;
+import backend.model.StockExchange;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -17,7 +24,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
@@ -28,14 +34,6 @@ import jakarta.validation.ValidatorFactory;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-
-import org.hibernate.validator.HibernateValidator;
-import org.hibernate.validator.messageinterpolation.ExpressionLanguageFeatureLevel;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import backend.model.LocalizedException;
-import backend.model.StockExchange;
 
 /**
  * A trading vehicle like a stock or an ETF.
@@ -135,14 +133,14 @@ public class Instrument {
     /**
      * The dividend of a ratio.
      */
-    @OneToOne(targetEntity = Instrument.class)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "DIVIDEND_ID")
     private Instrument dividend;
 
     /**
      * The divisor of a ratio.
      */
-    @OneToOne(targetEntity = Instrument.class)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "DIVISOR_ID")
     private Instrument divisor;
 

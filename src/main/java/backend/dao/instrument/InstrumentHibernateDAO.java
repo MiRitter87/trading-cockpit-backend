@@ -157,6 +157,11 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
         EntityGraph<Instrument> graph = entityManager.createEntityGraph(Instrument.class);
         graph.addAttributeNodes("sector");
         graph.addAttributeNodes("industryGroup");
+        graph.addAttributeNodes("dividend");
+        graph.addAttributeNodes("divisor");
+        graph.addSubgraph("dividend").addAttributeNodes("sector", "industryGroup");
+        graph.addSubgraph("divisor").addAttributeNodes("sector", "industryGroup");
+
         Map<String, Object> hints = new HashMap<String, Object>();
         hints.put("jakarta.persistence.loadgraph", graph);
 

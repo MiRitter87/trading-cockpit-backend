@@ -469,11 +469,28 @@ public class InstrumentServiceTest {
         assertEquals(this.appleStock, instrument);
     }
 
+    @Test
     /**
      * Tests the retrieval of an Instrument that constitutes a ratio.
      */
     public void testGetInstrumentRatio() {
-        // TODO Implement unit test trying to get a ratio (dividend and divisor need to be loaded by DAO)
+        WebServiceResult getInstrumentResult;
+        Instrument instrument;
+
+        // Get the instrument.
+        InstrumentService service = new InstrumentService();
+        getInstrumentResult = service.getInstrument(this.appleTeslaRatio.getId());
+
+        // Assure no error message exists
+        assertTrue(WebServiceTools.resultContainsErrorMessage(getInstrumentResult) == false);
+
+        // Assure that an instrument is returned
+        assertTrue(getInstrumentResult.getData() instanceof Instrument);
+
+        instrument = (Instrument) getInstrumentResult.getData();
+
+        // Check each attribute of the instrument.
+        assertEquals(this.appleTeslaRatio, instrument);
     }
 
     @Test
