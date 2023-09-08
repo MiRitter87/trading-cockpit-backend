@@ -590,6 +590,32 @@ public class InstrumentServiceTest {
 
     @Test
     /**
+     * Tests the retrieval of all instruments of type ratio. The test assures that dividend and divisor instances are
+     * loaded.
+     */
+    public void testGetIntrumentsTypeRatio() {
+        WebServiceResult getInstrumentsResult;
+        InstrumentArray instruments;
+        Instrument instrument;
+
+        // Get the instruments.
+        InstrumentService service = new InstrumentService();
+        getInstrumentsResult = service.getInstruments(InstrumentType.RATIO);
+        instruments = (InstrumentArray) getInstrumentsResult.getData();
+
+        // Assure no error message exists
+        assertTrue(WebServiceTools.resultContainsErrorMessage(getInstrumentsResult) == false);
+
+        // Check if one Instrument is returned.
+        assertEquals(1, instruments.getInstruments().size());
+
+        // Check the Instrument by each attribute.
+        instrument = instruments.getInstruments().get(0);
+        assertEquals(this.appleTeslaRatio, instrument);
+    }
+
+    @Test
+    /**
      * Tests deletion of an instrument.
      */
     public void testDeleteInstrument() {
