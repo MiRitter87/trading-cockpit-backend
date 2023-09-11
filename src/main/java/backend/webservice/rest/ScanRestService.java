@@ -10,6 +10,10 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
+import org.glassfish.jersey.jackson.internal.jackson.jaxrs.annotation.JacksonFeatures;
+
+import com.fasterxml.jackson.databind.SerializationFeature;
+
 import backend.model.scan.ScanWS;
 import backend.model.webservice.WebServiceResult;
 import backend.webservice.common.ScanService;
@@ -42,6 +46,7 @@ public class ScanRestService {
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @JacksonFeatures(serializationDisable = {SerializationFeature.FAIL_ON_EMPTY_BEANS})
     public WebServiceResult getScans() {
         ScanService scanService = new ScanService();
         return scanService.getScans();
