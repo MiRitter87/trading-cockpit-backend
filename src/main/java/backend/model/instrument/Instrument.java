@@ -623,6 +623,10 @@ public class Instrument {
             throw new LocalizedException("instrument.dividend.notNull.message");
         }
 
+        if (this.type == InstrumentType.RATIO && this.dividend != null && this.dividend.type == InstrumentType.RATIO) {
+            throw new LocalizedException("instrument.dividendTypeRatio");
+        }
+
         if (this.type != InstrumentType.RATIO && this.dividend != null) {
             throw new LocalizedException("instrument.dividendDefinedOnTypeNotRatio");
         }
@@ -636,6 +640,10 @@ public class Instrument {
     private void validateDivisor() throws LocalizedException {
         if (this.type == InstrumentType.RATIO && this.divisor == null) {
             throw new LocalizedException("instrument.divisor.notNull.message");
+        }
+
+        if (this.type == InstrumentType.RATIO && this.divisor != null && this.divisor.type == InstrumentType.RATIO) {
+            throw new LocalizedException("instrument.divisorTypeRatio");
         }
 
         if (this.type != InstrumentType.RATIO && this.divisor != null) {
