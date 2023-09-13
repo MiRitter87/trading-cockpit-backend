@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.Calendar;
 import java.util.List;
@@ -15,7 +14,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import backend.model.Currency;
 import backend.model.LocalizedException;
 import backend.model.StockExchange;
 import backend.tools.test.ValidationMessageProvider;
@@ -26,6 +24,11 @@ import backend.tools.test.ValidationMessageProvider;
  * @author Michael
  */
 public class InstrumentTest {
+    /**
+     * Class providing helper methods for fixture.
+     */
+    private InstrumentFixture fixtureHelper;
+
     /**
      * Access to localized application resources.
      */
@@ -76,6 +79,7 @@ public class InstrumentTest {
      * Tasks to be performed before each test is run.
      */
     private void setUp() {
+        this.fixtureHelper = new InstrumentFixture();
         this.initializeQuotations();
         this.initializeInstruments();
     }
@@ -94,78 +98,32 @@ public class InstrumentTest {
         this.quotation3 = null;
         this.quotation2 = null;
         this.quotation1 = null;
+
+        this.fixtureHelper = null;
     }
 
     /**
      * Initializes the quotations.
      */
     private void initializeQuotations() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.clear();
-
-        this.quotation1 = new Quotation();
-        calendar.set(2022, 07, 26, 15, 30, 0);
-        this.quotation1.setDate(calendar.getTime());
-        this.quotation1.setClose(BigDecimal.valueOf(1.11));
-        this.quotation1.setCurrency(Currency.USD);
-        this.quotation1.setVolume(10000);
-
-        this.quotation2 = new Quotation();
-        calendar.set(2022, 07, 27, 15, 30, 0);
-        this.quotation2.setDate(calendar.getTime());
-        this.quotation2.setClose(BigDecimal.valueOf(1.12));
-        this.quotation2.setCurrency(Currency.USD);
-        this.quotation2.setVolume(13400);
-
-        this.quotation3 = new Quotation();
-        calendar.set(2022, 07, 27, 14, 30, 0);
-        this.quotation3.setDate(calendar.getTime());
-        this.quotation3.setClose(BigDecimal.valueOf(1.11));
-        this.quotation3.setCurrency(Currency.USD);
-        this.quotation3.setVolume(10110);
+        this.quotation1 = this.fixtureHelper.getQuotation1();
+        this.quotation2 = this.fixtureHelper.getQuotation2();
+        this.quotation3 = this.fixtureHelper.getQuotation3();
     }
 
     /**
      * Initializes the instruments.
      */
     private void initializeInstruments() {
-        this.instrument = new Instrument();
-        this.instrument.setId(Integer.valueOf(1));
-        this.instrument.setSymbol("AAPL");
-        this.instrument.setType(InstrumentType.STOCK);
-        this.instrument.setStockExchange(StockExchange.NDQ);
-        this.instrument.setName("Apple");
+        this.instrument = this.fixtureHelper.getAppleStock();
         this.instrument.addQuotation(this.quotation1);
         this.instrument.addQuotation(this.quotation2);
         this.instrument.addQuotation(this.quotation3);
 
-        this.microsoftStock = new Instrument();
-        this.microsoftStock.setId(Integer.valueOf(2));
-        this.microsoftStock.setSymbol("MSFT");
-        this.microsoftStock.setType(InstrumentType.STOCK);
-        this.microsoftStock.setStockExchange(StockExchange.NDQ);
-        this.microsoftStock.setName("Microsoft");
-
-        this.sector = new Instrument();
-        this.sector.setId(Integer.valueOf(3));
-        this.sector.setSymbol("XLE");
-        this.sector.setType(InstrumentType.SECTOR);
-        this.sector.setStockExchange(StockExchange.NYSE);
-        this.sector.setName("Energy Select Sector SPDR Fund");
-
-        this.industryGroup = new Instrument();
-        this.industryGroup.setId(Integer.valueOf(4));
-        this.industryGroup.setSymbol("COPX");
-        this.industryGroup.setType(InstrumentType.IND_GROUP);
-        this.industryGroup.setStockExchange(StockExchange.NYSE);
-        this.industryGroup.setName("Global X Copper Miners ETF");
-
-        this.sectorIgRatio = new Instrument();
-        this.sectorIgRatio.setId(Integer.valueOf(5));
-        this.sectorIgRatio.setType(InstrumentType.RATIO);
-        this.sectorIgRatio.setName("Sector/Industry Group");
-        this.sectorIgRatio.setDividend(this.sector);
-        this.sectorIgRatio.setDivisor(this.industryGroup);
+        this.microsoftStock = this.fixtureHelper.getMicrosoftStock();
+        this.sector = this.fixtureHelper.getSector();
+        this.industryGroup = this.fixtureHelper.getIndustryGroup();
+        this.sectorIgRatio = this.fixtureHelper.getSectorIgRatio(this.sector, this.industryGroup);
     }
 
     @Test
