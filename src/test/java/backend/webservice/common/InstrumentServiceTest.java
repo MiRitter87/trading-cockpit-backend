@@ -7,10 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -25,15 +23,12 @@ import backend.dao.instrument.InstrumentDAO;
 import backend.dao.list.ListDAO;
 import backend.dao.priceAlert.PriceAlertDAO;
 import backend.dao.quotation.persistence.QuotationDAO;
-import backend.model.Currency;
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentArray;
 import backend.model.instrument.InstrumentType;
-import backend.model.instrument.InstrumentWS;
 import backend.model.instrument.Quotation;
 import backend.model.priceAlert.PriceAlert;
-import backend.model.priceAlert.PriceAlertType;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
 import backend.tools.WebServiceTools;
@@ -68,6 +63,11 @@ public class InstrumentServiceTest {
      * DAO to access PriceAlert data.
      */
     private static PriceAlertDAO priceAlertDAO;
+
+    /**
+     * Class providing helper methods for fixture.
+     */
+    private InstrumentServiceFixture fixtureHelper;
 
     /**
      * The stock of Apple.
@@ -147,6 +147,7 @@ public class InstrumentServiceTest {
      * Tasks to be performed before each test is run.
      */
     private void setUp() {
+        this.fixtureHelper = new InstrumentServiceFixture();
         this.createDummyInstruments();
         this.createDummyQuotations();
         this.createDummyLists();
@@ -162,19 +163,20 @@ public class InstrumentServiceTest {
         this.deleteDummyLists();
         this.deleteDummyQuotations();
         this.deleteDummyInstruments();
+        this.fixtureHelper = null;
     }
 
     /**
      * Initializes the database with dummy instruments.
      */
     private void createDummyInstruments() {
-        this.technologySector = this.getTechnologySector();
-        this.copperIndustryGroup = this.getCopperIndustryGroup();
-        this.appleStock = this.getAppleStock();
-        this.microsoftStock = this.getMicrosoftStock();
-        this.nvidiaStock = this.getNvidiaStock();
-        this.teslaStock = this.getTeslaStock();
-        this.appleTeslaRatio = this.getAppleTeslaRatio();
+        this.technologySector = this.fixtureHelper.getTechnologySector();
+        this.copperIndustryGroup = this.fixtureHelper.getCopperIndustryGroup();
+        this.appleStock = this.fixtureHelper.getAppleStock(this.technologySector, this.copperIndustryGroup);
+        this.microsoftStock = this.fixtureHelper.getMicrosoftStock();
+        this.nvidiaStock = this.fixtureHelper.getNvidiaStock();
+        this.teslaStock = this.fixtureHelper.getTeslaStock();
+        this.appleTeslaRatio = this.fixtureHelper.getAppleTeslaRatio(this.appleStock, this.teslaStock);
 
         try {
             instrumentDAO.insertInstrument(this.technologySector);
@@ -207,125 +209,11 @@ public class InstrumentServiceTest {
     }
 
     /**
-     * Gets the instrument of the Apple stock.
-     *
-     * @return The instrument of the Apple stock.
-     */
-    private Instrument getAppleStock() {
-        Instrument instrument = new Instrument();
-
-        instrument.setSymbol("AAPL");
-        instrument.setName("Apple");
-        instrument.setStockExchange(StockExchange.NDQ);
-        instrument.setType(InstrumentType.STOCK);
-        instrument.setSector(this.technologySector);
-        instrument.setIndustryGroup(this.copperIndustryGroup);
-
-        return instrument;
-    }
-
-    /**
-     * Gets the instrument of the Microsoft stock.
-     *
-     * @return The instrument of the Microsoft stock.
-     */
-    private Instrument getMicrosoftStock() {
-        Instrument instrument = new Instrument();
-
-        instrument.setSymbol("MSFT");
-        instrument.setName("Microsoft");
-        instrument.setStockExchange(StockExchange.NDQ);
-        instrument.setType(InstrumentType.STOCK);
-
-        return instrument;
-    }
-
-    /**
-     * Gets the instrument of the NVidia stock.
-     *
-     * @return The instrument of the NVidia stock.
-     */
-    private Instrument getNvidiaStock() {
-        Instrument instrument = new Instrument();
-
-        instrument.setSymbol("NVDA");
-        instrument.setName("NVIDIA");
-        instrument.setStockExchange(StockExchange.NDQ);
-        instrument.setType(InstrumentType.STOCK);
-
-        return instrument;
-    }
-
-    /**
-     * Gets the Instrument of the Tesla stock.
-     *
-     * @return The instrument of the Tesla stock.
-     */
-    private Instrument getTeslaStock() {
-        Instrument instrument = new Instrument();
-
-        instrument.setSymbol("TSLA");
-        instrument.setName("Tesla");
-        instrument.setStockExchange(StockExchange.NDQ);
-        instrument.setType(InstrumentType.STOCK);
-
-        return instrument;
-    }
-
-    /**
-     * Gets the Instrument of the Apple/Tesla ratio.
-     *
-     * @return The Instrument of the Apple/Tesla ratio.
-     */
-    private Instrument getAppleTeslaRatio() {
-        Instrument instrument = new Instrument();
-
-        instrument.setName("Apple/Tesla");
-        instrument.setType(InstrumentType.RATIO);
-        instrument.setDividend(this.appleStock);
-        instrument.setDivisor(this.teslaStock);
-
-        return instrument;
-    }
-
-    /**
-     * Gets the Instrument of the technology sector.
-     *
-     * @return The Instrument of the technology sector.
-     */
-    private Instrument getTechnologySector() {
-        Instrument instrument = new Instrument();
-
-        instrument.setSymbol("XLK");
-        instrument.setName("Technology Select Sector SPDR Fund");
-        instrument.setStockExchange(StockExchange.NYSE);
-        instrument.setType(InstrumentType.SECTOR);
-
-        return instrument;
-    }
-
-    /**
-     * Gets the Instrument of the Copper Industry Group.
-     *
-     * @return The Instrument of the Copper Industry Group.
-     */
-    private Instrument getCopperIndustryGroup() {
-        Instrument instrument = new Instrument();
-
-        instrument.setSymbol("COPX");
-        instrument.setName("Global X Copper Miners ETF");
-        instrument.setStockExchange(StockExchange.NYSE);
-        instrument.setType(InstrumentType.IND_GROUP);
-
-        return instrument;
-    }
-
-    /**
      * Initializes the database with dummy quotations.
      */
     private void createDummyQuotations() {
         List<Quotation> quotations = new ArrayList<>();
-        this.microsoftQuotation1 = this.getMicrosoftQuotation();
+        this.microsoftQuotation1 = this.fixtureHelper.getMicrosoftQuotation(this.microsoftStock);
         quotations.add(this.microsoftQuotation1);
 
         try {
@@ -350,27 +238,11 @@ public class InstrumentServiceTest {
     }
 
     /**
-     * Gets the Quotation of the Microsoft stock.
-     *
-     * @return The Quotation of the Microsoft stock.
-     */
-    private Quotation getMicrosoftQuotation() {
-        Quotation quotation = new Quotation();
-
-        quotation.setDate(new Date());
-        quotation.setClose(BigDecimal.valueOf(332.88));
-        quotation.setCurrency(Currency.USD);
-        quotation.setVolume(17540000);
-        quotation.setInstrument(this.microsoftStock);
-
-        return quotation;
-    }
-
-    /**
      * Initializes the database with dummy lists.
      */
     private void createDummyLists() {
-        this.list = this.getList();
+        this.list = this.fixtureHelper.getList();
+        this.list.addInstrument(this.appleStock);
 
         try {
             listDAO.insertList(this.list);
@@ -391,25 +263,10 @@ public class InstrumentServiceTest {
     }
 
     /**
-     * Gets the List.
-     *
-     * @return The List.
-     */
-    private backend.model.list.List getList() {
-        backend.model.list.List list = new backend.model.list.List();
-
-        list.setName("Dummy List");
-        list.setDescription("Some Description");
-        list.addInstrument(this.appleStock);
-
-        return list;
-    }
-
-    /**
      * Initializes the database with dummy price alerts.
      */
     private void createDummyPriceAlerts() {
-        this.nvidiaAlert = this.getNvidiaAlert();
+        this.nvidiaAlert = this.fixtureHelper.getNvidiaAlert(this.nvidiaStock);
 
         try {
             priceAlertDAO.insertPriceAlert(this.nvidiaAlert);
@@ -427,22 +284,6 @@ public class InstrumentServiceTest {
         } catch (Exception e) {
             fail(e.getMessage());
         }
-    }
-
-    /**
-     * Gets a PriceAlert for the NVIDIA stock.
-     *
-     * @return A PriceAlert for the NVIDIA stock.
-     */
-    private PriceAlert getNvidiaAlert() {
-        PriceAlert alert = new PriceAlert();
-
-        alert.setInstrument(this.nvidiaStock);
-        alert.setAlertType(PriceAlertType.LESS_OR_EQUAL);
-        alert.setPrice(BigDecimal.valueOf(120.00));
-        alert.setCurrency(Currency.USD);
-
-        return alert;
     }
 
     @Test
@@ -650,7 +491,7 @@ public class InstrumentServiceTest {
         } finally {
             // Restore old database state by adding the instrument that has been deleted previously.
             try {
-                this.microsoftStock = this.getMicrosoftStock();
+                this.microsoftStock = this.fixtureHelper.getMicrosoftStock();
                 instrumentDAO.insertInstrument(this.microsoftStock);
             } catch (Exception e) {
                 fail(e.getMessage());
@@ -837,7 +678,7 @@ public class InstrumentServiceTest {
 
         // Update the name.
         this.appleStock.setName("Apple Inc.");
-        updateInstrumentResult = service.updateInstrument(this.convertToWsInstrument(this.appleStock));
+        updateInstrumentResult = service.updateInstrument(this.fixtureHelper.convertToWsInstrument(this.appleStock));
 
         // Assure no error message exists
         assertTrue(WebServiceTools.resultContainsErrorMessage(updateInstrumentResult) == false);
@@ -866,7 +707,8 @@ public class InstrumentServiceTest {
 
         // Remove the symbol.
         this.microsoftStock.setSymbol("");
-        updateInstrumentResult = service.updateInstrument(this.convertToWsInstrument(this.microsoftStock));
+        updateInstrumentResult = service
+                .updateInstrument(this.fixtureHelper.convertToWsInstrument(this.microsoftStock));
 
         // There should be a return message of type E.
         assertTrue(updateInstrumentResult.getMessages().size() == 1);
@@ -889,7 +731,8 @@ public class InstrumentServiceTest {
         String actualErrorMessage, expectedErrorMessage;
 
         // Update instrument without changing any data.
-        updateInstrumentResult = service.updateInstrument(this.convertToWsInstrument(this.microsoftStock));
+        updateInstrumentResult = service
+                .updateInstrument(this.fixtureHelper.convertToWsInstrument(this.microsoftStock));
 
         // There should be a return message of type I
         assertTrue(updateInstrumentResult.getMessages().size() == 1);
@@ -916,7 +759,8 @@ public class InstrumentServiceTest {
         this.microsoftStock.setSymbol("AAPL");
 
         // Update the instrument at the database via WebService.
-        updateInstrumentResult = service.updateInstrument(this.convertToWsInstrument(this.microsoftStock));
+        updateInstrumentResult = service
+                .updateInstrument(this.fixtureHelper.convertToWsInstrument(this.microsoftStock));
 
         // There should be a return message of type E.
         assertTrue(updateInstrumentResult.getMessages().size() == 1);
@@ -951,7 +795,8 @@ public class InstrumentServiceTest {
         this.microsoftStock.setSector(this.appleStock);
 
         // Update the instrument at the database via WebService.
-        updateInstrumentResult = service.updateInstrument(this.convertToWsInstrument(this.microsoftStock));
+        updateInstrumentResult = service
+                .updateInstrument(this.fixtureHelper.convertToWsInstrument(this.microsoftStock));
 
         // There should be a return message of type E.
         assertTrue(updateInstrumentResult.getMessages().size() == 1);
@@ -986,7 +831,8 @@ public class InstrumentServiceTest {
         this.microsoftStock.setIndustryGroup(this.appleStock);
 
         // Update the instrument at the database via WebService.
-        updateInstrumentResult = service.updateInstrument(this.convertToWsInstrument(this.microsoftStock));
+        updateInstrumentResult = service
+                .updateInstrument(this.fixtureHelper.convertToWsInstrument(this.microsoftStock));
 
         // There should be a return message of type E.
         assertTrue(updateInstrumentResult.getMessages().size() == 1);
@@ -1023,7 +869,7 @@ public class InstrumentServiceTest {
         newInstrument.setType(InstrumentType.STOCK);
 
         // Add the new instrument to the database via WebService
-        addInstrumentResult = service.addInstrument(this.convertToWsInstrument(newInstrument));
+        addInstrumentResult = service.addInstrument(this.fixtureHelper.convertToWsInstrument(newInstrument));
 
         // Assure no error message exists
         assertTrue(WebServiceTools.resultContainsErrorMessage(addInstrumentResult) == false);
@@ -1071,7 +917,7 @@ public class InstrumentServiceTest {
         newInstrument.setStockExchange(StockExchange.NDQ);
 
         // Add a new instrument to the database via WebService
-        addInstrumentResult = service.addInstrument(this.convertToWsInstrument(newInstrument));
+        addInstrumentResult = service.addInstrument(this.fixtureHelper.convertToWsInstrument(newInstrument));
 
         // There should be a return message of type E.
         assertTrue(addInstrumentResult.getMessages().size() == 1);
@@ -1098,7 +944,7 @@ public class InstrumentServiceTest {
         newInstrument.setType(InstrumentType.STOCK);
 
         // Add a new instrument to the database via WebService.
-        addInstrumentResult = service.addInstrument(this.convertToWsInstrument(newInstrument));
+        addInstrumentResult = service.addInstrument(this.fixtureHelper.convertToWsInstrument(newInstrument));
 
         // There should be a return message of type E.
         assertTrue(addInstrumentResult.getMessages().size() == 1);
@@ -1112,32 +958,5 @@ public class InstrumentServiceTest {
 
         // The new instrument should not have been persisted.
         assertNull(newInstrument.getId());
-    }
-
-    /**
-     * Converts an Instrument to the lean WebService representation.
-     *
-     * @param instrument The Instrument to be converted.
-     * @return The lean WebService representation of the Instrument.
-     */
-    private InstrumentWS convertToWsInstrument(final Instrument instrument) {
-        InstrumentWS instrumentWS = new InstrumentWS();
-
-        // Simple object attributes.
-        instrumentWS.setId(instrument.getId());
-        instrumentWS.setSymbol(instrument.getSymbol());
-        instrumentWS.setType(instrument.getType());
-        instrumentWS.setStockExchange(instrument.getStockExchange());
-        instrumentWS.setName(instrument.getName());
-        instrumentWS.setCompanyPathInvestingCom(instrument.getCompanyPathInvestingCom());
-
-        // Object references.
-        if (instrument.getSector() != null)
-            instrumentWS.setSectorId(instrument.getSector().getId());
-
-        if (instrument.getIndustryGroup() != null)
-            instrumentWS.setIndustryGroupId(instrument.getIndustryGroup().getId());
-
-        return instrumentWS;
     }
 }
