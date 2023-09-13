@@ -4,23 +4,21 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import backend.model.Currency;
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 
 /**
- * Tests the Yahoo quotation DAO.
+ * Tests the Yahoo Quotation DAO.
  *
  * @author Michael
  *
@@ -30,6 +28,11 @@ public class QuotationProviderYahooDAOTest {
      * DAO to access quotation data from Yahoo.
      */
     private static QuotationProviderYahooDAO quotationProviderYahooDAO;
+
+    /**
+     * Class providing helper methods for fixture.
+     */
+    private QuotationProviderYahooDAOFixture fixtureHelper;
 
     @BeforeAll
     /**
@@ -47,123 +50,20 @@ public class QuotationProviderYahooDAOTest {
         quotationProviderYahooDAO = null;
     }
 
+    @BeforeEach
     /**
-     * Gets historical quotations of Denison Mines stock. The quotations of the three most recent trading days are
-     * provided.
-     *
-     * @return Historical quotations of Denison Mines stock
+     * Tasks to be performed before each test is run.
      */
-    private List<Quotation> getDenisonMinesQuotationHistory() {
-        List<Quotation> historicalQuotations = new ArrayList<>();
-        Quotation quotation = new Quotation();
-        long secondsSince1970;
-
-        secondsSince1970 = 1658496600;
-        quotation.setDate(new Date(secondsSince1970 * 1000));
-        quotation.setOpen(BigDecimal.valueOf(1.45));
-        quotation.setHigh(BigDecimal.valueOf(1.48));
-        quotation.setLow(BigDecimal.valueOf(1.35));
-        quotation.setClose(BigDecimal.valueOf(1.36));
-        quotation.setCurrency(Currency.CAD);
-        quotation.setVolume(1793300);
-        historicalQuotations.add(quotation);
-
-        quotation = new Quotation();
-        secondsSince1970 = 1658410200;
-        quotation.setDate(new Date(secondsSince1970 * 1000));
-        quotation.setOpen(BigDecimal.valueOf(1.50));
-        quotation.setHigh(BigDecimal.valueOf(1.52));
-        quotation.setLow(BigDecimal.valueOf(1.44));
-        quotation.setClose(BigDecimal.valueOf(1.46));
-        quotation.setCurrency(Currency.CAD);
-        quotation.setVolume(1450900);
-        historicalQuotations.add(quotation);
-
-        quotation = new Quotation();
-        secondsSince1970 = 1658323800;
-        quotation.setDate(new Date(secondsSince1970 * 1000));
-        quotation.setOpen(BigDecimal.valueOf(1.49));
-        quotation.setHigh(BigDecimal.valueOf(1.54));
-        quotation.setLow(BigDecimal.valueOf(1.46));
-        quotation.setClose(BigDecimal.valueOf(1.53));
-        quotation.setCurrency(Currency.CAD);
-        quotation.setVolume(1534800);
-        historicalQuotations.add(quotation);
-
-        return historicalQuotations;
+    private void setUp() {
+        this.fixtureHelper = new QuotationProviderYahooDAOFixture();
     }
 
+    @AfterEach
     /**
-     * Gets historical quotations of Rio Tinto stock. The quotations of the three most recent trading days are provided.
-     *
-     * @return Historical quotations of Rio Tinto stock
+     * Tasks to be performed after each test has been run.
      */
-    private List<Quotation> getRioTintoQuotationHistory() {
-        List<Quotation> historicalQuotations = new ArrayList<>();
-        Quotation quotation = new Quotation();
-        long secondsSince1970;
-
-        secondsSince1970 = 1672823859;
-        quotation.setDate(new Date(secondsSince1970 * 1000));
-        quotation.setOpen(BigDecimal.valueOf(5910));
-        quotation.setHigh(BigDecimal.valueOf(5941));
-        quotation.setLow(BigDecimal.valueOf(5834));
-        quotation.setClose(BigDecimal.valueOf(5835));
-        quotation.setCurrency(Currency.GBP);
-        quotation.setVolume(243671);
-        historicalQuotations.add(quotation);
-
-        quotation = new Quotation();
-        secondsSince1970 = 1672732800;
-        quotation.setDate(new Date(secondsSince1970 * 1000));
-        quotation.setOpen(BigDecimal.valueOf(5818));
-        quotation.setHigh(BigDecimal.valueOf(5905));
-        quotation.setLow(BigDecimal.valueOf(5810));
-        quotation.setClose(BigDecimal.valueOf(5839));
-        quotation.setCurrency(Currency.GBP);
-        quotation.setVolume(2112533);
-        historicalQuotations.add(quotation);
-
-        quotation = new Quotation();
-        secondsSince1970 = 1672387200;
-        quotation.setDate(new Date(secondsSince1970 * 1000));
-        quotation.setOpen(BigDecimal.valueOf(5803));
-        quotation.setHigh(BigDecimal.valueOf(5846));
-        quotation.setLow(BigDecimal.valueOf(5787));
-        quotation.setClose(BigDecimal.valueOf(5798));
-        quotation.setCurrency(Currency.GBP);
-        quotation.setVolume(588428);
-        historicalQuotations.add(quotation);
-
-        return historicalQuotations;
-    }
-
-    /**
-     * Gets a Quotation as expected from the Yahoo service.
-     *
-     * @return A Quotation.
-     */
-    private Quotation getDenisonMinesQuotation() {
-        Quotation quotation = new Quotation();
-
-        quotation.setClose(BigDecimal.valueOf(1.39));
-        quotation.setCurrency(Currency.CAD);
-
-        return quotation;
-    }
-
-    /**
-     * Gets a Quotation as expected from the Yahoo service.
-     *
-     * @return A Quotation.
-     */
-    private Quotation getRioTintoQuotation() {
-        Quotation quotation = new Quotation();
-
-        quotation.setClose(BigDecimal.valueOf(4821.5));
-        quotation.setCurrency(Currency.GBP);
-
-        return quotation;
+    private void tearDown() {
+        this.fixtureHelper = null;
     }
 
     @Test
@@ -297,7 +197,7 @@ public class QuotationProviderYahooDAOTest {
         try {
             actualQuotationHistory = quotationProviderYahooDAO.getQuotationHistory("DML", StockExchange.TSX,
                     InstrumentType.STOCK, 1);
-            expectedQuotationHistory = this.getDenisonMinesQuotationHistory();
+            expectedQuotationHistory = this.fixtureHelper.getDenisonMinesQuotationHistory();
 
             // 252 Trading days of a full year.
             assertEquals(252, actualQuotationHistory.size());
@@ -330,7 +230,7 @@ public class QuotationProviderYahooDAOTest {
         try {
             actualQuotationHistory = quotationProviderYahooDAO.getQuotationHistory("RIO", StockExchange.LSE,
                     InstrumentType.STOCK, 1);
-            expectedQuotationHistory = this.getRioTintoQuotationHistory();
+            expectedQuotationHistory = this.fixtureHelper.getRioTintoQuotationHistory();
 
             // 251 Trading days of a full year. Volume data are missing for a single day which is excluded. Therefore
             // 251 days instead of 252.
@@ -570,7 +470,7 @@ public class QuotationProviderYahooDAOTest {
 
         try {
             actualQuotation = quotationProviderYahooDAO.getCurrentQuotation(new Instrument("DML", StockExchange.TSX));
-            expectedQuotation = this.getDenisonMinesQuotation();
+            expectedQuotation = this.fixtureHelper.getDenisonMinesQuotation();
 
             assertTrue(expectedQuotation.getClose().compareTo(actualQuotation.getClose()) == 0);
             assertEquals(expectedQuotation.getCurrency(), actualQuotation.getCurrency());
@@ -588,7 +488,7 @@ public class QuotationProviderYahooDAOTest {
 
         try {
             actualQuotation = quotationProviderYahooDAO.getCurrentQuotation(new Instrument("RIO", StockExchange.LSE));
-            expectedQuotation = this.getRioTintoQuotation();
+            expectedQuotation = this.fixtureHelper.getRioTintoQuotation();
 
             assertTrue(expectedQuotation.getClose().compareTo(actualQuotation.getClose()) == 0);
             assertEquals(expectedQuotation.getCurrency(), actualQuotation.getCurrency());
