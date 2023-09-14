@@ -9,6 +9,7 @@ import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.priceAlert.PriceAlert;
 import backend.model.priceAlert.PriceAlertType;
+import backend.model.priceAlert.PriceAlertWS;
 
 /**
  * Helper class of the PriceAlertServiceTest, that provides methods for fixture initialization.
@@ -155,5 +156,34 @@ public class PriceAlertServiceFixture {
         alert.setConfirmationTime(new Date());
 
         return alert;
+    }
+
+    /**
+     * Converts a PriceAlert to the lean WebService representation.
+     *
+     * @param priceAlert The PriceAlert to be converted.
+     * @return The lean WebService representation of the PriceAlert.
+     */
+    public PriceAlertWS convertToWsPriceAlert(final PriceAlert priceAlert) {
+        PriceAlertWS priceAlertWS = new PriceAlertWS();
+
+        // Simple attributes.
+        priceAlertWS.setId(priceAlert.getId());
+        priceAlertWS.setAlertType(priceAlert.getAlertType());
+        priceAlertWS.setPrice(priceAlert.getPrice());
+        priceAlertWS.setCurrency(priceAlert.getCurrency());
+        priceAlertWS.setTriggerDistancePercent(priceAlert.getTriggerDistancePercent());
+        priceAlertWS.setConfirmationTime(priceAlert.getConfirmationTime());
+        priceAlertWS.setTriggerTime(priceAlert.getTriggerTime());
+        priceAlertWS.setLastStockQuoteTime(priceAlert.getLastStockQuoteTime());
+        priceAlertWS.setSendMail(priceAlert.isSendMail());
+        priceAlertWS.setAlertMailAddress(priceAlert.getAlertMailAddress());
+        priceAlertWS.setMailTransmissionTime(priceAlert.getMailTransmissionTime());
+
+        // Object references.
+        if (priceAlert.getInstrument() != null)
+            priceAlertWS.setInstrumentId(priceAlert.getInstrument().getId());
+
+        return priceAlertWS;
     }
 }

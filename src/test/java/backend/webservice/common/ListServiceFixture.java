@@ -1,11 +1,13 @@
 package backend.webservice.common;
 
 import java.util.Date;
+import java.util.Iterator;
 
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.list.List;
+import backend.model.list.ListWS;
 import backend.model.scan.Scan;
 import backend.model.scan.ScanExecutionStatus;
 
@@ -93,5 +95,31 @@ public class ListServiceFixture {
         scan.addList(list);
 
         return scan;
+    }
+
+    /**
+     * Converts a list to the lean WebService representation.
+     *
+     * @param list The list to be converted.
+     * @return The lean WebService representation of the list.
+     */
+    public ListWS convertToWsList(final List list) {
+        ListWS listWS = new ListWS();
+        Iterator<Instrument> instrumentIterator;
+        Instrument instrument;
+
+        // Head level
+        listWS.setId(list.getId());
+        listWS.setName(list.getName());
+        listWS.setDescription(list.getDescription());
+
+        // Instruments
+        instrumentIterator = list.getInstruments().iterator();
+        while (instrumentIterator.hasNext()) {
+            instrument = instrumentIterator.next();
+            listWS.getInstrumentIds().add(instrument.getId());
+        }
+
+        return listWS;
     }
 }

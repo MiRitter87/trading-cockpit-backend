@@ -27,7 +27,6 @@ import backend.model.priceAlert.ConfirmationStatus;
 import backend.model.priceAlert.PriceAlert;
 import backend.model.priceAlert.PriceAlertArray;
 import backend.model.priceAlert.PriceAlertType;
-import backend.model.priceAlert.PriceAlertWS;
 import backend.model.priceAlert.TriggerStatus;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
@@ -391,7 +390,7 @@ public class PriceAlertServiceTest {
 
         // Update the price.
         this.appleAlert.setPrice(BigDecimal.valueOf(186.30));
-        updatePriceAlertResult = service.updatePriceAlert(this.convertToWsPriceAlert(this.appleAlert));
+        updatePriceAlertResult = service.updatePriceAlert(this.fixtureHelper.convertToWsPriceAlert(this.appleAlert));
 
         // Assure no error message exists
         assertTrue(WebServiceTools.resultContainsErrorMessage(updatePriceAlertResult) == false);
@@ -421,7 +420,7 @@ public class PriceAlertServiceTest {
 
         // Remove the instrument.
         this.appleAlert.setInstrument(null);
-        updatePriceAlertResult = service.updatePriceAlert(this.convertToWsPriceAlert(this.appleAlert));
+        updatePriceAlertResult = service.updatePriceAlert(this.fixtureHelper.convertToWsPriceAlert(this.appleAlert));
 
         // There should be a return message of type E.
         assertTrue(updatePriceAlertResult.getMessages().size() == 1);
@@ -443,7 +442,7 @@ public class PriceAlertServiceTest {
         String actualErrorMessage, expectedErrorMessage;
 
         // Update price alert without changing any data.
-        updatePriceAlertResult = service.updatePriceAlert(this.convertToWsPriceAlert(this.appleAlert));
+        updatePriceAlertResult = service.updatePriceAlert(this.fixtureHelper.convertToWsPriceAlert(this.appleAlert));
 
         // There should be a return message of type I
         assertTrue(updatePriceAlertResult.getMessages().size() == 1);
@@ -473,7 +472,7 @@ public class PriceAlertServiceTest {
         newPriceAlert.setCurrency(Currency.USD);
 
         // Add a new price alert to the database via WebService
-        addPriceAlertResult = service.addPriceAlert(this.convertToWsPriceAlert(newPriceAlert));
+        addPriceAlertResult = service.addPriceAlert(this.fixtureHelper.convertToWsPriceAlert(newPriceAlert));
 
         // Assure no error message exists
         assertTrue(WebServiceTools.resultContainsErrorMessage(addPriceAlertResult) == false);
@@ -520,7 +519,7 @@ public class PriceAlertServiceTest {
         newPriceAlert.setPrice(BigDecimal.valueOf(149.99));
 
         // Add a new price alert to the database via WebService
-        addPriceAlertResult = service.addPriceAlert(this.convertToWsPriceAlert(newPriceAlert));
+        addPriceAlertResult = service.addPriceAlert(this.fixtureHelper.convertToWsPriceAlert(newPriceAlert));
 
         // There should be a return message of type E.
         assertTrue(addPriceAlertResult.getMessages().size() == 1);
@@ -541,7 +540,7 @@ public class PriceAlertServiceTest {
 
         // Update price alert.
         this.netflixAlert.setPrice(new BigDecimal(200));
-        updatePriceAlertResult = service.updatePriceAlert(this.convertToWsPriceAlert(this.netflixAlert));
+        updatePriceAlertResult = service.updatePriceAlert(this.fixtureHelper.convertToWsPriceAlert(this.netflixAlert));
 
         // There should be a return message of type E
         assertTrue(updatePriceAlertResult.getMessages().size() == 1);
@@ -565,7 +564,7 @@ public class PriceAlertServiceTest {
 
         // Update the confirmation time.
         this.netflixAlert.setConfirmationTime(confirmationTime);
-        updatePriceAlertResult = service.updatePriceAlert(this.convertToWsPriceAlert(this.netflixAlert));
+        updatePriceAlertResult = service.updatePriceAlert(this.fixtureHelper.convertToWsPriceAlert(this.netflixAlert));
 
         // Assure no error message exists
         assertTrue(WebServiceTools.resultContainsErrorMessage(updatePriceAlertResult) == false);
@@ -581,34 +580,5 @@ public class PriceAlertServiceTest {
         } catch (Exception e) {
             fail(e.getMessage());
         }
-    }
-
-    /**
-     * Converts a PriceAlert to the lean WebService representation.
-     *
-     * @param priceAlert The PriceAlert to be converted.
-     * @return The lean WebService representation of the PriceAlert.
-     */
-    private PriceAlertWS convertToWsPriceAlert(final PriceAlert priceAlert) {
-        PriceAlertWS priceAlertWS = new PriceAlertWS();
-
-        // Simple attributes.
-        priceAlertWS.setId(priceAlert.getId());
-        priceAlertWS.setAlertType(priceAlert.getAlertType());
-        priceAlertWS.setPrice(priceAlert.getPrice());
-        priceAlertWS.setCurrency(priceAlert.getCurrency());
-        priceAlertWS.setTriggerDistancePercent(priceAlert.getTriggerDistancePercent());
-        priceAlertWS.setConfirmationTime(priceAlert.getConfirmationTime());
-        priceAlertWS.setTriggerTime(priceAlert.getTriggerTime());
-        priceAlertWS.setLastStockQuoteTime(priceAlert.getLastStockQuoteTime());
-        priceAlertWS.setSendMail(priceAlert.isSendMail());
-        priceAlertWS.setAlertMailAddress(priceAlert.getAlertMailAddress());
-        priceAlertWS.setMailTransmissionTime(priceAlert.getMailTransmissionTime());
-
-        // Object references.
-        if (priceAlert.getInstrument() != null)
-            priceAlertWS.setInstrumentId(priceAlert.getInstrument().getId());
-
-        return priceAlertWS;
     }
 }

@@ -22,7 +22,6 @@ import backend.dao.chart.ChartObjectDAO;
 import backend.dao.instrument.InstrumentDAO;
 import backend.model.chart.HorizontalLine;
 import backend.model.chart.HorizontalLineArray;
-import backend.model.chart.HorizontalLineWS;
 import backend.model.instrument.Instrument;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
@@ -357,7 +356,8 @@ public class ChartObjectServiceTest {
 
         // Update the price.
         this.horizontalLine3.setPrice(new BigDecimal("300.00"));
-        updateHorizontalLineResult = service.updateHorizontalLine(this.convertToWsHorizontalLine(this.horizontalLine3));
+        updateHorizontalLineResult = service
+                .updateHorizontalLine(this.fixtureHelper.convertToWsHorizontalLine(this.horizontalLine3));
 
         // Assure no error message exists
         assertTrue(WebServiceTools.resultContainsErrorMessage(updateHorizontalLineResult) == false);
@@ -387,7 +387,8 @@ public class ChartObjectServiceTest {
 
         // Remove the instrument.
         this.horizontalLine3.setInstrument(null);
-        updateHorizontalLineResult = service.updateHorizontalLine(this.convertToWsHorizontalLine(this.horizontalLine3));
+        updateHorizontalLineResult = service
+                .updateHorizontalLine(this.fixtureHelper.convertToWsHorizontalLine(this.horizontalLine3));
 
         // There should be a return message of type E.
         assertTrue(updateHorizontalLineResult.getMessages().size() == 1);
@@ -409,7 +410,8 @@ public class ChartObjectServiceTest {
         String actualErrorMessage, expectedErrorMessage;
 
         // Update HorizontalLine without changing any data.
-        updateHorizontalLineResult = service.updateHorizontalLine(this.convertToWsHorizontalLine(this.horizontalLine3));
+        updateHorizontalLineResult = service
+                .updateHorizontalLine(this.fixtureHelper.convertToWsHorizontalLine(this.horizontalLine3));
 
         // There should be a return message of type I
         assertTrue(updateHorizontalLineResult.getMessages().size() == 1);
@@ -437,7 +439,8 @@ public class ChartObjectServiceTest {
         newHorizontalLine.setPrice(new BigDecimal("323.00"));
 
         // Add a HorizontalLine to the database via WebService
-        addHorizontalLineResult = service.addHorizontalLine(this.convertToWsHorizontalLine(newHorizontalLine));
+        addHorizontalLineResult = service
+                .addHorizontalLine(this.fixtureHelper.convertToWsHorizontalLine(newHorizontalLine));
 
         // Assure no error message exists
         assertTrue(WebServiceTools.resultContainsErrorMessage(addHorizontalLineResult) == false);
@@ -483,7 +486,8 @@ public class ChartObjectServiceTest {
         newHorizontalLine.setPrice(new BigDecimal("323.00"));
 
         // Add a new HorizontalLine to the database via WebService
-        addHorizontalLineResult = service.addHorizontalLine(this.convertToWsHorizontalLine(newHorizontalLine));
+        addHorizontalLineResult = service
+                .addHorizontalLine(this.fixtureHelper.convertToWsHorizontalLine(newHorizontalLine));
 
         // There should be a return message of type E.
         assertTrue(addHorizontalLineResult.getMessages().size() == 1);
@@ -491,25 +495,5 @@ public class ChartObjectServiceTest {
 
         // The new HorizontalLine should not have been persisted
         assertNull(newHorizontalLine.getId());
-    }
-
-    /**
-     * Converts a HorizontalLine to the lean WebService representation.
-     *
-     * @param horizontalLine The HorizontalLine to be converted.
-     * @return The lean WebService representation of the HorizontalLine.
-     */
-    private HorizontalLineWS convertToWsHorizontalLine(final HorizontalLine horizontalLine) {
-        HorizontalLineWS horizontalLineWS = new HorizontalLineWS();
-
-        // Simple attributes.
-        horizontalLineWS.setId(horizontalLine.getId());
-        horizontalLineWS.setPrice(horizontalLine.getPrice());
-
-        // Object references.
-        if (horizontalLine.getInstrument() != null)
-            horizontalLineWS.setInstrumentId(horizontalLine.getInstrument().getId());
-
-        return horizontalLineWS;
     }
 }

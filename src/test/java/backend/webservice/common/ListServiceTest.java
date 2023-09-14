@@ -25,7 +25,6 @@ import backend.dao.scan.ScanDAO;
 import backend.model.instrument.Instrument;
 import backend.model.list.List;
 import backend.model.list.ListArray;
-import backend.model.list.ListWS;
 import backend.model.scan.Scan;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
@@ -404,7 +403,7 @@ public class ListServiceTest {
 
         // Update the name.
         this.singleInstrumentList.setName("Single instrument - Updated name");
-        updateListResult = service.updateList(this.convertToWsList(this.singleInstrumentList));
+        updateListResult = service.updateList(this.fixtureHelper.convertToWsList(this.singleInstrumentList));
 
         // Assure no error message exists
         assertTrue(WebServiceTools.resultContainsErrorMessage(updateListResult) == false);
@@ -434,7 +433,7 @@ public class ListServiceTest {
 
         // No name is given.
         this.singleInstrumentList.setName(null);
-        updateListResult = service.updateList(this.convertToWsList(this.singleInstrumentList));
+        updateListResult = service.updateList(this.fixtureHelper.convertToWsList(this.singleInstrumentList));
 
         // There should be a return message of type E.
         assertTrue(updateListResult.getMessages().size() == 1);
@@ -456,7 +455,7 @@ public class ListServiceTest {
         String actualErrorMessage, expectedErrorMessage;
 
         // Update list without changing any data.
-        updateListResult = service.updateList(this.convertToWsList(this.singleInstrumentList));
+        updateListResult = service.updateList(this.fixtureHelper.convertToWsList(this.singleInstrumentList));
 
         // There should be a return message of type I
         assertTrue(updateListResult.getMessages().size() == 1);
@@ -485,7 +484,7 @@ public class ListServiceTest {
         newList.addInstrument(this.microsoftStock);
 
         // Add the new list to the database via WebService
-        addListResult = service.addList(this.convertToWsList(newList));
+        addListResult = service.addList(this.fixtureHelper.convertToWsList(newList));
 
         // Assure no error message exists
         assertTrue(WebServiceTools.resultContainsErrorMessage(addListResult) == false);
@@ -531,7 +530,7 @@ public class ListServiceTest {
         newList.setDescription("A new list without an instrument.");
 
         // Add a new list to the database via WebService
-        addListResult = service.addList(this.convertToWsList(newList));
+        addListResult = service.addList(this.fixtureHelper.convertToWsList(newList));
 
         // There should be a return message of type E.
         assertTrue(addListResult.getMessages().size() == 1);
@@ -561,7 +560,7 @@ public class ListServiceTest {
 
             // Remove Instrument from List used in Scan.
             this.multiInstrumentList.removeInstrument(this.amazonStock);
-            updateListResult = service.updateList(this.convertToWsList(this.multiInstrumentList));
+            updateListResult = service.updateList(this.fixtureHelper.convertToWsList(this.multiInstrumentList));
 
             // Assure no error message exists
             assertTrue(WebServiceTools.resultContainsErrorMessage(updateListResult) == false);
@@ -602,7 +601,7 @@ public class ListServiceTest {
 
             // Remove Instrument from List used in Scan.
             this.multiInstrumentList.removeInstrument(this.amazonStock);
-            updateListResult = service.updateList(this.convertToWsList(this.multiInstrumentList));
+            updateListResult = service.updateList(this.fixtureHelper.convertToWsList(this.multiInstrumentList));
 
             // Assure no error message exists
             assertTrue(WebServiceTools.resultContainsErrorMessage(updateListResult) == false);
@@ -620,31 +619,5 @@ public class ListServiceTest {
         } catch (Exception e) {
             fail(e.getMessage());
         }
-    }
-
-    /**
-     * Converts a list to the lean WebService representation.
-     *
-     * @param list The list to be converted.
-     * @return The lean WebService representation of the list.
-     */
-    private ListWS convertToWsList(final List list) {
-        ListWS listWS = new ListWS();
-        Iterator<Instrument> instrumentIterator;
-        Instrument instrument;
-
-        // Head level
-        listWS.setId(list.getId());
-        listWS.setName(list.getName());
-        listWS.setDescription(list.getDescription());
-
-        // Instruments
-        instrumentIterator = list.getInstruments().iterator();
-        while (instrumentIterator.hasNext()) {
-            instrument = instrumentIterator.next();
-            listWS.getInstrumentIds().add(instrument.getId());
-        }
-
-        return listWS;
     }
 }

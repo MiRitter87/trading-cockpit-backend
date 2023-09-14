@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.Iterator;
 import java.util.ResourceBundle;
 
 import org.junit.jupiter.api.AfterAll;
@@ -26,7 +25,6 @@ import backend.model.list.List;
 import backend.model.scan.Scan;
 import backend.model.scan.ScanArray;
 import backend.model.scan.ScanExecutionStatus;
-import backend.model.scan.ScanWS;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
 import backend.tools.WebServiceTools;
@@ -376,7 +374,7 @@ public class ScanServiceTest {
 
         // Update the name.
         this.singleListScan.setName("Single list - Updated name");
-        updateScanResult = service.updateScan(this.convertToWsScan(this.singleListScan));
+        updateScanResult = service.updateScan(this.fixtureHelper.convertToWsScan(this.singleListScan));
 
         // Assure no error message exists
         assertTrue(WebServiceTools.resultContainsErrorMessage(updateScanResult) == false);
@@ -406,7 +404,7 @@ public class ScanServiceTest {
 
         // No name is given.
         this.singleListScan.setName(null);
-        updateScanResult = service.updateScan(this.convertToWsScan(this.singleListScan));
+        updateScanResult = service.updateScan(this.fixtureHelper.convertToWsScan(this.singleListScan));
 
         // There should be a return message of type E.
         assertTrue(updateScanResult.getMessages().size() == 1);
@@ -428,7 +426,7 @@ public class ScanServiceTest {
         String actualErrorMessage, expectedErrorMessage;
 
         // Update scan without changing any data.
-        updateScanResult = service.updateScan(this.convertToWsScan(this.singleListScan));
+        updateScanResult = service.updateScan(this.fixtureHelper.convertToWsScan(this.singleListScan));
 
         // There should be a return message of type I
         assertTrue(updateScanResult.getMessages().size() == 1);
@@ -458,7 +456,7 @@ public class ScanServiceTest {
 
             // Try to set a second scan to execution status "IN_PROGRESS".
             this.multiListScan.setExecutionStatus(ScanExecutionStatus.IN_PROGRESS);
-            updateScanResult = service.updateScan(this.convertToWsScan(multiListScan));
+            updateScanResult = service.updateScan(this.fixtureHelper.convertToWsScan(multiListScan));
 
             // There should be a return message of type E.
             assertTrue(updateScanResult.getMessages().size() == 1);
@@ -487,7 +485,7 @@ public class ScanServiceTest {
 
         // Remove List from Scan.
         this.multiListScan.getLists().remove(this.multiInstrumentList);
-        updateScanResult = service.updateScan(this.convertToWsScan(this.multiListScan));
+        updateScanResult = service.updateScan(this.fixtureHelper.convertToWsScan(this.multiListScan));
 
         // Assure no error message exists
         assertTrue(WebServiceTools.resultContainsErrorMessage(updateScanResult) == false);
@@ -529,7 +527,7 @@ public class ScanServiceTest {
 
             // Remove List from Scan that contains the incomplete Instrument.
             this.multiListScan.getLists().remove(this.multiInstrumentList);
-            updateScanResult = service.updateScan(this.convertToWsScan(this.multiListScan));
+            updateScanResult = service.updateScan(this.fixtureHelper.convertToWsScan(this.multiListScan));
 
             // Assure no error message exists
             assertTrue(WebServiceTools.resultContainsErrorMessage(updateScanResult) == false);
@@ -564,7 +562,7 @@ public class ScanServiceTest {
         newScan.addList(this.singleInstrumentList);
 
         // Add the new scan to the database via WebService
-        addScanResult = service.addScan(this.convertToWsScan(newScan));
+        addScanResult = service.addScan(this.fixtureHelper.convertToWsScan(newScan));
 
         // Assure no error message exists
         assertTrue(WebServiceTools.resultContainsErrorMessage(addScanResult) == false);
@@ -610,7 +608,7 @@ public class ScanServiceTest {
         newScan.setDescription("A new scan without a list.");
 
         // Add a new scan to the database via WebService
-        addScanResult = service.addScan(this.convertToWsScan(newScan));
+        addScanResult = service.addScan(this.fixtureHelper.convertToWsScan(newScan));
 
         // There should be a return message of type E.
         assertTrue(addScanResult.getMessages().size() == 1);
@@ -618,44 +616,5 @@ public class ScanServiceTest {
 
         // The new scan should not have been persisted
         assertNull(newScan.getId());
-    }
-
-    /**
-     * Converts a Scan to the lean WebService representation.
-     *
-     * @param scan The Scan to be converted.
-     * @return The lean WebService representation of the Scan.
-     */
-    private ScanWS convertToWsScan(final Scan scan) {
-        ScanWS scanWS = new ScanWS();
-        Iterator<List> listIterator;
-        Iterator<Instrument> instrumentIterator;
-        List list;
-        Instrument instrument;
-
-        // Head level
-        scanWS.setId(scan.getId());
-        scanWS.setName(scan.getName());
-        scanWS.setDescription(scan.getDescription());
-        scanWS.setExecutionStatus(scan.getExecutionStatus());
-        scanWS.setCompletionStatus(scan.getCompletionStatus());
-        scanWS.setProgress(scan.getProgress());
-        scanWS.setLastScan(scan.getLastScan());
-
-        // Lists
-        listIterator = scan.getLists().iterator();
-        while (listIterator.hasNext()) {
-            list = listIterator.next();
-            scanWS.getListIds().add(list.getId());
-        }
-
-        // Instruments
-        instrumentIterator = scan.getIncompleteInstruments().iterator();
-        while (instrumentIterator.hasNext()) {
-            instrument = instrumentIterator.next();
-            scanWS.getIncompleteInstrumentIds().add(instrument.getId());
-        }
-
-        return scanWS;
     }
 }

@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 import backend.model.StockExchange;
 import backend.model.chart.HorizontalLine;
+import backend.model.chart.HorizontalLineWS;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 
@@ -88,5 +89,25 @@ public class ChartObjectServiceFixture {
         horizontalLine.setPrice(new BigDecimal("290.00"));
 
         return horizontalLine;
+    }
+
+    /**
+     * Converts a HorizontalLine to the lean WebService representation.
+     *
+     * @param horizontalLine The HorizontalLine to be converted.
+     * @return The lean WebService representation of the HorizontalLine.
+     */
+    public HorizontalLineWS convertToWsHorizontalLine(final HorizontalLine horizontalLine) {
+        HorizontalLineWS horizontalLineWS = new HorizontalLineWS();
+
+        // Simple attributes.
+        horizontalLineWS.setId(horizontalLine.getId());
+        horizontalLineWS.setPrice(horizontalLine.getPrice());
+
+        // Object references.
+        if (horizontalLine.getInstrument() != null)
+            horizontalLineWS.setInstrumentId(horizontalLine.getInstrument().getId());
+
+        return horizontalLineWS;
     }
 }

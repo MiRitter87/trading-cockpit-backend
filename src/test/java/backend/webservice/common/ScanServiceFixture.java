@@ -1,10 +1,13 @@
 package backend.webservice.common;
 
+import java.util.Iterator;
+
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.list.List;
 import backend.model.scan.Scan;
+import backend.model.scan.ScanWS;
 
 /**
  * Helper class of the ScanServiceTest, that provides methods for fixture initialization.
@@ -102,5 +105,44 @@ public class ScanServiceFixture {
         scan.setDescription("Contains multiple lists");
 
         return scan;
+    }
+
+    /**
+     * Converts a Scan to the lean WebService representation.
+     *
+     * @param scan The Scan to be converted.
+     * @return The lean WebService representation of the Scan.
+     */
+    public ScanWS convertToWsScan(final Scan scan) {
+        ScanWS scanWS = new ScanWS();
+        Iterator<List> listIterator;
+        Iterator<Instrument> instrumentIterator;
+        List list;
+        Instrument instrument;
+
+        // Head level
+        scanWS.setId(scan.getId());
+        scanWS.setName(scan.getName());
+        scanWS.setDescription(scan.getDescription());
+        scanWS.setExecutionStatus(scan.getExecutionStatus());
+        scanWS.setCompletionStatus(scan.getCompletionStatus());
+        scanWS.setProgress(scan.getProgress());
+        scanWS.setLastScan(scan.getLastScan());
+
+        // Lists
+        listIterator = scan.getLists().iterator();
+        while (listIterator.hasNext()) {
+            list = listIterator.next();
+            scanWS.getListIds().add(list.getId());
+        }
+
+        // Instruments
+        instrumentIterator = scan.getIncompleteInstruments().iterator();
+        while (instrumentIterator.hasNext()) {
+            instrument = instrumentIterator.next();
+            scanWS.getIncompleteInstrumentIds().add(instrument.getId());
+        }
+
+        return scanWS;
     }
 }
