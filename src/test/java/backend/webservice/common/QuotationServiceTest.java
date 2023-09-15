@@ -7,8 +7,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
@@ -17,15 +15,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import backend.controller.scan.IndicatorCalculator;
 import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
 import backend.dao.quotation.persistence.QuotationDAO;
-import backend.dao.quotation.provider.QuotationProviderDAO;
-import backend.dao.quotation.provider.QuotationProviderYahooDAOStub;
-import backend.model.Currency;
-import backend.model.StockExchange;
-import backend.model.instrument.Indicator;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
@@ -51,9 +43,9 @@ public class QuotationServiceTest {
     private static QuotationDAO quotationDAO;
 
     /**
-     * DAO to access quotation data from Yahoo.
+     * Class providing helper methods for fixture.
      */
-    private static QuotationProviderDAO quotationProviderYahooDAO;
+    private QuotationServiceFixture fixtureHelper;
 
     /**
      * The stock of Apple.
@@ -145,26 +137,6 @@ public class QuotationServiceTest {
      */
     private List<Quotation> denisonMinesQuotations;
 
-    /**
-     * The Indicator the Apple stock Quotation 2.
-     */
-    private Indicator appleQuotation2Indicator;
-
-    /**
-     * The Indicator of the Ford stock Quotation 1.
-     */
-    private Indicator fordQuotation1Indicator;
-
-    /**
-     * The Indicator of the XLE ETF Quotation 2.
-     */
-    private Indicator xleQuotation2Indicator;
-
-    /**
-     * The Indicator of the XLB ETF Quotation 1.
-     */
-    private Indicator xlbQuotation1Indicator;
-
     @BeforeAll
     /**
      * Tasks to be performed once at startup of test class.
@@ -172,7 +144,6 @@ public class QuotationServiceTest {
     public static void setUpClass() {
         instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
         quotationDAO = DAOManager.getInstance().getQuotationDAO();
-        quotationProviderYahooDAO = new QuotationProviderYahooDAOStub();
     }
 
     @AfterAll
@@ -182,7 +153,6 @@ public class QuotationServiceTest {
     public static void tearDownClass() {
         try {
             DAOManager.getInstance().close();
-            quotationProviderYahooDAO = null;
         } catch (IOException e) {
             fail(e.getMessage());
         }
@@ -193,6 +163,7 @@ public class QuotationServiceTest {
      * Tasks to be performed before each test is run.
      */
     private void setUp() {
+        this.fixtureHelper = new QuotationServiceFixture();
         this.createDummyInstruments();
         this.createDummyQuotations();
         this.createDummyIndicators();
@@ -205,21 +176,22 @@ public class QuotationServiceTest {
     private void tearDown() {
         this.deleteDummyQuotations();
         this.deleteDummyInstruments();
+        this.fixtureHelper = null;
     }
 
     /**
      * Initializes the database with dummy instruments.
      */
     private void createDummyInstruments() {
-        this.xliSector = this.getXliSector();
-        this.copperIndustryGroup = this.getCopperIndustryGroup();
-        this.appleStock = this.getAppleStock();
-        this.microsoftStock = this.getMicrosoftStock();
-        this.fordStock = this.getFordStock();
-        this.denisonMinesStock = this.getDenisonMinesStock();
-        this.xleETF = this.getXleEtf();
-        this.xlbETF = this.getXlbEtf();
-        this.xlfETF = this.getXlfEtf();
+        this.xliSector = this.fixtureHelper.getXliSector();
+        this.copperIndustryGroup = this.fixtureHelper.getCopperIndustryGroup();
+        this.appleStock = this.fixtureHelper.getAppleStock(this.xliSector, this.copperIndustryGroup);
+        this.microsoftStock = this.fixtureHelper.getMicrosoftStock(this.xliSector, this.copperIndustryGroup);
+        this.fordStock = this.fixtureHelper.getFordStock(this.xliSector, this.copperIndustryGroup);
+        this.denisonMinesStock = this.fixtureHelper.getDenisonMinesStock(this.xliSector, this.copperIndustryGroup);
+        this.xleETF = this.fixtureHelper.getXleEtf(this.xliSector, this.copperIndustryGroup);
+        this.xlbETF = this.fixtureHelper.getXlbEtf(this.xliSector, this.copperIndustryGroup);
+        this.xlfETF = this.fixtureHelper.getXlfEtf(this.xliSector, this.copperIndustryGroup);
 
         try {
             instrumentDAO.insertInstrument(this.xliSector);
@@ -256,178 +228,21 @@ public class QuotationServiceTest {
     }
 
     /**
-     * Gets the Instrument of the Apple stock.
-     *
-     * @return The Instrument of the Apple stock.
-     */
-    private Instrument getAppleStock() {
-        Instrument instrument = new Instrument();
-
-        instrument.setSymbol("AAPL");
-        instrument.setName("Apple");
-        instrument.setStockExchange(StockExchange.NDQ);
-        instrument.setType(InstrumentType.STOCK);
-        instrument.setSector(this.xliSector);
-        instrument.setIndustryGroup(this.copperIndustryGroup);
-
-        return instrument;
-    }
-
-    /**
-     * Gets the Instrument of the Microsoft stock.
-     *
-     * @return The Instrument of the Microsoft stock.
-     */
-    private Instrument getMicrosoftStock() {
-        Instrument instrument = new Instrument();
-
-        instrument.setSymbol("MSFT");
-        instrument.setName("Microsoft");
-        instrument.setStockExchange(StockExchange.NDQ);
-        instrument.setType(InstrumentType.STOCK);
-        instrument.setSector(this.xliSector);
-        instrument.setIndustryGroup(this.copperIndustryGroup);
-
-        return instrument;
-    }
-
-    /**
-     * Gets the Instrument of the Ford stock.
-     *
-     * @return The Instrument of the Ford stock.
-     */
-    private Instrument getFordStock() {
-        Instrument instrument = new Instrument();
-
-        instrument.setSymbol("F");
-        instrument.setName("Ford Motor Company");
-        instrument.setStockExchange(StockExchange.NYSE);
-        instrument.setType(InstrumentType.STOCK);
-        instrument.setSector(this.xliSector);
-        instrument.setIndustryGroup(this.copperIndustryGroup);
-
-        return instrument;
-    }
-
-    /**
-     * Gets the Instrument of the Denison Mines stock.
-     *
-     * @return The Instrument of the Denison Mines stock.
-     */
-    private Instrument getDenisonMinesStock() {
-        Instrument instrument = new Instrument();
-
-        instrument.setSymbol("DML");
-        instrument.setStockExchange(StockExchange.TSX);
-        instrument.setType(InstrumentType.STOCK);
-        instrument.setName("Denison Mines");
-        instrument.setSector(this.xliSector);
-        instrument.setIndustryGroup(this.copperIndustryGroup);
-
-        return instrument;
-    }
-
-    /**
-     * Gets the Instrument of the XLE ETF.
-     *
-     * @return The Instrument of the XLE ETF.
-     */
-    private Instrument getXleEtf() {
-        Instrument instrument = new Instrument();
-
-        instrument.setSymbol("XLE");
-        instrument.setName("Energy Select Sector SPDR Fund");
-        instrument.setStockExchange(StockExchange.NYSE);
-        instrument.setType(InstrumentType.ETF);
-        instrument.setSector(this.xliSector);
-        instrument.setIndustryGroup(this.copperIndustryGroup);
-
-        return instrument;
-    }
-
-    /**
-     * Gets the Instrument of the XLB ETF.
-     *
-     * @return The Instrument of the XLB ETF.
-     */
-    private Instrument getXlbEtf() {
-        Instrument instrument = new Instrument();
-
-        instrument.setSymbol("XLB");
-        instrument.setName("Materials Select Sector SPDR Fund");
-        instrument.setStockExchange(StockExchange.NYSE);
-        instrument.setType(InstrumentType.ETF);
-        instrument.setSector(this.xliSector);
-        instrument.setIndustryGroup(this.copperIndustryGroup);
-
-        return instrument;
-    }
-
-    /**
-     * Gets the Instrument of the XLF ETF.
-     *
-     * @return The Instrument of the XLF ETF.
-     */
-    private Instrument getXlfEtf() {
-        Instrument instrument = new Instrument();
-
-        instrument.setSymbol("XLF");
-        instrument.setName("Financial Select Sector SPDR Fund");
-        instrument.setStockExchange(StockExchange.NYSE);
-        instrument.setType(InstrumentType.ETF);
-        instrument.setSector(this.xliSector);
-        instrument.setIndustryGroup(this.copperIndustryGroup);
-
-        return instrument;
-    }
-
-    /**
-     * Gets the Instrument of the Industrial Sector.
-     *
-     * @return The Instrument of the Industrial Sector.
-     */
-    private Instrument getXliSector() {
-        Instrument instrument = new Instrument();
-
-        instrument.setSymbol("XLI");
-        instrument.setName("Industrial Select Sector SPDR Fund");
-        instrument.setStockExchange(StockExchange.NYSE);
-        instrument.setType(InstrumentType.SECTOR);
-
-        return instrument;
-    }
-
-    /**
-     * Gets the Instrument of the Copper Miners Industry Group.
-     *
-     * @return The Instrument of the Copper Miners Industry Group.
-     */
-    private Instrument getCopperIndustryGroup() {
-        Instrument instrument = new Instrument();
-
-        instrument.setSymbol("COPX");
-        instrument.setName("Global X Copper Miners ETF");
-        instrument.setStockExchange(StockExchange.NYSE);
-        instrument.setType(InstrumentType.IND_GROUP);
-
-        return instrument;
-    }
-
-    /**
      * Initializes the database with dummy quotations.
      */
     private void createDummyQuotations() {
         List<Quotation> quotations = new ArrayList<>();
 
-        this.appleQuotation1 = this.getAppleQuotation1();
-        this.appleQuotation2 = this.getAppleQuotation2();
-        this.microsoftQuotation1 = this.getMicrosoftQuotation1();
-        this.fordQuotation1 = this.getFordQuotation1();
-        this.xleQuotation1 = this.getXleQuotation1();
-        this.xleQuotation2 = this.getXleQuotation2();
-        this.xlbQuotation1 = this.getXlbQuotation1();
-        this.xlfQuotation1 = this.getXlfQuotation1();
-        this.denisonMinesQuotations = this.getDenisonMinesQuotationsWithoutIndicators();
+        this.appleQuotation1 = this.fixtureHelper.getAppleQuotation1(this.appleStock);
+        this.appleQuotation2 = this.fixtureHelper.getAppleQuotation2(this.appleStock);
+        this.microsoftQuotation1 = this.fixtureHelper.getMicrosoftQuotation1(this.microsoftStock);
+        this.fordQuotation1 = this.fixtureHelper.getFordQuotation1(this.fordStock);
+        this.xleQuotation1 = this.fixtureHelper.getXleQuotation1(this.xleETF);
+        this.xleQuotation2 = this.fixtureHelper.getXleQuotation2(this.xleETF);
+        this.xlbQuotation1 = this.fixtureHelper.getXlbQuotation1(this.xlbETF);
+        this.xlfQuotation1 = this.fixtureHelper.getXlfQuotation1(this.xlfETF);
+        this.denisonMinesQuotations = this.fixtureHelper
+                .getDenisonMinesQuotationsWithoutIndicators(this.denisonMinesStock);
 
         quotations.add(this.appleQuotation1);
         quotations.add(this.appleQuotation2);
@@ -470,321 +285,28 @@ public class QuotationServiceTest {
     }
 
     /**
-     * Gets the Quotation 1 of the Apple stock.
-     *
-     * @return The Quotation 1 of the Apple stock.
-     */
-    private Quotation getAppleQuotation1() {
-        Quotation quotation = new Quotation();
-        Calendar calendar = Calendar.getInstance();
-
-        calendar.setTime(new Date());
-        calendar.add(Calendar.DAY_OF_YEAR, -1);
-
-        quotation.setDate(calendar.getTime());
-        quotation.setClose(BigDecimal.valueOf(78.54));
-        quotation.setCurrency(Currency.USD);
-        quotation.setVolume(28973654);
-        quotation.setInstrument(this.appleStock);
-
-        return quotation;
-    }
-
-    /**
-     * Gets the Quotation 2 of the Apple stock.
-     *
-     * @return The Quotation 2 of the Apple stock.
-     */
-    private Quotation getAppleQuotation2() {
-        Quotation quotation = new Quotation();
-        Calendar calendar = Calendar.getInstance();
-
-        calendar.setTime(new Date());
-        calendar.set(Calendar.HOUR_OF_DAY, 15);
-        calendar.set(Calendar.MINUTE, 30);
-
-        quotation.setDate(calendar.getTime());
-        quotation.setClose(BigDecimal.valueOf(77.52));
-        quotation.setCurrency(Currency.USD);
-        quotation.setVolume(12373654);
-        quotation.setInstrument(this.appleStock);
-
-        return quotation;
-    }
-
-    /**
-     * Gets the Quotation 1 of the Microsoft stock.
-     *
-     * @return The Quotation 1 of the Microsoft stock.
-     */
-    private Quotation getMicrosoftQuotation1() {
-        Quotation quotation = new Quotation();
-
-        quotation.setDate(new Date());
-        quotation.setClose(BigDecimal.valueOf(124.07));
-        quotation.setCurrency(Currency.USD);
-        quotation.setVolume(13973124);
-        quotation.setInstrument(this.microsoftStock);
-
-        return quotation;
-    }
-
-    /**
-     * Gets the Quotation 1 of the Ford stock.
-     *
-     * @return The Quotation 1 of the Ford stock.
-     */
-    private Quotation getFordQuotation1() {
-        Quotation quotation = new Quotation();
-        Calendar calendar = Calendar.getInstance();
-
-        calendar.setTime(new Date());
-        calendar.set(Calendar.HOUR_OF_DAY, 22);
-        calendar.set(Calendar.MINUTE, 0);
-
-        quotation.setDate(calendar.getTime());
-        quotation.setClose(BigDecimal.valueOf(15.88));
-        quotation.setCurrency(Currency.USD);
-        quotation.setVolume(48600000);
-        quotation.setInstrument(this.fordStock);
-
-        return quotation;
-    }
-
-    /**
-     * Gets the Quotation 1 of the XLE ETF.
-     *
-     * @return The Quotation 1 of the XLE ETF.
-     */
-    private Quotation getXleQuotation1() {
-        Quotation quotation = new Quotation();
-        Calendar calendar = Calendar.getInstance();
-
-        calendar.setTime(new Date());
-        calendar.add(Calendar.DAY_OF_YEAR, -1);
-
-        quotation.setDate(calendar.getTime());
-        quotation.setClose(BigDecimal.valueOf(81.28));
-        quotation.setCurrency(Currency.USD);
-        quotation.setVolume(18994000);
-        quotation.setInstrument(this.xleETF);
-
-        return quotation;
-    }
-
-    /**
-     * Gets the Quotation 2 of the XLE ETF.
-     *
-     * @return The Quotation 2 of the XLE ETF.
-     */
-    private Quotation getXleQuotation2() {
-        Quotation quotation = new Quotation();
-        Calendar calendar = Calendar.getInstance();
-
-        calendar.setTime(new Date());
-        calendar.set(Calendar.HOUR_OF_DAY, 15);
-        calendar.set(Calendar.MINUTE, 30);
-
-        quotation.setDate(calendar.getTime());
-        quotation.setClose(BigDecimal.valueOf(81.99));
-        quotation.setCurrency(Currency.USD);
-        quotation.setVolume(25187000);
-        quotation.setInstrument(this.xleETF);
-
-        return quotation;
-    }
-
-    /**
-     * Gets the Quotation 1 of the XLB ETF.
-     *
-     * @return The Quotation 1 of the XLB ETF.
-     */
-    private Quotation getXlbQuotation1() {
-        Quotation quotation = new Quotation();
-
-        quotation.setDate(new Date());
-        quotation.setClose(BigDecimal.valueOf(71.25));
-        quotation.setCurrency(Currency.USD);
-        quotation.setVolume(79794000);
-        quotation.setInstrument(this.xlbETF);
-
-        return quotation;
-    }
-
-    /**
-     * Gets the Quotation 1 of the XLF ETF.
-     *
-     * @return The Quotation 1 of the XLF ETF.
-     */
-    private Quotation getXlfQuotation1() {
-        Quotation quotation = new Quotation();
-        Calendar calendar = Calendar.getInstance();
-
-        calendar.setTime(new Date());
-        calendar.set(Calendar.HOUR_OF_DAY, 22);
-        calendar.set(Calendar.MINUTE, 0);
-
-        quotation.setDate(calendar.getTime());
-        quotation.setClose(BigDecimal.valueOf(32.30));
-        quotation.setCurrency(Currency.USD);
-        quotation.setVolume(48148000);
-        quotation.setInstrument(this.xlfETF);
-
-        return quotation;
-    }
-
-    /**
-     * Gets quotations of the Denison Mines stock.
-     *
-     * @return A List of quotations.
-     */
-    private List<Quotation> getDenisonMinesQuotationsWithoutIndicators() {
-        List<Quotation> quotationsWithoutIndicators = new ArrayList<>();
-
-        try {
-            quotationsWithoutIndicators.addAll(
-                    quotationProviderYahooDAO.getQuotationHistory("DML", StockExchange.TSX, InstrumentType.STOCK, 1));
-
-            for (Quotation tempQuotation : quotationsWithoutIndicators) {
-                tempQuotation.setInstrument(this.denisonMinesStock);
-            }
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
-
-        return quotationsWithoutIndicators;
-    }
-
-    /**
      * Initializes the database with dummy indicators.
      */
     private void createDummyIndicators() {
         List<Quotation> quotations = new ArrayList<>();
 
-        this.initAppleQuotation2Indicator();
-        this.appleQuotation2.setIndicator(this.appleQuotation2Indicator);
-
-        this.initFordQuotation1Indicator();
-        this.fordQuotation1.setIndicator(this.fordQuotation1Indicator);
-
-        this.initXleQuotation2Indicator();
-        this.xleQuotation2.setIndicator(this.xleQuotation2Indicator);
-
-        this.initXlbQuotation1Indicator();
-        this.xlbQuotation1.setIndicator(this.xlbQuotation1Indicator);
+        this.appleQuotation2.setIndicator(this.fixtureHelper.getAppleQuotation2Indicator());
+        this.fordQuotation1.setIndicator(this.fixtureHelper.getFordQuotation1Indicator());
+        this.xleQuotation2.setIndicator(this.fixtureHelper.getXleQuotation2Indicator());
+        this.xlbQuotation1.setIndicator(this.fixtureHelper.getXlbQuotation1Indicator());
 
         quotations.add(this.appleQuotation2);
         quotations.add(this.fordQuotation1);
         quotations.add(this.xleQuotation2);
         quotations.add(this.xlbQuotation1);
-        quotations.addAll(this.getDenisonMinesQuotationsWithIndicators());
+        quotations.addAll(this.fixtureHelper.getDenisonMinesQuotationsWithIndicators(this.denisonMinesStock,
+                this.denisonMinesQuotations));
 
         try {
             quotationDAO.updateQuotations(quotations);
         } catch (Exception e) {
             fail(e.getMessage());
         }
-    }
-
-    /**
-     * Initializes the appleQuotation2Indicator.
-     */
-    private void initAppleQuotation2Indicator() {
-        this.appleQuotation2Indicator = new Indicator();
-        this.appleQuotation2Indicator.setStage(2);
-        this.appleQuotation2Indicator.setSma200(60);
-        this.appleQuotation2Indicator.setSma150((float) 63.45);
-        this.appleQuotation2Indicator.setSma50((float) 69.24);
-        this.appleQuotation2Indicator.setRsNumber(71);
-        this.appleQuotation2Indicator.setPerformance5Days((float) 12.44);
-        this.appleQuotation2Indicator.setDistanceTo52WeekHigh((float) -4.4);
-        this.appleQuotation2Indicator.setDistanceTo52WeekLow((float) 78.81);
-        this.appleQuotation2Indicator.setBollingerBandWidth((float) 8.71);
-        this.appleQuotation2Indicator.setVolumeDifferential5Days((float) 47.18);
-        this.appleQuotation2Indicator.setVolumeDifferential10Days((float) 19.34);
-        this.appleQuotation2Indicator.setBaseLengthWeeks(32);
-    }
-
-    /**
-     * Initializes the fordQuotation1Indicator.
-     */
-    private void initFordQuotation1Indicator() {
-        this.fordQuotation1Indicator = new Indicator();
-        this.fordQuotation1Indicator.setStage(3);
-        this.fordQuotation1Indicator.setSma200((float) 16.36);
-        this.fordQuotation1Indicator.setSma150((float) 15.08);
-        this.fordQuotation1Indicator.setSma50((float) 13.07);
-        this.fordQuotation1Indicator.setRsNumber(45);
-        this.fordQuotation1Indicator.setPerformance5Days((float) -10.21);
-        this.fordQuotation1Indicator.setDistanceTo52WeekHigh((float) -9.41);
-        this.fordQuotation1Indicator.setDistanceTo52WeekLow((float) 48.81);
-        this.fordQuotation1Indicator.setBollingerBandWidth((float) 4.11);
-        this.fordQuotation1Indicator.setVolumeDifferential5Days((float) 25.55);
-        this.fordQuotation1Indicator.setVolumeDifferential10Days((float) -9.67);
-        this.fordQuotation1Indicator.setBaseLengthWeeks(3);
-    }
-
-    /**
-     * Initializes the xleQuotation2Indicator.
-     */
-    private void initXleQuotation2Indicator() {
-        this.xleQuotation2Indicator = new Indicator();
-        this.xleQuotation2Indicator.setStage(2);
-        this.xleQuotation2Indicator.setSma200((float) 74.02);
-        this.xleQuotation2Indicator.setSma150((float) 76.84);
-        this.xleQuotation2Indicator.setSma50((float) 78.15);
-        this.xleQuotation2Indicator.setRsNumber(71);
-        this.xleQuotation2Indicator.setPerformance5Days((float) 3.17);
-        this.xleQuotation2Indicator.setDistanceTo52WeekHigh((float) -21.4);
-        this.xleQuotation2Indicator.setDistanceTo52WeekLow((float) 78.81);
-        this.xleQuotation2Indicator.setBollingerBandWidth((float) 8.71);
-        this.xleQuotation2Indicator.setVolumeDifferential5Days((float) 12.12);
-        this.xleQuotation2Indicator.setVolumeDifferential10Days((float) 19.34);
-        this.xleQuotation2Indicator.setBaseLengthWeeks(32);
-    }
-
-    /**
-     * Initializes the xlbQuotation1Indicator.
-     */
-    private void initXlbQuotation1Indicator() {
-        this.xlbQuotation1Indicator = new Indicator();
-        this.xlbQuotation1Indicator.setStage(4);
-        this.xlbQuotation1Indicator.setSma200((float) 79.83);
-        this.xlbQuotation1Indicator.setSma150((float) 78.64);
-        this.xlbQuotation1Indicator.setSma50((float) 74.01);
-        this.xlbQuotation1Indicator.setRsNumber(71);
-        this.xlbQuotation1Indicator.setPerformance5Days((float) -6.70);
-        this.xlbQuotation1Indicator.setDistanceTo52WeekHigh((float) -9.41);
-        this.xlbQuotation1Indicator.setDistanceTo52WeekLow((float) 0.81);
-        this.xlbQuotation1Indicator.setBollingerBandWidth((float) 4.11);
-        this.xlbQuotation1Indicator.setVolumeDifferential5Days((float) 21.89);
-        this.xlbQuotation1Indicator.setVolumeDifferential10Days((float) -9.67);
-        this.xlbQuotation1Indicator.setBaseLengthWeeks(3);
-    }
-
-    /**
-     * Calculates indicators and adds them to the DML quotations.
-     */
-    private List<Quotation> getDenisonMinesQuotationsWithIndicators() {
-        Quotation quotation;
-        List<Quotation> quotationsWithIndicators = new ArrayList<>();
-        IndicatorCalculator indicatorCalculator = new IndicatorCalculator();
-
-        // Quotations of Instrument are needed for indicator calculation.
-        this.denisonMinesStock.setQuotations(this.denisonMinesQuotations);
-
-        for (int i = 0; i < this.denisonMinesQuotations.size(); i++) {
-            quotation = this.denisonMinesQuotations.get(i);
-
-            if (i == 0)
-                quotation = indicatorCalculator.calculateIndicators(this.denisonMinesStock, quotation, true);
-            else
-                quotation = indicatorCalculator.calculateIndicators(this.denisonMinesStock, quotation, false);
-
-            quotationsWithIndicators.add(quotation);
-        }
-
-        return quotationsWithIndicators;
     }
 
     @Test
