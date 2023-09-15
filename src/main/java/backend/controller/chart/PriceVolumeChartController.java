@@ -471,16 +471,28 @@ public class PriceVolumeChartController extends ChartController {
         XYPlot slowStochasticPlot;
         NumberAxis valueAxis = new NumberAxis("");
         XYLineAndShapeRenderer slowStochasticRenderer = new XYLineAndShapeRenderer(true, false);
-        ValueMarker valueMarker;
-        final double lowerTriggerLine = 15;
-        final double middleLine = 50;
-        final double upperTriggerLine = 85;
 
         dataset = this.getSlowStochasticDataset(instrument);
 
         slowStochasticPlot = new XYPlot(dataset, timeAxis, valueAxis, null);
         slowStochasticPlot.setRenderer(slowStochasticRenderer);
         slowStochasticPlot.setRangeAxisLocation(AxisLocation.TOP_OR_RIGHT);
+
+        this.addSlowStochasticTriggerLines(slowStochasticPlot);
+
+        return slowStochasticPlot;
+    }
+
+    /**
+     * Adds horizontal trigger lines to the Slow Stochastic plot.
+     *
+     * @param slowStochasticPlot The Slow Stochastic plot.
+     */
+    private void addSlowStochasticTriggerLines(final XYPlot slowStochasticPlot) {
+        ValueMarker valueMarker;
+        final double lowerTriggerLine = 15;
+        final double middleLine = 50;
+        final double upperTriggerLine = 85;
 
         // Add value marker at 15, 50 and 85.
         valueMarker = new ValueMarker(lowerTriggerLine);
@@ -491,8 +503,6 @@ public class PriceVolumeChartController extends ChartController {
 
         valueMarker = new ValueMarker(upperTriggerLine);
         slowStochasticPlot.addRangeMarker(valueMarker);
-
-        return slowStochasticPlot;
     }
 
     /**
