@@ -10,11 +10,6 @@ import backend.model.instrument.QuotationArray;
  */
 public class StochasticCalculator {
     /**
-     * Smoothing period used for Slow Stochastic.
-     */
-    private static final int SLOW_STOCHASTIC_SMOOTHING_PERIOD = 3;
-
-    /**
      * Factor used for rounding to two decimal places.
      */
     private static final double ROUNDING_FACTOR_TWO_DECIMALS = 100.0;
@@ -23,12 +18,14 @@ public class StochasticCalculator {
      * Calculates the Slow Stochastic for the given number of days. The Slow Stochastic uses a default smoothing period
      * of 3.
      *
-     * @param days             The number of days used for calculation.
+     * @param daysPeriod       The number of days used for calculation.
+     * @param smoothingPeriod  The number of days used for smoothing of Slow Stochastic.
      * @param quotation        The Quotation for which the Slow Stochastic is calculated.
      * @param sortedQuotations A list of quotations sorted by date that build the trading history used for calculation.
      * @return The Slow Stochastic.
      */
-    public float getSlowStochastic(final int days, final Quotation quotation, final QuotationArray sortedQuotations) {
+    public float getSlowStochastic(final int daysPeriod, final int smoothingPeriod, final Quotation quotation,
+            final QuotationArray sortedQuotations) {
         float slowStochastic;
         float stochastic;
         float sum = 0;
@@ -39,18 +36,17 @@ public class StochasticCalculator {
         indexOfQuotation = sortedQuotations.getQuotations().indexOf(quotation);
 
         // Check if enough quotations exist for Slow Stochastic calculation.
-        if ((sortedQuotations.getQuotations().size() - days - indexOfQuotation
-                - SLOW_STOCHASTIC_SMOOTHING_PERIOD) < 0) {
+        if ((sortedQuotations.getQuotations().size() - daysPeriod - indexOfQuotation - smoothingPeriod) < 0) {
             return 0;
         }
 
-        for (int i = indexOfQuotation; i < (SLOW_STOCHASTIC_SMOOTHING_PERIOD + indexOfQuotation); i++) {
+        for (int i = indexOfQuotation; i < (smoothingPeriod + indexOfQuotation); i++) {
             currentQuotation = sortedQuotations.getQuotations().get(i);
-            stochastic = this.getStochastic(days, currentQuotation, sortedQuotations);
+            stochastic = this.getStochastic(daysPeriod, currentQuotation, sortedQuotations);
             sum += stochastic;
         }
 
-        slowStochastic = sum / SLOW_STOCHASTIC_SMOOTHING_PERIOD;
+        slowStochastic = sum / smoothingPeriod;
 
         // Round result to two decimal places.
         slowStochastic = (float) (Math.round(slowStochastic * ROUNDING_FACTOR_TWO_DECIMALS)

@@ -471,8 +471,10 @@ public class PriceVolumeChartController extends ChartController {
         XYPlot slowStochasticPlot;
         NumberAxis valueAxis = new NumberAxis("");
         XYLineAndShapeRenderer slowStochasticRenderer = new XYLineAndShapeRenderer(true, false);
+        final int slowStochasticPeriodDays = 14;
+        final int smoothingPeriodDays = 3;
 
-        dataset = this.getSlowStochasticDataset(instrument);
+        dataset = this.getSlowStochasticDataset(instrument, slowStochasticPeriodDays, smoothingPeriodDays);
 
         slowStochasticPlot = new XYPlot(dataset, timeAxis, valueAxis, null);
         slowStochasticPlot.setRenderer(slowStochasticRenderer);
@@ -508,23 +510,25 @@ public class PriceVolumeChartController extends ChartController {
     /**
      * Constructs a XYDataset for the Slow Stochastic.
      *
-     * @param instrument The Instrument for which the Price Volume chart is displayed.
+     * @param instrument      The Instrument for which the Price Volume chart is displayed.
+     * @param daysPeriod      The number of days used for calculation.
+     * @param smoothingPeriod The number of days used for smoothing of Slow Stochastic.
      * @return A dataset building the values of the Slow Stochastic.
      * @throws Exception Failed to construct dataset of Slow Stochastic.
      */
-    private XYDataset getSlowStochasticDataset(final Instrument instrument) throws Exception {
+    private XYDataset getSlowStochasticDataset(final Instrument instrument, final int daysPeriod,
+            final int smoothingPeriod) throws Exception {
         TimeSeries timeSeries = new TimeSeries(
                 this.getResources().getString("chart.priceVolume.timeSeriesSlowStochasticName"));
         TimeZone timeZone = TimeZone.getDefault();
         TimeSeriesCollection timeSeriesCollection = new TimeSeriesCollection(timeZone);
         QuotationArray quotationArray = instrument.getQuotationArray();
         float slowStochastic;
-        final int slowStochasticPeriodDays = 14;
 
         quotationArray.sortQuotationsByDate();
 
         for (Quotation quotation : quotationArray.getQuotations()) {
-            slowStochastic = this.stochasticCalculator.getSlowStochastic(slowStochasticPeriodDays, quotation,
+            slowStochastic = this.stochasticCalculator.getSlowStochastic(daysPeriod, smoothingPeriod, quotation,
                     quotationArray);
             timeSeries.add(new Day(quotation.getDate()), slowStochastic);
         }
