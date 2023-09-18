@@ -65,5 +65,11 @@ public enum ScanTemplate {
      * Instruments (mainly Sectors, Industry Groups and Indices) trading in a way that is conductive to a breakout-style
      * of Swing Trading.
      */
-    SWING_TRADING_ENVIRONMENT
+    SWING_TRADING_ENVIRONMENT,
+
+    /**
+     * Instruments whose RS-line is trading near the 52-week high. The referenced industry group is used for ratio
+     * calculation.
+     */
+    RS_NEAR_HIGH_IG
 }

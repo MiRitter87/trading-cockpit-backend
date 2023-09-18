@@ -42,12 +42,18 @@ public class ScanTemplateProcessor {
     private QuotationHibernateDAO quotationHibernateDAO;
 
     /**
+     * Performs manual tasks for the various "RS_NEAR_HIGH" Scan templates.
+     */
+    private TemplateRsNearHighProcessor rsNearHighProcessor;
+
+    /**
      * Constructor.
      *
      * @param quotationHibernateDAO DAO to access Quotation data.
      */
     public ScanTemplateProcessor(final QuotationHibernateDAO quotationHibernateDAO) {
         this.quotationHibernateDAO = quotationHibernateDAO;
+        this.rsNearHighProcessor = new TemplateRsNearHighProcessor();
     }
 
     /**
@@ -126,6 +132,8 @@ public class ScanTemplateProcessor {
             this.postProcessingHighTightFlag(quotations);
         } else if (scanTemplate == ScanTemplate.SWING_TRADING_ENVIRONMENT) {
             this.postProcessingSwingTradingEnvironment(quotations);
+        } else if (scanTemplate == ScanTemplate.RS_NEAR_HIGH_IG) {
+            this.rsNearHighProcessor.postProcessingRsNearHigh(scanTemplate, quotations);
         }
     }
 
