@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import backend.controller.RatioCalculationController;
+import backend.controller.scan.IndicatorCalculator;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
@@ -23,6 +24,8 @@ public class TemplateRsNearHighProcessor {
 
     /**
      * Initializes the TemplateRsNearHighProcessor.
+     *
+     * @param quotationHibernateDAO DAO to access Quotation data.
      */
     public TemplateRsNearHighProcessor(final QuotationHibernateDAO quotationHibernateDAO) {
         this.quotationHibernateDAO = quotationHibernateDAO;
@@ -78,8 +81,15 @@ public class TemplateRsNearHighProcessor {
      * @throws Exception Failed to calculate RS-Line.
      */
     private boolean isRsLineNearHigh(final Instrument dividend, final Instrument divisor) throws Exception {
-        List<Quotation> rsLineQuotations = this.getRsLineQuotations(dividend, divisor);
+        IndicatorCalculator indicatorCalculator = new IndicatorCalculator();
+        final float percentNearHighThreshold = -5;
+        QuotationArray rsLineQuotations = this.getRsLineQuotations(dividend, divisor);
+        float distanceTo52WeekHigh = indicatorCalculator
+                .getDistanceTo52WeekHigh(rsLineQuotations.getQuotations().get(0), rsLineQuotations);
 
+        if (distanceTo52WeekHigh >= percentNearHighThreshold) {
+            return true;
+        }
 
         return false;
     }
@@ -88,16 +98,17 @@ public class TemplateRsNearHighProcessor {
      * Calculates the quotations that build the RS-Line.
      *
      * @param dividend The Instrument used as dividend for RS-Line calculation.
-     * @param divisor The Instrument used as divisor for RS-Line calculation.
+     * @param divisor  The Instrument used as divisor for RS-Line calculation.
      * @return The quotations that build the RS-Line.
      * @throws Exception Failed to calculate RS-Line.
      */
-    private List<Quotation> getRsLineQuotations(final Instrument dividend, final Instrument divisor) throws Exception {
+    private QuotationArray getRsLineQuotations(final Instrument dividend, final Instrument divisor) throws Exception {
         RatioCalculationController ratioCalculator = new RatioCalculationController();
         QuotationArray rsLineQuotations = new QuotationArray();
 
-        if(divisor == null) {
-            throw new Exception("No divisor Instrument defined to calculate RS-Line of intrument with ID " +dividend.getId());
+        if (divisor == null) {
+            throw new Exception(
+                    "No divisor Instrument defined to calculate RS-Line of intrument with ID " + dividend.getId());
         }
 
         dividend.setQuotations(this.quotationHibernateDAO.getQuotationsOfInstrument(dividend.getId()));
@@ -106,6 +117,6 @@ public class TemplateRsNearHighProcessor {
         rsLineQuotations.setQuotations(ratioCalculator.getRatios(dividend, divisor));
         rsLineQuotations.sortQuotationsByDate();
 
-        return rsLineQuotations.getQuotations();
+        return rsLineQuotations;
     }
 }
