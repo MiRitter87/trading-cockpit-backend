@@ -10,7 +10,7 @@ import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
-
+import backend.model.LocalizedException;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 import backend.webservice.ScanTemplate;
@@ -300,7 +300,7 @@ public class QuotationHibernateDAO implements QuotationDAO {
     @SuppressWarnings("unchecked")
     @Override
     public List<Quotation> getQuotationsByTemplate(final ScanTemplate scanTemplate, final InstrumentType instrumentType,
-            final String startDate, final Float minLiquidity) throws Exception {
+            final String startDate, final Float minLiquidity) throws LocalizedException, Exception {
 
         EntityManager entityManager = this.sessionFactory.createEntityManager();
         List<Quotation> quotations;

@@ -5,6 +5,7 @@ import java.util.List;
 
 import backend.controller.RatioCalculationController;
 import backend.controller.scan.IndicatorCalculator;
+import backend.model.LocalizedException;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
@@ -38,10 +39,11 @@ public class TemplateRsNearHighProcessor {
      *
      * @param scanTemplate The ScanTemplate.
      * @param quotations   The quotations on which the post processing is performed.
-     * @throws Exception Post processing failed.
+     * @throws LocalizedException Exception with error message to be displayed to the user.
+     * @throws Exception          Post processing failed.
      */
     public void postProcessingRsNearHigh(final ScanTemplate scanTemplate, final List<Quotation> quotations)
-            throws Exception {
+            throws LocalizedException, Exception {
 
         Iterator<Quotation> quotationIterator = quotations.iterator();
         Quotation currentQuotation;
@@ -63,9 +65,15 @@ public class TemplateRsNearHighProcessor {
      * @param scanTemplate The ScanTemplate.
      * @param instrument   The Instrument for which the RS-Line is being determined.
      * @return The Instrument used as divisor for RS-Line calculation.
+     * @throws LocalizedException Informs the user about a missing Instrument relation for RS-Line calculation.
      */
-    private Instrument getRsLineDivisor(final ScanTemplate scanTemplate, final Instrument instrument) {
+    private Instrument getRsLineDivisor(final ScanTemplate scanTemplate, final Instrument instrument)
+            throws LocalizedException {
         if (scanTemplate == ScanTemplate.RS_NEAR_HIGH_IG) {
+            if (instrument.getIndustryGroup() == null) {
+                throw new LocalizedException("quotation.noIgReferenced", instrument.getId());
+            }
+
             return instrument.getIndustryGroup();
         }
 

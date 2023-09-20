@@ -2,6 +2,7 @@ package backend.dao.quotation.persistence;
 
 import java.util.List;
 
+import backend.model.LocalizedException;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 import backend.webservice.ScanTemplate;
@@ -83,8 +84,9 @@ public interface QuotationDAO {
      *                       omitted (null).
      * @param minLiquidity   The minimum trading liquidity that is required. Parameter can be omitted (null).
      * @return The most recent Quotation of each Instrument that matches the given Template.
-     * @throws Exception Quotation determination failed.
+     * @throws LocalizedException Exception with error message to be displayed to the user.
+     * @throws Exception          Quotation determination failed.
      */
     List<Quotation> getQuotationsByTemplate(ScanTemplate scanTemplate, InstrumentType instrumentType, String startDate,
-            Float minLiquidity) throws Exception;
+            Float minLiquidity) throws LocalizedException, Exception;
 }

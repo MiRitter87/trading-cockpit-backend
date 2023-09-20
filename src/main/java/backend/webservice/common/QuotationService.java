@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 
 import backend.dao.DAOManager;
 import backend.dao.quotation.persistence.QuotationDAO;
+import backend.model.LocalizedException;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.QuotationArray;
 import backend.model.webservice.WebServiceMessage;
@@ -70,6 +71,9 @@ public class QuotationService {
             quotations.setQuotations(
                     this.quotationDAO.getQuotationsByTemplate(scanTemplate, instrumentType, startDate, minLiquidity));
             getRecentQuotationsResult.setData(quotations);
+        } catch (LocalizedException localizedException) {
+            getRecentQuotationsResult.addMessage(
+                    new WebServiceMessage(WebServiceMessageType.E, localizedException.getLocalizedMessage()));
         } catch (Exception e) {
             getRecentQuotationsResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
                     this.resources.getString("quotation.getRecentQuotationsError")));

@@ -7,6 +7,7 @@ import java.util.List;
 
 import backend.controller.scan.IndicatorCalculator;
 import backend.controller.scan.PerformanceCalculator;
+import backend.model.LocalizedException;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
@@ -119,10 +120,11 @@ public class ScanTemplateProcessor {
      * @param scanTemplate      The scan template.
      * @param startDateAsString The start date for calculation of the RS number.
      * @param quotations        The quotations on which the post processing is performed.
-     * @throws Exception Post processing failed.
+     * @throws LocalizedException Exception with error message to be displayed to the user.
+     * @throws Exception          Post processing failed.
      */
     protected void templateBasedPostProcessing(final ScanTemplate scanTemplate, final String startDateAsString,
-            final List<Quotation> quotations) throws Exception {
+            final List<Quotation> quotations) throws LocalizedException, Exception {
 
         if (scanTemplate == ScanTemplate.RS_SINCE_DATE) {
             this.postProcessingRsSinceDate(startDateAsString, quotations);
