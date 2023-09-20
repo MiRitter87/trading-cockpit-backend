@@ -3,8 +3,10 @@ package backend.dao.quotation.persistence;
 import java.util.Iterator;
 import java.util.List;
 
+import backend.controller.RatioCalculationController;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
+import backend.model.instrument.QuotationArray;
 import backend.webservice.ScanTemplate;
 
 /**
@@ -14,6 +16,18 @@ import backend.webservice.ScanTemplate;
  * @author Michael
  */
 public class TemplateRsNearHighProcessor {
+    /**
+     * DAO to access Quotation data.
+     */
+    private QuotationHibernateDAO quotationHibernateDAO;
+
+    /**
+     * Initializes the TemplateRsNearHighProcessor.
+     */
+    public TemplateRsNearHighProcessor(final QuotationHibernateDAO quotationHibernateDAO) {
+        this.quotationHibernateDAO = quotationHibernateDAO;
+    }
+
     /**
      * Performs post processing tasks for the given quotations based on the given ScanTemplate. The method checks for
      * each Instrument if the RS-Line trades near the 52-week high. Those quotations that do not match the template are
@@ -34,9 +48,9 @@ public class TemplateRsNearHighProcessor {
             currentQuotation = quotationIterator.next();
             divisor = this.getRsLineDivisor(scanTemplate, currentQuotation.getInstrument());
 
-            // 3. Check if RS-Line trades within 5% of 52w-high
-
-            // 4. Remove Quotation from results if not
+            if (!this.isRsLineNearHigh(currentQuotation.getInstrument(), divisor)) {
+                quotationIterator.remove();
+            }
         }
     }
 
@@ -53,5 +67,45 @@ public class TemplateRsNearHighProcessor {
         }
 
         return null;
+    }
+
+    /**
+     * Checks if the RS-Line trades near its 52-week high.
+     *
+     * @param dividend The Instrument used as dividend for RS-Line calculation.
+     * @param divisor  The Instrument used as divisor for RS-Line calculation.
+     * @return true, if RS-Line trades near its 52-week high; false, if not.
+     * @throws Exception Failed to calculate RS-Line.
+     */
+    private boolean isRsLineNearHigh(final Instrument dividend, final Instrument divisor) throws Exception {
+        List<Quotation> rsLineQuotations = this.getRsLineQuotations(dividend, divisor);
+
+
+        return false;
+    }
+
+    /**
+     * Calculates the quotations that build the RS-Line.
+     *
+     * @param dividend The Instrument used as dividend for RS-Line calculation.
+     * @param divisor The Instrument used as divisor for RS-Line calculation.
+     * @return The quotations that build the RS-Line.
+     * @throws Exception Failed to calculate RS-Line.
+     */
+    private List<Quotation> getRsLineQuotations(final Instrument dividend, final Instrument divisor) throws Exception {
+        RatioCalculationController ratioCalculator = new RatioCalculationController();
+        QuotationArray rsLineQuotations = new QuotationArray();
+
+        if(divisor == null) {
+            throw new Exception("No divisor Instrument defined to calculate RS-Line of intrument with ID " +dividend.getId());
+        }
+
+        dividend.setQuotations(this.quotationHibernateDAO.getQuotationsOfInstrument(dividend.getId()));
+        divisor.setQuotations(this.quotationHibernateDAO.getQuotationsOfInstrument(divisor.getId()));
+
+        rsLineQuotations.setQuotations(ratioCalculator.getRatios(dividend, divisor));
+        rsLineQuotations.sortQuotationsByDate();
+
+        return rsLineQuotations.getQuotations();
     }
 }

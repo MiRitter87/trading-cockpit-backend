@@ -53,7 +53,7 @@ public class ScanTemplateProcessor {
      */
     public ScanTemplateProcessor(final QuotationHibernateDAO quotationHibernateDAO) {
         this.quotationHibernateDAO = quotationHibernateDAO;
-        this.rsNearHighProcessor = new TemplateRsNearHighProcessor();
+        this.rsNearHighProcessor = new TemplateRsNearHighProcessor(this.quotationHibernateDAO);
     }
 
     /**
