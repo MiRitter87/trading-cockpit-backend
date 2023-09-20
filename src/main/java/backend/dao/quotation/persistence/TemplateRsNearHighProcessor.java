@@ -1,7 +1,9 @@
 package backend.dao.quotation.persistence;
 
+import java.util.Iterator;
 import java.util.List;
 
+import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
 import backend.webservice.ScanTemplate;
 
@@ -24,6 +26,32 @@ public class TemplateRsNearHighProcessor {
     public void postProcessingRsNearHigh(final ScanTemplate scanTemplate, final List<Quotation> quotations)
             throws Exception {
 
+        Iterator<Quotation> quotationIterator = quotations.iterator();
+        Quotation currentQuotation;
+        Instrument divisor;
 
+        while (quotationIterator.hasNext()) {
+            currentQuotation = quotationIterator.next();
+            divisor = this.getRsLineDivisor(scanTemplate, currentQuotation.getInstrument());
+
+            // 3. Check if RS-Line trades within 5% of 52w-high
+
+            // 4. Remove Quotation from results if not
+        }
+    }
+
+    /**
+     * Determines the Instrument used for RS-Line calculation based on the given ScanTemplate.
+     *
+     * @param scanTemplate The ScanTemplate.
+     * @param instrument   The Instrument for which the RS-Line is being determined.
+     * @return The Instrument used as divisor for RS-Line calculation.
+     */
+    private Instrument getRsLineDivisor(final ScanTemplate scanTemplate, final Instrument instrument) {
+        if (scanTemplate == ScanTemplate.RS_NEAR_HIGH_IG) {
+            return instrument.getIndustryGroup();
+        }
+
+        return null;
     }
 }
