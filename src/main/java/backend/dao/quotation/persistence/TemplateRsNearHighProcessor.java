@@ -86,9 +86,11 @@ public class TemplateRsNearHighProcessor {
      * @param dividend The Instrument used as dividend for RS-Line calculation.
      * @param divisor  The Instrument used as divisor for RS-Line calculation.
      * @return true, if RS-Line trades near its 52-week high; false, if not.
-     * @throws Exception Failed to calculate RS-Line.
+     * @throws LocalizedException Informs the user about missing divisor quotations.
+     * @throws Exception          Failed to calculate RS-Line.
      */
-    private boolean isRsLineNearHigh(final Instrument dividend, final Instrument divisor) throws Exception {
+    private boolean isRsLineNearHigh(final Instrument dividend, final Instrument divisor)
+            throws LocalizedException, Exception {
         IndicatorCalculator indicatorCalculator = new IndicatorCalculator();
         final float percentNearHighThreshold = -5;
         QuotationArray rsLineQuotations = this.getRsLineQuotations(dividend, divisor);
@@ -108,11 +110,14 @@ public class TemplateRsNearHighProcessor {
      * @param dividend The Instrument used as dividend for RS-Line calculation.
      * @param divisor  The Instrument used as divisor for RS-Line calculation.
      * @return The quotations that build the RS-Line.
-     * @throws Exception Failed to calculate RS-Line.
+     * @throws LocalizedException Informs the user about missing divisor quotations.
+     * @throws Exception          Failed to calculate RS-Line.
      */
-    private QuotationArray getRsLineQuotations(final Instrument dividend, final Instrument divisor) throws Exception {
+    private QuotationArray getRsLineQuotations(final Instrument dividend, final Instrument divisor)
+            throws LocalizedException, Exception {
         RatioCalculationController ratioCalculator = new RatioCalculationController();
         QuotationArray rsLineQuotations = new QuotationArray();
+        List<Quotation> divisorQuotations;
 
         if (divisor == null) {
             throw new Exception(
@@ -120,7 +125,13 @@ public class TemplateRsNearHighProcessor {
         }
 
         dividend.setQuotations(this.quotationHibernateDAO.getQuotationsOfInstrument(dividend.getId()));
-        divisor.setQuotations(this.quotationHibernateDAO.getQuotationsOfInstrument(divisor.getId()));
+
+        divisorQuotations = this.quotationHibernateDAO.getQuotationsOfInstrument(divisor.getId());
+        if (divisorQuotations.size() == 0) {
+            throw new LocalizedException("quotation.missingDivisorQuotations", divisor.getId());
+        } else {
+            divisor.setQuotations(divisorQuotations);
+        }
 
         rsLineQuotations.setQuotations(ratioCalculator.getRatios(dividend, divisor));
         rsLineQuotations.sortQuotationsByDate();
