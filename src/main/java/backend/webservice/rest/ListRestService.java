@@ -11,6 +11,10 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+import org.glassfish.jersey.jackson.internal.jackson.jaxrs.annotation.JacksonFeatures;
+
+import com.fasterxml.jackson.databind.SerializationFeature;
+
 import backend.model.list.ListWS;
 import backend.model.webservice.WebServiceResult;
 import backend.webservice.common.ListService;
@@ -43,6 +47,7 @@ public class ListRestService {
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @JacksonFeatures(serializationDisable = {SerializationFeature.FAIL_ON_EMPTY_BEANS})
     public WebServiceResult getLists() {
         ListService listService = new ListService();
         return listService.getLists();
