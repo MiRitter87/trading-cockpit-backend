@@ -32,12 +32,6 @@ public class ScanTemplateProcessor {
     private static final float THREE_WEEKS_TIGHT_THRESHOLD = 1.015f;
 
     /**
-     * The percentage threshold that defines the minimum performance required for a "High Tight Flag". This value takes
-     * a possible decline of up to 25% into account that may happen during the consolidation.
-     */
-    private static final float HIGH_TIGHT_FLAG_THRESHOLD = 75;
-
-    /**
      * DAO to access Quotation data.
      */
     private QuotationHibernateDAO quotationHibernateDAO;
@@ -53,6 +47,11 @@ public class ScanTemplateProcessor {
     private TemplateSwingTradingProcessor swingTradingProcessor;
 
     /**
+     * Performs manual tasks for the "HIGH_TIGHT_FLAG" ScanTemplate.
+     */
+    private TemplateHighTightFlagProcessor highTightFlagProcessor;
+
+    /**
      * Constructor.
      *
      * @param quotationHibernateDAO DAO to access Quotation data.
@@ -61,6 +60,7 @@ public class ScanTemplateProcessor {
         this.quotationHibernateDAO = quotationHibernateDAO;
         this.rsNearHighProcessor = new TemplateRsNearHighProcessor(this.quotationHibernateDAO);
         this.swingTradingProcessor = new TemplateSwingTradingProcessor(this.quotationHibernateDAO);
+        this.highTightFlagProcessor = new TemplateHighTightFlagProcessor(this.quotationHibernateDAO);
     }
 
     /**
@@ -137,7 +137,7 @@ public class ScanTemplateProcessor {
         } else if (scanTemplate == ScanTemplate.THREE_WEEKS_TIGHT) {
             this.postProcessingThreeWeeksTight(quotations);
         } else if (scanTemplate == ScanTemplate.HIGH_TIGHT_FLAG) {
-            this.postProcessingHighTightFlag(quotations);
+            this.highTightFlagProcessor.postProcessingHighTightFlag(quotations);
         } else if (scanTemplate == ScanTemplate.SWING_TRADING_ENVIRONMENT) {
             this.swingTradingProcessor.postProcessingSwingTradingEnvironment(quotations);
         } else if (scanTemplate == ScanTemplate.RS_NEAR_HIGH_IG) {
@@ -211,30 +211,6 @@ public class ScanTemplateProcessor {
             weeklyQuotations = quotationArray.getWeeklyQuotations();
 
             if (!this.isThreeWeeksTight(weeklyQuotations)) {
-                quotationIterator.remove();
-            }
-        }
-    }
-
-    /**
-     * Performs post processing tasks for the given quotations based on the ScanTemplate "HIGH_TIGHT_FLAG". The method
-     * checks for each Instrument of the given quotations if the price has advanced at least 75% within the last 14
-     * weeks. Those quotations that do not match the template are removed from the List of quotations.
-     *
-     * @param quotations The quotations on which the post processing is performed.
-     * @throws Exception Post processing failed.
-     */
-    private void postProcessingHighTightFlag(final List<Quotation> quotations) throws Exception {
-        Iterator<Quotation> quotationIterator = quotations.iterator();
-        QuotationArray quotationArray;
-        Quotation currentQuotation;
-
-        while (quotationIterator.hasNext()) {
-            currentQuotation = quotationIterator.next();
-            quotationArray = new QuotationArray(
-                    this.quotationHibernateDAO.getQuotationsOfInstrument(currentQuotation.getInstrument().getId()));
-
-            if (!this.isHighTightFlag(quotationArray)) {
                 quotationIterator.remove();
             }
         }
@@ -316,39 +292,6 @@ public class ScanTemplateProcessor {
                     return false;
                 }
             }
-        }
-
-        return true;
-    }
-
-    /**
-     * Checks if the given quotations constitute the pattern of a Hight Tight Flag.
-     *
-     * @param quotationArray The trading history of an Instrument.
-     * @return true, if trading history constitutes a High Tight Flag.
-     */
-    private boolean isHighTightFlag(final QuotationArray quotationArray) {
-        PerformanceCalculator performanceCalculator = new PerformanceCalculator();
-        final int tradingDaysPerWeek = 5;
-        final int maxWeeksForPattern = 14;
-        final int maxDaysForPattern = tradingDaysPerWeek * maxWeeksForPattern;
-        Quotation currentQuotation;
-        Quotation maxQuotationForPattern;
-        float performanceMaxQuotation;
-
-        // Not enough trading days to evaluate pattern.
-        if (quotationArray.getQuotations().size() <= maxDaysForPattern) {
-            return false;
-        }
-
-        quotationArray.sortQuotationsByDate();
-        currentQuotation = quotationArray.getQuotations().get(0);
-        maxQuotationForPattern = quotationArray.getQuotations().get(maxDaysForPattern);
-
-        performanceMaxQuotation = performanceCalculator.getPerformance(currentQuotation, maxQuotationForPattern);
-
-        if (performanceMaxQuotation < HIGH_TIGHT_FLAG_THRESHOLD) {
-            return false;
         }
 
         return true;
