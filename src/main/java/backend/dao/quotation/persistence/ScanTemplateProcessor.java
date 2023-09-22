@@ -48,6 +48,11 @@ public class ScanTemplateProcessor {
     private TemplateRsNearHighProcessor rsNearHighProcessor;
 
     /**
+     * Performs manual tasks for the "SWING_TRADING_ENVIRONMENT" ScanTemplate.
+     */
+    private TemplateSwingTradingProcessor swingTradingProcessor;
+
+    /**
      * Constructor.
      *
      * @param quotationHibernateDAO DAO to access Quotation data.
@@ -55,6 +60,7 @@ public class ScanTemplateProcessor {
     public ScanTemplateProcessor(final QuotationHibernateDAO quotationHibernateDAO) {
         this.quotationHibernateDAO = quotationHibernateDAO;
         this.rsNearHighProcessor = new TemplateRsNearHighProcessor(this.quotationHibernateDAO);
+        this.swingTradingProcessor = new TemplateSwingTradingProcessor(this.quotationHibernateDAO);
     }
 
     /**
@@ -133,7 +139,7 @@ public class ScanTemplateProcessor {
         } else if (scanTemplate == ScanTemplate.HIGH_TIGHT_FLAG) {
             this.postProcessingHighTightFlag(quotations);
         } else if (scanTemplate == ScanTemplate.SWING_TRADING_ENVIRONMENT) {
-            this.postProcessingSwingTradingEnvironment(quotations);
+            this.swingTradingProcessor.postProcessingSwingTradingEnvironment(quotations);
         } else if (scanTemplate == ScanTemplate.RS_NEAR_HIGH_IG) {
             this.rsNearHighProcessor.postProcessingRsNearHigh(scanTemplate, quotations);
         }
@@ -229,30 +235,6 @@ public class ScanTemplateProcessor {
                     this.quotationHibernateDAO.getQuotationsOfInstrument(currentQuotation.getInstrument().getId()));
 
             if (!this.isHighTightFlag(quotationArray)) {
-                quotationIterator.remove();
-            }
-        }
-    }
-
-    /**
-     * Performs post processing tasks for the given quotations based on the ScanTemplate "SWING_TRADING_ENVIRONMENT".
-     * The method checks for each Instrument of the given quotations if the SMA(10) as well as the SMA(20) is rising.
-     * Those quotations that do not match the template are removed from the List of quotations.
-     *
-     * @param quotations The quotations on which the post processing is performed.
-     * @throws Exception Post processing failed.
-     */
-    private void postProcessingSwingTradingEnvironment(final List<Quotation> quotations) throws Exception {
-        Iterator<Quotation> quotationIterator = quotations.iterator();
-        QuotationArray quotationArray;
-        Quotation currentQuotation;
-
-        while (quotationIterator.hasNext()) {
-            currentQuotation = quotationIterator.next();
-            quotationArray = new QuotationArray(
-                    this.quotationHibernateDAO.getQuotationsOfInstrument(currentQuotation.getInstrument().getId()));
-
-            if (!this.isSwingTradingEnvironment(quotationArray)) {
                 quotationIterator.remove();
             }
         }
@@ -370,35 +352,5 @@ public class ScanTemplateProcessor {
         }
 
         return true;
-    }
-
-    /**
-     * Checks if the given quotations constitute a "Swing Trading Environment".
-     *
-     * @param quotationArray The trading history of an Instrument.
-     * @return true, if trading history constitutes a Swing Trading Environment.
-     */
-    private boolean isSwingTradingEnvironment(final QuotationArray quotationArray) {
-        Quotation currentQuotation;
-        Quotation previousQuotation;
-
-        if (quotationArray.getQuotations().size() < 2) {
-            return false;
-        }
-
-        quotationArray.sortQuotationsByDate();
-        currentQuotation = quotationArray.getQuotations().get(0);
-        previousQuotation = quotationArray.getQuotations().get(1);
-
-        if (currentQuotation.getIndicator() == null || previousQuotation.getIndicator() == null) {
-            return false;
-        }
-
-        if ((currentQuotation.getIndicator().getSma10() > previousQuotation.getIndicator().getSma10())
-                && (currentQuotation.getIndicator().getSma20() > previousQuotation.getIndicator().getSma20())) {
-            return true;
-        }
-
-        return false;
     }
 }
