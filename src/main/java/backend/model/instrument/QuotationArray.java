@@ -131,6 +131,38 @@ public class QuotationArray {
     }
 
     /**
+     * Determines the newest Quotation of the given date.
+     *
+     * @param date The date.
+     * @return The newest Quotation of the date.
+     */
+    public Quotation getNewestQuotationOfDate(final Date date) {
+        Quotation quotation;
+        Quotation newestQuotation = null;
+        Date quotationDate;
+        Date inputDate;
+
+        inputDate = DateTools.getDateWithoutIntradayAttributes(date);
+
+        for (int i = 0; i < this.quotations.size(); i++) {
+            quotation = this.quotations.get(i);
+            quotationDate = DateTools.getDateWithoutIntradayAttributes(quotation.getDate());
+
+            if (inputDate.getTime() == quotationDate.getTime()) {
+                if (newestQuotation == null) {
+                    newestQuotation = quotation;
+                }
+
+                if (newestQuotation.getDate().getTime() < quotation.getDate().getTime()) {
+                    newestQuotation = quotation;
+                }
+            }
+        }
+
+        return newestQuotation;
+    }
+
+    /**
      * Gets the age of the newest Quotation in days.
      *
      * @return The age of the newest Quotation in days.

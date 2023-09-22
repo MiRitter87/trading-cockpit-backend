@@ -7,6 +7,7 @@ import java.util.List;
 
 import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
+import backend.model.instrument.QuotationArray;
 
 /**
  * Controller used to calculate the price ratio between two instruments.
@@ -36,7 +37,7 @@ public class RatioCalculationController {
      * Checks if quotations exist for both instruments of a ratio.
      *
      * @param dividendInstrument The Instrument being the dividend.
-     * @param divisorInstrument The Instrument being the divisor.
+     * @param divisorInstrument  The Instrument being the divisor.
      * @throws Exception In case no quotations exist for at least one Instrument.
      */
     private void checkQuotationsExistForRatio(final Instrument dividendInstrument, final Instrument divisorInstrument)
@@ -61,9 +62,11 @@ public class RatioCalculationController {
         List<Quotation> ratios = new ArrayList<>();
         Quotation divisorQuotation;
         Quotation ratioQuotation;
+        QuotationArray quotationArray = new QuotationArray();
 
         for (Quotation dividendQuotation : dividendInstrument.getQuotationsSortedByDate()) {
-            divisorQuotation = divisorInstrument.getQuotationByDate(dividendQuotation.getDate());
+            quotationArray.setQuotations(divisorInstrument.getQuotations());
+            divisorQuotation = quotationArray.getNewestQuotationOfDate(dividendQuotation.getDate());
 
             if (divisorQuotation == null) {
                 continue;
