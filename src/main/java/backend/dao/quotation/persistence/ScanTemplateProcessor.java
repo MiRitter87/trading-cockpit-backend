@@ -73,20 +73,31 @@ public class ScanTemplateProcessor {
      */
     protected void fillTransientAttributes(final InstrumentType instrumentType, final List<Quotation> quotations)
             throws Exception {
+
+        this.fillSectorRsNumber(instrumentType, quotations);
+        this.fillIndustryGroupRsNumber(instrumentType, quotations);
+    }
+
+    /**
+     * Fills the transient attribute: Sector RS number.
+     *
+     * @param instrumentType The InstrumentType of the given quotations.
+     * @param quotations     The quotations with their referenced data whose transient attributes are to be filled.
+     * @throws Exception In case an error occurred during data determination.
+     */
+    private void fillSectorRsNumber(final InstrumentType instrumentType, final List<Quotation> quotations)
+            throws Exception {
         QuotationArray sectorQuotations = new QuotationArray();
-        QuotationArray industryGroupQuotations = new QuotationArray();
         List<Quotation> quotationsOfInstrument;
         Quotation sectorQuotation;
-        Quotation industryGroupQuotation;
 
         if (quotations.size() == 0 || instrumentType != InstrumentType.STOCK) {
             return;
         }
 
         sectorQuotations.setQuotations(this.quotationHibernateDAO.getRecentQuotations(InstrumentType.SECTOR));
-        industryGroupQuotations.setQuotations(this.quotationHibernateDAO.getRecentQuotations(InstrumentType.IND_GROUP));
 
-        // Determine and set the sector and industry group RS number for each quotation.
+        // Determine and set the sector RS number for each quotation.
         for (Quotation quotation : quotations) {
             if (quotation.getInstrument().getSector() != null) {
                 quotationsOfInstrument = sectorQuotations
@@ -102,7 +113,30 @@ public class ScanTemplateProcessor {
                     quotation.getIndicator().setRsNumberSector(sectorQuotation.getIndicator().getRsNumber());
                 }
             }
+        }
+    }
 
+    /**
+     * Fills the transient attribute: Industry Group RS number.
+     *
+     * @param instrumentType The InstrumentType of the given quotations.
+     * @param quotations     The quotations with their referenced data whose transient attributes are to be filled.
+     * @throws Exception In case an error occurred during data determination.
+     */
+    private void fillIndustryGroupRsNumber(final InstrumentType instrumentType, final List<Quotation> quotations)
+            throws Exception {
+        QuotationArray industryGroupQuotations = new QuotationArray();
+        List<Quotation> quotationsOfInstrument;
+        Quotation industryGroupQuotation;
+
+        if (quotations.size() == 0 || instrumentType != InstrumentType.STOCK) {
+            return;
+        }
+
+        industryGroupQuotations.setQuotations(this.quotationHibernateDAO.getRecentQuotations(InstrumentType.IND_GROUP));
+
+        // Determine and set the industry group RS number for each quotation.
+        for (Quotation quotation : quotations) {
             if (quotation.getInstrument().getIndustryGroup() != null) {
                 quotationsOfInstrument = industryGroupQuotations
                         .getQuotationsByInstrumentId(quotation.getInstrument().getIndustryGroup().getId());
