@@ -1,17 +1,13 @@
 package backend.dao.quotation.persistence;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import backend.controller.scan.IndicatorCalculator;
-import backend.controller.scan.PerformanceCalculator;
 import backend.model.LocalizedException;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
-import backend.tools.DateTools;
 import backend.webservice.ScanTemplate;
 
 /**
@@ -47,9 +43,14 @@ public class ScanTemplateProcessor {
     private TemplateHighTightFlagProcessor highTightFlagProcessor;
 
     /**
-     * Performs manual tasks fot the "THREE_WEEKS_TIGHT" ScanTemplate.
+     * Performs manual tasks for the "THREE_WEEKS_TIGHT" ScanTemplate.
      */
     private TemplateThreeWeeksTightProcessor threeWeeksTightProcessor;
+
+    /**
+     * Performs manual tasks for the "RS_SINCE_DATE" ScanTemplate.
+     */
+    private TemplateRsSinceDateProcessor rsSinceDateProcessor;
 
     /**
      * Constructor.
@@ -58,10 +59,11 @@ public class ScanTemplateProcessor {
      */
     public ScanTemplateProcessor(final QuotationHibernateDAO quotationHibernateDAO) {
         this.quotationHibernateDAO = quotationHibernateDAO;
-        this.rsNearHighProcessor = new TemplateRsNearHighProcessor(this.quotationHibernateDAO);
-        this.swingTradingProcessor = new TemplateSwingTradingProcessor(this.quotationHibernateDAO);
-        this.highTightFlagProcessor = new TemplateHighTightFlagProcessor(this.quotationHibernateDAO);
-        this.threeWeeksTightProcessor = new TemplateThreeWeeksTightProcessor(this.quotationHibernateDAO);
+        this.rsNearHighProcessor = new TemplateRsNearHighProcessor(quotationHibernateDAO);
+        this.swingTradingProcessor = new TemplateSwingTradingProcessor(quotationHibernateDAO);
+        this.highTightFlagProcessor = new TemplateHighTightFlagProcessor(quotationHibernateDAO);
+        this.threeWeeksTightProcessor = new TemplateThreeWeeksTightProcessor(quotationHibernateDAO);
+        this.rsSinceDateProcessor = new TemplateRsSinceDateProcessor(quotationHibernateDAO);
     }
 
     /**
@@ -168,7 +170,7 @@ public class ScanTemplateProcessor {
             final List<Quotation> quotations) throws LocalizedException, Exception {
 
         if (scanTemplate == ScanTemplate.RS_SINCE_DATE) {
-            this.postProcessingRsSinceDate(startDateAsString, quotations);
+            this.rsSinceDateProcessor.postProcessingRsSinceDate(startDateAsString, quotations);
         } else if (scanTemplate == ScanTemplate.THREE_WEEKS_TIGHT) {
             this.threeWeeksTightProcessor.postProcessingThreeWeeksTight(quotations);
         } else if (scanTemplate == ScanTemplate.HIGH_TIGHT_FLAG) {
@@ -189,40 +191,6 @@ public class ScanTemplateProcessor {
      */
     protected void applyFilters(final Float minLiquidity, final List<Quotation> quotations) {
         this.filterByMinLiquidity(minLiquidity, quotations);
-    }
-
-    /**
-     * Performs post processing tasks for the given quotations based on the ScanTemplate "RS_SINCE_DATE". The method
-     * calculates and sets the RS number beginning from the given date.
-     *
-     * @param startDateAsString The start date for calculation of the RS number.
-     * @param quotations        The quotations on which the post processing is performed.
-     * @throws Exception Post processing failed.
-     */
-    private void postProcessingRsSinceDate(final String startDateAsString, final List<Quotation> quotations)
-            throws Exception {
-
-        IndicatorCalculator indicatorCalculator = new IndicatorCalculator();
-        PerformanceCalculator performanceCalculator = new PerformanceCalculator();
-        Date startDate = DateTools.convertStringToDate(startDateAsString);
-        QuotationArray quotationsOfInstrument = new QuotationArray();
-        Quotation quotationOfDate;
-        int quotationOfDateIndex;
-        float rsPercent;
-
-        // Calculate the price performance from the start date to the current date.
-        for (Quotation currentQuotation : quotations) {
-            quotationsOfInstrument.setQuotations(
-                    this.quotationHibernateDAO.getQuotationsOfInstrument(currentQuotation.getInstrument().getId()));
-            quotationOfDateIndex = quotationsOfInstrument.getIndexOfQuotationWithDate(startDate);
-            quotationOfDate = quotationsOfInstrument.getQuotations().get(quotationOfDateIndex);
-
-            rsPercent = performanceCalculator.getPerformance(currentQuotation, quotationOfDate);
-            currentQuotation.getIndicator().setRsPercentSum(rsPercent);
-        }
-
-        // Calculate the RS numbers based on the newly calculated performance.
-        indicatorCalculator.calculateRsNumbers(quotations);
     }
 
     /**
