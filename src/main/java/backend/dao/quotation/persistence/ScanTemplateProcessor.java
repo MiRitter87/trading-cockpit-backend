@@ -27,11 +27,6 @@ import backend.webservice.ScanTemplate;
  */
 public class ScanTemplateProcessor {
     /**
-     * The percentage threshold that defines a trading range that constitutes a "three weeks tight" pattern.
-     */
-    private static final float THREE_WEEKS_TIGHT_THRESHOLD = 1.015f;
-
-    /**
      * DAO to access Quotation data.
      */
     private QuotationHibernateDAO quotationHibernateDAO;
@@ -52,6 +47,11 @@ public class ScanTemplateProcessor {
     private TemplateHighTightFlagProcessor highTightFlagProcessor;
 
     /**
+     * Performs manual tasks fot the "THREE_WEEKS_TIGHT" ScanTemplate.
+     */
+    private TemplateThreeWeeksTightProcessor threeWeeksTightProcessor;
+
+    /**
      * Constructor.
      *
      * @param quotationHibernateDAO DAO to access Quotation data.
@@ -61,6 +61,7 @@ public class ScanTemplateProcessor {
         this.rsNearHighProcessor = new TemplateRsNearHighProcessor(this.quotationHibernateDAO);
         this.swingTradingProcessor = new TemplateSwingTradingProcessor(this.quotationHibernateDAO);
         this.highTightFlagProcessor = new TemplateHighTightFlagProcessor(this.quotationHibernateDAO);
+        this.threeWeeksTightProcessor = new TemplateThreeWeeksTightProcessor(this.quotationHibernateDAO);
     }
 
     /**
@@ -135,7 +136,7 @@ public class ScanTemplateProcessor {
         if (scanTemplate == ScanTemplate.RS_SINCE_DATE) {
             this.postProcessingRsSinceDate(startDateAsString, quotations);
         } else if (scanTemplate == ScanTemplate.THREE_WEEKS_TIGHT) {
-            this.postProcessingThreeWeeksTight(quotations);
+            this.threeWeeksTightProcessor.postProcessingThreeWeeksTight(quotations);
         } else if (scanTemplate == ScanTemplate.HIGH_TIGHT_FLAG) {
             this.highTightFlagProcessor.postProcessingHighTightFlag(quotations);
         } else if (scanTemplate == ScanTemplate.SWING_TRADING_ENVIRONMENT) {
@@ -191,32 +192,6 @@ public class ScanTemplateProcessor {
     }
 
     /**
-     * Performs post processing tasks for the given quotations based on the ScanTemplate "THREE_WEEKS_TIGHT". The method
-     * checks for each Instrument of the given quotations if the Instrument has closed three weeks in a row within a
-     * tight range. Those quotations that do not match the template are removed from the List of quotations.
-     *
-     * @param quotations The quotations on which the post processing is performed.
-     * @throws Exception Post processing failed.
-     */
-    private void postProcessingThreeWeeksTight(final List<Quotation> quotations) throws Exception {
-        Iterator<Quotation> quotationIterator = quotations.iterator();
-        QuotationArray quotationArray;
-        List<Quotation> weeklyQuotations;
-        Quotation currentQuotation;
-
-        while (quotationIterator.hasNext()) {
-            currentQuotation = quotationIterator.next();
-            quotationArray = new QuotationArray(
-                    this.quotationHibernateDAO.getQuotationsOfInstrument(currentQuotation.getInstrument().getId()));
-            weeklyQuotations = quotationArray.getWeeklyQuotations();
-
-            if (!this.isThreeWeeksTight(weeklyQuotations)) {
-                quotationIterator.remove();
-            }
-        }
-    }
-
-    /**
      * Filters the given quotations by the minimum liquidity.
      *
      * @param minLiquidity The minimum trading liquidity that is required. Parameter can be omitted (null).
@@ -261,39 +236,5 @@ public class ScanTemplateProcessor {
         }
 
         return false;
-    }
-
-    /**
-     * Checks if the most recent three weekly quotations have closed within a tight range.
-     *
-     * @param weeklyQuotations Weekly quotations.
-     * @return true, if last three quotations close within a tight range; false if not.
-     */
-    private boolean isThreeWeeksTight(final List<Quotation> weeklyQuotations) {
-        double upperBound = 0;
-        double lowerBound = 0;
-        Quotation currentQuotation;
-        final int numberOfWeeks = 3;
-
-        if (weeklyQuotations.size() < numberOfWeeks) {
-            return false;
-        }
-
-        for (int i = 0; i < numberOfWeeks; i++) {
-            currentQuotation = weeklyQuotations.get(i);
-
-            // Initialize the upper and lower boundary for the trading range based on the newest weekly Quotation.
-            if (i == 0) {
-                lowerBound = currentQuotation.getClose().doubleValue() * (2 - THREE_WEEKS_TIGHT_THRESHOLD);
-                upperBound = currentQuotation.getClose().doubleValue() * THREE_WEEKS_TIGHT_THRESHOLD;
-            } else {
-                if (currentQuotation.getClose().doubleValue() < lowerBound
-                        || currentQuotation.getClose().doubleValue() > upperBound) {
-                    return false;
-                }
-            }
-        }
-
-        return true;
     }
 }
