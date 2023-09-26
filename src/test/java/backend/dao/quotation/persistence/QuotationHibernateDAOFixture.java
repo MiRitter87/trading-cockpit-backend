@@ -232,10 +232,10 @@ public class QuotationHibernateDAOFixture {
         Indicator indicator = new Indicator();
 
         indicator.setStage(3);
+        indicator.setRsNumber(24);
 
         return indicator;
     }
-
 
     /**
      * Initializes and provides the xleQuotation1Indicator.
@@ -263,6 +263,7 @@ public class QuotationHibernateDAOFixture {
 
         return indicator;
     }
+
     /**
      * Initializes and provides the copperIndustryGroupQuotation1Indicator.
      *

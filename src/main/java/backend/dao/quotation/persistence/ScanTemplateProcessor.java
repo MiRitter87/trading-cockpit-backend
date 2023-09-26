@@ -78,6 +78,7 @@ public class ScanTemplateProcessor {
 
         this.fillSectorRsNumber(instrumentType, quotations);
         this.fillIndustryGroupRsNumber(instrumentType, quotations);
+        this.fillCompositeRsNumberIg(instrumentType, quotations);
     }
 
     /**
@@ -152,6 +153,50 @@ public class ScanTemplateProcessor {
                 if (industryGroupQuotation != null && this.areQuotationsOfSameDay(quotation, industryGroupQuotation)) {
                     quotation.getIndicator()
                             .setRsNumberIndustryGroup(industryGroupQuotation.getIndicator().getRsNumber());
+                }
+            }
+        }
+    }
+
+    /**
+     * Fills the transient attribute: Composite RS number of Instrument and its industry group.
+     *
+     * @param instrumentType The InstrumentType of the given quotations.
+     * @param quotations     The quotations with their referenced data whose transient attributes are to be filled.
+     * @throws Exception In case an error occurred during data determination.
+     */
+    private void fillCompositeRsNumberIg(final InstrumentType instrumentType, final List<Quotation> quotations)
+            throws Exception {
+
+        QuotationArray industryGroupQuotations = new QuotationArray();
+        List<Quotation> quotationsOfInstrument;
+        Quotation industryGroupQuotation;
+        int rsNumberSum;
+        int compositeRsNumber;
+
+        if (quotations.size() == 0 || instrumentType != InstrumentType.STOCK) {
+            return;
+        }
+
+        industryGroupQuotations.setQuotations(this.quotationHibernateDAO.getRecentQuotations(InstrumentType.IND_GROUP));
+
+        // Determine and set the composite RS number for each quotation.
+        for (Quotation quotation : quotations) {
+            if (quotation.getInstrument().getIndustryGroup() != null) {
+                quotationsOfInstrument = industryGroupQuotations
+                        .getQuotationsByInstrumentId(quotation.getInstrument().getIndustryGroup().getId());
+
+                if (quotationsOfInstrument.size() == 1) {
+                    industryGroupQuotation = quotationsOfInstrument.get(0);
+                } else {
+                    industryGroupQuotation = null;
+                }
+
+                if (industryGroupQuotation != null && this.areQuotationsOfSameDay(quotation, industryGroupQuotation)) {
+                    rsNumberSum = quotation.getIndicator().getRsNumber()
+                            + industryGroupQuotation.getIndicator().getRsNumber();
+                    compositeRsNumber = (int) Math.ceil((double) rsNumberSum / 2);
+                    quotation.getIndicator().setRsNumberCompositeIg(compositeRsNumber);
                 }
             }
         }

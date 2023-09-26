@@ -120,6 +120,12 @@ public class Indicator {
     private int rsNumberIndustryGroup;
 
     /**
+     * Composite RS number consisting of RS number of an Instrument and its referenced industry group.
+     */
+    @Transient
+    private int rsNumberCompositeIg;
+
+    /**
      * The length of the most recent consolidation in weeks, beginning at the most recent 52-week high.
      */
     @Column(name = "BASE_LENGTH_WEEKS")
@@ -378,6 +384,20 @@ public class Indicator {
      */
     public void setRsNumberIndustryGroup(final int rsNumberIndustryGroup) {
         this.rsNumberIndustryGroup = rsNumberIndustryGroup;
+    }
+
+    /**
+     * @return the rsNumberCompositeIg
+     */
+    public int getRsNumberCompositeIg() {
+        return rsNumberCompositeIg;
+    }
+
+    /**
+     * @param rsNumberCompositeIg the rsNumberCompositeIg to set
+     */
+    public void setRsNumberCompositeIg(final int rsNumberCompositeIg) {
+        this.rsNumberCompositeIg = rsNumberCompositeIg;
     }
 
     /**

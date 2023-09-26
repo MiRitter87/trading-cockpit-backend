@@ -250,7 +250,8 @@ public class QuotationHibernateDAOTest {
             this.xliSectorQuotation1.setIndicator(this.xliSectorQuotation1Indicator);
             quotations.add(this.xliSectorQuotation1);
 
-            this.copperIndustryGroupQuotation1Indicator = this.fixtureHelper.getCopperIndustryGroupQuotation1Indicator();
+            this.copperIndustryGroupQuotation1Indicator = this.fixtureHelper
+                    .getCopperIndustryGroupQuotation1Indicator();
             this.copperIndustryGroupQuotation1.setIndicator(this.copperIndustryGroupQuotation1Indicator);
             quotations.add(this.copperIndustryGroupQuotation1);
 
@@ -535,6 +536,7 @@ public class QuotationHibernateDAOTest {
     public void testGetQuotationsByTemplate() {
         List<Quotation> quotations;
         Quotation databaseQuotation;
+        int expectedCompositeRsNumberIg;
 
         try {
             quotations = quotationDAO.getQuotationsByTemplate(ScanTemplate.ALL, InstrumentType.STOCK, null, null);
@@ -551,6 +553,12 @@ public class QuotationHibernateDAOTest {
                     databaseQuotation.getIndicator().getRsNumberSector());
             assertEquals(this.copperIndustryGroupQuotation1Indicator.getRsNumber(),
                     databaseQuotation.getIndicator().getRsNumberIndustryGroup());
+
+            // Assure the composite RS number based on an Instrument and its industry group is provided.
+            expectedCompositeRsNumberIg = this.appleQuotation2.getIndicator().getRsNumber()
+                    + this.copperIndustryGroupQuotation1Indicator.getRsNumber();
+            expectedCompositeRsNumberIg = (int) Math.ceil((double) expectedCompositeRsNumberIg / 2);
+            assertEquals(expectedCompositeRsNumberIg, databaseQuotation.getIndicator().getRsNumberCompositeIg());
         } catch (Exception e) {
             fail(e.getMessage());
         }
