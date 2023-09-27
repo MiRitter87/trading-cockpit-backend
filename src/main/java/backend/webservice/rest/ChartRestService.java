@@ -49,6 +49,20 @@ public class ChartRestService {
     }
 
     /**
+     * Provides a chart with the percentage of instruments trading above their SMA(200).
+     *
+     * @param listId The ID of the list defining the instruments used chart creation (optional).
+     * @return The chart.
+     */
+    @GET
+    @Path("/instrumentsAboveSma200")
+    @Produces("image/png")
+    public Response getInstrumentsAboveSma200Chart(@QueryParam("listId") final Integer listId) {
+        ChartService chartService = new ChartService();
+        return chartService.getInstrumentsAboveSma200Chart(listId);
+    }
+
+    /**
      * Provides a chart of an Instrument marked with Distribution Days.
      *
      * @param instrumentId The ID of the Instrument used for chart creation.
