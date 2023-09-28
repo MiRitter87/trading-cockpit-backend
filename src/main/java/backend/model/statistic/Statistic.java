@@ -95,6 +95,24 @@ public class Statistic {
     private float percentAboveSma50;
 
     /**
+     * The number of instruments which are trading above the 200-day Simple Moving Average.
+     */
+    @Column(name = "NUMBER_ABOVE_SMA200")
+    private int numberAboveSma200;
+
+    /**
+     * The number of instruments which are trading at or below the 200-day Simple Moving Average.
+     */
+    @Column(name = "NUMBER_AT_OR_BELOW_SMA200")
+    private int numberAtOrBelowSma200;
+
+    /**
+     * The percentage of instruments which are trading above the 200-day Simple Moving Average.
+     */
+    @Column(name = "PERCENT_ABOVE_SMA200")
+    private float percentAboveSma200;
+
+    /**
      * The number of the "Ritter Market Trend" indicator.
      */
     @Column(name = "NUMBER_RITTER_MARKET_TREND")
@@ -226,6 +244,43 @@ public class Statistic {
     }
 
     /**
+     * @return the numberAboveSma200
+     */
+    public int getNumberAboveSma200() {
+        return numberAboveSma200;
+    }
+
+    /**
+     * @param numberAboveSma200 the numberAboveSma200 to set
+     */
+    public void setNumberAboveSma200(final int numberAboveSma200) {
+        this.numberAboveSma200 = numberAboveSma200;
+        this.updatePercentAboveSma200();
+    }
+
+    /**
+     * @return the numberAtOrBelowSma200
+     */
+    public int getNumberAtOrBelowSma200() {
+        return numberAtOrBelowSma200;
+    }
+
+    /**
+     * @param numberAtOrBelowSma200 the numberAtOrBelowSma200 to set
+     */
+    public void setNumberAtOrBelowSma200(final int numberAtOrBelowSma200) {
+        this.numberAtOrBelowSma200 = numberAtOrBelowSma200;
+        this.updatePercentAboveSma200();
+    }
+
+    /**
+     * @return the percentAboveSma200
+     */
+    public float getPercentAboveSma200() {
+        return percentAboveSma200;
+    }
+
+    /**
      * @return the numberRitterMarketTrend
      */
     public int getNumberRitterMarketTrend() {
@@ -273,12 +328,32 @@ public class Statistic {
     }
 
     /**
+     * Updates the percentage above SMA(200).
+     */
+    private void updatePercentAboveSma200() {
+        BigDecimal pctAboveSma200;
+        BigDecimal numAboveSma200;
+        BigDecimal totalNumber;
+        final int hundredPercent = 100;
+
+        if ((this.numberAboveSma200 + this.numberAtOrBelowSma200) != 0) {
+            numAboveSma200 = new BigDecimal(this.numberAboveSma200);
+            totalNumber = new BigDecimal(this.numberAboveSma200 + this.numberAtOrBelowSma200);
+
+            pctAboveSma200 = numAboveSma200.multiply(new BigDecimal(hundredPercent)).divide(totalNumber, 0,
+                    RoundingMode.HALF_UP);
+            this.percentAboveSma200 = pctAboveSma200.floatValue();
+        }
+    }
+
+    /**
      * Calculates the hashCode of a Statistic.
      */
     @Override
     public int hashCode() {
         return Objects.hash(advanceDeclineNumber, date, id, instrumentType, numberAboveSma50, numberAdvance,
-                numberAtOrBelowSma50, numberDecline, numberOfInstruments, numberRitterMarketTrend, percentAboveSma50);
+                numberAtOrBelowSma50, numberDecline, numberOfInstruments, numberRitterMarketTrend, percentAboveSma50,
+                numberAboveSma200, numberAtOrBelowSma200, percentAboveSma200);
     }
 
     /**
@@ -311,7 +386,9 @@ public class Statistic {
         return advanceDeclineNumber == other.advanceDeclineNumber && Objects.equals(id, other.id)
                 && instrumentType == other.instrumentType && numberAboveSma50 == other.numberAboveSma50
                 && numberAdvance == other.numberAdvance && numberAtOrBelowSma50 == other.numberAtOrBelowSma50
-                && numberDecline == other.numberDecline && numberOfInstruments == other.numberOfInstruments
+                && numberAboveSma200 == other.numberAboveSma200 && numberAtOrBelowSma200 == other.numberAtOrBelowSma200
+                && percentAboveSma200 == other.percentAboveSma200 && numberDecline == other.numberDecline
+                && numberOfInstruments == other.numberOfInstruments
                 && numberRitterMarketTrend == other.numberRitterMarketTrend
                 && Float.floatToIntBits(percentAboveSma50) == Float.floatToIntBits(other.percentAboveSma50);
     }
