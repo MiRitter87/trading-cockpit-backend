@@ -106,6 +106,10 @@ public class StatisticCalculationController {
                         statistic.getNumberAboveSma50() + this.getNumberAboveSma50(currentQuotation));
                 statistic.setNumberAtOrBelowSma50(
                         statistic.getNumberAtOrBelowSma50() + this.getNumberAtOrBelowSma50(currentQuotation));
+                statistic.setNumberAboveSma200(
+                        statistic.getNumberAboveSma200() + this.getNumberAboveSma200(currentQuotation));
+                statistic.setNumberAtOrBelowSma200(
+                        statistic.getNumberAtOrBelowSma200() + this.getNumberAtOrBelowSma200(currentQuotation));
                 statistic.setNumberRitterMarketTrend(statistic.getNumberRitterMarketTrend()
                         + this.getNumberRitterMarketTrend(currentQuotation, previousQuotation));
             }
@@ -182,6 +186,50 @@ public class StatisticCalculationController {
         sma50 = BigDecimal.valueOf(currentQuotation.getIndicator().getSma50());
 
         if (currentQuotation.getClose().compareTo(sma50) == -1) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    /**
+     * Compares the price of the current Quotation with its SMA(200) and checks if the price is above its SMA(200).
+     *
+     * @param currentQuotation The current Quotation.
+     * @return 1, if the price of the current Quotation is bigger than its SMA(200). 0, if it is less or equal.
+     */
+    private int getNumberAboveSma200(final Quotation currentQuotation) {
+        BigDecimal sma200;
+
+        if (currentQuotation.getIndicator() == null || currentQuotation.getIndicator().getSma200() == 0) {
+            return 0;
+        }
+
+        sma200 = BigDecimal.valueOf(currentQuotation.getIndicator().getSma200());
+
+        if (currentQuotation.getClose().compareTo(sma200) == 1) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    /**
+     * Compares the price of the current Quotation with its SMA(200) and checks if the price is below its SMA(200).
+     *
+     * @param currentQuotation The current Quotation.
+     * @return 1, if the price of the current Quotation is at or below its SMA(200). 0, if it is bigger.
+     */
+    private int getNumberAtOrBelowSma200(final Quotation currentQuotation) {
+        BigDecimal sma200;
+
+        if (currentQuotation.getIndicator() == null || currentQuotation.getIndicator().getSma200() == 0) {
+            return 0;
+        }
+
+        sma200 = BigDecimal.valueOf(currentQuotation.getIndicator().getSma200());
+
+        if (currentQuotation.getClose().compareTo(sma200) == -1) {
             return 1;
         } else {
             return 0;
