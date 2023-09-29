@@ -16,6 +16,7 @@ import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
 
 import backend.controller.NoQuotationsExistException;
+import backend.controller.chart.AboveSma200ChartController;
 import backend.controller.chart.AboveSma50ChartController;
 import backend.controller.chart.AdvanceDeclineNumberChartController;
 import backend.controller.chart.DistributionDaysChartController;
@@ -117,7 +118,25 @@ public class ChartService {
      * @return A Response containing the generated chart.
      */
     public Response getInstrumentsAboveSma200Chart(final Integer listId) {
-        return null;
+        AboveSma200ChartController aboveSma200ChartController = new AboveSma200ChartController();
+        JFreeChart chart;
+        StreamingOutput streamingOutput = null;
+
+        try {
+            chart = aboveSma200ChartController.getInstrumentsAboveSma200Chart(InstrumentType.STOCK, listId);
+
+            streamingOutput = new StreamingOutput() {
+                @Override
+                public void write(final OutputStream output) throws IOException, WebApplicationException {
+                    ChartUtils.writeChartAsPNG(output, chart, CHART_WIDTH, CHART_HEIGHT);
+                }
+            };
+        } catch (Exception exception) {
+            LOGGER.error(this.resources.getString("chart.aboveSma200.getError"), exception);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+        }
+
+        return Response.ok(streamingOutput).build();
     }
 
     /**
