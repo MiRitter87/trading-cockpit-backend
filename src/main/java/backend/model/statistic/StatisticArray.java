@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlElementWrapper;
 
@@ -58,6 +60,7 @@ public class StatisticArray {
      *
      * @return All statistics sorted by date.
      */
+    @JsonIgnore
     public List<Statistic> getStatisticsSortedByDate() {
         Collections.sort(this.statistics, new StatisticDateComparator());
 
