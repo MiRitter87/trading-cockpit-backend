@@ -10,6 +10,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlElementWrapper;
 
@@ -167,6 +169,7 @@ public class QuotationArray {
      *
      * @return The age of the newest Quotation in days.
      */
+    @JsonIgnore
     public long getAgeOfNewestQuotationInDays() {
         Quotation newestQuotation;
         Date currentDate = new Date();
@@ -222,6 +225,7 @@ public class QuotationArray {
      *
      * @return A List of weekly quotations.
      */
+    @JsonIgnore
     public List<Quotation> getWeeklyQuotations() {
         List<Quotation> weeklyQuotations = new ArrayList<>();
         Quotation weeklyQuotation = new Quotation();
@@ -310,6 +314,7 @@ public class QuotationArray {
      *
      * @return The price high.
      */
+    @JsonIgnore
     public BigDecimal getPriceHigh() {
         BigDecimal high = new BigDecimal(0);
 
@@ -327,6 +332,7 @@ public class QuotationArray {
      *
      * @return The price low.
      */
+    @JsonIgnore
     public BigDecimal getPriceLow() {
         BigDecimal low = new BigDecimal(0);
         Quotation quotation;
