@@ -29,6 +29,8 @@ import jakarta.validation.constraints.Size;
 import org.hibernate.validator.HibernateValidator;
 import org.hibernate.validator.messageinterpolation.ExpressionLanguageFeatureLevel;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import backend.model.NoItemsException;
 import backend.model.instrument.Instrument;
 import backend.model.list.List;
@@ -490,6 +492,7 @@ public class Scan {
      *
      * @return All instruments based on the lists that are defined in the scan.
      */
+    @JsonIgnore
     public Set<Instrument> getInstrumentsFromScanLists() {
         Set<Instrument> instruments = new HashSet<>();
         Iterator<List> listIterator = this.getLists().iterator();
