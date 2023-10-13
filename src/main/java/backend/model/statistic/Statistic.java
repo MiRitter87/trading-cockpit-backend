@@ -119,6 +119,12 @@ public class Statistic {
     private int numberRitterMarketTrend;
 
     /**
+     * The number of instruments that traded up on volume.
+     */
+    @Column(name = "NUMBER_UP_ON_VOLUME")
+    private int numberUpOnVolume;
+
+    /**
      * Default constructor.
      */
     public Statistic() {
@@ -309,6 +315,20 @@ public class Statistic {
     }
 
     /**
+     * @return the numberUpOnVolume
+     */
+    public int getNumberUpOnVolume() {
+        return numberUpOnVolume;
+    }
+
+    /**
+     * @param numberUpOnVolume the numberUpOnVolume to set
+     */
+    public void setNumberUpOnVolume(final int numberUpOnVolume) {
+        this.numberUpOnVolume = numberUpOnVolume;
+    }
+
+    /**
      * Updates the percentage above SMA(50).
      */
     private void updatePercentAboveSma50() {
@@ -353,7 +373,7 @@ public class Statistic {
     public int hashCode() {
         return Objects.hash(advanceDeclineNumber, date, id, instrumentType, numberAboveSma50, numberAdvance,
                 numberAtOrBelowSma50, numberDecline, numberOfInstruments, numberRitterMarketTrend, percentAboveSma50,
-                numberAboveSma200, numberAtOrBelowSma200, percentAboveSma200);
+                numberAboveSma200, numberAtOrBelowSma200, percentAboveSma200, numberUpOnVolume);
     }
 
     /**
@@ -390,6 +410,7 @@ public class Statistic {
                 && percentAboveSma200 == other.percentAboveSma200 && numberDecline == other.numberDecline
                 && numberOfInstruments == other.numberOfInstruments
                 && numberRitterMarketTrend == other.numberRitterMarketTrend
+                && numberUpOnVolume == other.numberUpOnVolume
                 && Float.floatToIntBits(percentAboveSma50) == Float.floatToIntBits(other.percentAboveSma50);
     }
 }
