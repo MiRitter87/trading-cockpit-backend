@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import backend.controller.instrumentCheck.InstrumentCheckPatternController;
 import backend.dao.DAOManager;
 import backend.dao.ObjectUnchangedException;
 import backend.dao.instrument.InstrumentDAO;
@@ -112,6 +113,8 @@ public class StatisticCalculationController {
                         statistic.getNumberAtOrBelowSma200() + this.getNumberAtOrBelowSma200(currentQuotation));
                 statistic.setNumberRitterMarketTrend(statistic.getNumberRitterMarketTrend()
                         + this.getNumberRitterMarketTrend(currentQuotation, previousQuotation));
+                statistic.setNumberUpOnVolume(statistic.getNumberUpOnVolume()
+                        + this.getNumberUpOnVolume(currentQuotation, previousQuotation));
             }
         }
 
@@ -241,7 +244,7 @@ public class StatisticCalculationController {
      *
      * @param currentQuotation  The current Quotation.
      * @param previousQuotation The previous Quotation.
-     * @return 1, if Quotation behaves bullish, -1 if it behaves bearish, 0 if behavior is neither bullish nor bearish..
+     * @return 1, if Quotation behaves bullish, -1 if it behaves bearish, 0 if behavior is neither bullish nor bearish.
      */
     private int getNumberRitterMarketTrend(final Quotation currentQuotation, final Quotation previousQuotation) {
         // The indicator can't be calculated if these values are not available.
@@ -268,6 +271,30 @@ public class StatisticCalculationController {
         }
 
         // Price unchanged.
+        return 0;
+    }
+
+    /**
+     * Calculates the "up on volume" number for the current Quotation.
+     *
+     * @param currentQuotation  The current Quotation.
+     * @param previousQuotation The previous Quotation.
+     * @return 1, if Quotation traded up on volume; 0, if not.
+     */
+    private int getNumberUpOnVolume(final Quotation currentQuotation, final Quotation previousQuotation) {
+        InstrumentCheckPatternController patternController = new InstrumentCheckPatternController();
+        boolean isUpOnVolume = false;
+
+        try {
+            isUpOnVolume = patternController.isUpOnVolume(currentQuotation, previousQuotation);
+        } catch (Exception e) {
+            return 0;
+        }
+
+        if (isUpOnVolume) {
+            return 1;
+        }
+
         return 0;
     }
 
@@ -386,7 +413,10 @@ public class StatisticCalculationController {
                 databaseStatistic.setNumberDecline(newStatistic.getNumberDecline());
                 databaseStatistic.setNumberAboveSma50(newStatistic.getNumberAboveSma50());
                 databaseStatistic.setNumberAtOrBelowSma50(newStatistic.getNumberAtOrBelowSma50());
+                databaseStatistic.setNumberAboveSma200(newStatistic.getNumberAboveSma200());
+                databaseStatistic.setNumberAtOrBelowSma200(newStatistic.getNumberAtOrBelowSma200());
                 databaseStatistic.setNumberRitterMarketTrend(newStatistic.getNumberRitterMarketTrend());
+                databaseStatistic.setNumberUpOnVolume(newStatistic.getNumberUpOnVolume());
                 statisticUpdate.add(databaseStatistic);
             }
         }
