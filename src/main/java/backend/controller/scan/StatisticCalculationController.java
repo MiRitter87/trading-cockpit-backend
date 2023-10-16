@@ -115,6 +115,8 @@ public class StatisticCalculationController {
                         + this.getNumberRitterMarketTrend(currentQuotation, previousQuotation));
                 statistic.setNumberUpOnVolume(statistic.getNumberUpOnVolume()
                         + this.getNumberUpOnVolume(currentQuotation, previousQuotation));
+                statistic.setNumberDownOnVolume(statistic.getNumberDownOnVolume()
+                        + this.getNumberDownOnVolume(currentQuotation, previousQuotation));
             }
         }
 
@@ -299,6 +301,30 @@ public class StatisticCalculationController {
     }
 
     /**
+     * Calculates the "down on volume" number for the current Quotation.
+     *
+     * @param currentQuotation  The current Quotation.
+     * @param previousQuotation The previous Quotation.
+     * @return 1, if Quotation traded down on volume; 0, if not.
+     */
+    private int getNumberDownOnVolume(final Quotation currentQuotation, final Quotation previousQuotation) {
+        InstrumentCheckPatternController patternController = new InstrumentCheckPatternController();
+        boolean isDownOnVolume = false;
+
+        try {
+            isDownOnVolume = patternController.isDownOnVolume(currentQuotation, previousQuotation);
+        } catch (Exception e) {
+            return 0;
+        }
+
+        if (isDownOnVolume) {
+            return 1;
+        }
+
+        return 0;
+    }
+
+    /**
      * Persists statistics to the database.
      *
      * @param newStatistics The new statistics that have been calculated during runtime based on the current database
@@ -417,6 +443,7 @@ public class StatisticCalculationController {
                 databaseStatistic.setNumberAtOrBelowSma200(newStatistic.getNumberAtOrBelowSma200());
                 databaseStatistic.setNumberRitterMarketTrend(newStatistic.getNumberRitterMarketTrend());
                 databaseStatistic.setNumberUpOnVolume(newStatistic.getNumberUpOnVolume());
+                databaseStatistic.setNumberDownOnVolume(newStatistic.getNumberDownOnVolume());
                 statisticUpdate.add(databaseStatistic);
             }
         }
