@@ -131,6 +131,12 @@ public class Statistic {
     private int numberDownOnVolume;
 
     /**
+     * The number of instrument that made a bearish high-volume reversal.
+     */
+    @Column(name = "NUMBER_BEARISH_REVERSAL")
+    private int numberBearishReversal;
+
+    /**
      * Default constructor.
      */
     public Statistic() {
@@ -349,6 +355,20 @@ public class Statistic {
     }
 
     /**
+     * @return the numberBearishReversal
+     */
+    public int getNumberBearishReversal() {
+        return numberBearishReversal;
+    }
+
+    /**
+     * @param numberBearishReversal the numberBearishReversal to set
+     */
+    public void setNumberBearishReversal(final int numberBearishReversal) {
+        this.numberBearishReversal = numberBearishReversal;
+    }
+
+    /**
      * Updates the percentage above SMA(50).
      */
     private void updatePercentAboveSma50() {
@@ -393,7 +413,8 @@ public class Statistic {
     public int hashCode() {
         return Objects.hash(advanceDeclineNumber, date, id, instrumentType, numberAboveSma50, numberAdvance,
                 numberAtOrBelowSma50, numberDecline, numberOfInstruments, numberRitterMarketTrend, percentAboveSma50,
-                numberAboveSma200, numberAtOrBelowSma200, percentAboveSma200, numberUpOnVolume, numberDownOnVolume);
+                numberAboveSma200, numberAtOrBelowSma200, percentAboveSma200, numberUpOnVolume, numberDownOnVolume,
+                numberBearishReversal);
     }
 
     /**
@@ -431,6 +452,7 @@ public class Statistic {
                 && numberOfInstruments == other.numberOfInstruments
                 && numberRitterMarketTrend == other.numberRitterMarketTrend
                 && numberUpOnVolume == other.numberUpOnVolume && numberDownOnVolume == other.numberDownOnVolume
+                && numberBearishReversal == other.numberBearishReversal
                 && Float.floatToIntBits(percentAboveSma50) == Float.floatToIntBits(other.percentAboveSma50);
     }
 }
