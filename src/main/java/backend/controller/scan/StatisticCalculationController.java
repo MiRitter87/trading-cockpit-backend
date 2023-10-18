@@ -119,6 +119,8 @@ public class StatisticCalculationController {
                         + this.getNumberDownOnVolume(currentQuotation, previousQuotation));
                 statistic.setNumberBearishReversal(
                         statistic.getNumberBearishReversal() + this.getNumberBearishReversal(currentQuotation));
+                statistic.setNumberBullishReversal(
+                        statistic.getNumberBullishReversal() + this.getNumberBullishReversal(currentQuotation));
             }
         }
 
@@ -350,6 +352,29 @@ public class StatisticCalculationController {
     }
 
     /**
+     * Calculates the "bullish high-volume reversal" number for the current Quotation.
+     *
+     * @param currentQuotation The current Quotation.
+     * @return 1, if Quotation made a bullish reversal; 0, if not.
+     */
+    private int getNumberBullishReversal(final Quotation currentQuotation) {
+        InstrumentCheckPatternController patternController = new InstrumentCheckPatternController();
+        boolean isBullishReversal = false;
+
+        try {
+            isBullishReversal = patternController.isBullishHighVolumeReversal(currentQuotation);
+        } catch (Exception e) {
+            return 0;
+        }
+
+        if (isBullishReversal) {
+            return 1;
+        }
+
+        return 0;
+    }
+
+    /**
      * Persists statistics to the database.
      *
      * @param newStatistics The new statistics that have been calculated during runtime based on the current database
@@ -470,6 +495,7 @@ public class StatisticCalculationController {
                 databaseStatistic.setNumberUpOnVolume(newStatistic.getNumberUpOnVolume());
                 databaseStatistic.setNumberDownOnVolume(newStatistic.getNumberDownOnVolume());
                 databaseStatistic.setNumberBearishReversal(newStatistic.getNumberBearishReversal());
+                databaseStatistic.setNumberBullishReversal(newStatistic.getNumberBullishReversal());
                 statisticUpdate.add(databaseStatistic);
             }
         }
