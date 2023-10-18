@@ -131,10 +131,16 @@ public class Statistic {
     private int numberDownOnVolume;
 
     /**
-     * The number of instrument that made a bearish high-volume reversal.
+     * The number of instruments that made a bearish high-volume reversal.
      */
     @Column(name = "NUMBER_BEARISH_REVERSAL")
     private int numberBearishReversal;
+
+    /**
+     * The number of instruments that made a bullish high-volume reversal.
+     */
+    @Column(name = "NUMBER_BULLISH_REVERSAL")
+    private int numberBullishReversal;
 
     /**
      * Default constructor.
@@ -369,6 +375,20 @@ public class Statistic {
     }
 
     /**
+     * @return the numberBullishReversal
+     */
+    public int getNumberBullishReversal() {
+        return numberBullishReversal;
+    }
+
+    /**
+     * @param numberBullishReversal the numberBullishReversal to set
+     */
+    public void setNumberBullishReversal(final int numberBullishReversal) {
+        this.numberBullishReversal = numberBullishReversal;
+    }
+
+    /**
      * Updates the percentage above SMA(50).
      */
     private void updatePercentAboveSma50() {
@@ -414,7 +434,7 @@ public class Statistic {
         return Objects.hash(advanceDeclineNumber, date, id, instrumentType, numberAboveSma50, numberAdvance,
                 numberAtOrBelowSma50, numberDecline, numberOfInstruments, numberRitterMarketTrend, percentAboveSma50,
                 numberAboveSma200, numberAtOrBelowSma200, percentAboveSma200, numberUpOnVolume, numberDownOnVolume,
-                numberBearishReversal);
+                numberBearishReversal, numberBullishReversal);
     }
 
     /**
@@ -453,6 +473,7 @@ public class Statistic {
                 && numberRitterMarketTrend == other.numberRitterMarketTrend
                 && numberUpOnVolume == other.numberUpOnVolume && numberDownOnVolume == other.numberDownOnVolume
                 && numberBearishReversal == other.numberBearishReversal
+                && numberBullishReversal == other.numberBullishReversal
                 && Float.floatToIntBits(percentAboveSma50) == Float.floatToIntBits(other.percentAboveSma50);
     }
 }
