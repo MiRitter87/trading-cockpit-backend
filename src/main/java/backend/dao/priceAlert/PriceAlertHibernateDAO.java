@@ -103,7 +103,7 @@ public class PriceAlertHibernateDAO implements PriceAlertDAO {
         // Use entity graphs to load data of referenced Instrument instances.
         EntityGraph<PriceAlert> graph = entityManager.createEntityGraph(PriceAlert.class);
         graph.addAttributeNodes("instrument");
-        graph.addSubgraph("instrument").addAttributeNodes("sector");
+        graph.addSubgraph("instrument").addAttributeNodes("sector", "industryGroup");
 
         entityManager.getTransaction().begin();
 
@@ -157,7 +157,7 @@ public class PriceAlertHibernateDAO implements PriceAlertDAO {
         // Use entity graphs to load data of referenced instrument instance.
         EntityGraph<PriceAlert> graph = entityManager.createEntityGraph(PriceAlert.class);
         graph.addAttributeNodes("instrument");
-        graph.addSubgraph("instrument").addAttributeNodes("sector");
+        graph.addSubgraph("instrument").addAttributeNodes("sector", "industryGroup");
         Map<String, Object> hints = new HashMap<String, Object>();
         hints.put("jakarta.persistence.loadgraph", graph);
 

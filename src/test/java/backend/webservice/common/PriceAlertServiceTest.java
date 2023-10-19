@@ -104,6 +104,11 @@ public class PriceAlertServiceTest {
      */
     private Instrument technologySector;
 
+    /**
+     * Instrument of internet industry group.
+     */
+    private Instrument internetIndustryGroup;
+
     @BeforeAll
     /**
      * Tasks to be performed once at startup of test class.
@@ -183,13 +188,16 @@ public class PriceAlertServiceTest {
      */
     private void createDummyInstruments() {
         this.technologySector = this.fixtureHelper.getTechnologySectorInstrument();
+        this.internetIndustryGroup = this.fixtureHelper.getInternetIgInstrument();
         this.appleInstrument = this.fixtureHelper.getAppleInstrument();
         this.microsoftInstrument = this.fixtureHelper.getMicrosoftInstrument();
-        this.netflixInstrument = this.fixtureHelper.getNetflixInstrument(this.technologySector);
+        this.netflixInstrument = this.fixtureHelper.getNetflixInstrument(this.technologySector,
+                this.internetIndustryGroup);
         this.nvidiaInstrument = this.fixtureHelper.getNvidiaInstrument();
 
         try {
             instrumentDAO.insertInstrument(this.technologySector);
+            instrumentDAO.insertInstrument(this.internetIndustryGroup);
             instrumentDAO.insertInstrument(this.appleInstrument);
             instrumentDAO.insertInstrument(this.microsoftInstrument);
             instrumentDAO.insertInstrument(this.netflixInstrument);
@@ -208,6 +216,7 @@ public class PriceAlertServiceTest {
             instrumentDAO.deleteInstrument(this.netflixInstrument);
             instrumentDAO.deleteInstrument(this.microsoftInstrument);
             instrumentDAO.deleteInstrument(this.appleInstrument);
+            instrumentDAO.deleteInstrument(this.internetIndustryGroup);
             instrumentDAO.deleteInstrument(this.technologySector);
         } catch (Exception e) {
             fail(e.getMessage());

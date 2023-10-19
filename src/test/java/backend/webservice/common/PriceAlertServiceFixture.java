@@ -52,10 +52,11 @@ public class PriceAlertServiceFixture {
     /**
      * Gets the Instrument of the Netflix stock.
      *
-     * @param sector The sector.
+     * @param sector        The sector.
+     * @param industryGroup The industry group.
      * @return The Instrument of the Netflix stock.
      */
-    public Instrument getNetflixInstrument(final Instrument sector) {
+    public Instrument getNetflixInstrument(final Instrument sector, final Instrument industryGroup) {
         Instrument instrument = new Instrument();
 
         instrument.setSymbol("NFLX");
@@ -63,6 +64,7 @@ public class PriceAlertServiceFixture {
         instrument.setStockExchange(StockExchange.NDQ);
         instrument.setType(InstrumentType.STOCK);
         instrument.setSector(sector);
+        instrument.setIndustryGroup(industryGroup);
 
         return instrument;
     }
@@ -95,6 +97,22 @@ public class PriceAlertServiceFixture {
         instrument.setName("Technology Select Sector SPDR Fund");
         instrument.setStockExchange(StockExchange.NYSE);
         instrument.setType(InstrumentType.SECTOR);
+
+        return instrument;
+    }
+
+    /**
+     * Gets the Instrument of the technology industry group.
+     *
+     * @return The Instrument of the technology industry group.
+     */
+    public Instrument getInternetIgInstrument() {
+        Instrument instrument = new Instrument();
+
+        instrument.setSymbol("XWEB");
+        instrument.setName("SPDR S&P Internet ETF");
+        instrument.setStockExchange(StockExchange.NYSE);
+        instrument.setType(InstrumentType.IND_GROUP);
 
         return instrument;
     }
