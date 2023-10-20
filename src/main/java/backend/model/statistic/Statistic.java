@@ -143,6 +143,12 @@ public class Statistic {
     private int numberBullishReversal;
 
     /**
+     * The number of instruments that are churning.
+     */
+    @Column(name = "NUMBER_CHURNING")
+    private int numberChurning;
+
+    /**
      * Default constructor.
      */
     public Statistic() {
@@ -389,6 +395,20 @@ public class Statistic {
     }
 
     /**
+     * @return the numberChurning
+     */
+    public int getNumberChurning() {
+        return numberChurning;
+    }
+
+    /**
+     * @param numberChurning the numberChurning to set
+     */
+    public void setNumberChurning(final int numberChurning) {
+        this.numberChurning = numberChurning;
+    }
+
+    /**
      * Updates the percentage above SMA(50).
      */
     private void updatePercentAboveSma50() {
@@ -434,7 +454,7 @@ public class Statistic {
         return Objects.hash(advanceDeclineNumber, date, id, instrumentType, numberAboveSma50, numberAdvance,
                 numberAtOrBelowSma50, numberDecline, numberOfInstruments, numberRitterMarketTrend, percentAboveSma50,
                 numberAboveSma200, numberAtOrBelowSma200, percentAboveSma200, numberUpOnVolume, numberDownOnVolume,
-                numberBearishReversal, numberBullishReversal);
+                numberBearishReversal, numberBullishReversal, numberChurning);
     }
 
     /**
@@ -473,7 +493,7 @@ public class Statistic {
                 && numberRitterMarketTrend == other.numberRitterMarketTrend
                 && numberUpOnVolume == other.numberUpOnVolume && numberDownOnVolume == other.numberDownOnVolume
                 && numberBearishReversal == other.numberBearishReversal
-                && numberBullishReversal == other.numberBullishReversal
+                && numberBullishReversal == other.numberBullishReversal && numberChurning == other.numberChurning
                 && Float.floatToIntBits(percentAboveSma50) == Float.floatToIntBits(other.percentAboveSma50);
     }
 }
