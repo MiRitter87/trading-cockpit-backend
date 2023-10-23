@@ -175,7 +175,7 @@ public class InstrumentCheckPatternController {
         Quotation previousQuotation;
         List<ProtocolEntry> protocolEntries = new ArrayList<>();
         ProtocolEntry protocolEntry;
-        float performance;
+        boolean isChurning;
 
         startIndex = sortedQuotations.getIndexOfQuotationWithDate(startDate);
 
@@ -191,20 +191,9 @@ public class InstrumentCheckPatternController {
             }
 
             currentQuotation = sortedQuotations.getQuotations().get(i);
+            isChurning = this.isChurning(currentQuotation, previousQuotation);
 
-            if (previousQuotation.getIndicator() == null) {
-                throw new Exception("No indicator is defined for Quotation with ID: " + previousQuotation.getId());
-            }
-
-            if (currentQuotation.getIndicator() == null) {
-                throw new Exception("No indicator is defined for Quotation with ID: " + currentQuotation.getId());
-            }
-
-            performance = this.performanceCalculator.getPerformance(currentQuotation, previousQuotation);
-
-            if (performance <= CHURNING_UP_THRESHOLD && performance >= CHURNING_DOWN_THRESHOLD
-                    && currentQuotation.getVolume() > currentQuotation.getIndicator().getSma30Volume()) {
-
+            if (isChurning) {
                 protocolEntry = new ProtocolEntry();
                 protocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
                 protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(currentQuotation.getDate()));
@@ -355,6 +344,35 @@ public class InstrumentCheckPatternController {
 
         if (currentQuotation.getOpen().compareTo(reversalThresholdPrice) >= 0
                 && currentQuotation.getClose().compareTo(reversalThresholdPrice) >= 0
+                && currentQuotation.getVolume() > currentQuotation.getIndicator().getSma30Volume()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Checks if the current Quotation is churning.
+     *
+     * @param currentQuotation  The current Quotation.
+     * @param previousQuotation The previous Quotation.
+     * @return true, if currentQuotation is churning; false, if not.
+     * @throws Exception Determination failed.
+     */
+    public boolean isChurning(final Quotation currentQuotation, final Quotation previousQuotation) throws Exception {
+        float performance;
+
+        if (previousQuotation.getIndicator() == null) {
+            throw new Exception("No indicator is defined for Quotation with ID: " + previousQuotation.getId());
+        }
+
+        if (currentQuotation.getIndicator() == null) {
+            throw new Exception("No indicator is defined for Quotation with ID: " + currentQuotation.getId());
+        }
+
+        performance = this.performanceCalculator.getPerformance(currentQuotation, previousQuotation);
+
+        if (performance <= CHURNING_UP_THRESHOLD && performance >= CHURNING_DOWN_THRESHOLD
                 && currentQuotation.getVolume() > currentQuotation.getIndicator().getSma30Volume()) {
             return true;
         }
