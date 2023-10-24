@@ -121,6 +121,8 @@ public class StatisticCalculationController {
                         statistic.getNumberBearishReversal() + this.getNumberBearishReversal(currentQuotation));
                 statistic.setNumberBullishReversal(
                         statistic.getNumberBullishReversal() + this.getNumberBullishReversal(currentQuotation));
+                statistic.setNumberChurning(
+                        statistic.getNumberChurning() + this.getNumberChurning(currentQuotation, previousQuotation));
             }
         }
 
@@ -375,6 +377,30 @@ public class StatisticCalculationController {
     }
 
     /**
+     * Calculates the "churning" number for the current Quotation.
+     *
+     * @param currentQuotation  The current Quotation.
+     * @param previousQuotation The previous Quotation.
+     * @return 1, if Quotation is churning; 0, if not.
+     */
+    private int getNumberChurning(final Quotation currentQuotation, final Quotation previousQuotation) {
+        InstrumentCheckPatternController patternController = new InstrumentCheckPatternController();
+        boolean isChurning = false;
+
+        try {
+            isChurning = patternController.isChurning(currentQuotation, previousQuotation);
+        } catch (Exception e) {
+            return 0;
+        }
+
+        if (isChurning) {
+            return 1;
+        }
+
+        return 0;
+    }
+
+    /**
      * Persists statistics to the database.
      *
      * @param newStatistics The new statistics that have been calculated during runtime based on the current database
@@ -496,6 +522,7 @@ public class StatisticCalculationController {
                 databaseStatistic.setNumberDownOnVolume(newStatistic.getNumberDownOnVolume());
                 databaseStatistic.setNumberBearishReversal(newStatistic.getNumberBearishReversal());
                 databaseStatistic.setNumberBullishReversal(newStatistic.getNumberBullishReversal());
+                databaseStatistic.setNumberChurning(newStatistic.getNumberChurning());
                 statisticUpdate.add(databaseStatistic);
             }
         }
