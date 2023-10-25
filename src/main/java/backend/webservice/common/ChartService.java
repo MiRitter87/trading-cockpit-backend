@@ -19,12 +19,12 @@ import backend.controller.NoQuotationsExistException;
 import backend.controller.chart.AboveSma200ChartController;
 import backend.controller.chart.AboveSma50ChartController;
 import backend.controller.chart.AdvanceDeclineNumberChartController;
-import backend.controller.chart.DistributionDaysChartController;
-import backend.controller.chart.FollowThroughDaysChartController;
-import backend.controller.chart.PocketPivotChartController;
-import backend.controller.chart.PriceVolumeChartController;
 import backend.controller.chart.RitterMarketTrendChartController;
 import backend.controller.chart.RitterPatternIndicatorChartController;
+import backend.controller.chart.priceVolume.DistributionDaysChartController;
+import backend.controller.chart.priceVolume.FollowThroughDaysChartController;
+import backend.controller.chart.priceVolume.PocketPivotChartController;
+import backend.controller.chart.priceVolume.PriceVolumeChartController;
 import backend.model.instrument.InstrumentType;
 import backend.webservice.Indicator;
 

@@ -1,4 +1,4 @@
-package backend.controller.chart;
+package backend.controller.chart.priceVolume;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +11,7 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.xy.OHLCDataset;
 
 import backend.controller.NoQuotationsExistException;
+import backend.controller.chart.ChartController;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
 

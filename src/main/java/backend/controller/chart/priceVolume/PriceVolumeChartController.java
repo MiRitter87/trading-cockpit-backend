@@ -1,4 +1,4 @@
-package backend.controller.chart;
+package backend.controller.chart.priceVolume;
 
 import java.awt.Color;
 import java.util.List;
@@ -23,6 +23,7 @@ import org.jfree.data.xy.XYDataset;
 
 import backend.controller.NoQuotationsExistException;
 import backend.controller.RatioCalculationController;
+import backend.controller.chart.ChartController;
 import backend.controller.scan.BollingerCalculator;
 import backend.controller.scan.StochasticCalculator;
 import backend.dao.DAOManager;

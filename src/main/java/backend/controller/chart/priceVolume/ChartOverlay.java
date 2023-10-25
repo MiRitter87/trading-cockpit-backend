@@ -1,4 +1,4 @@
-package backend.controller.chart;
+package backend.controller.chart.priceVolume;
 
 /**
  * An overlay that can be plotted onto a chart.
