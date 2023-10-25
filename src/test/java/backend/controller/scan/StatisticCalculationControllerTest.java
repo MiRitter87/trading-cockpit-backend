@@ -211,7 +211,10 @@ public class StatisticCalculationControllerTest {
             calendar.setTime(new Date());
             this.appleQuotation1 = new Quotation();
             this.appleQuotation1.setDate(calendar.getTime());
-            this.appleQuotation1.setClose(BigDecimal.valueOf(78.54));
+            this.appleQuotation1.setOpen(BigDecimal.valueOf(76.37));
+            this.appleQuotation1.setHigh(BigDecimal.valueOf(78.37));
+            this.appleQuotation1.setLow(BigDecimal.valueOf(75.37));
+            this.appleQuotation1.setClose(BigDecimal.valueOf(76.37));
             this.appleQuotation1.setCurrency(Currency.USD);
             this.appleQuotation1.setVolume(6784544);
             this.appleQuotation1.setInstrument(this.appleStock);
@@ -254,7 +257,10 @@ public class StatisticCalculationControllerTest {
             calendar.setTime(new Date());
             this.microsoftQuotation1 = new Quotation();
             this.microsoftQuotation1.setDate(calendar.getTime());
-            this.microsoftQuotation1.setClose(BigDecimal.valueOf(247.58));
+            this.microsoftQuotation1.setOpen(BigDecimal.valueOf(254.71));
+            this.microsoftQuotation1.setHigh(BigDecimal.valueOf(254.88));
+            this.microsoftQuotation1.setLow(BigDecimal.valueOf(247.12));
+            this.microsoftQuotation1.setClose(BigDecimal.valueOf(254.72));
             this.microsoftQuotation1.setCurrency(Currency.USD);
             this.microsoftQuotation1.setVolume(1234544);
             this.microsoftQuotation1.setInstrument(this.microsoftStock);
@@ -314,7 +320,7 @@ public class StatisticCalculationControllerTest {
 
             this.microsoftQuotation1Indicator = new Indicator();
             this.microsoftQuotation1Indicator.setSma50((float) 247.54);
-            this.microsoftQuotation1Indicator.setSma200((float) 250.70);
+            this.microsoftQuotation1Indicator.setSma200((float) 260.70);
             this.microsoftQuotation1Indicator.setSma30Volume(1200000);
             this.microsoftQuotation1.setIndicator(this.microsoftQuotation1Indicator);
             quotations.add(this.microsoftQuotation1);
@@ -392,6 +398,11 @@ public class StatisticCalculationControllerTest {
             assertEquals(1, statistic.getNumberAtOrBelowSma200());
             assertEquals(50, statistic.getPercentAboveSma200());
             assertEquals(0, statistic.getNumberRitterMarketTrend());
+            assertEquals(1, statistic.getNumberUpOnVolume());
+            assertEquals(1, statistic.getNumberDownOnVolume());
+            assertEquals(1, statistic.getNumberBearishReversal());
+            assertEquals(1, statistic.getNumberBullishReversal());
+            assertEquals(0, statistic.getNumberChurning());
 
             // Check correct statistic of second day.
             statistic = calculatedStatistics.getStatistics().get(1);
@@ -407,6 +418,11 @@ public class StatisticCalculationControllerTest {
             assertEquals(1, statistic.getNumberAtOrBelowSma200());
             assertEquals(50, statistic.getPercentAboveSma200());
             assertEquals(0, statistic.getNumberRitterMarketTrend());
+            assertEquals(0, statistic.getNumberUpOnVolume());
+            assertEquals(0, statistic.getNumberDownOnVolume());
+            assertEquals(0, statistic.getNumberBearishReversal());
+            assertEquals(0, statistic.getNumberBullishReversal());
+            assertEquals(1, statistic.getNumberChurning());
         } catch (Exception e) {
             fail(e.getMessage());
         }
