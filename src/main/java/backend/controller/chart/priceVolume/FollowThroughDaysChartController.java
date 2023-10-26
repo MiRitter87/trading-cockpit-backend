@@ -20,7 +20,6 @@ import org.jfree.data.xy.IntervalXYDataset;
 import org.jfree.data.xy.OHLCDataset;
 
 import backend.controller.NoQuotationsExistException;
-import backend.controller.chart.ChartController;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
 
@@ -29,7 +28,7 @@ import backend.model.instrument.Quotation;
  *
  * @author Michael
  */
-public class FollowThroughDaysChartController extends ChartController {
+public class FollowThroughDaysChartController extends PriceVolumeChartController {
     /**
      * The performance threshold that defines a Follow-Through Day.
      */

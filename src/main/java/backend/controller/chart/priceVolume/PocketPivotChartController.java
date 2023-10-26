@@ -11,7 +11,6 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.xy.OHLCDataset;
 
 import backend.controller.NoQuotationsExistException;
-import backend.controller.chart.ChartController;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
 
@@ -20,7 +19,7 @@ import backend.model.instrument.Quotation;
  *
  * @author Michael
  */
-public class PocketPivotChartController extends ChartController {
+public class PocketPivotChartController extends PriceVolumeChartController {
     /**
      * Gets a chart of an Instrument marked with Pocket Pivots.
      *
