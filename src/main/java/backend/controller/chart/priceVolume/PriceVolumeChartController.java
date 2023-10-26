@@ -33,7 +33,6 @@ import org.jfree.data.xy.OHLCDataset;
 
 import backend.controller.NoQuotationsExistException;
 import backend.controller.chart.ChartController;
-import backend.controller.chart.SegmentedTimeline;
 import backend.controller.scan.PerformanceCalculator;
 import backend.dao.DAOManager;
 import backend.dao.chart.ChartObjectDAO;

@@ -51,7 +51,7 @@
 
 	<!-- Excludes SegmentedTimeline.java which is from a third-party library and not modified. -->
 	<module name="BeforeExecutionExclusionFileFilter">
-		<property name="fileNamePattern" value="[/\\]src[/\\]main[/\\]java[/\\]backend[/\\]controller[/\\]chart[/\\]SegmentedTimeline.java"/>
+		<property name="fileNamePattern" value="[/\\]src[/\\]main[/\\]java[/\\]backend[/\\]controller[/\\]chart[/\\]priceVolume[/\\]SegmentedTimeline.java"/>
 	</module>
 
   <!-- https://checkstyle.org/filters/suppressionfilter.html -->

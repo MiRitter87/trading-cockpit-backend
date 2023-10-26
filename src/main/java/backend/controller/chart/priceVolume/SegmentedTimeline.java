@@ -46,7 +46,7 @@
  * 11-Jul-2007 : Fixed time zone bugs (DG);
  *
  */
-package backend.controller.chart;
+package backend.controller.chart.priceVolume;
 
 import java.io.Serializable;
 import java.util.ArrayList;
