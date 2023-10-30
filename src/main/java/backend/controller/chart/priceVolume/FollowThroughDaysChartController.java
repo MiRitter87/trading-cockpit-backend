@@ -37,7 +37,7 @@ public class FollowThroughDaysChartController extends PriceVolumeChartController
     /**
      * Gets a chart of an Instrument marked with Follow-Through Days.
      *
-     * @param instrumentId The ID of the Instrument used for Statistic chart creation.
+     * @param instrumentId The ID of the Instrument used for chart creation.
      * @return The chart.
      * @throws NoQuotationsExistException No quotations exist for the Quotation with the given ID.
      * @throws Exception                  Chart generation failed.

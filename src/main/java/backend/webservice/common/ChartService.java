@@ -23,6 +23,7 @@ import backend.controller.chart.RitterMarketTrendChartController;
 import backend.controller.chart.RitterPatternIndicatorChartController;
 import backend.controller.chart.priceVolume.DistributionDaysChartController;
 import backend.controller.chart.priceVolume.FollowThroughDaysChartController;
+import backend.controller.chart.priceVolume.HealthCheckChartController;
 import backend.controller.chart.priceVolume.PocketPivotChartController;
 import backend.controller.chart.priceVolume.PriceVolumeChartController;
 import backend.controller.instrumentCheck.HealthCheckProfile;
@@ -350,6 +351,27 @@ public class ChartService {
     public Response getHealthCheckChart(final Integer instrumentId, final HealthCheckProfile profile,
             final Integer lookbackPeriod) {
 
-        return null;
+        HealthCheckChartController healthCheckChartController = new HealthCheckChartController();
+        JFreeChart chart;
+        StreamingOutput streamingOutput = null;
+
+        try {
+            chart = healthCheckChartController.getHealthCheckChart(instrumentId, profile, lookbackPeriod);
+
+            streamingOutput = new StreamingOutput() {
+                @Override
+                public void write(final OutputStream output) throws IOException, WebApplicationException {
+                    ChartUtils.writeChartAsPNG(output, chart, CHART_WIDTH, CHART_HEIGHT);
+                }
+            };
+        } catch (NoQuotationsExistException noQuotationsExistException) {
+            return Response.status(Status.NOT_FOUND.getStatusCode(),
+                    this.resources.getString("chart.healthCheck.noQuotationsError")).build();
+        } catch (Exception exception) {
+            LOGGER.error(this.resources.getString("chart.healthCheck.getError"), exception);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+        }
+
+        return Response.ok(streamingOutput).build();
     }
 }
