@@ -1,7 +1,9 @@
 package backend.controller.instrumentCheck;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -9,6 +11,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import backend.controller.scan.IndicatorCalculator;
 import backend.dao.quotation.provider.QuotationProviderYahooDAO;
@@ -18,6 +21,9 @@ import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
+import backend.model.protocol.ProtocolEntry;
+import backend.model.protocol.ProtocolEntryCategory;
+import backend.tools.DateTools;
 
 /**
  * Tests the InstrumentCheckAverageController.
@@ -114,6 +120,81 @@ public class InstrumentCheckAverageControllerTest {
                 quotation = indicatorCalculator.calculateIndicators(instrument, quotation, true);
             else
                 quotation = indicatorCalculator.calculateIndicators(instrument, quotation, false);
+        }
+    }
+
+    @Test
+    /**
+     * Tests the check if Instrument closed below SMA(50).
+     */
+    public void testCheckCloseBelowSma50() {
+        ProtocolEntry expectedProtocolEntry1 = new ProtocolEntry();
+        ProtocolEntry expectedProtocolEntry2 = new ProtocolEntry();
+        ProtocolEntry actualProtocolEntry;
+        List<ProtocolEntry> protocolEntries;
+        Calendar calendar = Calendar.getInstance();
+
+        // Define the expected protocol entries.
+        calendar.set(2022, 3, 21); // The day on which the price closed below the SMA(50).
+        expectedProtocolEntry1.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
+        expectedProtocolEntry1.setCategory(ProtocolEntryCategory.VIOLATION);
+        expectedProtocolEntry1.setText(this.resources.getString("protocol.closeBelowSma50HighVolume"));
+
+        calendar.set(2022, 6, 22); // The day on which the price closed below the SMA(50).
+        expectedProtocolEntry2.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
+        expectedProtocolEntry2.setCategory(ProtocolEntryCategory.VIOLATION);
+        expectedProtocolEntry2.setText(this.resources.getString("protocol.closeBelowSma50HighVolume"));
+
+        // Call controller to perform check.
+        calendar.set(2022, 3, 7); // Begin check on 07.04.22
+        try {
+            protocolEntries = this.instrumentCheckAverageController.checkCloseBelowSma50(calendar.getTime(),
+                    this.dmlQuotations);
+
+            // Verify the check result
+            assertEquals(2, protocolEntries.size());
+
+            // Validate the protocol entries
+            actualProtocolEntry = protocolEntries.get(0);
+            assertEquals(expectedProtocolEntry1, actualProtocolEntry);
+
+            actualProtocolEntry = protocolEntries.get(1);
+            assertEquals(expectedProtocolEntry2, actualProtocolEntry);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    /**
+     * Tests the check if Instrument closed below EMA(21).
+     */
+    public void testCheckCloseBelowEma21() {
+        ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
+        ProtocolEntry actualProtocolEntry;
+        List<ProtocolEntry> protocolEntries;
+        Calendar calendar = Calendar.getInstance();
+
+        // Define the expected protocol entry.
+        calendar.set(2022, 6, 22); // The day on which the price closed below the EMA(21).
+        expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
+        expectedProtocolEntry.setCategory(ProtocolEntryCategory.VIOLATION);
+        expectedProtocolEntry.setText(this.resources.getString("protocol.closeBelowEma21"));
+
+        // Call controller to perform check.
+        calendar.set(2022, 6, 15); // Begin check on 15.07.22
+        try {
+            protocolEntries = this.instrumentCheckAverageController.checkCloseBelowEma21(calendar.getTime(),
+                    this.dmlQuotations);
+
+            // Verify the check result
+            assertEquals(1, protocolEntries.size());
+
+            // Validate the protocol entry
+            actualProtocolEntry = protocolEntries.get(0);
+            assertEquals(expectedProtocolEntry, actualProtocolEntry);
+        } catch (Exception e) {
+            fail(e.getMessage());
         }
     }
 }
