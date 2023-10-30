@@ -8,7 +8,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Response;
-
+import backend.controller.instrumentCheck.HealthCheckProfile;
 import backend.webservice.Indicator;
 import backend.webservice.common.ChartService;
 
@@ -156,5 +156,21 @@ public class ChartRestService {
         ChartService chartService = new ChartService();
         return chartService.getPriceVolumeChart(instrumentId, overlays, withVolume, withSma30Volume, indicator,
                 rsInstrumentId);
+    }
+
+    /**
+     * Provides a chart of an Instrument marked with health check events.
+     *
+     * @param instrumentId   The ID of the Instrument used for chart creation.
+     * @param profile        The HealthCheckProfile that is used.
+     * @param lookbackPeriod The number of days taken into account for health check routines.
+     * @return The chart.
+     */
+    public Response getHealthCheckChart(@PathParam("instrumentId") final Integer instrumentId,
+            @QueryParam("profile") final HealthCheckProfile profile,
+            @QueryParam("lookbackPeriod") final Integer lookbackPeriod) {
+
+        ChartService chartService = new ChartService();
+        return chartService.getHealthCheckChart(instrumentId, profile, lookbackPeriod);
     }
 }

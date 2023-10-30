@@ -25,6 +25,7 @@ import backend.controller.chart.priceVolume.DistributionDaysChartController;
 import backend.controller.chart.priceVolume.FollowThroughDaysChartController;
 import backend.controller.chart.priceVolume.PocketPivotChartController;
 import backend.controller.chart.priceVolume.PriceVolumeChartController;
+import backend.controller.instrumentCheck.HealthCheckProfile;
 import backend.model.instrument.InstrumentType;
 import backend.webservice.Indicator;
 
@@ -336,5 +337,19 @@ public class ChartService {
         }
 
         return Response.ok(streamingOutput).build();
+    }
+
+    /**
+     * Provides a chart of an Instrument marked with health check events.
+     *
+     * @param instrumentId   The ID of the Instrument used for chart creation.
+     * @param profile        The HealthCheckProfile that is used.
+     * @param lookbackPeriod The number of days taken into account for health check routines.
+     * @return The chart.
+     */
+    public Response getHealthCheckChart(final Integer instrumentId, final HealthCheckProfile profile,
+            final Integer lookbackPeriod) {
+
+        return null;
     }
 }
