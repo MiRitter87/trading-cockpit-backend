@@ -290,57 +290,6 @@ public class InstrumentCheckCountingController {
     }
 
     /**
-     * Checks if there is a time-wise climax movement. A time-wise climax move is given, if at least 7 of the last 10
-     * trading days are up-days.
-     *
-     * @param startDate        The date at which the check starts.
-     * @param sortedQuotations The quotations sorted by date that build the trading history.
-     * @return List of ProtocolEntry, for each day on which there is a time-wise climax movement.
-     * @throws Exception The check failed because data are not fully available or corrupt.
-     */
-    public List<ProtocolEntry> checkTimeClimax(final Date startDate, final QuotationArray sortedQuotations)
-            throws Exception {
-        Quotation currentQuotation;
-        int startIndex;
-        int numberOfUpDays;
-        List<ProtocolEntry> protocolEntries = new ArrayList<>();
-        ProtocolEntry protocolEntry;
-        Map<String, Integer> upDownDaySums;
-        final int thresholdNumberOfUpDays = 7;
-        final int numberOfDaysCheckedForClimax = 10;
-
-        startIndex = sortedQuotations.getIndexOfQuotationWithDate(startDate);
-
-        if (startIndex == -1) {
-            throw new Exception("Could not find a quotation at or after the given start date.");
-        }
-
-        for (int i = startIndex; i >= 0; i--) {
-            // Skip this Quotation, if not at least 10 previous days of trading history exist.
-            if ((i + numberOfDaysCheckedForClimax) >= sortedQuotations.getQuotations().size()) {
-                continue;
-            }
-
-            currentQuotation = sortedQuotations.getQuotations().get(i);
-
-            upDownDaySums = this.getNumberOfUpAndDownDays(
-                    sortedQuotations.getQuotations().get(i + numberOfDaysCheckedForClimax - 1), currentQuotation,
-                    sortedQuotations);
-            numberOfUpDays = upDownDaySums.get(MAP_ENTRY_UP_DAYS);
-
-            if (numberOfUpDays >= thresholdNumberOfUpDays) {
-                protocolEntry = new ProtocolEntry();
-                protocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
-                protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(currentQuotation.getDate()));
-                protocolEntry.setText(this.resources.getString("protocol.timeClimax"));
-                protocolEntries.add(protocolEntry);
-            }
-        }
-
-        return protocolEntries;
-    }
-
-    /**
      * Checks if three lower closes have occurred.
      *
      * @param startDate        The date at which the check starts.

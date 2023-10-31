@@ -110,7 +110,7 @@ public class InstrumentCheckController {
         protocol.getProtocolEntries()
                 .addAll(this.instrumentCheckPatternController.checkChurning(startDate, quotations));
         protocol.getProtocolEntries()
-                .addAll(this.instrumentCheckCountingController.checkTimeClimax(startDate, quotations));
+                .addAll(this.instrumentCheckClimaxController.checkTimeClimax(startDate, quotations));
         protocol.getProtocolEntries()
                 .addAll(this.instrumentCheckClimaxController.checkClimaxMoveOneWeek(startDate, quotations));
         protocol.getProtocolEntries()
