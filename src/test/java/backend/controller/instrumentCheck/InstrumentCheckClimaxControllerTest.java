@@ -1,7 +1,10 @@
 package backend.controller.instrumentCheck;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.text.MessageFormat;
+import java.util.Calendar;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -9,6 +12,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import backend.controller.scan.IndicatorCalculator;
 import backend.dao.quotation.provider.QuotationProviderYahooDAO;
@@ -18,6 +22,9 @@ import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
+import backend.model.protocol.ProtocolEntry;
+import backend.model.protocol.ProtocolEntryCategory;
+import backend.tools.DateTools;
 
 /**
  * Tests the InstrumentCheckClimaxController.
@@ -114,6 +121,74 @@ public class InstrumentCheckClimaxControllerTest {
                 quotation = indicatorCalculator.calculateIndicators(instrument, quotation, true);
             else
                 quotation = indicatorCalculator.calculateIndicators(instrument, quotation, false);
+        }
+    }
+
+    @Test
+    /**
+     * Tests the check if Instrument has a climax movement within a week.
+     */
+    public void testCheckClimaxMoveOneWeek() {
+        ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
+        ProtocolEntry actualProtocolEntry;
+        List<ProtocolEntry> protocolEntries;
+        Calendar calendar = Calendar.getInstance();
+
+        // Define the expected protocol entry.
+        calendar.set(2022, 2, 2); // The day on which a climax of at least 25% within a week occurred: 02.03.22.
+        expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
+        expectedProtocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
+        expectedProtocolEntry
+                .setText(MessageFormat.format(this.resources.getString("protocol.climaxOneWeek"), "25,79"));
+
+        // Call controller to perform check.
+        calendar.set(2022, 1, 29); // Begin check on 29.02.22
+        try {
+            protocolEntries = this.instrumentCheckClimaxController.checkClimaxMoveOneWeek(calendar.getTime(),
+                    this.dmlQuotations);
+
+            // Verify the check result
+            assertEquals(1, protocolEntries.size());
+
+            // Validate the protocol entry
+            actualProtocolEntry = protocolEntries.get(0);
+            assertEquals(expectedProtocolEntry, actualProtocolEntry);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    /**
+     * Tests the check if Instrument has a climax movement within three weeks.
+     */
+    public void testCheckClimaxMoveThreeWeeks() {
+        ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
+        ProtocolEntry actualProtocolEntry;
+        List<ProtocolEntry> protocolEntries;
+        Calendar calendar = Calendar.getInstance();
+
+        // Define the expected protocol entry.
+        calendar.set(2021, 8, 16); // The day on which a climax of at least 25% within a week occurred: 16.09.21.
+        expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
+        expectedProtocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
+        expectedProtocolEntry
+                .setText(MessageFormat.format(this.resources.getString("protocol.climaxThreeWeeks"), "55,4"));
+
+        // Call controller to perform check.
+        calendar.set(2021, 8, 16); // Begin check on 16.09.21
+        try {
+            protocolEntries = this.instrumentCheckClimaxController.checkClimaxMoveThreeWeeks(calendar.getTime(),
+                    this.dmlQuotations);
+
+            // Verify the check result
+            assertEquals(1, protocolEntries.size());
+
+            // Validate the protocol entry
+            actualProtocolEntry = protocolEntries.get(0);
+            assertEquals(expectedProtocolEntry, actualProtocolEntry);
+        } catch (Exception e) {
+            fail(e.getMessage());
         }
     }
 }

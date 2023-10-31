@@ -1,21 +1,12 @@
 package backend.controller.instrumentCheck;
 
-import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.ResourceBundle;
 
 import backend.controller.NoQuotationsExistException;
-import backend.controller.scan.PerformanceCalculator;
 import backend.dao.DAOManager;
 import backend.dao.quotation.persistence.QuotationDAO;
-import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
 import backend.model.protocol.Protocol;
-import backend.model.protocol.ProtocolEntry;
-import backend.model.protocol.ProtocolEntryCategory;
-import backend.tools.DateTools;
 
 /**
  * Controller that performs Instrument health checks.
@@ -24,29 +15,9 @@ import backend.tools.DateTools;
  */
 public class InstrumentCheckController {
     /**
-     * The performance threshold of a climax move within one week.
-     */
-    private static final float CLIMAX_ONE_WEEK_THRESHOLD = 25;
-
-    /**
-     * The performance threshold of a climax move within three weeks.
-     */
-    private static final float CLIMAX_THREE_WEEKS_THRESHOLD = 50;
-
-    /**
-     * Access to localized application resources.
-     */
-    private ResourceBundle resources = ResourceBundle.getBundle("backend");
-
-    /**
      * DAO to access Quotation data of Instrument.
      */
     private QuotationDAO quotationDAO;
-
-    /**
-     * Performance calculator.
-     */
-    private PerformanceCalculator performanceCalculator;
 
     /**
      * Controller used for counting-related Instrument health checks.
@@ -69,17 +40,21 @@ public class InstrumentCheckController {
     private InstrumentCheckAverageController instrumentCheckAverageController;
 
     /**
+     * Controller for climax-related Instrument health checks.
+     */
+    private InstrumentCheckClimaxController instrumentCheckClimaxController;
+
+    /**
      * Default constructor.
      */
     public InstrumentCheckController() {
         this.quotationDAO = DAOManager.getInstance().getQuotationDAO();
 
-        this.performanceCalculator = new PerformanceCalculator();
-
         this.instrumentCheckCountingController = new InstrumentCheckCountingController();
         this.instrumentCheckExtremumController = new InstrumentCheckExtremumController();
         this.instrumentCheckPatternController = new InstrumentCheckPatternController();
         this.instrumentCheckAverageController = new InstrumentCheckAverageController();
+        this.instrumentCheckClimaxController = new InstrumentCheckClimaxController();
     }
 
     /**
@@ -136,105 +111,15 @@ public class InstrumentCheckController {
                 .addAll(this.instrumentCheckPatternController.checkChurning(startDate, quotations));
         protocol.getProtocolEntries()
                 .addAll(this.instrumentCheckCountingController.checkTimeClimax(startDate, quotations));
-        protocol.getProtocolEntries().addAll(this.checkClimaxMoveOneWeek(startDate, quotations));
-        protocol.getProtocolEntries().addAll(this.checkClimaxMoveThreeWeeks(startDate, quotations));
+        protocol.getProtocolEntries()
+                .addAll(this.instrumentCheckClimaxController.checkClimaxMoveOneWeek(startDate, quotations));
+        protocol.getProtocolEntries()
+                .addAll(this.instrumentCheckClimaxController.checkClimaxMoveThreeWeeks(startDate, quotations));
 
         protocol.sortEntriesByDate();
         protocol.calculatePercentages();
 
         return protocol;
-    }
-
-    /**
-     * Checks if the Instrument has a climax movement advancing at least 25% within a week or 50% within three weeks.
-     *
-     * @param startDate        The date at which the check starts.
-     * @param sortedQuotations The quotations sorted by date that build the trading history.
-     * @return List of ProtocolEntry, for all days on which a climactic advance is given.
-     * @throws Exception The check failed because data are not fully available or corrupt.
-     */
-    public List<ProtocolEntry> checkClimaxMoveOneWeek(final Date startDate, final QuotationArray sortedQuotations)
-            throws Exception {
-        int startIndex;
-        Quotation currentDayQuotation;
-        List<ProtocolEntry> protocolEntries = new ArrayList<>();
-        ProtocolEntry protocolEntry;
-        float performanceOneWeek = 0;
-        final int daysInWeek = 5;
-
-        startIndex = sortedQuotations.getIndexOfQuotationWithDate(startDate);
-
-        if (startIndex == -1) {
-            throw new Exception("Could not find a quotation at or after the given start date.");
-        }
-
-        for (int i = startIndex; i >= 0; i--) {
-            currentDayQuotation = sortedQuotations.getQuotations().get(i);
-
-            if (currentDayQuotation.getIndicator() == null) {
-                throw new Exception("No indicator is defined for Quotation with ID: " + currentDayQuotation.getId());
-            }
-
-            performanceOneWeek = this.performanceCalculator.getPricePerformanceForDays(daysInWeek, currentDayQuotation,
-                    sortedQuotations);
-
-            if (performanceOneWeek >= CLIMAX_ONE_WEEK_THRESHOLD) {
-                protocolEntry = new ProtocolEntry();
-                protocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
-                protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(currentDayQuotation.getDate()));
-                protocolEntry.setText(
-                        MessageFormat.format(this.resources.getString("protocol.climaxOneWeek"), performanceOneWeek));
-                protocolEntries.add(protocolEntry);
-            }
-        }
-
-        return protocolEntries;
-    }
-
-    /**
-     * Checks if the Instrument has a climax movement advancing at least 50% within three weeks.
-     *
-     * @param startDate        The date at which the check starts.
-     * @param sortedQuotations The quotations sorted by date that build the trading history.
-     * @return List of ProtocolEntry, for all days on which a climactic advance is given.
-     * @throws Exception The check failed because data are not fully available or corrupt.
-     */
-    public List<ProtocolEntry> checkClimaxMoveThreeWeeks(final Date startDate, final QuotationArray sortedQuotations)
-            throws Exception {
-        int startIndex;
-        Quotation currentDayQuotation;
-        List<ProtocolEntry> protocolEntries = new ArrayList<>();
-        ProtocolEntry protocolEntry;
-        float performanceThreeWeeks = 0;
-        final int daysInThreeWeeks = 15;
-
-        startIndex = sortedQuotations.getIndexOfQuotationWithDate(startDate);
-
-        if (startIndex == -1) {
-            throw new Exception("Could not find a quotation at or after the given start date.");
-        }
-
-        for (int i = startIndex; i >= 0; i--) {
-            currentDayQuotation = sortedQuotations.getQuotations().get(i);
-
-            if (currentDayQuotation.getIndicator() == null) {
-                throw new Exception("No indicator is defined for Quotation with ID: " + currentDayQuotation.getId());
-            }
-
-            performanceThreeWeeks = this.performanceCalculator.getPricePerformanceForDays(daysInThreeWeeks,
-                    currentDayQuotation, sortedQuotations);
-
-            if (performanceThreeWeeks >= CLIMAX_THREE_WEEKS_THRESHOLD) {
-                protocolEntry = new ProtocolEntry();
-                protocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
-                protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(currentDayQuotation.getDate()));
-                protocolEntry.setText(MessageFormat.format(this.resources.getString("protocol.climaxThreeWeeks"),
-                        performanceThreeWeeks));
-                protocolEntries.add(protocolEntry);
-            }
-        }
-
-        return protocolEntries;
     }
 
     /**
