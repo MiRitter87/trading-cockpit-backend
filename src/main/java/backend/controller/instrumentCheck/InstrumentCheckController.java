@@ -123,6 +123,85 @@ public class InstrumentCheckController {
     }
 
     /**
+     * Checks the health of the given Instrument beginning at the given start date. The executed health check methods
+     * depend on the given HealthCheckProfile.
+     *
+     * @param instrumentId The id of the Instrument.
+     * @param startDate    The start date of the health check.
+     * @param profile      The HealthCheckProfile that is used.
+     * @return A protocol containing the health information from the start date until the most recent quotation.
+     * @throws NoQuotationsExistException Exception indicating no Quotations exist at and after given start date.
+     * @throws Exception                  Health check failed.
+     */
+    public Protocol checkInstrumentWithProfile(final Integer instrumentId, final Date startDate,
+            final HealthCheckProfile profile) throws NoQuotationsExistException, Exception {
+
+        QuotationArray quotations = new QuotationArray(this.quotationDAO.getQuotationsOfInstrument(instrumentId));
+        Protocol protocol = new Protocol();
+
+        quotations.sortQuotationsByDate();
+        this.checkQuotationsExistAfterStartDate(startDate, quotations);
+
+        switch (profile) {
+        case CONFIRMATIONS:
+            this.checkConfirmations(startDate, quotations, protocol);
+            break;
+        case SELLING_INTO_STRENGTH:
+            this.checkSellingIntoStrength(startDate, quotations, protocol);
+            break;
+        case SELLING_INTO_WEAKNESS:
+            this.checkSellingIntoWeakness(startDate, quotations, protocol);
+            break;
+        default:
+            break;
+        }
+
+        return protocol;
+    }
+
+    /**
+     * Checks for price and volume action that confirms an up-trend.
+     *
+     * @param startDate  The start date of the health check.
+     * @param quotations The quotations that build the trading history of an Instrument.
+     * @param protocol   The Protocol to which possible events are added.
+     * @throws Exception Health check failed.
+     */
+    private void checkConfirmations(final Date startDate, final QuotationArray quotations, final Protocol protocol)
+            throws Exception {
+
+        // TODO Implement method
+    }
+
+    /**
+     * Checks for price and volume action that advises to sell into strength.
+     *
+     * @param startDate  The start date of the health check.
+     * @param quotations The quotations that build the trading history of an Instrument.
+     * @param protocol   The Protocol to which possible events are added.
+     * @throws Exception Health check failed.
+     */
+    private void checkSellingIntoStrength(final Date startDate, final QuotationArray quotations,
+            final Protocol protocol) throws Exception {
+
+        // TODO Implement method
+    }
+
+    /**
+     * Checks for price and volume action that advises to sell into weakness.
+     *
+     * @param startDate  The start date of the health check.
+     * @param quotations The quotations that build the trading history of an Instrument.
+     * @param protocol   The Protocol to which possible events are added.
+     * @throws Exception Health check failed.
+     */
+    private void checkSellingIntoWeakness(final Date startDate, final QuotationArray quotations,
+            final Protocol protocol) throws Exception {
+
+        // TODO Implement method
+    }
+
+    /**
      * Checks if quotations exist at and after the given start date.
      *
      * @param startDate  The start date.
