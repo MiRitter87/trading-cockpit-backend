@@ -5,8 +5,10 @@ import java.util.Date;
 import backend.controller.NoQuotationsExistException;
 import backend.dao.DAOManager;
 import backend.dao.quotation.persistence.QuotationDAO;
+import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
 import backend.model.protocol.Protocol;
+import backend.tools.DateTools;
 
 /**
  * Controller that performs Instrument health checks.
@@ -212,5 +214,34 @@ public class InstrumentCheckController {
         if (indexOfQuotationWithDate == -1) {
             throw new NoQuotationsExistException(startDate);
         }
+    }
+
+    /**
+     * Determines the start date for Instrument health checks.
+     *
+     * @param lookbackPeriod The number of days taken into account for health check routines.
+     * @param quotations     The list of quotations.
+     * @return The start date.
+     */
+    public Date getStartDate(final Integer lookbackPeriod, final QuotationArray quotations) {
+        Date date;
+        Quotation quotation;
+        int sizeOfQuotations = quotations.getQuotations().size();
+
+        if (sizeOfQuotations == 0) {
+            return null;
+        }
+
+        quotations.sortQuotationsByDate();
+
+        if (sizeOfQuotations < lookbackPeriod) {
+            quotation = quotations.getQuotations().get(sizeOfQuotations - 1);
+        } else {
+            quotation = quotations.getQuotations().get(lookbackPeriod - 1);
+        }
+
+        date = DateTools.getDateWithoutIntradayAttributes(quotation.getDate());
+
+        return date;
     }
 }

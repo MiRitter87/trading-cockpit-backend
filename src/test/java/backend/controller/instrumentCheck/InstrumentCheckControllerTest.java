@@ -1,8 +1,10 @@
 package backend.controller.instrumentCheck;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
@@ -20,6 +22,7 @@ import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
+import backend.tools.DateTools;
 
 /**
  * Tests the InstrumentCheckController.
@@ -129,5 +132,22 @@ public class InstrumentCheckControllerTest {
         } catch (NoQuotationsExistException expected) {
             // All is well.
         }
+    }
+
+    @Test
+    /**
+     * Checks if the start date is properly determined based on a lookback period and a list of quotations.
+     */
+    public void testGetStartDate() {
+        Calendar calendar = Calendar.getInstance();
+        final int lookbackPeriod = 15;
+        final Date expectedStartDate;
+        final Date actualStartDate;
+
+        calendar.set(2022, 6, 4); // 04.07.22
+        expectedStartDate = DateTools.getDateWithoutIntradayAttributes(calendar.getTime());
+
+        actualStartDate = this.instrumentCheckController.getStartDate(lookbackPeriod, this.dmlQuotations);
+        assertEquals(expectedStartDate, actualStartDate);
     }
 }
