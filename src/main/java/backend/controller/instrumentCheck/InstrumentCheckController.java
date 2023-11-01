@@ -74,47 +74,9 @@ public class InstrumentCheckController {
         quotations.sortQuotationsByDate();
         this.checkQuotationsExistAfterStartDate(startDate, quotations);
 
-        // Confirmations
-        protocol.getProtocolEntries()
-                .addAll(this.instrumentCheckCountingController.checkMoreUpThanDownDays(startDate, quotations));
-        protocol.getProtocolEntries()
-                .addAll(this.instrumentCheckCountingController.checkMoreGoodThanBadCloses(startDate, quotations));
-        protocol.getProtocolEntries()
-                .addAll(this.instrumentCheckPatternController.checkUpOnVolume(startDate, quotations));
-
-        // Violations
-        protocol.getProtocolEntries()
-                .addAll(this.instrumentCheckAverageController.checkCloseBelowSma50(startDate, quotations));
-        protocol.getProtocolEntries()
-                .addAll(this.instrumentCheckAverageController.checkCloseBelowEma21(startDate, quotations));
-        protocol.getProtocolEntries()
-                .addAll(this.instrumentCheckExtremumController.checkLargestDownDay(startDate, quotations));
-        protocol.getProtocolEntries()
-                .addAll(this.instrumentCheckCountingController.checkMoreDownThanUpDays(startDate, quotations));
-        protocol.getProtocolEntries()
-                .addAll(this.instrumentCheckCountingController.checkMoreBadThanGoodCloses(startDate, quotations));
-        protocol.getProtocolEntries()
-                .addAll(this.instrumentCheckPatternController.checkDownOnVolume(startDate, quotations));
-        protocol.getProtocolEntries()
-                .addAll(this.instrumentCheckPatternController.checkHighVolumeReversal(startDate, quotations));
-        protocol.getProtocolEntries()
-                .addAll(this.instrumentCheckCountingController.checkThreeLowerCloses(startDate, quotations));
-
-        // Uncertain
-        protocol.getProtocolEntries()
-                .addAll(this.instrumentCheckExtremumController.checkLargestUpDay(startDate, quotations));
-        protocol.getProtocolEntries()
-                .addAll(this.instrumentCheckExtremumController.checkLargestDailySpread(startDate, quotations));
-        protocol.getProtocolEntries()
-                .addAll(this.instrumentCheckExtremumController.checkLargestDailyVolume(startDate, quotations));
-        protocol.getProtocolEntries()
-                .addAll(this.instrumentCheckPatternController.checkChurning(startDate, quotations));
-        protocol.getProtocolEntries()
-                .addAll(this.instrumentCheckClimaxController.checkTimeClimax(startDate, quotations));
-        protocol.getProtocolEntries()
-                .addAll(this.instrumentCheckClimaxController.checkClimaxMoveOneWeek(startDate, quotations));
-        protocol.getProtocolEntries()
-                .addAll(this.instrumentCheckClimaxController.checkClimaxMoveThreeWeeks(startDate, quotations));
+        this.checkConfirmations(startDate, quotations, protocol);
+        this.checkSellingIntoWeakness(startDate, quotations, protocol);
+        this.checkSellingIntoStrength(startDate, quotations, protocol);
 
         protocol.sortEntriesByDate();
         protocol.calculatePercentages();
@@ -156,6 +118,8 @@ public class InstrumentCheckController {
             break;
         }
 
+        protocol.sortEntriesByDate();
+
         return protocol;
     }
 
@@ -170,7 +134,12 @@ public class InstrumentCheckController {
     private void checkConfirmations(final Date startDate, final QuotationArray quotations, final Protocol protocol)
             throws Exception {
 
-        // TODO Implement method
+        protocol.getProtocolEntries()
+                .addAll(this.instrumentCheckCountingController.checkMoreUpThanDownDays(startDate, quotations));
+        protocol.getProtocolEntries()
+                .addAll(this.instrumentCheckCountingController.checkMoreGoodThanBadCloses(startDate, quotations));
+        protocol.getProtocolEntries()
+                .addAll(this.instrumentCheckPatternController.checkUpOnVolume(startDate, quotations));
     }
 
     /**
@@ -184,7 +153,20 @@ public class InstrumentCheckController {
     private void checkSellingIntoStrength(final Date startDate, final QuotationArray quotations,
             final Protocol protocol) throws Exception {
 
-        // TODO Implement method
+        protocol.getProtocolEntries()
+                .addAll(this.instrumentCheckExtremumController.checkLargestUpDay(startDate, quotations));
+        protocol.getProtocolEntries()
+                .addAll(this.instrumentCheckExtremumController.checkLargestDailySpread(startDate, quotations));
+        protocol.getProtocolEntries()
+                .addAll(this.instrumentCheckExtremumController.checkLargestDailyVolume(startDate, quotations));
+        protocol.getProtocolEntries()
+                .addAll(this.instrumentCheckPatternController.checkChurning(startDate, quotations));
+        protocol.getProtocolEntries()
+                .addAll(this.instrumentCheckClimaxController.checkTimeClimax(startDate, quotations));
+        protocol.getProtocolEntries()
+                .addAll(this.instrumentCheckClimaxController.checkClimaxMoveOneWeek(startDate, quotations));
+        protocol.getProtocolEntries()
+                .addAll(this.instrumentCheckClimaxController.checkClimaxMoveThreeWeeks(startDate, quotations));
     }
 
     /**
@@ -198,7 +180,22 @@ public class InstrumentCheckController {
     private void checkSellingIntoWeakness(final Date startDate, final QuotationArray quotations,
             final Protocol protocol) throws Exception {
 
-        // TODO Implement method
+        protocol.getProtocolEntries()
+                .addAll(this.instrumentCheckAverageController.checkCloseBelowSma50(startDate, quotations));
+        protocol.getProtocolEntries()
+                .addAll(this.instrumentCheckAverageController.checkCloseBelowEma21(startDate, quotations));
+        protocol.getProtocolEntries()
+                .addAll(this.instrumentCheckExtremumController.checkLargestDownDay(startDate, quotations));
+        protocol.getProtocolEntries()
+                .addAll(this.instrumentCheckCountingController.checkMoreDownThanUpDays(startDate, quotations));
+        protocol.getProtocolEntries()
+                .addAll(this.instrumentCheckCountingController.checkMoreBadThanGoodCloses(startDate, quotations));
+        protocol.getProtocolEntries()
+                .addAll(this.instrumentCheckPatternController.checkDownOnVolume(startDate, quotations));
+        protocol.getProtocolEntries()
+                .addAll(this.instrumentCheckPatternController.checkHighVolumeReversal(startDate, quotations));
+        protocol.getProtocolEntries()
+                .addAll(this.instrumentCheckCountingController.checkThreeLowerCloses(startDate, quotations));
     }
 
     /**
