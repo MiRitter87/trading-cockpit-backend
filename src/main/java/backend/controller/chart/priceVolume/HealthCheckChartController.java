@@ -1,17 +1,25 @@
 package backend.controller.chart.priceVolume;
 
 import java.util.Date;
+import java.util.List;
 
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.DateAxis;
+import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.CombinedDomainXYPlot;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYBarRenderer;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesCollection;
+import org.jfree.data.xy.IntervalXYDataset;
 
 import backend.controller.NoQuotationsExistException;
 import backend.controller.instrumentCheck.HealthCheckProfile;
 import backend.controller.instrumentCheck.InstrumentCheckController;
 import backend.model.instrument.Instrument;
+import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
 import backend.model.protocol.Protocol;
 
@@ -70,12 +78,16 @@ public class HealthCheckChartController extends PriceVolumeChartController {
             final HealthCheckProfile profile, final Integer lookbackPeriod) throws Exception {
 
         Protocol healthProtocol = this.getHealthProtocol(instrument, profile, lookbackPeriod);
+        IntervalXYDataset healthEventData = this.getHealthEventDataset(instrument, healthProtocol);
+        NumberAxis healthEventAxis = new NumberAxis();
 
-        // 2. Evaluate protocol and build plot dataset
+        XYBarRenderer healthEventRenderer = new XYBarRenderer();
+        healthEventRenderer.setShadowVisible(false);
 
-        // 3. Construct plot based on dataset
+        XYPlot healthEventSubplot = new XYPlot(healthEventData, timeAxis, healthEventAxis, healthEventRenderer);
+        healthEventSubplot.setRangeAxisLocation(AxisLocation.TOP_OR_RIGHT);
 
-        return null;
+        return healthEventSubplot;
     }
 
     /**
@@ -102,5 +114,31 @@ public class HealthCheckChartController extends PriceVolumeChartController {
                 profile);
 
         return healthCheckProtocol;
+    }
+
+    /**
+     * Gets a dataset containing the daily sum of health check events of the given Instrument.
+     *
+     * @param instrument The Instrument.
+     * @param protocol   The Protocol that contains the health check events.
+     * @return A dataset containing the daily sum of health check events.
+     * @throws Exception Dataset creation failed.
+     */
+    private IntervalXYDataset getHealthEventDataset(final Instrument instrument, final Protocol protocol)
+            throws Exception {
+
+        List<Quotation> quotationsSortedByDate = instrument.getQuotationsSortedByDate();
+        TimeSeriesCollection dataset = new TimeSeriesCollection();
+        TimeSeries healthEventTimeSeries = new TimeSeries(
+                this.getResources().getString("chart.healthCheck.timeSeriesEventName"));
+
+        // TODO Loop all quotations. Check for each quotation how many protocol entries exist.
+        for (Quotation tempQuotation : quotationsSortedByDate) {
+            // TODO call method like protocol.getEntriesOfDate(tempQuotation.getDate())
+        }
+
+        dataset.addSeries(healthEventTimeSeries);
+
+        return dataset;
     }
 }
