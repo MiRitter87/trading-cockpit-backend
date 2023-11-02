@@ -1,5 +1,7 @@
 package backend.controller.chart.priceVolume;
 
+import java.util.Date;
+
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.ValueAxis;
@@ -8,7 +10,10 @@ import org.jfree.chart.plot.XYPlot;
 
 import backend.controller.NoQuotationsExistException;
 import backend.controller.instrumentCheck.HealthCheckProfile;
+import backend.controller.instrumentCheck.InstrumentCheckController;
 import backend.model.instrument.Instrument;
+import backend.model.instrument.QuotationArray;
+import backend.model.protocol.Protocol;
 
 /**
  * Controller for the creation of a chart displaying an Instrument with health check events.
@@ -64,7 +69,7 @@ public class HealthCheckChartController extends PriceVolumeChartController {
     private XYPlot getHealthPlot(final Instrument instrument, final ValueAxis timeAxis,
             final HealthCheckProfile profile, final Integer lookbackPeriod) throws Exception {
 
-        // 1. Perform health check based on given profile
+        Protocol healthProtocol = this.getHealthProtocol(instrument, profile, lookbackPeriod);
 
         // 2. Evaluate protocol and build plot dataset
 
@@ -73,4 +78,29 @@ public class HealthCheckChartController extends PriceVolumeChartController {
         return null;
     }
 
+    /**
+     * Performs a health check and returns the Protocol.
+     *
+     * @param instrument     The Instrument.
+     * @param profile        The HealthCheckProfile that is used.
+     * @param lookbackPeriod The number of days taken into account for health check routines.
+     * @return The Protocol.
+     * @throws Exception Failed to perform health check.
+     */
+    private Protocol getHealthProtocol(final Instrument instrument, final HealthCheckProfile profile,
+            final Integer lookbackPeriod) throws Exception {
+
+        InstrumentCheckController instrumentCheckController = new InstrumentCheckController();
+        QuotationArray sortedQuotations = instrument.getQuotationArray();
+        Date startDate;
+        Protocol healthCheckProtocol;
+
+        sortedQuotations.sortQuotationsByDate();
+        startDate = instrumentCheckController.getStartDate(lookbackPeriod, sortedQuotations);
+
+        healthCheckProtocol = instrumentCheckController.checkInstrumentWithProfile(instrument.getId(), startDate,
+                profile);
+
+        return healthCheckProtocol;
+    }
 }
