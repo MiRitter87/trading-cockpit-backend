@@ -11,6 +11,7 @@ import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.CombinedDomainXYPlot;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
+import org.jfree.data.time.Day;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.IntervalXYDataset;
@@ -22,6 +23,7 @@ import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
 import backend.model.protocol.Protocol;
+import backend.model.protocol.ProtocolEntry;
 
 /**
  * Controller for the creation of a chart displaying an Instrument with health check events.
@@ -131,10 +133,11 @@ public class HealthCheckChartController extends PriceVolumeChartController {
         TimeSeriesCollection dataset = new TimeSeriesCollection();
         TimeSeries healthEventTimeSeries = new TimeSeries(
                 this.getResources().getString("chart.healthCheck.timeSeriesEventName"));
+        List<ProtocolEntry> entriesOfDate;
 
-        // TODO Loop all quotations. Check for each quotation how many protocol entries exist.
         for (Quotation tempQuotation : quotationsSortedByDate) {
-            // TODO call method like protocol.getEntriesOfDate(tempQuotation.getDate())
+            entriesOfDate = protocol.getEntriesOfDate(tempQuotation.getDate());
+            healthEventTimeSeries.add(new Day(tempQuotation.getDate()), entriesOfDate.size());
         }
 
         dataset.addSeries(healthEventTimeSeries);
