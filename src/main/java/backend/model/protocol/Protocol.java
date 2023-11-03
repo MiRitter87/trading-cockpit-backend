@@ -4,8 +4,10 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
+import backend.tools.DateTools;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlElementWrapper;
 
@@ -105,6 +107,31 @@ public class Protocol {
      */
     public void sortEntriesByDate() {
         Collections.sort(this.protocolEntries, new ProtocolEntryDateComparator());
+    }
+
+    /**
+     * Determines all protocol entries of the given date. Intraday attributes (hours, minutes, seconds, ...) of the date
+     * are not taken into account.
+     *
+     * @param date The date.
+     * @return A List of protocol entries of the given date.
+     */
+    public List<ProtocolEntry> getEntriesOfDate(final Date date) {
+        List<ProtocolEntry> entriesOfDate = new ArrayList<>();
+        Date inputDate;
+        Date entryDate;
+
+        inputDate = DateTools.getDateWithoutIntradayAttributes(date);
+
+        for (ProtocolEntry entry : this.protocolEntries) {
+            entryDate = DateTools.getDateWithoutIntradayAttributes(entry.getDate());
+
+            if (entryDate.getTime() == inputDate.getTime()) {
+                entriesOfDate.add(entry);
+            }
+        }
+
+        return entriesOfDate;
     }
 
     /**

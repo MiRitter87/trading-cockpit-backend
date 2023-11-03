@@ -1,10 +1,16 @@
 package backend.model.protocol;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import backend.tools.DateTools;
 
 /**
  * Tests the Protocol model.
@@ -62,5 +68,29 @@ public class ProtocolTest {
      */
     private void tearDown() {
         this.protocol = null;
+    }
+
+    @Test
+    /**
+     * Tests the retrieval of protocol entries by a given date.
+     */
+    public void testGetEntriesOfDate() {
+        Calendar calendar = Calendar.getInstance();
+        List<ProtocolEntry> protocolEntries;
+        int expectedNumberOfEntries = 3;
+        Date expectedDate;
+        Date actualDate;
+
+        calendar.set(2023, 10, 2);
+        protocolEntries = this.protocol.getEntriesOfDate(calendar.getTime());
+
+        assertEquals(expectedNumberOfEntries, protocolEntries.size());
+
+        expectedDate = DateTools.getDateWithoutIntradayAttributes(calendar.getTime());
+
+        for(ProtocolEntry entry: protocolEntries) {
+            actualDate = DateTools.getDateWithoutIntradayAttributes(entry.getDate());
+            assertEquals(expectedDate, actualDate);
+        }
     }
 }
