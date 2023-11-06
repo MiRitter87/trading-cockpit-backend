@@ -105,25 +105,36 @@ public class InstrumentCheckExtremumController {
      * Checks for the largest daily high/low-spread of the year. The check begins at the start date and goes up until
      * the most recent Quotation.
      *
-     * @param startDate  The date at which the check starts.
-     * @param quotations The quotations that build the trading history.
+     * @param startDate        The date at which the check starts.
+     * @param sortedQuotations The quotations that build the trading history.
      * @return List of ProtocolEntry, for the day of the largest high/low-spread of the year after the start date.
      * @throws Exception The check failed because data are not fully available or corrupt.
      */
-    public List<ProtocolEntry> checkLargestDailySpread(final Date startDate, final QuotationArray quotations)
+    public List<ProtocolEntry> checkLargestDailySpread(final Date startDate, final QuotationArray sortedQuotations)
             throws Exception {
+        int startIndex;
+        Quotation currentQuotation;
         Quotation largestSpreadQuotation;
         List<ProtocolEntry> protocolEntries = new ArrayList<>();
         ProtocolEntry protocolEntry;
 
-        largestSpreadQuotation = this.getLargestDailySpread(quotations.getQuotations());
+        startIndex = sortedQuotations.getIndexOfQuotationWithDate(startDate);
 
-        if (largestSpreadQuotation.getDate().getTime() >= startDate.getTime()) {
-            protocolEntry = new ProtocolEntry();
-            protocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
-            protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(largestSpreadQuotation.getDate()));
-            protocolEntry.setText(this.resources.getString("protocol.largestDailySpread"));
-            protocolEntries.add(protocolEntry);
+        if (startIndex == -1) {
+            throw new Exception("Could not find a quotation at or after the given start date.");
+        }
+
+        for (int i = startIndex; i >= 0; i--) {
+            currentQuotation = sortedQuotations.getQuotations().get(i);
+            largestSpreadQuotation = this.getLargestDailySpread(sortedQuotations.getQuotations(), currentQuotation);
+
+            if (largestSpreadQuotation.equals(currentQuotation)) {
+                protocolEntry = new ProtocolEntry();
+                protocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
+                protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(largestSpreadQuotation.getDate()));
+                protocolEntry.setText(this.resources.getString("protocol.largestDailySpread"));
+                protocolEntries.add(protocolEntry);
+            }
         }
 
         return protocolEntries;
@@ -227,18 +238,24 @@ public class InstrumentCheckExtremumController {
     }
 
     /**
-     * Determines the largest daily high/low-spread of the given trading history.
+     * Determines the largest daily high/low-spread of the given trading history. The checks are performed up until the
+     * given endQuotation. Quotations afterwards are not taken into account.
      *
-     * @param quotations A list of quotations.
+     * @param quotations   A list of quotations.
+     * @param endQuotation The latest Quotation for which the check is executed.
      * @return The Quotation with the largest daily high/low-spread.
      */
-    private Quotation getLargestDailySpread(final List<Quotation> quotations) {
+    private Quotation getLargestDailySpread(final List<Quotation> quotations, final Quotation endQuotation) {
         float largestDailySpread = 0;
         float currentSpread;
         Quotation largestSpreadQuotation = null;
 
         // Determine the Quotation with the largest daily high/low-spread.
         for (Quotation currentQuotation : quotations) {
+            if (currentQuotation.getDate().getTime() > endQuotation.getDate().getTime()) {
+                continue;
+            }
+
             currentSpread = currentQuotation.getHigh().floatValue() - currentQuotation.getLow().floatValue();
 
             if (currentSpread > largestDailySpread) {

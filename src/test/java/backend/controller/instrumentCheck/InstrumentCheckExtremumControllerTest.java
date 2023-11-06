@@ -196,16 +196,22 @@ public class InstrumentCheckExtremumControllerTest {
      * Tests the check if Instrument had largest daily high/low-spread of the year.
      */
     public void testCheckLargestDailySpread() {
-        ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
+        ProtocolEntry expectedProtocolEntry1 = new ProtocolEntry();
+        ProtocolEntry expectedProtocolEntry2 = new ProtocolEntry();
         ProtocolEntry actualProtocolEntry;
         List<ProtocolEntry> protocolEntries;
         Calendar calendar = Calendar.getInstance();
 
-        // Define the expected protocol entry.
-        calendar.set(2022, 2, 9); // Largest daily high/low-spread is on 09.03.22.
-        expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
-        expectedProtocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
-        expectedProtocolEntry.setText(this.resources.getString("protocol.largestDailySpread"));
+        // Define the expected protocol entries.
+        calendar.set(2021, 9, 12); // Largest daily high/low-spread occurred on 12.10.21.
+        expectedProtocolEntry1.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
+        expectedProtocolEntry1.setCategory(ProtocolEntryCategory.UNCERTAIN);
+        expectedProtocolEntry1.setText(this.resources.getString("protocol.largestDailySpread"));
+
+        calendar.set(2022, 2, 9); // A new largest daily high/low-spread occurred on 09.03.22.
+        expectedProtocolEntry2.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
+        expectedProtocolEntry2.setCategory(ProtocolEntryCategory.UNCERTAIN);
+        expectedProtocolEntry2.setText(this.resources.getString("protocol.largestDailySpread"));
 
         // Call controller to perform check.
         calendar.set(2021, 9, 1); // Begin check on 01.10.21.
@@ -214,11 +220,14 @@ public class InstrumentCheckExtremumControllerTest {
                     this.dmlQuotations);
 
             // Verify the check result.
-            assertEquals(1, protocolEntries.size());
+            assertEquals(2, protocolEntries.size());
 
-            // Validate the protocol entry.
+            // Validate the protocol entries.
             actualProtocolEntry = protocolEntries.get(0);
-            assertEquals(expectedProtocolEntry, actualProtocolEntry);
+            assertEquals(expectedProtocolEntry1, actualProtocolEntry);
+
+            actualProtocolEntry = protocolEntries.get(1);
+            assertEquals(expectedProtocolEntry2, actualProtocolEntry);
         } catch (Exception e) {
             fail(e.getMessage());
         }
