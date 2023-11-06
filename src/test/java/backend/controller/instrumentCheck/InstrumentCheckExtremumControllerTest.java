@@ -169,7 +169,7 @@ public class InstrumentCheckExtremumControllerTest {
         Calendar calendar = Calendar.getInstance();
 
         // Define the expected protocol entry.
-        calendar.set(2021, 9, 12); // Largest down day is 12.10.21 (19,41%)
+        calendar.set(2021, 9, 12); // Largest up day is 12.10.21 (19,41%)
         expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
         expectedProtocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
         expectedProtocolEntry.setText(MessageFormat.format(this.resources.getString("protocol.largestUpDay"), "19,41"));

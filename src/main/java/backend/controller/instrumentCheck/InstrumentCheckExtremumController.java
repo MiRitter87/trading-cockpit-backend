@@ -80,22 +80,33 @@ public class InstrumentCheckExtremumController {
      */
     public List<ProtocolEntry> checkLargestUpDay(final Date startDate, final QuotationArray sortedQuotations)
             throws Exception {
+        int startIndex;
+        Quotation currentQuotation;
         Quotation largestUpQuotation;
         List<ProtocolEntry> protocolEntries = new ArrayList<>();
         ProtocolEntry protocolEntry;
         float largestUpDayPerformance;
 
-        largestUpQuotation = this.getLargestUpDay(sortedQuotations);
-        largestUpDayPerformance = this.performanceCalculator.getPricePerformanceForDays(1, largestUpQuotation,
-                sortedQuotations);
+        startIndex = sortedQuotations.getIndexOfQuotationWithDate(startDate);
 
-        if (largestUpQuotation.getDate().getTime() >= startDate.getTime()) {
-            protocolEntry = new ProtocolEntry();
-            protocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
-            protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(largestUpQuotation.getDate()));
-            protocolEntry.setText(
-                    MessageFormat.format(this.resources.getString("protocol.largestUpDay"), largestUpDayPerformance));
-            protocolEntries.add(protocolEntry);
+        if (startIndex == -1) {
+            throw new Exception("Could not find a quotation at or after the given start date.");
+        }
+
+        for (int i = startIndex; i >= 0; i--) {
+            currentQuotation = sortedQuotations.getQuotations().get(i);
+            largestUpQuotation = this.getLargestUpDay(sortedQuotations.getQuotations(), currentQuotation);
+            largestUpDayPerformance = this.performanceCalculator.getPricePerformanceForDays(1, largestUpQuotation,
+                    sortedQuotations);
+
+            if (largestUpQuotation.equals(currentQuotation)) {
+                protocolEntry = new ProtocolEntry();
+                protocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
+                protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(largestUpQuotation.getDate()));
+                protocolEntry.setText(MessageFormat.format(this.resources.getString("protocol.largestUpDay"),
+                        largestUpDayPerformance));
+                protocolEntries.add(protocolEntry);
+            }
         }
 
         return protocolEntries;
@@ -209,12 +220,14 @@ public class InstrumentCheckExtremumController {
     }
 
     /**
-     * Determines the largest up-day of the given trading history.
+     * Determines the largest up-day of the given trading history. The checks are performed up until the given
+     * endQuotation. Quotations afterwards are not taken into account.
      *
-     * @param sortedQuotations The quotations sorted by date that build the trading history.
+     * @param quotations   A list of quotations sorted by date that build the trading history.
+     * @param endQuotation The latest Quotation for which the check is executed.
      * @return The Quotation of the largest up-day.
      */
-    private Quotation getLargestUpDay(final QuotationArray sortedQuotations) {
+    private Quotation getLargestUpDay(final List<Quotation> quotations, final Quotation endQuotation) {
         float largestUpPerformance = 0;
         float performance;
         Quotation largestUpQuotation = null;
@@ -222,9 +235,13 @@ public class InstrumentCheckExtremumController {
         Quotation previousQuotation;
 
         // Determine the Quotation with the largest positive performance.
-        for (int i = 0; i < sortedQuotations.getQuotations().size() - 1; i++) {
-            currentQuotation = sortedQuotations.getQuotations().get(i);
-            previousQuotation = sortedQuotations.getQuotations().get(i + 1);
+        for (int i = 0; i < quotations.size() - 2; i++) {
+            currentQuotation = quotations.get(i);
+            previousQuotation = quotations.get(i + 1);
+
+            if (currentQuotation.getDate().getTime() > endQuotation.getDate().getTime()) {
+                continue;
+            }
 
             performance = this.performanceCalculator.getPerformance(currentQuotation, previousQuotation);
 
@@ -241,7 +258,7 @@ public class InstrumentCheckExtremumController {
      * Determines the largest daily high/low-spread of the given trading history. The checks are performed up until the
      * given endQuotation. Quotations afterwards are not taken into account.
      *
-     * @param quotations   A list of quotations.
+     * @param quotations   A list of quotations sorted by date that build the trading history.
      * @param endQuotation The latest Quotation for which the check is executed.
      * @return The Quotation with the largest daily high/low-spread.
      */
@@ -271,7 +288,7 @@ public class InstrumentCheckExtremumController {
      * Determines the largest daily volume of the given trading history. The checks are performed up until the given
      * endQuotation. Quotations afterwards are not taken into account.
      *
-     * @param quotations   A list of quotations.
+     * @param quotations   A list of quotations sorted by date that build the trading history.
      * @param endQuotation The latest Quotation for which the check is executed.
      * @return The Quotation with the largest daily volume.
      */
