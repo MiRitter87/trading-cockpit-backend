@@ -133,25 +133,36 @@ public class InstrumentCheckExtremumController {
      * Checks for the largest daily volume of the year. The check begins at the start date and goes up until the most
      * recent Quotation.
      *
-     * @param startDate  The date at which the check starts.
-     * @param quotations The quotations that build the trading history.
+     * @param startDate        The date at which the check starts.
+     * @param sortedQuotations The quotations that build the trading history.
      * @return List of ProtocolEntry, for the day of the largest volume of the year after the start date.
      * @throws Exception The check failed because data are not fully available or corrupt.
      */
-    public List<ProtocolEntry> checkLargestDailyVolume(final Date startDate, final QuotationArray quotations)
+    public List<ProtocolEntry> checkLargestDailyVolume(final Date startDate, final QuotationArray sortedQuotations)
             throws Exception {
+        int startIndex;
+        Quotation currentQuotation;
         Quotation largestVolumeQuotation;
         List<ProtocolEntry> protocolEntries = new ArrayList<>();
         ProtocolEntry protocolEntry;
 
-        largestVolumeQuotation = this.getLargestDailyVolume(quotations.getQuotations());
+        startIndex = sortedQuotations.getIndexOfQuotationWithDate(startDate);
 
-        if (largestVolumeQuotation.getDate().getTime() >= startDate.getTime()) {
-            protocolEntry = new ProtocolEntry();
-            protocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
-            protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(largestVolumeQuotation.getDate()));
-            protocolEntry.setText(this.resources.getString("protocol.largestDailyVolume"));
-            protocolEntries.add(protocolEntry);
+        if (startIndex == -1) {
+            throw new Exception("Could not find a quotation at or after the given start date.");
+        }
+
+        for (int i = startIndex; i >= 0; i--) {
+            currentQuotation = sortedQuotations.getQuotations().get(i);
+            largestVolumeQuotation = this.getLargestDailyVolume(sortedQuotations.getQuotations(), currentQuotation);
+
+            if (largestVolumeQuotation.equals(currentQuotation)) {
+                protocolEntry = new ProtocolEntry();
+                protocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
+                protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(largestVolumeQuotation.getDate()));
+                protocolEntry.setText(this.resources.getString("protocol.largestDailyVolume"));
+                protocolEntries.add(protocolEntry);
+            }
         }
 
         return protocolEntries;
@@ -240,17 +251,23 @@ public class InstrumentCheckExtremumController {
     }
 
     /**
-     * Determines the largest daily volume of the given trading history.
+     * Determines the largest daily volume of the given trading history. The checks are performed up until the given
+     * endQuotation. Quotations afterwards are not taken into account.
      *
-     * @param quotations A list of quotations.
+     * @param quotations   A list of quotations.
+     * @param endQuotation The latest Quotation for which the check is executed.
      * @return The Quotation with the largest daily volume.
      */
-    private Quotation getLargestDailyVolume(final List<Quotation> quotations) {
+    private Quotation getLargestDailyVolume(final List<Quotation> quotations, final Quotation endQuotation) {
         long largestDailyVolume = 0;
         Quotation largestVolumeQuotation = null;
 
         // Determine the Quotation with the largest daily volume.
         for (Quotation currentQuotation : quotations) {
+            if (currentQuotation.getDate().getTime() > endQuotation.getDate().getTime()) {
+                continue;
+            }
+
             if (currentQuotation.getVolume() > largestDailyVolume) {
                 largestDailyVolume = currentQuotation.getVolume();
                 largestVolumeQuotation = currentQuotation;
