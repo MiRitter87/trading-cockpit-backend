@@ -48,22 +48,33 @@ public class InstrumentCheckExtremumController {
      */
     public List<ProtocolEntry> checkLargestDownDay(final Date startDate, final QuotationArray sortedQuotations)
             throws Exception {
+        int startIndex;
+        Quotation currentQuotation;
         Quotation largestDownQuotation;
         List<ProtocolEntry> protocolEntries = new ArrayList<>();
         ProtocolEntry protocolEntry;
         float largestDownDayPerformance;
 
-        largestDownQuotation = this.getLargestDownDay(sortedQuotations);
-        largestDownDayPerformance = this.performanceCalculator.getPricePerformanceForDays(1, largestDownQuotation,
-                sortedQuotations);
+        startIndex = sortedQuotations.getIndexOfQuotationWithDate(startDate);
 
-        if (largestDownQuotation.getDate().getTime() >= startDate.getTime()) {
-            protocolEntry = new ProtocolEntry();
-            protocolEntry.setCategory(ProtocolEntryCategory.VIOLATION);
-            protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(largestDownQuotation.getDate()));
-            protocolEntry.setText(MessageFormat.format(this.resources.getString("protocol.largestDownDay"),
-                    largestDownDayPerformance));
-            protocolEntries.add(protocolEntry);
+        if (startIndex == -1) {
+            throw new Exception("Could not find a quotation at or after the given start date.");
+        }
+
+        for (int i = startIndex; i >= 0; i--) {
+            currentQuotation = sortedQuotations.getQuotations().get(i);
+            largestDownQuotation = this.getLargestDownDay(sortedQuotations.getQuotations(), currentQuotation);
+            largestDownDayPerformance = this.performanceCalculator.getPricePerformanceForDays(1, largestDownQuotation,
+                    sortedQuotations);
+
+            if (largestDownQuotation.equals(currentQuotation)) {
+                protocolEntry = new ProtocolEntry();
+                protocolEntry.setCategory(ProtocolEntryCategory.VIOLATION);
+                protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(largestDownQuotation.getDate()));
+                protocolEntry.setText(MessageFormat.format(this.resources.getString("protocol.largestDownDay"),
+                        largestDownDayPerformance));
+                protocolEntries.add(protocolEntry);
+            }
         }
 
         return protocolEntries;
@@ -193,10 +204,11 @@ public class InstrumentCheckExtremumController {
     /**
      * Determines the largest down-day of the given trading history.
      *
-     * @param sortedQuotations The quotations sorted by date that build the trading history.
+     * @param quotations A list of quotations sorted by date that build the trading history.
+     * @param endQuotation The latest Quotation for which the check is executed.
      * @return The Quotation of the largest down-day.
      */
-    private Quotation getLargestDownDay(final QuotationArray sortedQuotations) {
+    private Quotation getLargestDownDay(final List<Quotation> quotations, final Quotation endQuotation) {
         float largestDownPerformance = 0;
         float performance;
         Quotation largestDownQuotation = null;
@@ -204,9 +216,13 @@ public class InstrumentCheckExtremumController {
         Quotation previousQuotation;
 
         // Determine the Quotation with the largest negative performance.
-        for (int i = 0; i < sortedQuotations.getQuotations().size() - 1; i++) {
-            currentQuotation = sortedQuotations.getQuotations().get(i);
-            previousQuotation = sortedQuotations.getQuotations().get(i + 1);
+        for (int i = 0; i < quotations.size() - 2; i++) {
+            currentQuotation = quotations.get(i);
+            previousQuotation = quotations.get(i + 1);
+
+            if (currentQuotation.getDate().getTime() > endQuotation.getDate().getTime()) {
+                continue;
+            }
 
             performance = this.performanceCalculator.getPerformance(currentQuotation, previousQuotation);
 
