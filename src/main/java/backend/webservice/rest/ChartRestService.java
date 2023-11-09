@@ -166,6 +166,9 @@ public class ChartRestService {
      * @param lookbackPeriod The number of days taken into account for health check routines.
      * @return The chart.
      */
+    @GET
+    @Path("/healthCheck/{instrumentId}")
+    @Produces("image/png")
     public Response getHealthCheckChart(@PathParam("instrumentId") final Integer instrumentId,
             @QueryParam("profile") final HealthCheckProfile profile,
             @QueryParam("lookbackPeriod") final Integer lookbackPeriod) {
