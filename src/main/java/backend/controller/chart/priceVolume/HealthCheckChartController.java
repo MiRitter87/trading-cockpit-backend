@@ -1,6 +1,7 @@
 package backend.controller.chart.priceVolume;
 
 import java.awt.Color;
+import java.text.MessageFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -81,7 +82,8 @@ public class HealthCheckChartController extends PriceVolumeChartController {
             final HealthCheckProfile profile, final Integer lookbackPeriod) throws Exception {
 
         Protocol healthProtocol = this.getHealthProtocol(instrument, profile, lookbackPeriod);
-        IntervalXYDataset healthEventData = this.getHealthEventDataset(instrument, healthProtocol);
+        IntervalXYDataset healthEventData = this.getHealthEventDataset(instrument, healthProtocol, profile,
+                lookbackPeriod);
         NumberAxis healthEventAxis = new NumberAxis();
 
         XYBarRenderer healthEventRenderer = new XYBarRenderer();
@@ -123,19 +125,23 @@ public class HealthCheckChartController extends PriceVolumeChartController {
     /**
      * Gets a dataset containing the daily sum of health check events of the given Instrument.
      *
-     * @param instrument The Instrument.
-     * @param protocol   The Protocol that contains the health check events.
+     * @param instrument     The Instrument.
+     * @param protocol       The Protocol that contains the health check events.
+     * @param profile        The HealthCheckProfile that is used.
+     * @param lookbackPeriod The number of days taken into account for health check routines.
      * @return A dataset containing the daily sum of health check events.
      * @throws Exception Dataset creation failed.
      */
-    private IntervalXYDataset getHealthEventDataset(final Instrument instrument, final Protocol protocol)
-            throws Exception {
+    private IntervalXYDataset getHealthEventDataset(final Instrument instrument, final Protocol protocol,
+            final HealthCheckProfile profile, final Integer lookbackPeriod) throws Exception {
 
         List<Quotation> quotationsSortedByDate = instrument.getQuotationsSortedByDate();
         TimeSeriesCollection dataset = new TimeSeriesCollection();
-        TimeSeries healthEventTimeSeries = new TimeSeries(
-                this.getResources().getString("chart.healthCheck.timeSeriesEventName"));
+        TimeSeries healthEventTimeSeries;
         List<ProtocolEntry> entriesOfDate;
+        String timeSeriesName = this.getHealthEventTimeSeriesName(profile, lookbackPeriod);
+
+        healthEventTimeSeries = new TimeSeries(timeSeriesName);
 
         for (Quotation tempQuotation : quotationsSortedByDate) {
             entriesOfDate = protocol.getEntriesOfDate(tempQuotation.getDate());
@@ -167,5 +173,37 @@ public class HealthCheckChartController extends PriceVolumeChartController {
         default:
             break;
         }
+    }
+
+    /**
+     * Gets the name for the health event time series.
+     *
+     * @param profile        The HealthCheckProfile that is used.
+     * @param lookbackPeriod The number of days taken into account for health check routines.
+     * @return The name for the health event time series.
+     */
+    private String getHealthEventTimeSeriesName(final HealthCheckProfile profile, final Integer lookbackPeriod) {
+        String timeSeriesName;
+
+        switch (profile) {
+        case CONFIRMATIONS:
+            timeSeriesName = MessageFormat.format(
+                    this.getResources().getString("chart.healthCheck.timeSeriesEventName.confirmations"),
+                    lookbackPeriod);
+            break;
+        case SELLING_INTO_STRENGTH:
+            timeSeriesName = MessageFormat.format(
+                    this.getResources().getString("chart.healthCheck.timeSeriesEventName.strength"), lookbackPeriod);
+            break;
+        case SELLING_INTO_WEAKNESS:
+            timeSeriesName = MessageFormat.format(
+                    this.getResources().getString("chart.healthCheck.timeSeriesEventName.weakness"), lookbackPeriod);
+            break;
+        default:
+            timeSeriesName = this.getResources().getString("chart.healthCheck.timeSeriesEventName");
+            break;
+        }
+
+        return timeSeriesName;
     }
 }
