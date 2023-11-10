@@ -1,5 +1,6 @@
 package backend.controller.chart.priceVolume;
 
+import java.awt.Color;
 import java.util.Date;
 import java.util.List;
 
@@ -85,6 +86,7 @@ public class HealthCheckChartController extends PriceVolumeChartController {
 
         XYBarRenderer healthEventRenderer = new XYBarRenderer();
         healthEventRenderer.setShadowVisible(false);
+        this.setHealthEventBarColor(healthEventRenderer, profile);
 
         XYPlot healthEventSubplot = new XYPlot(healthEventData, timeAxis, healthEventAxis, healthEventRenderer);
         healthEventSubplot.setRangeAxisLocation(AxisLocation.TOP_OR_RIGHT);
@@ -143,5 +145,27 @@ public class HealthCheckChartController extends PriceVolumeChartController {
         dataset.addSeries(healthEventTimeSeries);
 
         return dataset;
+    }
+
+    /**
+     * Sets the color of the health check event bars depending on the HealthCheckProfile.
+     *
+     * @param healthEventRenderer The renderer for health check events.
+     * @param profile             The HealthCheckProfile
+     */
+    private void setHealthEventBarColor(final XYBarRenderer healthEventRenderer, final HealthCheckProfile profile) {
+        switch (profile) {
+        case CONFIRMATIONS:
+            healthEventRenderer.setSeriesPaint(0, Color.GREEN);
+            break;
+        case SELLING_INTO_STRENGTH:
+            healthEventRenderer.setSeriesPaint(0, Color.YELLOW);
+            break;
+        case SELLING_INTO_WEAKNESS:
+            healthEventRenderer.setSeriesPaint(0, Color.RED);
+            break;
+        default:
+            break;
+        }
     }
 }
