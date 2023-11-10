@@ -1,4 +1,4 @@
-package backend.controller.chart;
+package backend.controller.chart.statistic;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -20,6 +20,7 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 
+import backend.controller.chart.ChartController;
 import backend.controller.instrumentCheck.InstrumentCheckPatternController;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;

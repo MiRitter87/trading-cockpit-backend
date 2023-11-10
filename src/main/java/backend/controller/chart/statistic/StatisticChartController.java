@@ -1,8 +1,9 @@
-package backend.controller.chart;
+package backend.controller.chart.statistic;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import backend.controller.chart.ChartController;
 import backend.controller.scan.StatisticCalculationController;
 import backend.dao.DAOManager;
 import backend.dao.statistic.StatisticDAO;
