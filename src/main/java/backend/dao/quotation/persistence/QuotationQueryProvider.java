@@ -167,7 +167,7 @@ public class QuotationQueryProvider {
      * Provides a native Query that determines the IDs of the quotations with the newest date for each Instrument. Only
      * those instruments are taken into account that match the given InstrumentType.
      *
-     * @param instrumentType The InstrumentType.
+     * @param instrumentType The InstrumentType. Parameter can be omitted (null).
      * @return The Query.
      */
     @SuppressWarnings("unchecked")
@@ -176,8 +176,13 @@ public class QuotationQueryProvider {
         Query query;
 
         // Get the IDs of all instruments of the given type.
-        query = this.entityManager.createQuery("SELECT id FROM Instrument i WHERE i.type = :instrumentType");
-        query.setParameter("instrumentType", instrumentType);
+        if (instrumentType != null) {
+            query = this.entityManager.createQuery("SELECT id FROM Instrument i WHERE i.type = :instrumentType");
+            query.setParameter("instrumentType", instrumentType);
+        } else {
+            query = this.entityManager.createQuery("SELECT id FROM Instrument i");
+        }
+
         instrumentIdsOfGivenInstrumentType = query.getResultList();
 
         // Get the IDs of all Quotations with the newest date for each Instrument.

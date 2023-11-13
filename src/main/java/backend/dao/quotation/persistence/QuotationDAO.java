@@ -79,7 +79,7 @@ public interface QuotationDAO {
      * quotations are provided that have an Indicator associated with them.
      *
      * @param scanTemplate   The Template for Quotation query.
-     * @param instrumentType The InstrumentType.
+     * @param instrumentType The InstrumentType. Parameter can be omitted (null).
      * @param startDate      The start date for the RS number determination. Format used: yyyy-MM-dd. Parameter can be
      *                       omitted (null).
      * @param minLiquidity   The minimum trading liquidity that is required. Parameter can be omitted (null).

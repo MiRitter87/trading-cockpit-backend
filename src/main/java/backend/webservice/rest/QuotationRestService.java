@@ -22,12 +22,11 @@ public class QuotationRestService {
     /**
      * Provides a list of all quotations.
      *
-     * @param scanTemplate   The template that defines the parameters applied to the Scan results. Parameter can be
-     *                       omitted.
-     * @param instrumentType The type of Instrument that is requested.
+     * @param scanTemplate   The template that defines the parameters applied to the Scan results.
+     * @param instrumentType The type of Instrument that is requested. Parameter can be omitted (null).
      * @param startDate      The start date for the RS number determination. Format used: yyyy-MM-dd. Parameter can be
-     *                       omitted (null)..
-     * @param minLiquidity   The minimum trading liquidity that is required. Parameter can be omitted (null)..
+     *                       omitted (null).
+     * @param minLiquidity   The minimum trading liquidity that is required. Parameter can be omitted (null).
      * @return A list of all quotations.
      */
     @GET

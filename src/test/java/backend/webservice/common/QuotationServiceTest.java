@@ -726,4 +726,41 @@ public class QuotationServiceTest {
         expectedQuotation = this.denisonMinesQuotations.get(0);
         assertEquals(expectedQuotation, actualQuotation);
     }
+
+    @Test
+    /**
+     * Tests the retrieval of the most recent quotation with its corresponding Indicator and Instrument. Only those
+     * quotations should be returned that have an Indicator associated with them. Instruments of all types are
+     * requested.
+     */
+    public void testGetRecentQuotationsAllTypes() {
+        QuotationArray quotations;
+        WebServiceResult getQuotationsResult;
+
+        // Get the quotations.
+        QuotationService service = new QuotationService();
+        getQuotationsResult = service.getQuotations(ScanTemplate.ALL, null, null, null);
+        quotations = (QuotationArray) getQuotationsResult.getData();
+
+        // Assure no error message exists
+        assertTrue(WebServiceTools.resultContainsErrorMessage(getQuotationsResult) == false);
+
+        // Check if five quotations are returned.
+        assertEquals(5, quotations.getQuotations().size());
+
+        // Check if the correct quotations are returned
+        for (Quotation quotation : quotations.getQuotations()) {
+            if (quotation.getId().equals(this.appleQuotation2.getId())) {
+                assertEquals(this.appleQuotation2, quotation);
+            } else if (quotation.getId().equals(this.fordQuotation1.getId())) {
+                assertEquals(this.fordQuotation1, quotation);
+            } else if (quotation.getId().equals(this.xleQuotation2.getId())) {
+                assertEquals(this.xleQuotation2, quotation);
+            } else if (quotation.getId().equals(this.xlbQuotation1.getId())) {
+                assertEquals(this.xlbQuotation1, quotation);
+            } else if (quotation.getId().equals(this.denisonMinesQuotations.get(0).getId())) {
+                assertEquals(this.denisonMinesQuotations.get(0), quotation);
+            }
+        }
+    }
 }
