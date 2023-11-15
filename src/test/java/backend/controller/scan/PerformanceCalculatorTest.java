@@ -181,4 +181,19 @@ public class PerformanceCalculatorTest {
 
         assertEquals(expectedRSPercentSum, actualRSPercentSum);
     }
+
+    @Test
+    /**
+     * Tests the calculation of the average performance on up-days.
+     */
+    public void testGetAveragePerformanceOfUpDays() {
+        QuotationArray sortedQuotations = new QuotationArray(this.dmlStock.getQuotationsSortedByDate());
+        float expectedPerformance = (float) 4.15;
+        float actualPerformance;
+
+        actualPerformance = this.performanceCalculator
+                .getAveragePerformanceOfUpDays(sortedQuotations.getQuotations().get(0), sortedQuotations, 5, 10);
+
+        assertEquals(expectedPerformance, actualPerformance);
+    }
 }

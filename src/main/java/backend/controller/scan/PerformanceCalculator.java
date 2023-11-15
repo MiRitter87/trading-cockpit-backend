@@ -114,6 +114,56 @@ public class PerformanceCalculator {
     }
 
     /**
+     * Calculates the average performance on up-days.
+     *
+     * @param quotation        The Quotation for which the average is calculated.
+     * @param sortedQuotations A list of quotations sorted by date that build the trading history.
+     * @param minDays          The minimum number of days required for average determination.
+     * @param maxDays          The maximum number of days used for average determination, if enough quotations exist.
+     * @return The average performance of up-days; 0, if no average could be determined.
+     */
+    public float getAveragePerformanceOfUpDays(final Quotation quotation, final QuotationArray sortedQuotations,
+            final int minDays, final int maxDays) {
+
+        int indexOfQuotation = 0;
+        int numberOfUpDays = 0;
+        float performance;
+        BigDecimal performanceSum = new BigDecimal(0);
+        BigDecimal averageUpPerformance;
+        Quotation currentQuotation;
+        Quotation previousQuotation;
+
+        // Get the starting point of price performance calculation.
+        indexOfQuotation = sortedQuotations.getQuotations().indexOf(quotation);
+
+        // Check if enough quotations exist for price performance calculation.
+        // The -1 is needed because a performance can only be calculated against a previous day. Therefore an additional
+        // Quotation has to exist.
+        if ((sortedQuotations.getQuotations().size() - minDays - indexOfQuotation - 1) < 0) {
+            return 0;
+        }
+
+        for (int i = indexOfQuotation; i < (maxDays + indexOfQuotation); i++) {
+            if (i == sortedQuotations.getQuotations().size() - 1) {
+                break; // End of quotations reached. Can't calculate for the whole number of maxDays.
+            }
+
+            currentQuotation = sortedQuotations.getQuotations().get(i);
+            previousQuotation = sortedQuotations.getQuotations().get(i + 1);
+            performance = this.getPerformance(currentQuotation, previousQuotation);
+
+            if (performance > 0) {
+                performanceSum = performanceSum.add(BigDecimal.valueOf(performance));
+                numberOfUpDays++;
+            }
+        }
+
+        averageUpPerformance = performanceSum.divide(BigDecimal.valueOf(numberOfUpDays), 2, RoundingMode.HALF_UP);
+
+        return averageUpPerformance.floatValue();
+    }
+
+    /**
      * Provides the performance of a given interval for relative strength calculation.
      *
      * @param sortedQuotations The quotations containing date and price information for performance calculation.
