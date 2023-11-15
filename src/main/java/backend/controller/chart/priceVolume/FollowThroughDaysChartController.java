@@ -20,8 +20,10 @@ import org.jfree.data.xy.IntervalXYDataset;
 import org.jfree.data.xy.OHLCDataset;
 
 import backend.controller.NoQuotationsExistException;
+import backend.controller.scan.PerformanceCalculator;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
+import backend.model.instrument.QuotationArray;
 
 /**
  * Controller for the creation of a chart displaying an Instrument with Follow-Through Days.
@@ -30,7 +32,7 @@ import backend.model.instrument.Quotation;
  */
 public class FollowThroughDaysChartController extends PriceVolumeChartController {
     /**
-     * The performance threshold that defines a Follow-Through Day.
+     * The factor used to calculate the performance threshold that defines a Follow-Through Day.
      */
     private static final float FTD_PERCENT_THRESHOLD = (float) 1.7;
 
@@ -116,7 +118,7 @@ public class FollowThroughDaysChartController extends PriceVolumeChartController
         for (int i = 0; i < quotationsSortedByDate.size() - 1; i++) {
             currentQuotation = quotationsSortedByDate.get(i);
             previousQuotation = quotationsSortedByDate.get(i + 1);
-            isFollowThroughDay = this.isFollowThroughDay(currentQuotation, previousQuotation);
+            isFollowThroughDay = this.isFollowThroughDay(currentQuotation, previousQuotation, quotationsSortedByDate);
 
             if (isFollowThroughDay) {
                 indexOfFollowThroughDays.add(i);
@@ -157,7 +159,7 @@ public class FollowThroughDaysChartController extends PriceVolumeChartController
             }
 
             // A Follow-Through Day is considered failed if the price undercuts the low established within 10 days
-            // before the FTD.
+            // before the FTD. The undercut has to occur within 10 days after the FTD.
             isLowBeforeFTDUndercut = this.isLowBeforeFTDUndercut(currentQuotation, quotationsSortedByDate,
                     daysBeforeFTD, daysAfterFTD);
             if (isLowBeforeFTDUndercut && !indexOfFailedFollowThroughDays.contains(indexOfFollowThroughDay)) {
@@ -268,16 +270,32 @@ public class FollowThroughDaysChartController extends PriceVolumeChartController
     /**
      * Checks if the day of the current Quotation constitutes a Follow-Through Day.
      *
-     * @param currentQuotation  The current Quotation.
-     * @param previousQuotation The previous Quotation.
+     * @param currentQuotation       The current Quotation.
+     * @param previousQuotation      The previous Quotation.
+     * @param quotationsSortedByDate A List of Quotations sorted by Date.
      * @return true, if day of current Quotation is Follow-Through Day; false, if not.
      */
-    private boolean isFollowThroughDay(final Quotation currentQuotation, final Quotation previousQuotation) {
+    private boolean isFollowThroughDay(final Quotation currentQuotation, final Quotation previousQuotation,
+            final List<Quotation> quotationsSortedByDate) {
+
+        PerformanceCalculator performanceCalculator = new PerformanceCalculator();
         float performance;
+        float averagePerformance;
+        float performanceThreshold;
+        final int minDaysForAveragePerformance = 50;
+        final int maxDaysForAveragePerformance = 200;
 
         performance = this.getPerformanceCalculator().getPerformance(currentQuotation, previousQuotation);
+        averagePerformance = performanceCalculator.getAveragePerformanceOfUpDays(currentQuotation,
+                new QuotationArray(quotationsSortedByDate), minDaysForAveragePerformance, maxDaysForAveragePerformance);
 
-        if (performance >= FTD_PERCENT_THRESHOLD && (currentQuotation.getVolume() > previousQuotation.getVolume())) {
+        if (averagePerformance == 0) {
+            return false;
+        }
+
+        performanceThreshold = averagePerformance * FTD_PERCENT_THRESHOLD;
+
+        if (performance >= performanceThreshold && (currentQuotation.getVolume() > previousQuotation.getVolume())) {
             return true;
         }
 
