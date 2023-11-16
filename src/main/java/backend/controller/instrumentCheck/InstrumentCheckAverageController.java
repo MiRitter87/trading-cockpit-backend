@@ -1,10 +1,12 @@
 package backend.controller.instrumentCheck;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import backend.controller.scan.PerformanceCalculator;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
 import backend.model.protocol.ProtocolEntry;
@@ -18,6 +20,11 @@ import backend.tools.DateTools;
  * @author Michael
  */
 public class InstrumentCheckAverageController {
+    /**
+     * The percentage threshold used to determine "extended above SMA(200)".
+     */
+    private static final float EXTENDED_ABOVE_SMA200_THRESHOLD = 100;
+
     /**
      * Access to localized application resources.
      */
@@ -145,7 +152,8 @@ public class InstrumentCheckAverageController {
      * Checks if the price is extended above the SMA(200) on a closing basis. The check begins at the start date and
      * goes up until the most recent Quotation.
      *
-     * For each day on which price is extended above the SMA(200), a ProtocolEntry is provided with further information.
+     * For each day on which the price is extended above the SMA(200), a ProtocolEntry is provided with further
+     * information.
      *
      * @param startDate        The date at which the check starts.
      * @param sortedQuotations The quotations sorted by date that build the trading history.
@@ -155,7 +163,42 @@ public class InstrumentCheckAverageController {
     public List<ProtocolEntry> checkExtendedAboveSma200(final Date startDate, final QuotationArray sortedQuotations)
             throws Exception {
 
+        int startIndex;
+        float percentAboveSma200;
+        Quotation currentDayQuotation;
+        ProtocolEntry protocolEntry;
         List<ProtocolEntry> protocolEntries = new ArrayList<>();
+        PerformanceCalculator performanceCalculator = new PerformanceCalculator();
+
+        startIndex = sortedQuotations.getIndexOfQuotationWithDate(startDate);
+
+        if (startIndex == -1) {
+            throw new Exception("Could not find a quotation at or after the given start date.");
+        }
+
+        for (int i = startIndex; i >= 0; i--) {
+            currentDayQuotation = sortedQuotations.getQuotations().get(i);
+
+            if (currentDayQuotation.getIndicator() == null) {
+                throw new Exception("No indicator is defined for Quotation with ID: " + currentDayQuotation.getId());
+            }
+
+            if (currentDayQuotation.getIndicator().getSma200() == 0) {
+                continue; // Can't perform check if no SMA(200) is available.
+            }
+
+            percentAboveSma200 = performanceCalculator.getPerformance(currentDayQuotation.getClose().floatValue(),
+                    currentDayQuotation.getIndicator().getSma200());
+
+            if (percentAboveSma200 >= EXTENDED_ABOVE_SMA200_THRESHOLD) {
+                protocolEntry = new ProtocolEntry();
+                protocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
+                protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(currentDayQuotation.getDate()));
+                protocolEntry.setText(MessageFormat.format(this.resources.getString("protocol.extendedAboveSma200"),
+                        percentAboveSma200));
+                protocolEntries.add(protocolEntry);
+            }
+        }
 
         return protocolEntries;
     }

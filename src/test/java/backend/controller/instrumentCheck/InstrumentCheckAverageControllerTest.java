@@ -127,7 +127,7 @@ public class InstrumentCheckAverageControllerTest {
 
     @Test
     /**
-     * Tests the check if Instrument closed below SMA(50).
+     * Tests the check if the price of an Instrument closed below SMA(50).
      */
     public void testCheckCloseBelowSma50() {
         ProtocolEntry expectedProtocolEntry1 = new ProtocolEntry();
@@ -169,7 +169,7 @@ public class InstrumentCheckAverageControllerTest {
 
     @Test
     /**
-     * Tests the check if Instrument closed below EMA(21).
+     * Tests the check if the price of an Instrument closed below EMA(21).
      */
     public void testCheckCloseBelowEma21() {
         ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
@@ -200,18 +200,18 @@ public class InstrumentCheckAverageControllerTest {
         }
     }
 
-    //@Test
+    @Test
     /**
-     * Tests the check if Instrument is extended above the SMA(200).
+     * Tests the check if the price of an Instrument is extended above the SMA(200).
      */
     public void testCheckExtendedAboveSma200() {
         ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
         ProtocolEntry actualProtocolEntry;
         List<ProtocolEntry> protocolEntries;
         Calendar calendar = Calendar.getInstance();
-        float percentAboveSma200 = (float) 123.6;
+        float percentAboveSma200 = (float) 123.71;
 
-        // Modify quotation of test data. It has to be at least 100% above SMA(200).
+        // Modify quotation of test data. Closing price has to be at least 100% above the SMA(200).
         this.dmlQuotations.sortQuotationsByDate();
         this.dmlQuotations.getQuotations().get(0).setClose(BigDecimal.valueOf(4));
 
