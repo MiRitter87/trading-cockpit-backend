@@ -30,13 +30,24 @@ public class PerformanceCalculator {
      * @return The price performance.
      */
     public float getPerformance(final Quotation currentQuotation, final Quotation previousQuotation) {
+        return this.getPerformance(currentQuotation.getClose().floatValue(), previousQuotation.getClose().floatValue());
+    }
+
+    /**
+     * Calculates the price performance between the current price and the previous price.
+     *
+     * @param currentPrice  The current price.
+     * @param previousPrice The previous price.
+     * @return The price performance.
+     */
+    public float getPerformance(final float currentPrice, final float previousPrice) {
         float performance;
         BigDecimal roundedPerformance;
         final int scaleDivision = 4;
         final int scaleResult = 2;
 
-        performance = currentQuotation.getClose()
-                .divide(previousQuotation.getClose(), scaleDivision, RoundingMode.HALF_UP).floatValue() - 1;
+        performance = BigDecimal.valueOf(currentPrice)
+                .divide(BigDecimal.valueOf(previousPrice), scaleDivision, RoundingMode.HALF_UP).floatValue() - 1;
         performance = performance * HUNDRED_PERCENT; // Get performance in percent.
 
         // Round result to two decimal places.
