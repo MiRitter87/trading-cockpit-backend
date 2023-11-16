@@ -3,6 +3,8 @@ package backend.controller.instrumentCheck;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -185,6 +187,45 @@ public class InstrumentCheckAverageControllerTest {
         calendar.set(2022, 6, 15); // Begin check on 15.07.22
         try {
             protocolEntries = this.instrumentCheckAverageController.checkCloseBelowEma21(calendar.getTime(),
+                    this.dmlQuotations);
+
+            // Verify the check result
+            assertEquals(1, protocolEntries.size());
+
+            // Validate the protocol entry
+            actualProtocolEntry = protocolEntries.get(0);
+            assertEquals(expectedProtocolEntry, actualProtocolEntry);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    //@Test
+    /**
+     * Tests the check if Instrument is extended above the SMA(200).
+     */
+    public void testCheckExtendedAboveSma200() {
+        ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
+        ProtocolEntry actualProtocolEntry;
+        List<ProtocolEntry> protocolEntries;
+        Calendar calendar = Calendar.getInstance();
+        float percentAboveSma200 = (float) 123.6;
+
+        // Modify quotation of test data. It has to be at least 100% above SMA(200).
+        this.dmlQuotations.sortQuotationsByDate();
+        this.dmlQuotations.getQuotations().get(0).setClose(BigDecimal.valueOf(4));
+
+        // Define the expected protocol entry.
+        calendar.set(2022, 6, 22); // The day on which the price is extended above the SMA(200).
+        expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
+        expectedProtocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
+        expectedProtocolEntry.setText(
+                MessageFormat.format(this.resources.getString("protocol.extendedAboveSma200"), percentAboveSma200));
+
+        // Call controller to perform check.
+        calendar.set(2022, 6, 15); // Begin check on 15.07.22
+        try {
+            protocolEntries = this.instrumentCheckAverageController.checkExtendedAboveSma200(calendar.getTime(),
                     this.dmlQuotations);
 
             // Verify the check result

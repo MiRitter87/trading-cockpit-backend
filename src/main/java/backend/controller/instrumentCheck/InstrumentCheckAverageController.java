@@ -140,4 +140,23 @@ public class InstrumentCheckAverageController {
 
         return protocolEntries;
     }
+
+    /**
+     * Checks if the price is extended above the SMA(200) on a closing basis. The check begins at the start date and
+     * goes up until the most recent Quotation.
+     *
+     * For each day on which price is extended above the SMA(200), a ProtocolEntry is provided with further information.
+     *
+     * @param startDate        The date at which the check starts.
+     * @param sortedQuotations The quotations sorted by date that build the trading history.
+     * @return List of ProtocolEntry, for all days on which the price is extended above the SMA(200).
+     * @throws Exception The check failed because data are not fully available or corrupt.
+     */
+    public List<ProtocolEntry> checkExtendedAboveSma200(final Date startDate, final QuotationArray sortedQuotations)
+            throws Exception {
+
+        List<ProtocolEntry> protocolEntries = new ArrayList<>();
+
+        return protocolEntries;
+    }
 }
