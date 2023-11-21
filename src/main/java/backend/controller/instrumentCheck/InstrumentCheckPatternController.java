@@ -1,6 +1,7 @@
 package backend.controller.instrumentCheck;
 
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -49,6 +50,11 @@ public class InstrumentCheckPatternController {
      * The threshold of the daily price range for bullish reversal calculation.
      */
     private static final float REVERSAL_THRESHOLD_BULLISH = (float) 0.6;
+
+    /**
+     * The threshold of a gap up that constitutes an exhaustion gap.
+     */
+    private static final float EXHAUSTION_GAP_THRESHOLD = 1;
 
     /**
      * Access to localized application resources.
@@ -256,7 +262,37 @@ public class InstrumentCheckPatternController {
     public List<ProtocolEntry> checkGapUp(final Date startDate, final QuotationArray sortedQuotations)
             throws Exception {
 
+        int startIndex;
+        Quotation currentQuotation;
+        Quotation previousQuotation;
         List<ProtocolEntry> protocolEntries = new ArrayList<>();
+        ProtocolEntry protocolEntry;
+        float gapUpSize;
+
+        startIndex = sortedQuotations.getIndexOfQuotationWithDate(startDate);
+
+        if (startIndex == -1) {
+            throw new Exception("Could not find a quotation at or after the given start date.");
+        }
+
+        for (int i = startIndex; i >= 0; i--) {
+            if ((i + 1) < sortedQuotations.getQuotations().size()) {
+                previousQuotation = sortedQuotations.getQuotations().get(i + 1);
+            } else {
+                continue;
+            }
+
+            currentQuotation = sortedQuotations.getQuotations().get(i);
+            gapUpSize = this.getGapUpSize(currentQuotation, previousQuotation);
+
+            if (gapUpSize >= EXHAUSTION_GAP_THRESHOLD) {
+                protocolEntry = new ProtocolEntry();
+                protocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
+                protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(currentQuotation.getDate()));
+                protocolEntry.setText(MessageFormat.format(resources.getString("protocol.gapUp"), gapUpSize));
+                protocolEntries.add(protocolEntry);
+            }
+        }
 
         return protocolEntries;
     }
@@ -395,5 +431,22 @@ public class InstrumentCheckPatternController {
         }
 
         return false;
+    }
+
+    /**
+     * Determines the size of a gap up in percent.
+     *
+     * @param currentQuotation  The current Quotation.
+     * @param previousQuotation The previous Quotation.
+     * @return The percentage size of the gap up.
+     * @throws Exception Determination failed.
+     */
+    public float getGapUpSize(final Quotation currentQuotation, final Quotation previousQuotation) throws Exception {
+        float gapSize;
+
+        gapSize = this.performanceCalculator.getPerformance(currentQuotation.getLow().floatValue(),
+                previousQuotation.getHigh().floatValue());
+
+        return gapSize;
     }
 }

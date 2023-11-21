@@ -282,7 +282,7 @@ public class InstrumentCheckPatternControllerTest {
         }
     }
 
-    //@Test
+    @Test
     /**
      * Tests the check if Instrument made a gap up.
      */

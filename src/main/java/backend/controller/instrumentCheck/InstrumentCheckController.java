@@ -171,6 +171,8 @@ public class InstrumentCheckController {
                 .addAll(this.instrumentCheckClimaxController.checkClimaxMoveThreeWeeks(startDate, quotations));
         protocol.getProtocolEntries()
                 .addAll(this.instrumentCheckAverageController.checkExtendedAboveSma200(startDate, quotations));
+        protocol.getProtocolEntries()
+                .addAll(this.instrumentCheckPatternController.checkGapUp(startDate, quotations));
     }
 
     /**
