@@ -196,4 +196,19 @@ public class PerformanceCalculatorTest {
 
         assertEquals(expectedPerformance, actualPerformance);
     }
+
+    @Test
+    /**
+     * Tests the calculation of the average performance on down-days.
+     */
+    public void testGetAveragePerformanceOfDownDays() {
+        QuotationArray sortedQuotations = new QuotationArray(this.dmlStock.getQuotationsSortedByDate());
+        float expectedPerformance = (float) -3.79;
+        float actualPerformance;
+
+        actualPerformance = this.performanceCalculator
+                .getAveragePerformanceOfDownDays(sortedQuotations.getQuotations().get(0), sortedQuotations, 5, 10);
+
+        assertEquals(expectedPerformance, actualPerformance);
+    }
 }
