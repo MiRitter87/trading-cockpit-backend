@@ -20,7 +20,6 @@ import org.jfree.data.xy.IntervalXYDataset;
 import org.jfree.data.xy.OHLCDataset;
 
 import backend.controller.NoQuotationsExistException;
-import backend.controller.scan.PerformanceCalculator;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
@@ -34,7 +33,7 @@ public class FollowThroughDaysChartController extends PriceVolumeChartController
     /**
      * The factor used to calculate the performance threshold that defines a Follow-Through Day.
      */
-    private static final float FTD_PERCENT_THRESHOLD = (float) 1.7;
+    private static final float FTD_THRESHOLD_FACTOR = (float) 1.7;
 
     /**
      * Gets a chart of an Instrument marked with Follow-Through Days.
@@ -259,7 +258,7 @@ public class FollowThroughDaysChartController extends PriceVolumeChartController
             currentQuotation = quotationsSortedByDate.get(i + 1);
             nextQuotation = quotationsSortedByDate.get(i);
 
-            if (this.isDistributionDay(nextQuotation, currentQuotation)) {
+            if (this.isDistributionDay(nextQuotation, currentQuotation, quotationsSortedByDate)) {
                 return true;
             }
         }
@@ -278,7 +277,6 @@ public class FollowThroughDaysChartController extends PriceVolumeChartController
     private boolean isFollowThroughDay(final Quotation currentQuotation, final Quotation previousQuotation,
             final List<Quotation> quotationsSortedByDate) {
 
-        PerformanceCalculator performanceCalculator = new PerformanceCalculator();
         float performance;
         float averagePerformance;
         float performanceThreshold;
@@ -286,14 +284,14 @@ public class FollowThroughDaysChartController extends PriceVolumeChartController
         final int maxDaysForAveragePerformance = 200;
 
         performance = this.getPerformanceCalculator().getPerformance(currentQuotation, previousQuotation);
-        averagePerformance = performanceCalculator.getAveragePerformanceOfUpDays(currentQuotation,
+        averagePerformance = this.getPerformanceCalculator().getAveragePerformanceOfUpDays(currentQuotation,
                 new QuotationArray(quotationsSortedByDate), minDaysForAveragePerformance, maxDaysForAveragePerformance);
 
         if (averagePerformance == 0) {
             return false;
         }
 
-        performanceThreshold = averagePerformance * FTD_PERCENT_THRESHOLD;
+        performanceThreshold = averagePerformance * FTD_THRESHOLD_FACTOR;
 
         if (performance >= performanceThreshold && (currentQuotation.getVolume() > previousQuotation.getVolume())) {
             return true;

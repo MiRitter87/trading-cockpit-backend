@@ -148,7 +148,7 @@ public class DistributionDaysChartController extends PriceVolumeChartController 
         for (int i = 0; i < quotationsSortedByDate.size() - 1; i++) {
             currentQuotation = quotationsSortedByDate.get(i);
             previousQuotation = quotationsSortedByDate.get(i + 1);
-            isDistributionDay = this.isDistributionDay(currentQuotation, previousQuotation);
+            isDistributionDay = this.isDistributionDay(currentQuotation, previousQuotation, quotationsSortedByDate);
             priceHasAdvanced = this.hasPriceAdvancedPercent(quotationsSortedByDate, currentQuotation,
                     numberOfAdditionalDays, percentAdvanceNegatingDistributionDay);
 

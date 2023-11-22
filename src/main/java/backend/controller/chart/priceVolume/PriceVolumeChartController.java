@@ -47,9 +47,9 @@ import backend.webservice.Indicator;
  */
 public class PriceVolumeChartController extends ChartController {
     /**
-     * The performance threshold that defines a Distribution Day.
+     * The factor used to calculate the performance threshold that defines a Distribution Day.
      */
-    private static final float DD_PERCENT_THRESHOLD = (float) -0.2;
+    private static final float DD_THRESHOLD_FACTOR = (float) 0.274;
 
     /**
      * DAO to access chart object data.
@@ -472,16 +472,31 @@ public class PriceVolumeChartController extends ChartController {
     /**
      * Checks if the day of the current Quotation constitutes a Distribution Day.
      *
-     * @param currentQuotation  The current Quotation.
-     * @param previousQuotation The previous Quotation.
+     * @param currentQuotation       The current Quotation.
+     * @param previousQuotation      The previous Quotation.
+     * @param quotationsSortedByDate A List of Quotations sorted by Date.
      * @return true, if day of current Quotation is Distribution Day; false, if not.
      */
-    protected boolean isDistributionDay(final Quotation currentQuotation, final Quotation previousQuotation) {
+    protected boolean isDistributionDay(final Quotation currentQuotation, final Quotation previousQuotation,
+            final List<Quotation> quotationsSortedByDate) {
+
         float performance;
+        float averagePerformance;
+        float performanceThreshold;
+        final int minDaysForAveragePerformance = 50;
+        final int maxDaysForAveragePerformance = 200;
 
         performance = this.performanceCalculator.getPerformance(currentQuotation, previousQuotation);
+        averagePerformance = this.performanceCalculator.getAveragePerformanceOfDownDays(currentQuotation,
+                new QuotationArray(quotationsSortedByDate), minDaysForAveragePerformance, maxDaysForAveragePerformance);
 
-        if (performance < DD_PERCENT_THRESHOLD && (currentQuotation.getVolume() > previousQuotation.getVolume())) {
+        if (averagePerformance == 0) {
+            return false;
+        }
+
+        performanceThreshold = averagePerformance * DD_THRESHOLD_FACTOR;
+
+        if (performance <= performanceThreshold && (currentQuotation.getVolume() > previousQuotation.getVolume())) {
             return true;
         }
 
