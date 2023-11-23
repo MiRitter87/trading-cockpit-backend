@@ -3,6 +3,8 @@ package backend.model.protocol;
 import java.util.Date;
 import java.util.Objects;
 
+import backend.controller.instrumentCheck.HealthCheckProfile;
+
 /**
  * The entry of a protocol that informs about the health of an Instrument at a certain date. The behavior of an
  * instruments price and volume can confirm or violate the current trend.
@@ -19,6 +21,11 @@ public class ProtocolEntry {
      * The category.
      */
     private ProtocolEntryCategory category;
+
+    /**
+     * The HealthCheckProfile whose health check created this ProtocolEntry.
+     */
+    private HealthCheckProfile profile;
 
     /**
      * The protocol text.
@@ -61,6 +68,20 @@ public class ProtocolEntry {
     }
 
     /**
+     * @return the profile
+     */
+    public HealthCheckProfile getProfile() {
+        return profile;
+    }
+
+    /**
+     * @param profile the profile to set
+     */
+    public void setProfile(final HealthCheckProfile profile) {
+        this.profile = profile;
+    }
+
+    /**
      * @return the text
      */
     public String getText() {
@@ -79,7 +100,7 @@ public class ProtocolEntry {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(category, date, text);
+        return Objects.hash(category, date, profile, text);
     }
 
     /**
@@ -97,6 +118,7 @@ public class ProtocolEntry {
             return false;
         }
         ProtocolEntry other = (ProtocolEntry) obj;
-        return category == other.category && Objects.equals(date, other.date) && Objects.equals(text, other.text);
+        return category == other.category && Objects.equals(date, other.date) && profile == other.profile
+                && Objects.equals(text, other.text);
     }
 }
