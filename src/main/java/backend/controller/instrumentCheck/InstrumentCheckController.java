@@ -1,6 +1,8 @@
 package backend.controller.instrumentCheck;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import backend.controller.NoQuotationsExistException;
 import backend.dao.DAOManager;
@@ -8,6 +10,7 @@ import backend.dao.quotation.persistence.QuotationDAO;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
 import backend.model.protocol.Protocol;
+import backend.model.protocol.ProtocolEntry;
 import backend.tools.DateTools;
 
 /**
@@ -136,12 +139,14 @@ public class InstrumentCheckController {
     private void checkConfirmations(final Date startDate, final QuotationArray quotations, final Protocol protocol)
             throws Exception {
 
-        protocol.getProtocolEntries()
-                .addAll(this.instrumentCheckCountingController.checkMoreUpThanDownDays(startDate, quotations));
-        protocol.getProtocolEntries()
-                .addAll(this.instrumentCheckCountingController.checkMoreGoodThanBadCloses(startDate, quotations));
-        protocol.getProtocolEntries()
-                .addAll(this.instrumentCheckPatternController.checkUpOnVolume(startDate, quotations));
+        List<ProtocolEntry> confirmations = new ArrayList<>();
+
+        confirmations.addAll(this.instrumentCheckCountingController.checkMoreUpThanDownDays(startDate, quotations));
+        confirmations.addAll(this.instrumentCheckCountingController.checkMoreGoodThanBadCloses(startDate, quotations));
+        confirmations.addAll(this.instrumentCheckPatternController.checkUpOnVolume(startDate, quotations));
+
+        this.setProfile(confirmations, HealthCheckProfile.CONFIRMATIONS);
+        protocol.getProtocolEntries().addAll(confirmations);
     }
 
     /**
@@ -155,24 +160,24 @@ public class InstrumentCheckController {
     private void checkSellingIntoStrength(final Date startDate, final QuotationArray quotations,
             final Protocol protocol) throws Exception {
 
-        protocol.getProtocolEntries()
-                .addAll(this.instrumentCheckExtremumController.checkLargestUpDay(startDate, quotations));
-        protocol.getProtocolEntries()
+        List<ProtocolEntry> sellingIntoStrength = new ArrayList<>();
+
+        sellingIntoStrength.addAll(this.instrumentCheckExtremumController.checkLargestUpDay(startDate, quotations));
+        sellingIntoStrength
                 .addAll(this.instrumentCheckExtremumController.checkLargestDailySpread(startDate, quotations));
-        protocol.getProtocolEntries()
+        sellingIntoStrength
                 .addAll(this.instrumentCheckExtremumController.checkLargestDailyVolume(startDate, quotations));
-        protocol.getProtocolEntries()
-                .addAll(this.instrumentCheckPatternController.checkChurning(startDate, quotations));
-        protocol.getProtocolEntries()
-                .addAll(this.instrumentCheckClimaxController.checkTimeClimax(startDate, quotations));
-        protocol.getProtocolEntries()
-                .addAll(this.instrumentCheckClimaxController.checkClimaxMoveOneWeek(startDate, quotations));
-        protocol.getProtocolEntries()
+        sellingIntoStrength.addAll(this.instrumentCheckPatternController.checkChurning(startDate, quotations));
+        sellingIntoStrength.addAll(this.instrumentCheckClimaxController.checkTimeClimax(startDate, quotations));
+        sellingIntoStrength.addAll(this.instrumentCheckClimaxController.checkClimaxMoveOneWeek(startDate, quotations));
+        sellingIntoStrength
                 .addAll(this.instrumentCheckClimaxController.checkClimaxMoveThreeWeeks(startDate, quotations));
-        protocol.getProtocolEntries()
+        sellingIntoStrength
                 .addAll(this.instrumentCheckAverageController.checkExtendedAboveSma200(startDate, quotations));
-        protocol.getProtocolEntries()
-                .addAll(this.instrumentCheckPatternController.checkGapUp(startDate, quotations));
+        sellingIntoStrength.addAll(this.instrumentCheckPatternController.checkGapUp(startDate, quotations));
+
+        this.setProfile(sellingIntoStrength, HealthCheckProfile.SELLING_INTO_STRENGTH);
+        protocol.getProtocolEntries().addAll(sellingIntoStrength);
     }
 
     /**
@@ -186,22 +191,22 @@ public class InstrumentCheckController {
     private void checkSellingIntoWeakness(final Date startDate, final QuotationArray quotations,
             final Protocol protocol) throws Exception {
 
-        protocol.getProtocolEntries()
-                .addAll(this.instrumentCheckAverageController.checkCloseBelowSma50(startDate, quotations));
-        protocol.getProtocolEntries()
-                .addAll(this.instrumentCheckAverageController.checkCloseBelowEma21(startDate, quotations));
-        protocol.getProtocolEntries()
-                .addAll(this.instrumentCheckExtremumController.checkLargestDownDay(startDate, quotations));
-        protocol.getProtocolEntries()
+        List<ProtocolEntry> sellingIntoWeakness = new ArrayList<>();
+
+        sellingIntoWeakness.addAll(this.instrumentCheckAverageController.checkCloseBelowSma50(startDate, quotations));
+        sellingIntoWeakness.addAll(this.instrumentCheckAverageController.checkCloseBelowEma21(startDate, quotations));
+        sellingIntoWeakness.addAll(this.instrumentCheckExtremumController.checkLargestDownDay(startDate, quotations));
+        sellingIntoWeakness
                 .addAll(this.instrumentCheckCountingController.checkMoreDownThanUpDays(startDate, quotations));
-        protocol.getProtocolEntries()
+        sellingIntoWeakness
                 .addAll(this.instrumentCheckCountingController.checkMoreBadThanGoodCloses(startDate, quotations));
-        protocol.getProtocolEntries()
-                .addAll(this.instrumentCheckPatternController.checkDownOnVolume(startDate, quotations));
-        protocol.getProtocolEntries()
+        sellingIntoWeakness.addAll(this.instrumentCheckPatternController.checkDownOnVolume(startDate, quotations));
+        sellingIntoWeakness
                 .addAll(this.instrumentCheckPatternController.checkHighVolumeReversal(startDate, quotations));
-        protocol.getProtocolEntries()
-                .addAll(this.instrumentCheckCountingController.checkThreeLowerCloses(startDate, quotations));
+        sellingIntoWeakness.addAll(this.instrumentCheckCountingController.checkThreeLowerCloses(startDate, quotations));
+
+        this.setProfile(sellingIntoWeakness, HealthCheckProfile.SELLING_INTO_WEAKNESS);
+        protocol.getProtocolEntries().addAll(sellingIntoWeakness);
     }
 
     /**
@@ -247,5 +252,17 @@ public class InstrumentCheckController {
         date = DateTools.getDateWithoutIntradayAttributes(quotation.getDate());
 
         return date;
+    }
+
+    /**
+     * Sets the given HealthCheckProfile in all protocol entries.
+     *
+     * @param protocolEntries A List of protocol entries.
+     * @param profile         The HealthCheckProfile to be set in each ProtocolEntry.
+     */
+    private void setProfile(final List<ProtocolEntry> protocolEntries, final HealthCheckProfile profile) {
+        for (ProtocolEntry protocolEntry : protocolEntries) {
+            protocolEntry.setProfile(profile);
+        }
     }
 }
