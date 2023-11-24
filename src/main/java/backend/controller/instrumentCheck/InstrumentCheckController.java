@@ -63,33 +63,6 @@ public class InstrumentCheckController {
     }
 
     /**
-     * Checks the health of the given Instrument beginning at the given start date.
-     *
-     * @param instrumentId The id of the Instrument.
-     * @param startDate    The start date of the health check.
-     * @return A protocol containing the health information from the start date until the most recent quotation.
-     * @throws NoQuotationsExistException Exception indicating no Quotations exist at and after given start date.
-     * @throws Exception                  Health check failed.
-     */
-    public Protocol checkInstrument(final Integer instrumentId, final Date startDate)
-            throws NoQuotationsExistException, Exception {
-        QuotationArray quotations = new QuotationArray(this.quotationDAO.getQuotationsOfInstrument(instrumentId));
-        Protocol protocol = new Protocol();
-
-        quotations.sortQuotationsByDate();
-        this.checkQuotationsExistAfterStartDate(startDate, quotations);
-
-        this.checkConfirmations(startDate, quotations, protocol);
-        this.checkSellingIntoWeakness(startDate, quotations, protocol);
-        this.checkSellingIntoStrength(startDate, quotations, protocol);
-
-        protocol.sortEntriesByDate();
-        protocol.calculatePercentages();
-
-        return protocol;
-    }
-
-    /**
      * Checks the health of the given Instrument beginning at the given start date. The executed health check methods
      * depend on the given HealthCheckProfile.
      *
@@ -100,8 +73,8 @@ public class InstrumentCheckController {
      * @throws NoQuotationsExistException Exception indicating no Quotations exist at and after given start date.
      * @throws Exception                  Health check failed.
      */
-    public Protocol checkInstrumentWithProfile(final Integer instrumentId, final Date startDate,
-            final HealthCheckProfile profile) throws NoQuotationsExistException, Exception {
+    public Protocol checkInstrument(final Integer instrumentId, final Date startDate, final HealthCheckProfile profile)
+            throws NoQuotationsExistException, Exception {
 
         QuotationArray quotations = new QuotationArray(this.quotationDAO.getQuotationsOfInstrument(instrumentId));
         Protocol protocol = new Protocol();
@@ -119,11 +92,17 @@ public class InstrumentCheckController {
         case SELLING_INTO_WEAKNESS:
             this.checkSellingIntoWeakness(startDate, quotations, protocol);
             break;
+        case ALL:
+            this.checkConfirmations(startDate, quotations, protocol);
+            this.checkSellingIntoStrength(startDate, quotations, protocol);
+            this.checkSellingIntoWeakness(startDate, quotations, protocol);
+            break;
         default:
             break;
         }
 
         protocol.sortEntriesByDate();
+        protocol.calculatePercentages();
 
         return protocol;
     }

@@ -7,6 +7,11 @@ package backend.controller.instrumentCheck;
  */
 public enum HealthCheckProfile {
     /**
+     * All health checks.
+     */
+    ALL,
+
+    /**
      * Price and volume action that confirms an up-trend.
      */
     CONFIRMATIONS,

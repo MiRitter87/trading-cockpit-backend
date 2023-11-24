@@ -116,8 +116,7 @@ public class HealthCheckChartController extends PriceVolumeChartController {
         sortedQuotations.sortQuotationsByDate();
         startDate = instrumentCheckController.getStartDate(lookbackPeriod, sortedQuotations);
 
-        healthCheckProtocol = instrumentCheckController.checkInstrumentWithProfile(instrument.getId(), startDate,
-                profile);
+        healthCheckProtocol = instrumentCheckController.checkInstrument(instrument.getId(), startDate, profile);
 
         return healthCheckProtocol;
     }

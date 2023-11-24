@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import backend.controller.NoQuotationsExistException;
+import backend.controller.instrumentCheck.HealthCheckProfile;
 import backend.controller.instrumentCheck.InstrumentCheckController;
 import backend.dao.DAOManager;
 import backend.dao.ObjectUnchangedException;
@@ -263,9 +264,11 @@ public class InstrumentService {
      *
      * @param instrumentId The ID of the instrument.
      * @param startDate    The start date for the health check. Format used: yyyy-MM-dd
+     * @param profile      The HealthCheckProfile that is being used.
      * @return A Protocol with health information about the given Instrument.
      */
-    public WebServiceResult getInstrumentHealthProtocol(final Integer instrumentId, final String startDate) {
+    public WebServiceResult getInstrumentHealthProtocol(final Integer instrumentId, final String startDate,
+            final HealthCheckProfile profile) {
         WebServiceResult getHealthProtocolResult = new WebServiceResult();
         InstrumentCheckController controller = new InstrumentCheckController();
         Protocol protocol;
@@ -273,7 +276,7 @@ public class InstrumentService {
 
         try {
             convertedStartDate = DateTools.convertStringToDate(startDate);
-            protocol = controller.checkInstrument(instrumentId, convertedStartDate);
+            protocol = controller.checkInstrument(instrumentId, convertedStartDate, profile);
             getHealthProtocolResult.setData(protocol);
         } catch (NoQuotationsExistException noQuotationsExistException) {
             getHealthProtocolResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,

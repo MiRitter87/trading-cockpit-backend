@@ -10,7 +10,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
-
+import backend.controller.instrumentCheck.HealthCheckProfile;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.InstrumentWS;
 import backend.model.webservice.WebServiceResult;
@@ -98,14 +98,15 @@ public class InstrumentRestService {
      *
      * @param id        The ID of the instrument.
      * @param startDate The start date for the health check. Format used: yyyy-MM-dd
+     * @param profile   The HealthCheckProfile that is being used.
      * @return A Protocol with health information about the given Instrument.
      */
     @GET
     @Path("/{id}/health")
     @Produces(MediaType.APPLICATION_JSON)
     public WebServiceResult getInstrumentHealthProtocol(@PathParam("id") final Integer id,
-            @QueryParam("startDate") final String startDate) {
+            @QueryParam("startDate") final String startDate, @QueryParam("profile") final HealthCheckProfile profile) {
         InstrumentService instrumentService = new InstrumentService();
-        return instrumentService.getInstrumentHealthProtocol(id, startDate);
+        return instrumentService.getInstrumentHealthProtocol(id, startDate, profile);
     }
 }
