@@ -143,6 +143,10 @@ public class Protocol {
         int numberOfUncertainties = 0;
         final int hundredPercent = 100;
 
+        if (this.protocolEntries.size() == 0) {
+            return; // Prevent division by zero.
+        }
+
         for (ProtocolEntry entry : this.protocolEntries) {
             if (entry.getCategory() == ProtocolEntryCategory.CONFIRMATION) {
                 numberOfConfirmations++;
