@@ -83,6 +83,13 @@ public class PriceVolumeChartController extends ChartController {
     }
 
     /**
+     * @return the chartOverlayProvider
+     */
+    public ChartOverlayProvider getChartOverlayProvider() {
+        return chartOverlayProvider;
+    }
+
+    /**
      * @return the performanceCalculator
      */
     public PerformanceCalculator getPerformanceCalculator() {
@@ -387,7 +394,7 @@ public class PriceVolumeChartController extends ChartController {
      * @param volumeSubplot The sub plot of the chart showing the volume.
      * @param instrument    The Instrument containing the trading history.
      */
-    private void clipVolumeAt2TimesAverage(final XYPlot volumeSubplot, final Instrument instrument) {
+    protected void clipVolumeAt2TimesAverage(final XYPlot volumeSubplot, final Instrument instrument) {
         double upperVolumeAxisRange = this.getHighestAverageVolume(instrument) * 2;
         NumberAxis volumeAxis = (NumberAxis) volumeSubplot.getRangeAxis();
 
@@ -403,7 +410,7 @@ public class PriceVolumeChartController extends ChartController {
      * @param overlays           The requested chart overlays.
      * @param candleStickSubplot The Plot to which moving averages are added.
      */
-    private void addMovingAveragesPrice(final Instrument instrument, final List<String> overlays,
+    protected void addMovingAveragesPrice(final Instrument instrument, final List<String> overlays,
             final XYPlot candleStickSubplot) {
 
         if (overlays == null || overlays.isEmpty()) {

@@ -2,6 +2,7 @@ package backend.controller.chart.priceVolume;
 
 import java.awt.Color;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -52,7 +53,12 @@ public class HealthCheckChartController extends PriceVolumeChartController {
         final int candleStickPlotWeight = 4;
 
         XYPlot candleStickSubplot = this.getCandlestickPlot(instrument, dateAxis);
+        this.addMovingAveragesPrice(instrument, candleStickSubplot);
+
         XYPlot volumeSubplot = this.getVolumePlot(instrument, dateAxis);
+        this.getChartOverlayProvider().addMovingAverageVolume(instrument, true, volumeSubplot);
+        this.clipVolumeAt2TimesAverage(volumeSubplot, instrument);
+
         XYPlot healthSubplot = this.getHealthPlot(instrument, dateAxis, profile, lookbackPeriod);
 
         // Build combined plot based on subplots.
@@ -94,6 +100,21 @@ public class HealthCheckChartController extends PriceVolumeChartController {
         healthEventSubplot.setRangeAxisLocation(AxisLocation.TOP_OR_RIGHT);
 
         return healthEventSubplot;
+    }
+
+    /**
+     * Adds moving averages of the price to the candlestick plot.
+     *
+     * @param instrument         The Instrument whose price and volume data are displayed.
+     * @param candleStickSubplot The Plot to which moving averages are added.
+     */
+    private void addMovingAveragesPrice(final Instrument instrument, final XYPlot candleStickSubplot) {
+        List<String> overlays = new ArrayList<>();
+
+        overlays.add(ChartOverlay.EMA_21.toString());
+        overlays.add(ChartOverlay.SMA_50.toString());
+
+        this.addMovingAveragesPrice(instrument, overlays, candleStickSubplot);
     }
 
     /**
