@@ -151,7 +151,7 @@ public class ScanTemplateProcessor {
                 }
 
                 if (industryGroupQuotation != null && this.areQuotationsOfSameDay(quotation, industryGroupQuotation)) {
-                    quotation.getIndicator()
+                    quotation.getIndicator().getRelativeStrengthData()
                             .setRsNumberIndustryGroup(industryGroupQuotation.getIndicator().getRsNumber());
                 }
             }

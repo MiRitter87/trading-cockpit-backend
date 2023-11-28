@@ -24,6 +24,12 @@ public class RelativeStrengthData {
     private Integer id;
 
     /**
+     * The RS number of the corresponding industry group.
+     */
+    @Transient
+    private int rsNumberIndustryGroup;
+
+    /**
      * The Indicator this data belong to.
      */
     @Transient
@@ -48,6 +54,20 @@ public class RelativeStrengthData {
      */
     public void setId(final Integer id) {
         this.id = id;
+    }
+
+    /**
+     * @return the rsNumberIndustryGroup
+     */
+    public int getRsNumberIndustryGroup() {
+        return rsNumberIndustryGroup;
+    }
+
+    /**
+     * @param rsNumberIndustryGroup the rsNumberIndustryGroup to set
+     */
+    public void setRsNumberIndustryGroup(final int rsNumberIndustryGroup) {
+        this.rsNumberIndustryGroup = rsNumberIndustryGroup;
     }
 
     /**

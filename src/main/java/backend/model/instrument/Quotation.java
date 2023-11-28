@@ -258,6 +258,7 @@ public class Quotation {
 
         if (this.indicator != null) {
             this.indicator.setId(this.id);
+            this.indicator.getRelativeStrengthData().setId(this.id);
         }
     }
 

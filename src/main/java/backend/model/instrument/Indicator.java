@@ -117,12 +117,6 @@ public class Indicator {
     private int rsNumberSector;
 
     /**
-     * The RS number of the corresponding industry group.
-     */
-    @Transient
-    private int rsNumberIndustryGroup;
-
-    /**
      * Composite RS number consisting of RS number of an Instrument and its referenced industry group.
      */
     @Transient
@@ -169,7 +163,7 @@ public class Indicator {
      * Default constructor.
      */
     public Indicator() {
-
+        this.relativeStrengthData = new RelativeStrengthData();
     }
 
     /**
@@ -380,20 +374,6 @@ public class Indicator {
      */
     public void setRsNumberSector(final int rsNumberSector) {
         this.rsNumberSector = rsNumberSector;
-    }
-
-    /**
-     * @return the rsNumberIndustryGroup
-     */
-    public int getRsNumberIndustryGroup() {
-        return rsNumberIndustryGroup;
-    }
-
-    /**
-     * @param rsNumberIndustryGroup the rsNumberIndustryGroup to set
-     */
-    public void setRsNumberIndustryGroup(final int rsNumberIndustryGroup) {
-        this.rsNumberIndustryGroup = rsNumberIndustryGroup;
     }
 
     /**

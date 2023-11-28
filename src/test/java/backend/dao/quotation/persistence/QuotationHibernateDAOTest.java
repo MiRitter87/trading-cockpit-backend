@@ -552,7 +552,7 @@ public class QuotationHibernateDAOTest {
             assertEquals(this.xliSectorQuotation1Indicator.getRsNumber(),
                     databaseQuotation.getIndicator().getRsNumberSector());
             assertEquals(this.copperIndustryGroupQuotation1Indicator.getRsNumber(),
-                    databaseQuotation.getIndicator().getRsNumberIndustryGroup());
+                    databaseQuotation.getIndicator().getRelativeStrengthData().getRsNumberIndustryGroup());
 
             // Assure the composite RS number based on an Instrument and its industry group is provided.
             expectedCompositeRsNumberIg = this.appleQuotation2.getIndicator().getRsNumber()
