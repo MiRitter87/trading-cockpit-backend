@@ -9,6 +9,7 @@
         <class>backend.model.instrument.Instrument</class>
         <class>backend.model.instrument.Quotation</class>
         <class>backend.model.instrument.Indicator</class>
+        <class>backend.model.instrument.RelativeStrengthData</class>
         <class>backend.model.list.List</class>
         <class>backend.model.scan.Scan</class>
         <class>backend.model.statistic.Statistic</class>

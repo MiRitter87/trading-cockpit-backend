@@ -2,9 +2,12 @@ package backend.model.instrument;
 
 import java.util.Objects;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
@@ -154,6 +157,13 @@ public class Indicator {
      */
     @Column(name = "SMA30_VOLUME")
     private long sma30Volume;
+
+    /**
+     * Relative strength data.
+     */
+    @OneToOne(targetEntity = RelativeStrengthData.class, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "RS_DATA_ID")
+    private RelativeStrengthData relativeStrengthData;
 
     /**
      * Default constructor.
@@ -482,6 +492,24 @@ public class Indicator {
      */
     public void setEma21(final float ema21) {
         this.ema21 = ema21;
+    }
+
+    /**
+     * @return the relativeStrengthData
+     */
+    public RelativeStrengthData getRelativeStrengthData() {
+        return relativeStrengthData;
+    }
+
+    /**
+     * @param relativeStrengthData the relativeStrengthData to set
+     */
+    public void setRelativeStrengthData(final RelativeStrengthData relativeStrengthData) {
+        this.relativeStrengthData = relativeStrengthData;
+
+        if (this.relativeStrengthData != null) {
+            this.relativeStrengthData.setId(this.id);
+        }
     }
 
     /**
