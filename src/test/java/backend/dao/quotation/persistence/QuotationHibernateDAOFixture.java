@@ -232,7 +232,7 @@ public class QuotationHibernateDAOFixture {
         Indicator indicator = new Indicator();
 
         indicator.setStage(3);
-        indicator.setRsNumber(24);
+        indicator.getRelativeStrengthData().setRsNumber(24);
 
         return indicator;
     }
@@ -259,7 +259,7 @@ public class QuotationHibernateDAOFixture {
         Indicator indicator = new Indicator();
 
         indicator.setStage(1);
-        indicator.setRsNumber(46);
+        indicator.getRelativeStrengthData().setRsNumber(46);
 
         return indicator;
     }
@@ -273,7 +273,7 @@ public class QuotationHibernateDAOFixture {
         Indicator indicator = new Indicator();
 
         indicator.setStage(4);
-        indicator.setRsNumber(12);
+        indicator.getRelativeStrengthData().setRsNumber(12);
 
         return indicator;
     }

@@ -549,14 +549,14 @@ public class QuotationHibernateDAOTest {
             assertEquals(this.appleQuotation2, databaseQuotation);
 
             // Assure the RS number of the sector and industry group is provided. These are transient attributes.
-            assertEquals(this.xliSectorQuotation1Indicator.getRsNumber(),
+            assertEquals(this.xliSectorQuotation1Indicator.getRelativeStrengthData().getRsNumber(),
                     databaseQuotation.getIndicator().getRelativeStrengthData().getRsNumberSector());
-            assertEquals(this.copperIndustryGroupQuotation1Indicator.getRsNumber(),
+            assertEquals(this.copperIndustryGroupQuotation1Indicator.getRelativeStrengthData().getRsNumber(),
                     databaseQuotation.getIndicator().getRelativeStrengthData().getRsNumberIndustryGroup());
 
             // Assure the composite RS number based on an Instrument and its industry group is provided.
-            expectedCompositeRsNumberIg = this.appleQuotation2.getIndicator().getRsNumber()
-                    + this.copperIndustryGroupQuotation1Indicator.getRsNumber();
+            expectedCompositeRsNumberIg = this.appleQuotation2.getIndicator().getRelativeStrengthData().getRsNumber()
+                    + this.copperIndustryGroupQuotation1Indicator.getRelativeStrengthData().getRsNumber();
             expectedCompositeRsNumberIg = (int) Math.ceil((double) expectedCompositeRsNumberIg / 2);
             assertEquals(expectedCompositeRsNumberIg,
                     databaseQuotation.getIndicator().getRelativeStrengthData().getRsNumberCompositeIg());

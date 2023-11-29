@@ -37,10 +37,10 @@ public class QuotationQueryProvider {
      */
     public Query getQueryForMinerviniTrendTemplate() {
         return this.entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i "
-                + "LEFT JOIN FETCH i.sector LEFT JOIN FETCH i.industryGroup "
-                + "JOIN q.indicator r WHERE q.id IN :quotationIds AND q.indicator IS NOT NULL "
+                + "LEFT JOIN FETCH i.sector LEFT JOIN FETCH i.industryGroup JOIN q.indicator r "
+                + "JOIN r.relativeStrengthData s WHERE q.id IN :quotationIds AND q.indicator IS NOT NULL "
                 + "AND q.close > r.sma50 AND r.sma50 > r.sma150 AND r.sma150 > r.sma200 "
-                + "AND r.distanceTo52WeekLow >= 30 AND r.distanceTo52WeekHigh >= -25 AND r.rsNumber >= 70");
+                + "AND r.distanceTo52WeekLow >= 30 AND r.distanceTo52WeekHigh >= -25 AND s.rsNumber >= 70");
     }
 
     /**

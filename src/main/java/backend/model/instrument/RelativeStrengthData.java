@@ -1,5 +1,7 @@
 package backend.model.instrument;
 
+import java.util.Objects;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
@@ -22,6 +24,12 @@ public class RelativeStrengthData {
     @Id
     @Column(name = "RS_DATA_ID")
     private Integer id;
+
+    /**
+     * The relative strength percentile of the instrument in relation to a set of other instruments.
+     */
+    @Column(name = "RS_NUMBER")
+    private int rsNumber;
 
     /**
      * The RS number of the corresponding sector.
@@ -66,6 +74,20 @@ public class RelativeStrengthData {
      */
     public void setId(final Integer id) {
         this.id = id;
+    }
+
+    /**
+     * @return the rsNumber
+     */
+    public int getRsNumber() {
+        return rsNumber;
+    }
+
+    /**
+     * @param rsNumber the rsNumber to set
+     */
+    public void setRsNumber(final int rsNumber) {
+        this.rsNumber = rsNumber;
     }
 
     /**
@@ -123,5 +145,31 @@ public class RelativeStrengthData {
      */
     public void setIndicator(final Indicator indicator) {
         this.indicator = indicator;
+    }
+
+    /**
+     * Calculates the hashCode of the RelativeStrengthData.
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, rsNumber);
+    }
+
+    /**
+     * Indicates whether some other RelativeStrengthData is "equal to" this one.
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        RelativeStrengthData other = (RelativeStrengthData) obj;
+        return Objects.equals(id, other.id) && rsNumber == other.rsNumber;
     }
 }

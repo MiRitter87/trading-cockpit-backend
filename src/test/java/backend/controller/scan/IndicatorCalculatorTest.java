@@ -187,9 +187,9 @@ public class IndicatorCalculatorTest {
         this.indicatorCalculator.calculateRsNumbers(quotations);
 
         // Verify the correct calculation.
-        assertEquals(33, this.dmlQuotation2.getIndicator().getRsNumber());
-        assertEquals(67, this.dmlQuotation3.getIndicator().getRsNumber());
-        assertEquals(100, this.dmlQuotation1.getIndicator().getRsNumber());
+        assertEquals(33, this.dmlQuotation2.getIndicator().getRelativeStrengthData().getRsNumber());
+        assertEquals(67, this.dmlQuotation3.getIndicator().getRelativeStrengthData().getRsNumber());
+        assertEquals(100, this.dmlQuotation1.getIndicator().getRelativeStrengthData().getRsNumber());
     }
 
     @Test

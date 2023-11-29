@@ -376,7 +376,6 @@ public class QuotationServiceFixture {
      */
     public List<Quotation> getDenisonMinesQuotationsWithoutIndicators(final Instrument instrument) {
         QuotationProviderDAO quotationProviderYahooDAO = new QuotationProviderYahooDAOStub();
-        ;
         List<Quotation> quotationsWithoutIndicators = new ArrayList<>();
 
         try {
@@ -405,7 +404,7 @@ public class QuotationServiceFixture {
         indicator.setSma200(60);
         indicator.setSma150((float) 63.45);
         indicator.setSma50((float) 69.24);
-        indicator.setRsNumber(71);
+        indicator.getRelativeStrengthData().setRsNumber(71);
         indicator.setPerformance5Days((float) 12.44);
         indicator.setDistanceTo52WeekHigh((float) -4.4);
         indicator.setDistanceTo52WeekLow((float) 78.81);
@@ -429,7 +428,7 @@ public class QuotationServiceFixture {
         indicator.setSma200((float) 16.36);
         indicator.setSma150((float) 15.08);
         indicator.setSma50((float) 13.07);
-        indicator.setRsNumber(45);
+        indicator.getRelativeStrengthData().setRsNumber(45);
         indicator.setPerformance5Days((float) -10.21);
         indicator.setDistanceTo52WeekHigh((float) -9.41);
         indicator.setDistanceTo52WeekLow((float) 48.81);
@@ -453,7 +452,7 @@ public class QuotationServiceFixture {
         indicator.setSma200((float) 74.02);
         indicator.setSma150((float) 76.84);
         indicator.setSma50((float) 78.15);
-        indicator.setRsNumber(71);
+        indicator.getRelativeStrengthData().setRsNumber(71);
         indicator.setPerformance5Days((float) 3.17);
         indicator.setDistanceTo52WeekHigh((float) -21.4);
         indicator.setDistanceTo52WeekLow((float) 78.81);
@@ -477,7 +476,7 @@ public class QuotationServiceFixture {
         indicator.setSma200((float) 79.83);
         indicator.setSma150((float) 78.64);
         indicator.setSma50((float) 74.01);
-        indicator.setRsNumber(71);
+        indicator.getRelativeStrengthData().setRsNumber(71);
         indicator.setPerformance5Days((float) -6.70);
         indicator.setDistanceTo52WeekHigh((float) -9.41);
         indicator.setDistanceTo52WeekLow((float) 0.81);

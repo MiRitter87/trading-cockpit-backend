@@ -114,7 +114,7 @@ public class ScanTemplateProcessor {
 
                 if (sectorQuotation != null && this.areQuotationsOfSameDay(quotation, sectorQuotation)) {
                     quotation.getIndicator().getRelativeStrengthData()
-                            .setRsNumberSector(sectorQuotation.getIndicator().getRsNumber());
+                            .setRsNumberSector(sectorQuotation.getIndicator().getRelativeStrengthData().getRsNumber());
                 }
             }
         }
@@ -152,8 +152,8 @@ public class ScanTemplateProcessor {
                 }
 
                 if (industryGroupQuotation != null && this.areQuotationsOfSameDay(quotation, industryGroupQuotation)) {
-                    quotation.getIndicator().getRelativeStrengthData()
-                            .setRsNumberIndustryGroup(industryGroupQuotation.getIndicator().getRsNumber());
+                    quotation.getIndicator().getRelativeStrengthData().setRsNumberIndustryGroup(
+                            industryGroupQuotation.getIndicator().getRelativeStrengthData().getRsNumber());
                 }
             }
         }
@@ -194,8 +194,8 @@ public class ScanTemplateProcessor {
                 }
 
                 if (industryGroupQuotation != null && this.areQuotationsOfSameDay(quotation, industryGroupQuotation)) {
-                    rsNumberSum = quotation.getIndicator().getRsNumber()
-                            + industryGroupQuotation.getIndicator().getRsNumber();
+                    rsNumberSum = quotation.getIndicator().getRelativeStrengthData().getRsNumber()
+                            + industryGroupQuotation.getIndicator().getRelativeStrengthData().getRsNumber();
                     compositeRsNumber = (int) Math.ceil((double) rsNumberSum / 2);
                     quotation.getIndicator().getRelativeStrengthData().setRsNumberCompositeIg(compositeRsNumber);
                 }

@@ -319,7 +319,7 @@ public class IndicatorCalculator {
 
             indicator = quotations.get(i).getIndicator();
             if (indicator != null) {
-                indicator.setRsNumber(rsNumber.intValue());
+                indicator.getRelativeStrengthData().setRsNumber(rsNumber.intValue());
             }
         }
     }

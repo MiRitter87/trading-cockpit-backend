@@ -104,12 +104,6 @@ public class Indicator {
     private float rsPercentSum;
 
     /**
-     * The relative strength percentile of the instrument in relation to a set of other instruments.
-     */
-    @Column(name = "RS_NUMBER")
-    private int rsNumber;
-
-    /**
      * The length of the most recent consolidation in weeks, beginning at the most recent 52-week high.
      */
     @Column(name = "BASE_LENGTH_WEEKS")
@@ -336,20 +330,6 @@ public class Indicator {
     }
 
     /**
-     * @return the rsNumber
-     */
-    public int getRsNumber() {
-        return rsNumber;
-    }
-
-    /**
-     * @param rsNumber the rsNumber to set
-     */
-    public void setRsNumber(final int rsNumber) {
-        this.rsNumber = rsNumber;
-    }
-
-    /**
      * @return the baseLengthWeeks
      */
     public int getBaseLengthWeeks() {
@@ -456,10 +436,9 @@ public class Indicator {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(bollingerBandWidth, distanceTo52WeekHigh, distanceTo52WeekLow, ema21, id, rsNumber,
-                rsPercentSum, sma150, sma200, sma50, sma10, sma20, stage, volumeDifferential5Days,
-                volumeDifferential10Days, baseLengthWeeks, upDownVolumeRatio, performance5Days, liquidity20Days,
-                sma30Volume);
+        return Objects.hash(bollingerBandWidth, distanceTo52WeekHigh, distanceTo52WeekLow, ema21, id, rsPercentSum,
+                sma150, sma200, sma50, sma10, sma20, stage, volumeDifferential5Days, volumeDifferential10Days,
+                baseLengthWeeks, upDownVolumeRatio, performance5Days, liquidity20Days, sma30Volume);
     }
 
     /**
@@ -480,7 +459,7 @@ public class Indicator {
         return Float.floatToIntBits(bollingerBandWidth) == Float.floatToIntBits(other.bollingerBandWidth)
                 && Float.floatToIntBits(distanceTo52WeekHigh) == Float.floatToIntBits(other.distanceTo52WeekHigh)
                 && Float.floatToIntBits(distanceTo52WeekLow) == Float.floatToIntBits(other.distanceTo52WeekLow)
-                && Objects.equals(id, other.id) && rsNumber == other.rsNumber
+                && Objects.equals(id, other.id)
                 && Float.floatToIntBits(rsPercentSum) == Float.floatToIntBits(other.rsPercentSum)
                 && Float.floatToIntBits(sma150) == Float.floatToIntBits(other.sma150)
                 && Float.floatToIntBits(sma200) == Float.floatToIntBits(other.sma200)
