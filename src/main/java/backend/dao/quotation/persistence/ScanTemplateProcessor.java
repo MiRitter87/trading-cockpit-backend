@@ -113,7 +113,8 @@ public class ScanTemplateProcessor {
                 }
 
                 if (sectorQuotation != null && this.areQuotationsOfSameDay(quotation, sectorQuotation)) {
-                    quotation.getIndicator().setRsNumberSector(sectorQuotation.getIndicator().getRsNumber());
+                    quotation.getIndicator().getRelativeStrengthData()
+                            .setRsNumberSector(sectorQuotation.getIndicator().getRsNumber());
                 }
             }
         }
@@ -196,7 +197,7 @@ public class ScanTemplateProcessor {
                     rsNumberSum = quotation.getIndicator().getRsNumber()
                             + industryGroupQuotation.getIndicator().getRsNumber();
                     compositeRsNumber = (int) Math.ceil((double) rsNumberSum / 2);
-                    quotation.getIndicator().setRsNumberCompositeIg(compositeRsNumber);
+                    quotation.getIndicator().getRelativeStrengthData().setRsNumberCompositeIg(compositeRsNumber);
                 }
             }
         }

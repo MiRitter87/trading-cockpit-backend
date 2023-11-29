@@ -24,10 +24,22 @@ public class RelativeStrengthData {
     private Integer id;
 
     /**
+     * The RS number of the corresponding sector.
+     */
+    @Transient
+    private int rsNumberSector;
+
+    /**
      * The RS number of the corresponding industry group.
      */
     @Transient
     private int rsNumberIndustryGroup;
+
+    /**
+     * Composite RS number consisting of RS number of an Instrument and its referenced industry group.
+     */
+    @Transient
+    private int rsNumberCompositeIg;
 
     /**
      * The Indicator this data belong to.
@@ -57,6 +69,20 @@ public class RelativeStrengthData {
     }
 
     /**
+     * @return the rsNumberSector
+     */
+    public int getRsNumberSector() {
+        return rsNumberSector;
+    }
+
+    /**
+     * @param rsNumberSector the rsNumberSector to set
+     */
+    public void setRsNumberSector(final int rsNumberSector) {
+        this.rsNumberSector = rsNumberSector;
+    }
+
+    /**
      * @return the rsNumberIndustryGroup
      */
     public int getRsNumberIndustryGroup() {
@@ -68,6 +94,20 @@ public class RelativeStrengthData {
      */
     public void setRsNumberIndustryGroup(final int rsNumberIndustryGroup) {
         this.rsNumberIndustryGroup = rsNumberIndustryGroup;
+    }
+
+    /**
+     * @return the rsNumberCompositeIg
+     */
+    public int getRsNumberCompositeIg() {
+        return rsNumberCompositeIg;
+    }
+
+    /**
+     * @param rsNumberCompositeIg the rsNumberCompositeIg to set
+     */
+    public void setRsNumberCompositeIg(final int rsNumberCompositeIg) {
+        this.rsNumberCompositeIg = rsNumberCompositeIg;
     }
 
     /**

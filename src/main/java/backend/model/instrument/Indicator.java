@@ -9,7 +9,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 
 /**
  * Indicator data that are calculated based on quotations.
@@ -109,18 +108,6 @@ public class Indicator {
      */
     @Column(name = "RS_NUMBER")
     private int rsNumber;
-
-    /**
-     * The RS number of the corresponding sector.
-     */
-    @Transient
-    private int rsNumberSector;
-
-    /**
-     * Composite RS number consisting of RS number of an Instrument and its referenced industry group.
-     */
-    @Transient
-    private int rsNumberCompositeIg;
 
     /**
      * The length of the most recent consolidation in weeks, beginning at the most recent 52-week high.
@@ -360,34 +347,6 @@ public class Indicator {
      */
     public void setRsNumber(final int rsNumber) {
         this.rsNumber = rsNumber;
-    }
-
-    /**
-     * @return the rsNumberSector
-     */
-    public int getRsNumberSector() {
-        return rsNumberSector;
-    }
-
-    /**
-     * @param rsNumberSector the rsNumberSector to set
-     */
-    public void setRsNumberSector(final int rsNumberSector) {
-        this.rsNumberSector = rsNumberSector;
-    }
-
-    /**
-     * @return the rsNumberCompositeIg
-     */
-    public int getRsNumberCompositeIg() {
-        return rsNumberCompositeIg;
-    }
-
-    /**
-     * @param rsNumberCompositeIg the rsNumberCompositeIg to set
-     */
-    public void setRsNumberCompositeIg(final int rsNumberCompositeIg) {
-        this.rsNumberCompositeIg = rsNumberCompositeIg;
     }
 
     /**
