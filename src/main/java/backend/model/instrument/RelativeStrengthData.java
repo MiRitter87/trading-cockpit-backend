@@ -26,6 +26,12 @@ public class RelativeStrengthData {
     private Integer id;
 
     /**
+     * The sum of an instruments performance in different time frames used for rsNumber calculation.
+     */
+    @Column(name = "RS_PERCENT_SUM")
+    private float rsPercentSum;
+
+    /**
      * The relative strength percentile of the instrument in relation to a set of other instruments.
      */
     @Column(name = "RS_NUMBER")
@@ -74,6 +80,20 @@ public class RelativeStrengthData {
      */
     public void setId(final Integer id) {
         this.id = id;
+    }
+
+    /**
+     * @return the rsPercentSum
+     */
+    public float getRsPercentSum() {
+        return rsPercentSum;
+    }
+
+    /**
+     * @param rsPercentSum the rsPercentSum to set
+     */
+    public void setRsPercentSum(final float rsPercentSum) {
+        this.rsPercentSum = rsPercentSum;
     }
 
     /**
@@ -152,7 +172,7 @@ public class RelativeStrengthData {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(id, rsNumber);
+        return Objects.hash(id, rsNumber, rsPercentSum);
     }
 
     /**
@@ -170,6 +190,7 @@ public class RelativeStrengthData {
             return false;
         }
         RelativeStrengthData other = (RelativeStrengthData) obj;
-        return Objects.equals(id, other.id) && rsNumber == other.rsNumber;
+        return Objects.equals(id, other.id) && rsNumber == other.rsNumber
+                && Float.floatToIntBits(rsPercentSum) == Float.floatToIntBits(other.rsPercentSum);
     }
 }

@@ -56,7 +56,7 @@ public class TemplateRsSinceDateProcessor {
             quotationOfDate = quotationsOfInstrument.getQuotations().get(quotationOfDateIndex);
 
             rsPercent = performanceCalculator.getPerformance(currentQuotation, quotationOfDate);
-            currentQuotation.getIndicator().setRsPercentSum(rsPercent);
+            currentQuotation.getIndicator().getRelativeStrengthData().setRsPercentSum(rsPercent);
         }
 
         // Calculate the RS numbers based on the newly calculated performance.

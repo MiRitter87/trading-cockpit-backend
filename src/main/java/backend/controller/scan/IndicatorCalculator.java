@@ -169,7 +169,8 @@ public class IndicatorCalculator {
     private void calculateMostRecentIndicators(final Indicator indicator, final QuotationArray sortedQuotations,
             final Quotation quotation) {
 
-        indicator.setRsPercentSum(this.performanceCalculator.getRSPercentSum(quotation, sortedQuotations));
+        indicator.getRelativeStrengthData()
+                .setRsPercentSum(this.performanceCalculator.getRSPercentSum(quotation, sortedQuotations));
         indicator.setEma21(
                 this.movingAverageCalculator.getExponentialMovingAverage(DAYS_EMA21, quotation, sortedQuotations));
         indicator

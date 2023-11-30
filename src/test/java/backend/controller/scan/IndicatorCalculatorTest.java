@@ -160,15 +160,15 @@ public class IndicatorCalculatorTest {
     private void initializeDmlQuotations() {
         this.dmlQuotation1 = new Quotation();
         this.dmlQuotation1.setIndicator(new Indicator());
-        this.dmlQuotation1.getIndicator().setRsPercentSum((float) 34.5);
+        this.dmlQuotation1.getIndicator().getRelativeStrengthData().setRsPercentSum((float) 34.5);
 
         this.dmlQuotation2 = new Quotation();
         this.dmlQuotation2.setIndicator(new Indicator());
-        this.dmlQuotation2.getIndicator().setRsPercentSum(-5);
+        this.dmlQuotation2.getIndicator().getRelativeStrengthData().setRsPercentSum(-5);
 
         this.dmlQuotation3 = new Quotation();
         this.dmlQuotation3.setIndicator(new Indicator());
-        this.dmlQuotation3.getIndicator().setRsPercentSum((float) 12.35);
+        this.dmlQuotation3.getIndicator().getRelativeStrengthData().setRsPercentSum((float) 12.35);
     }
 
     @Test

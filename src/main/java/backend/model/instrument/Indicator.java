@@ -98,12 +98,6 @@ public class Indicator {
     private float volumeDifferential10Days;
 
     /**
-     * The sum of an instruments performance in different time frames used for rsNumber calculation.
-     */
-    @Column(name = "RS_PERCENT_SUM")
-    private float rsPercentSum;
-
-    /**
      * The length of the most recent consolidation in weeks, beginning at the most recent 52-week high.
      */
     @Column(name = "BASE_LENGTH_WEEKS")
@@ -316,20 +310,6 @@ public class Indicator {
     }
 
     /**
-     * @return the rsPercentSum
-     */
-    public float getRsPercentSum() {
-        return rsPercentSum;
-    }
-
-    /**
-     * @param rsPercentSum the rsPercentSum to set
-     */
-    public void setRsPercentSum(final float rsPercentSum) {
-        this.rsPercentSum = rsPercentSum;
-    }
-
-    /**
      * @return the baseLengthWeeks
      */
     public int getBaseLengthWeeks() {
@@ -436,9 +416,9 @@ public class Indicator {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(bollingerBandWidth, distanceTo52WeekHigh, distanceTo52WeekLow, ema21, id, rsPercentSum,
-                sma150, sma200, sma50, sma10, sma20, stage, volumeDifferential5Days, volumeDifferential10Days,
-                baseLengthWeeks, upDownVolumeRatio, performance5Days, liquidity20Days, sma30Volume);
+        return Objects.hash(bollingerBandWidth, distanceTo52WeekHigh, distanceTo52WeekLow, ema21, id, sma150, sma200,
+                sma50, sma10, sma20, stage, volumeDifferential5Days, volumeDifferential10Days, baseLengthWeeks,
+                upDownVolumeRatio, performance5Days, liquidity20Days, sma30Volume);
     }
 
     /**
@@ -459,9 +439,7 @@ public class Indicator {
         return Float.floatToIntBits(bollingerBandWidth) == Float.floatToIntBits(other.bollingerBandWidth)
                 && Float.floatToIntBits(distanceTo52WeekHigh) == Float.floatToIntBits(other.distanceTo52WeekHigh)
                 && Float.floatToIntBits(distanceTo52WeekLow) == Float.floatToIntBits(other.distanceTo52WeekLow)
-                && Objects.equals(id, other.id)
-                && Float.floatToIntBits(rsPercentSum) == Float.floatToIntBits(other.rsPercentSum)
-                && Float.floatToIntBits(sma150) == Float.floatToIntBits(other.sma150)
+                && Objects.equals(id, other.id) && Float.floatToIntBits(sma150) == Float.floatToIntBits(other.sma150)
                 && Float.floatToIntBits(sma200) == Float.floatToIntBits(other.sma200)
                 && Float.floatToIntBits(sma50) == Float.floatToIntBits(other.sma50)
                 && Float.floatToIntBits(sma10) == Float.floatToIntBits(other.sma10)

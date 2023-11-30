@@ -27,9 +27,11 @@ public class QuotationRsPercentSumComparator implements Comparator<Quotation> {
         }
 
         // Compare if both indicators are defined.
-        if (quotation1.getIndicator().getRsPercentSum() > quotation2.getIndicator().getRsPercentSum()) {
+        if (quotation1.getIndicator().getRelativeStrengthData().getRsPercentSum() > quotation2.getIndicator()
+                .getRelativeStrengthData().getRsPercentSum()) {
             return -1;
-        } else if (quotation1.getIndicator().getRsPercentSum() < quotation2.getIndicator().getRsPercentSum()) {
+        } else if (quotation1.getIndicator().getRelativeStrengthData().getRsPercentSum() < quotation2.getIndicator()
+                .getRelativeStrengthData().getRsPercentSum()) {
             return 1;
         } else {
             return 0;
