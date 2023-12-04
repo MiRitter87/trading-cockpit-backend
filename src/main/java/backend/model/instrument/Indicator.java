@@ -131,14 +131,25 @@ public class Indicator {
      * Relative strength data.
      */
     @OneToOne(targetEntity = RelativeStrengthData.class, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "RS_DATA_ID")
+    @JoinColumn(name = "RS_DATA_ID", nullable = true)
     private RelativeStrengthData relativeStrengthData;
 
     /**
      * Default constructor.
      */
     public Indicator() {
-        this.relativeStrengthData = new RelativeStrengthData();
+
+    }
+
+    /**
+     * Initializes the Indicator.
+     *
+     * @param withRelativeStrengthData Initialize indicators RelativeStrengthData, if true.
+     */
+    public Indicator(final boolean withRelativeStrengthData) {
+        if (withRelativeStrengthData) {
+            this.relativeStrengthData = new RelativeStrengthData();
+        }
     }
 
     /**

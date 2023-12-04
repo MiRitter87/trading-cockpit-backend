@@ -398,7 +398,7 @@ public class QuotationServiceFixture {
      * @return The appleQuotation2Indicator.
      */
     public Indicator getAppleQuotation2Indicator() {
-        Indicator indicator = new Indicator();
+        Indicator indicator = new Indicator(true);
 
         indicator.setStage(2);
         indicator.setSma200(60);
@@ -422,7 +422,7 @@ public class QuotationServiceFixture {
      * @return The fordQuotation1Indicator.
      */
     public Indicator getFordQuotation1Indicator() {
-        Indicator indicator = new Indicator();
+        Indicator indicator = new Indicator(true);
 
         indicator.setStage(3);
         indicator.setSma200((float) 16.36);
@@ -446,7 +446,7 @@ public class QuotationServiceFixture {
      * @return The xleQuotation2Indicator.
      */
     public Indicator getXleQuotation2Indicator() {
-        Indicator indicator = new Indicator();
+        Indicator indicator = new Indicator(true);
 
         indicator.setStage(2);
         indicator.setSma200((float) 74.02);
@@ -470,7 +470,7 @@ public class QuotationServiceFixture {
      * @return The xlbQuotation1Indicator.
      */
     public Indicator getXlbQuotation1Indicator() {
-        Indicator indicator = new Indicator();
+        Indicator indicator = new Indicator(true);
 
         indicator.setStage(4);
         indicator.setSma200((float) 79.83);

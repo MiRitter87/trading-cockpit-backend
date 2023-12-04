@@ -11,6 +11,7 @@ import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
 import backend.model.instrument.QuotationRsPercentSumComparator;
+import backend.model.instrument.RelativeStrengthData;
 
 /**
  * Performs calculations of indicators based on the instruments quotations.
@@ -149,6 +150,7 @@ public class IndicatorCalculator {
         }
 
         if (mostRecent) {
+            indicator.setRelativeStrengthData(new RelativeStrengthData());
             this.calculateMostRecentIndicators(indicator, sortedQuotations, quotation);
         } else {
             this.calculateHistoricalIndicators(indicator, sortedQuotations, quotation);
