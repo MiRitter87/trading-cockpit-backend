@@ -60,6 +60,6 @@ public class TemplateRsSinceDateProcessor {
         }
 
         // Calculate the RS numbers based on the newly calculated performance.
-        indicatorCalculator.calculateRsNumbers(quotations);
+        indicatorCalculator.calculateRsNumber(quotations);
     }
 }

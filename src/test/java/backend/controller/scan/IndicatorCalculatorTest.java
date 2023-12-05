@@ -175,7 +175,7 @@ public class IndicatorCalculatorTest {
     /**
      * Tests the calculation of RS numbers.
      */
-    public void testCalculateRsNumbers() {
+    public void testCalculateRsNumber() {
         List<Quotation> quotations = new ArrayList<>();
 
         // Prepare all quotations on which the RS number is to be calculated.
@@ -184,7 +184,7 @@ public class IndicatorCalculatorTest {
         quotations.add(this.dmlQuotation3);
 
         // Calculate the RS numbers.
-        this.indicatorCalculator.calculateRsNumbers(quotations);
+        this.indicatorCalculator.calculateRsNumber(quotations);
 
         // Verify the correct calculation.
         assertEquals(33, this.dmlQuotation2.getIndicator().getRelativeStrengthData().getRsNumber());

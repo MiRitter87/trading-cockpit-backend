@@ -302,11 +302,20 @@ public class IndicatorCalculator {
     }
 
     /**
-     * Calculates the RS number for each Quotation.
+     * Calculates the various RS numbers for each Quotation.
      *
-     * @param quotations The quotations on which the calculation of the RS number is based.
+     * @param quotations The quotations on which the calculation of the RS numbers is based.
      */
     public void calculateRsNumbers(final List<Quotation> quotations) {
+        this.calculateRsNumber(quotations);
+    }
+
+    /**
+     * Calculates the rsNumber.
+     *
+     * @param quotations The quotations on which the calculation of the rsNumber is based.
+     */
+    public void calculateRsNumber(final List<Quotation> quotations) {
         Indicator indicator;
         BigDecimal rsNumber;
         BigDecimal dividend;
