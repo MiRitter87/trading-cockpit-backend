@@ -161,19 +161,22 @@ public class IndicatorCalculatorTest {
         this.dmlQuotation1 = new Quotation();
         this.dmlQuotation1.setIndicator(new Indicator(true));
         this.dmlQuotation1.getIndicator().getRelativeStrengthData().setRsPercentSum((float) 34.5);
+        this.dmlQuotation1.getIndicator().setDistanceTo52WeekHigh((float) -4.56);
 
         this.dmlQuotation2 = new Quotation();
         this.dmlQuotation2.setIndicator(new Indicator(true));
         this.dmlQuotation2.getIndicator().getRelativeStrengthData().setRsPercentSum(-5);
+        this.dmlQuotation2.getIndicator().setDistanceTo52WeekHigh((float) -0.56);
 
         this.dmlQuotation3 = new Quotation();
         this.dmlQuotation3.setIndicator(new Indicator(true));
         this.dmlQuotation3.getIndicator().getRelativeStrengthData().setRsPercentSum((float) 12.35);
+        this.dmlQuotation3.getIndicator().setDistanceTo52WeekHigh(-7);
     }
 
     @Test
     /**
-     * Tests the calculation of RS numbers.
+     * Tests the calculation of RS numbers: rsNumber.
      */
     public void testCalculateRsNumber() {
         List<Quotation> quotations = new ArrayList<>();
@@ -190,6 +193,27 @@ public class IndicatorCalculatorTest {
         assertEquals(33, this.dmlQuotation2.getIndicator().getRelativeStrengthData().getRsNumber());
         assertEquals(67, this.dmlQuotation3.getIndicator().getRelativeStrengthData().getRsNumber());
         assertEquals(100, this.dmlQuotation1.getIndicator().getRelativeStrengthData().getRsNumber());
+    }
+
+    @Test
+    /**
+     * Tests the calculation of RS numbers: rsNumberDistance52WeekHigh.
+     */
+    public void testCalculateRsNumberDistanceTo52wHigh() {
+        List<Quotation> quotations = new ArrayList<>();
+
+        // Prepare all quotations on which the RS number is to be calculated.
+        quotations.add(this.dmlQuotation1);
+        quotations.add(this.dmlQuotation2);
+        quotations.add(this.dmlQuotation3);
+
+        // Calculate the RS numbers.
+        this.indicatorCalculator.calculateRsNumberDistanceTo52wHigh(quotations);
+
+        // Verify the correct calculation.
+        assertEquals(33, this.dmlQuotation3.getIndicator().getRelativeStrengthData().getRsNumberDistance52WeekHigh());
+        assertEquals(67, this.dmlQuotation1.getIndicator().getRelativeStrengthData().getRsNumberDistance52WeekHigh());
+        assertEquals(100, this.dmlQuotation2.getIndicator().getRelativeStrengthData().getRsNumberDistance52WeekHigh());
     }
 
     @Test

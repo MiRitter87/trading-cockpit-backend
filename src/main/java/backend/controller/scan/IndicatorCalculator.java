@@ -10,6 +10,7 @@ import backend.model.instrument.Indicator;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
+import backend.model.instrument.QuotationDistanceTo52WeekHighComparator;
 import backend.model.instrument.QuotationRsPercentSumComparator;
 import backend.model.instrument.RelativeStrengthData;
 
@@ -308,6 +309,7 @@ public class IndicatorCalculator {
      */
     public void calculateRsNumbers(final List<Quotation> quotations) {
         this.calculateRsNumber(quotations);
+        this.calculateRsNumberDistanceTo52wHigh(quotations);
     }
 
     /**
@@ -332,6 +334,32 @@ public class IndicatorCalculator {
             indicator = quotations.get(i).getIndicator();
             if (indicator != null) {
                 indicator.getRelativeStrengthData().setRsNumber(rsNumber.intValue());
+            }
+        }
+    }
+
+    /**
+     * Calculates the RS number that measures the distance to the 52-week high.
+     *
+     * @param quotations The quotations on which the calculation of the rsNumberDistance52WeekHigh is based.
+     */
+    public void calculateRsNumberDistanceTo52wHigh(final List<Quotation> quotations) {
+        Indicator indicator;
+        BigDecimal rsNumber;
+        BigDecimal dividend;
+        BigDecimal numberOfElements;
+
+        Collections.sort(quotations, new QuotationDistanceTo52WeekHighComparator());
+        numberOfElements = BigDecimal.valueOf(quotations.size());
+
+        for (int i = 0; i < quotations.size(); i++) {
+            dividend = numberOfElements.subtract(BigDecimal.valueOf(i));
+            rsNumber = dividend.divide(numberOfElements, 2, RoundingMode.HALF_UP);
+            rsNumber = rsNumber.multiply(BigDecimal.valueOf(HUNDRED_PERCENT));
+
+            indicator = quotations.get(i).getIndicator();
+            if (indicator != null) {
+                indicator.getRelativeStrengthData().setRsNumberDistance52WeekHigh(rsNumber.intValue());
             }
         }
     }
