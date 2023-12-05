@@ -32,10 +32,18 @@ public class RelativeStrengthData {
     private float rsPercentSum;
 
     /**
-     * The relative strength percentile of the instrument in relation to a set of other instruments.
+     * The relative strength percentile of the instrument in relation to a set of other instruments. This is a measure
+     * of the price performance over a period of 3 months, 6 months, 9 months and 12 months.
      */
     @Column(name = "RS_NUMBER")
     private int rsNumber;
+
+    /**
+     * The relative strength percentile of the instrument in relation to a set of other instruments. This is a measure
+     * of the distance to the 52-week high.
+     */
+    @Column(name = "RS_NUMBER_DISTANCE_52W_HIGH")
+    private int rsNumberDistance52WeekHigh;
 
     /**
      * The RS number of the corresponding sector.
@@ -111,6 +119,20 @@ public class RelativeStrengthData {
     }
 
     /**
+     * @return the rsNumberDistance52WeekHigh
+     */
+    public int getRsNumberDistance52WeekHigh() {
+        return rsNumberDistance52WeekHigh;
+    }
+
+    /**
+     * @param rsNumberDistance52WeekHigh the rsNumberDistance52WeekHigh to set
+     */
+    public void setRsNumberDistance52WeekHigh(final int rsNumberDistance52WeekHigh) {
+        this.rsNumberDistance52WeekHigh = rsNumberDistance52WeekHigh;
+    }
+
+    /**
      * @return the rsNumberSector
      */
     public int getRsNumberSector() {
@@ -172,7 +194,7 @@ public class RelativeStrengthData {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(id, rsNumber, rsPercentSum);
+        return Objects.hash(id, rsNumber, rsNumberDistance52WeekHigh, rsPercentSum);
     }
 
     /**
@@ -191,6 +213,7 @@ public class RelativeStrengthData {
         }
         RelativeStrengthData other = (RelativeStrengthData) obj;
         return Objects.equals(id, other.id) && rsNumber == other.rsNumber
+                && rsNumberDistance52WeekHigh == other.rsNumberDistance52WeekHigh
                 && Float.floatToIntBits(rsPercentSum) == Float.floatToIntBits(other.rsPercentSum);
     }
 }
