@@ -14,16 +14,14 @@ public class QuotationRsPercentSumComparator implements Comparator<Quotation> {
     @Override
     public int compare(final Quotation quotation1, final Quotation quotation2) {
         // Handle possible null values of Indicator.
-        if (quotation1.getIndicator() == null && quotation2.getIndicator() == null) {
+        if (quotation1.getIndicator() == null || quotation2.getIndicator() == null) {
             return 0;
         }
 
-        if (quotation1.getIndicator() == null && quotation2.getIndicator() != null) {
-            return 1;
-        }
-
-        if (quotation1.getIndicator() != null && quotation2.getIndicator() == null) {
-            return -1;
+        // Handle possible null values of RelativeStrengthData.
+        if (quotation1.getIndicator().getRelativeStrengthData() == null
+                || quotation2.getIndicator().getRelativeStrengthData() == null) {
+            return 0;
         }
 
         // Compare if both indicators are defined.
