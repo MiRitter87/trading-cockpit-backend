@@ -2,6 +2,11 @@ package backend.model.instrument;
 
 import java.util.Comparator;
 
+/**
+ * Compares two quotations by their distance to the 52-week high.
+ *
+ * @author Michael
+ */
 public class QuotationDistanceTo52WeekHighComparator implements Comparator<Quotation> {
     /**
      * Compares two quotations for order by the distance to the 52-week high of their Indicator.
@@ -13,7 +18,6 @@ public class QuotationDistanceTo52WeekHighComparator implements Comparator<Quota
             return 0;
         }
 
-        // Compare if both indicators are defined.
         if (quotation1.getIndicator().getDistanceTo52WeekHigh() > quotation2.getIndicator().getDistanceTo52WeekHigh()) {
             return -1;
         } else if (quotation1.getIndicator().getDistanceTo52WeekHigh() < quotation2.getIndicator()
@@ -23,5 +27,4 @@ public class QuotationDistanceTo52WeekHighComparator implements Comparator<Quota
             return 0;
         }
     }
-
 }

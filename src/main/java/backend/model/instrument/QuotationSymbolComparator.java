@@ -3,7 +3,7 @@ package backend.model.instrument;
 import java.util.Comparator;
 
 /**
- * Compares two quotations .
+ * Compares two quotations by the symbol of their Instrument.
  *
  * @author Michael
  */
