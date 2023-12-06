@@ -46,6 +46,13 @@ public class RelativeStrengthData {
     private int rsNumberDistance52WeekHigh;
 
     /**
+     * The relative strength percentile of the instrument in relation to a set of other instruments. This is a measure
+     * of the Up/Down Volume Ratio.
+     */
+    @Column(name = "RS_NUMBER_UD_VOL_RATIO")
+    private int rsNumberUpDownVolumeRatio;
+
+    /**
      * The RS number of the corresponding sector.
      */
     @Transient
@@ -133,6 +140,20 @@ public class RelativeStrengthData {
     }
 
     /**
+     * @return the rsNumberUpDownVolumeRatio
+     */
+    public int getRsNumberUpDownVolumeRatio() {
+        return rsNumberUpDownVolumeRatio;
+    }
+
+    /**
+     * @param rsNumberUpDownVolumeRatio the rsNumberUpDownVolumeRatio to set
+     */
+    public void setRsNumberUpDownVolumeRatio(final int rsNumberUpDownVolumeRatio) {
+        this.rsNumberUpDownVolumeRatio = rsNumberUpDownVolumeRatio;
+    }
+
+    /**
      * @return the rsNumberSector
      */
     public int getRsNumberSector() {
@@ -194,7 +215,7 @@ public class RelativeStrengthData {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(id, rsNumber, rsNumberDistance52WeekHigh, rsPercentSum);
+        return Objects.hash(id, rsNumber, rsNumberDistance52WeekHigh, rsNumberUpDownVolumeRatio, rsPercentSum);
     }
 
     /**
@@ -214,6 +235,7 @@ public class RelativeStrengthData {
         RelativeStrengthData other = (RelativeStrengthData) obj;
         return Objects.equals(id, other.id) && rsNumber == other.rsNumber
                 && rsNumberDistance52WeekHigh == other.rsNumberDistance52WeekHigh
+                && rsNumberUpDownVolumeRatio == other.rsNumberUpDownVolumeRatio
                 && Float.floatToIntBits(rsPercentSum) == Float.floatToIntBits(other.rsPercentSum);
     }
 }
