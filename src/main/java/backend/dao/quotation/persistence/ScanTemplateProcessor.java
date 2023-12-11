@@ -158,6 +158,7 @@ public class ScanTemplateProcessor {
         Quotation industryGroupQuotation;
         int rsNumberSum;
         int compositeRsNumber;
+        final int fiveComponents = 5;
 
         if (quotations.size() == 0 || instrumentType != InstrumentType.STOCK) {
             return;
@@ -172,9 +173,11 @@ public class ScanTemplateProcessor {
                         industryGroupQuotations);
 
                 if (industryGroupQuotation != null && this.areQuotationsOfSameDay(quotation, industryGroupQuotation)) {
-                    rsNumberSum = quotation.getIndicator().getRelativeStrengthData().getRsNumber()
-                            + industryGroupQuotation.getIndicator().getRelativeStrengthData().getRsNumber();
-                    compositeRsNumber = (int) Math.ceil((double) rsNumberSum / 2);
+                    rsNumberSum = quotation.getIndicator().getRelativeStrengthData().getRsNumber() * 2;
+                    rsNumberSum += industryGroupQuotation.getIndicator().getRelativeStrengthData().getRsNumber();
+                    rsNumberSum += quotation.getIndicator().getRelativeStrengthData().getRsNumberDistance52WeekHigh();
+                    rsNumberSum += quotation.getIndicator().getRelativeStrengthData().getRsNumberUpDownVolumeRatio();
+                    compositeRsNumber = (int) Math.ceil((double) rsNumberSum / fiveComponents);
                     quotation.getIndicator().getRelativeStrengthData().setRsNumberCompositeIg(compositeRsNumber);
                 }
             }

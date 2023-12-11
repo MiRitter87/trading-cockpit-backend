@@ -556,8 +556,15 @@ public class QuotationHibernateDAOTest {
 
             // Assure the composite RS number based on an Instrument and its industry group is provided.
             expectedCompositeRsNumberIg = this.appleQuotation2.getIndicator().getRelativeStrengthData().getRsNumber()
-                    + this.copperIndustryGroupQuotation1Indicator.getRelativeStrengthData().getRsNumber();
-            expectedCompositeRsNumberIg = (int) Math.ceil((double) expectedCompositeRsNumberIg / 2);
+                    * 2;
+            expectedCompositeRsNumberIg += this.copperIndustryGroupQuotation1Indicator.getRelativeStrengthData()
+                    .getRsNumber();
+            expectedCompositeRsNumberIg += this.appleQuotation2.getIndicator().getRelativeStrengthData()
+                    .getRsNumberDistance52WeekHigh();
+            expectedCompositeRsNumberIg += this.appleQuotation2.getIndicator().getRelativeStrengthData()
+                    .getRsNumberUpDownVolumeRatio();
+            expectedCompositeRsNumberIg = (int) Math.ceil((double) expectedCompositeRsNumberIg / 5);
+
             assertEquals(expectedCompositeRsNumberIg,
                     databaseQuotation.getIndicator().getRelativeStrengthData().getRsNumberCompositeIg());
         } catch (Exception e) {

@@ -233,6 +233,8 @@ public class QuotationHibernateDAOFixture {
 
         indicator.setStage(3);
         indicator.getRelativeStrengthData().setRsNumber(24);
+        indicator.getRelativeStrengthData().setRsNumberDistance52WeekHigh(87);
+        indicator.getRelativeStrengthData().setRsNumberUpDownVolumeRatio(54);
 
         return indicator;
     }
