@@ -91,7 +91,6 @@ public class ScanTemplateProcessor {
     private void fillSectorRsNumber(final InstrumentType instrumentType, final List<Quotation> quotations)
             throws Exception {
         QuotationArray sectorQuotations = new QuotationArray();
-        List<Quotation> quotationsOfInstrument;
         Quotation sectorQuotation;
 
         if (quotations.size() == 0 || instrumentType != InstrumentType.STOCK) {
@@ -103,14 +102,7 @@ public class ScanTemplateProcessor {
         // Determine and set the sector RS number for each quotation.
         for (Quotation quotation : quotations) {
             if (quotation.getInstrument().getSector() != null) {
-                quotationsOfInstrument = sectorQuotations
-                        .getQuotationsByInstrumentId(quotation.getInstrument().getSector().getId());
-
-                if (quotationsOfInstrument.size() == 1) {
-                    sectorQuotation = quotationsOfInstrument.get(0);
-                } else {
-                    sectorQuotation = null;
-                }
+                sectorQuotation = this.getQuotation(quotation.getInstrument().getSector().getId(), sectorQuotations);
 
                 if (sectorQuotation != null && this.areQuotationsOfSameDay(quotation, sectorQuotation)) {
                     quotation.getIndicator().getRelativeStrengthData()
@@ -130,7 +122,6 @@ public class ScanTemplateProcessor {
     private void fillIndustryGroupRsNumber(final InstrumentType instrumentType, final List<Quotation> quotations)
             throws Exception {
         QuotationArray industryGroupQuotations = new QuotationArray();
-        List<Quotation> quotationsOfInstrument;
         Quotation industryGroupQuotation;
 
         if (quotations.size() == 0 || instrumentType != InstrumentType.STOCK) {
@@ -142,14 +133,8 @@ public class ScanTemplateProcessor {
         // Determine and set the industry group RS number for each quotation.
         for (Quotation quotation : quotations) {
             if (quotation.getInstrument().getIndustryGroup() != null) {
-                quotationsOfInstrument = industryGroupQuotations
-                        .getQuotationsByInstrumentId(quotation.getInstrument().getIndustryGroup().getId());
-
-                if (quotationsOfInstrument.size() == 1) {
-                    industryGroupQuotation = quotationsOfInstrument.get(0);
-                } else {
-                    industryGroupQuotation = null;
-                }
+                industryGroupQuotation = this.getQuotation(quotation.getInstrument().getIndustryGroup().getId(),
+                        industryGroupQuotations);
 
                 if (industryGroupQuotation != null && this.areQuotationsOfSameDay(quotation, industryGroupQuotation)) {
                     quotation.getIndicator().getRelativeStrengthData().setRsNumberIndustryGroup(
@@ -170,7 +155,6 @@ public class ScanTemplateProcessor {
             throws Exception {
 
         QuotationArray industryGroupQuotations = new QuotationArray();
-        List<Quotation> quotationsOfInstrument;
         Quotation industryGroupQuotation;
         int rsNumberSum;
         int compositeRsNumber;
@@ -184,14 +168,8 @@ public class ScanTemplateProcessor {
         // Determine and set the composite RS number for each quotation.
         for (Quotation quotation : quotations) {
             if (quotation.getInstrument().getIndustryGroup() != null) {
-                quotationsOfInstrument = industryGroupQuotations
-                        .getQuotationsByInstrumentId(quotation.getInstrument().getIndustryGroup().getId());
-
-                if (quotationsOfInstrument.size() == 1) {
-                    industryGroupQuotation = quotationsOfInstrument.get(0);
-                } else {
-                    industryGroupQuotation = null;
-                }
+                industryGroupQuotation = this.getQuotation(quotation.getInstrument().getIndustryGroup().getId(),
+                        industryGroupQuotations);
 
                 if (industryGroupQuotation != null && this.areQuotationsOfSameDay(quotation, industryGroupQuotation)) {
                     rsNumberSum = quotation.getIndicator().getRelativeStrengthData().getRsNumber()
@@ -201,6 +179,28 @@ public class ScanTemplateProcessor {
                 }
             }
         }
+    }
+
+    /**
+     * Tries to determine a single Quotation from the given QuotationArray that has the given Instrument ID.
+     *
+     * @param instrumentId The ID of the Instrument whose Quotation is requested.
+     * @param quotations   The QuotationArray.
+     * @return The Quotation with the given ID, if a distinct entry is found; null otherwise.
+     */
+    private Quotation getQuotation(final int instrumentId, final QuotationArray quotations) {
+        List<Quotation> quotationsOfInstrument;
+        Quotation quotation;
+
+        quotationsOfInstrument = quotations.getQuotationsByInstrumentId(instrumentId);
+
+        if (quotationsOfInstrument.size() == 1) {
+            quotation = quotationsOfInstrument.get(0);
+        } else {
+            quotation = null;
+        }
+
+        return quotation;
     }
 
     /**
