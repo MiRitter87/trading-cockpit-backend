@@ -192,7 +192,7 @@ public class QuotationProviderInvestingDAO extends AbstractQuotationProviderDAO 
         final List<DomElement> divs = htmlPage.getElementsByTagName("div");
         for (DomElement element : divs) {
             if (element.getAttribute("class")
-                    .equals("text-5xl font-bold leading-9 md:text-[42px] md:leading-[60px] text-[#232526]")) {
+                    .equals("text-5xl/9 font-bold md:text-[42px] md:leading-[60px] text-[#232526]")) {
                 quotation = new Quotation();
                 quotation.setCurrency(this.getCurrencyForStockExchange(instrument.getStockExchange()));
                 currentPrice = element.getFirstChild().asNormalizedText();
