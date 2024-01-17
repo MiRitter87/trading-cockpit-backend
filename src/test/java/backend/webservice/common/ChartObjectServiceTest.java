@@ -65,6 +65,11 @@ public class ChartObjectServiceTest {
     private Instrument microsoftInstrument;
 
     /**
+     * Instrument of the technology sector.
+     */
+    private Instrument technologySector;
+
+    /**
      * A horizontal line of Apple.
      */
     private HorizontalLine horizontalLine1;
@@ -124,10 +129,12 @@ public class ChartObjectServiceTest {
      * Initializes the database with dummy Instruments.
      */
     private void createDummyInstruments() {
-        this.appleInstrument = this.fixtureHelper.getAppleInstrument();
-        this.microsoftInstrument = this.fixtureHelper.getMicrosoftInstrument();
+        this.technologySector = this.fixtureHelper.getTechnologySector();
+        this.appleInstrument = this.fixtureHelper.getAppleInstrument(this.technologySector, this.technologySector);
+        this.microsoftInstrument = this.fixtureHelper.getMicrosoftInstrument(this.technologySector, this.technologySector);
 
         try {
+            instrumentDAO.insertInstrument(this.technologySector);
             instrumentDAO.insertInstrument(this.appleInstrument);
             instrumentDAO.insertInstrument(this.microsoftInstrument);
         } catch (Exception e) {
@@ -142,6 +149,7 @@ public class ChartObjectServiceTest {
         try {
             instrumentDAO.deleteInstrument(this.microsoftInstrument);
             instrumentDAO.deleteInstrument(this.appleInstrument);
+            instrumentDAO.deleteInstrument(this.technologySector);
         } catch (Exception e) {
             fail(e.getMessage());
         }

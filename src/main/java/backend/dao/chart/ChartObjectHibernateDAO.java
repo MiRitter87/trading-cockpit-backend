@@ -99,6 +99,7 @@ public class ChartObjectHibernateDAO implements ChartObjectDAO {
         // Use entity graphs to load data of referenced Instrument instances.
         EntityGraph<HorizontalLine> graph = entityManager.createEntityGraph(HorizontalLine.class);
         graph.addAttributeNodes("instrument");
+        graph.addSubgraph("instrument").addAttributeNodes("sector", "industryGroup");
 
         entityManager.getTransaction().begin();
 
@@ -144,6 +145,7 @@ public class ChartObjectHibernateDAO implements ChartObjectDAO {
         // Use entity graphs to load data of referenced instrument instance.
         EntityGraph<HorizontalLine> graph = entityManager.createEntityGraph(HorizontalLine.class);
         graph.addAttributeNodes("instrument");
+        graph.addSubgraph("instrument").addAttributeNodes("sector", "industryGroup");
         Map<String, Object> hints = new HashMap<String, Object>();
         hints.put("jakarta.persistence.loadgraph", graph);
 

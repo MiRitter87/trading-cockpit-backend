@@ -17,15 +17,19 @@ public class ChartObjectServiceFixture {
     /**
      * Gets the Instrument of the Apple stock.
      *
+     * @param sector        The sector Instrument.
+     * @param industryGroup The industry group Instrument.
      * @return The Instrument of the Apple stock.
      */
-    public Instrument getAppleInstrument() {
+    public Instrument getAppleInstrument(final Instrument sector, final Instrument industryGroup) {
         Instrument instrument = new Instrument();
 
         instrument.setSymbol("AAPL");
         instrument.setName("Apple");
         instrument.setStockExchange(StockExchange.NDQ);
         instrument.setType(InstrumentType.STOCK);
+        instrument.setSector(sector);
+        instrument.setIndustryGroup(industryGroup);
 
         return instrument;
     }
@@ -33,15 +37,35 @@ public class ChartObjectServiceFixture {
     /**
      * Gets the Instrument of the Microsoft stock.
      *
+     * @param sector        The sector Instrument.
+     * @param industryGroup The industry group Instrument.
      * @return The Instrument of the Microsoft stock.
      */
-    public Instrument getMicrosoftInstrument() {
+    public Instrument getMicrosoftInstrument(final Instrument sector, final Instrument industryGroup) {
         Instrument instrument = new Instrument();
 
         instrument.setSymbol("MSFT");
         instrument.setName("Microsoft");
         instrument.setStockExchange(StockExchange.NDQ);
         instrument.setType(InstrumentType.STOCK);
+        instrument.setSector(sector);
+        instrument.setIndustryGroup(industryGroup);
+
+        return instrument;
+    }
+
+    /**
+     * Gets the Instrument of the technology sector.
+     *
+     * @param sector The sector Instrument.
+     */
+    public Instrument getTechnologySector() {
+        Instrument instrument = new Instrument();
+
+        instrument.setSymbol("XLK");
+        instrument.setName("Technology Select Sector SPDR Fund");
+        instrument.setStockExchange(StockExchange.NYSE);
+        instrument.setType(InstrumentType.SECTOR);
 
         return instrument;
     }
