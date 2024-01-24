@@ -12,8 +12,10 @@ import org.jfree.data.time.Day;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 
+import backend.controller.scan.MovingAverageCalculator;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
+import backend.model.instrument.QuotationArray;
 
 /**
  * Provides overlays for plots that are used in a Price Volume chart of an Instrument.
@@ -188,5 +190,43 @@ public class ChartOverlayProvider {
         smaRenderer.setSeriesPaint(0, Color.BLACK);
         volumeSubplot.setRenderer(index, smaRenderer);
         volumeSubplot.setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
+    }
+
+    /**
+     * Adds the SMA(10) to the chart. The SMA(10) is calculated on-the-fly.
+     *
+     * @param instrument         The Instrument with quotations.
+     * @param candleStickSubplot The Plot to which the moving average is added.
+     */
+    public void addSma10(final Instrument instrument, final XYPlot candleStickSubplot) {
+        QuotationArray quotations = instrument.getQuotationArray();
+        MovingAverageCalculator movingAverageCalculator = new MovingAverageCalculator();
+        float sma10;
+        TimeSeriesCollection timeSeriesCollection = new TimeSeriesCollection();
+        TimeSeries sma10TimeSeries = new TimeSeries(this.resources.getString("chart.pocketPivots.timeSeriesSma10Name"));
+        int index = candleStickSubplot.getDatasetCount();
+        final int tenDays = 10;
+
+        quotations.sortQuotationsByDate();
+
+        for (Quotation tempQuotation : quotations.getQuotations()) {
+            sma10 = movingAverageCalculator.getSimpleMovingAverage(tenDays, tempQuotation, quotations);
+
+            if (sma10 == 0) {
+                continue;
+            }
+
+            sma10TimeSeries.add(new Day(tempQuotation.getDate()), sma10);
+        }
+
+        timeSeriesCollection.addSeries(sma10TimeSeries);
+
+        candleStickSubplot.setDataset(index, timeSeriesCollection);
+        candleStickSubplot.mapDatasetToRangeAxis(index, 0);
+
+        XYItemRenderer smaRenderer = new XYLineAndShapeRenderer(true, false);
+        smaRenderer.setSeriesPaint(0, Color.BLACK);
+        candleStickSubplot.setRenderer(index, smaRenderer);
+        candleStickSubplot.setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
     }
 }
