@@ -52,6 +52,7 @@ public class PocketPivotChartController extends PriceVolumeChartController {
         XYPlot volumeSubplot = this.getVolumePlot(instrument, dateAxis);
 
         this.chartOverlayProvider.addSma10(instrument, candleStickSubplot);
+        this.chartOverlayProvider.addSma50(instrument, candleStickSubplot);
         this.addAnnotationsToCandlestickPlot(candleStickSubplot, instrument);
 
         // Build combined plot based on subplots.
