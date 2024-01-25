@@ -120,26 +120,67 @@ public class PocketPivotChartController extends PriceVolumeChartController {
      * @return true, if Quotation with given index is Pocket Pivot; false, if not.
      */
     private boolean isPocketPivot(final List<Quotation> quotationsSortedByDate, final int quotationIndex) {
-        Quotation currentQuotation;
-        Quotation previousQuotation;
-        float performance;
-        long largestDownVolume = 0;
-        long quotationVolume;
+        final boolean isUpDay;
+        final boolean isVolumeHighEnough;
         final int lookbackDaysForPPCalculation = 11;
-        final int lookbackDaysForVolume = 10;
 
         // No Pocket Pivot, if not at least 11 historical trading days exist after the given quotationIndex.
         if (quotationIndex + lookbackDaysForPPCalculation >= quotationsSortedByDate.size()) {
             return false;
         }
 
+        isUpDay = this.isUpDay(quotationsSortedByDate, quotationIndex);
+        if (!isUpDay) {
+            return false; // A Pocket Pivot only occurs on up-days.
+        }
+
+        isVolumeHighEnough = this.isVolumeHighEnough(quotationsSortedByDate, quotationIndex);
+        if (isVolumeHighEnough) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Checks if the Quotation defined by the given quotationIndex constitutes an up-day.
+     *
+     * @param quotationsSortedByDate A List of Quotations sorted by Date.
+     * @param quotationIndex         The index of the Quotation which is checked.
+     * @return true, if up-day; false, if not.
+     */
+    private boolean isUpDay(final List<Quotation> quotationsSortedByDate, final int quotationIndex) {
+        Quotation currentQuotation;
+        Quotation previousQuotation;
+        float performance;
+
         currentQuotation = quotationsSortedByDate.get(quotationIndex);
         previousQuotation = quotationsSortedByDate.get(quotationIndex + 1);
 
         performance = this.getPerformanceCalculator().getPerformance(currentQuotation, previousQuotation);
         if (performance <= 0) {
-            return false; // A Pocket Pivot only occurs on up-days.
+            return false;
         }
+
+        return true;
+    }
+
+    /**
+     * Checks if the volume of the current Quotation is higher than the highest down-volume of the last 10 trading days.
+     *
+     * @param quotationsSortedByDate A List of Quotations sorted by Date.
+     * @param quotationIndex         The index of the Quotation which is checked.
+     * @return true, if volume is high enough; false, if not.
+     */
+    private boolean isVolumeHighEnough(final List<Quotation> quotationsSortedByDate, final int quotationIndex) {
+        Quotation currentQuotation;
+        Quotation previousQuotation;
+        long quotationVolume;
+        float performance;
+        long largestDownVolume = 0;
+        final int lookbackDaysForVolume = 10;
+
+        currentQuotation = quotationsSortedByDate.get(quotationIndex);
 
         // The volume of the potential pocket pivot.
         quotationVolume = currentQuotation.getVolume();
