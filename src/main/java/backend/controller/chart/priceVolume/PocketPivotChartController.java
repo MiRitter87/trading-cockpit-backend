@@ -125,6 +125,7 @@ public class PocketPivotChartController extends PriceVolumeChartController {
         final boolean isUpDay;
         final boolean isVolumeHighEnough;
         final boolean isCloseAboveSma10;
+        final boolean isPriceExtended;
         final int lookbackDaysForPPCalculation = 11;
 
         // No Pocket Pivot, if not at least 11 historical trading days exist after the given quotationIndex.
@@ -137,13 +138,18 @@ public class PocketPivotChartController extends PriceVolumeChartController {
             return false; // A Pocket Pivot only occurs on up-days.
         }
 
+        isVolumeHighEnough = this.isVolumeHighEnough(quotationsSortedByDate, quotationIndex);
+        if (!isVolumeHighEnough) {
+            return false;
+        }
+
         isCloseAboveSma10 = this.isClosingPriceAboveSma10(quotationsSortedByDate, quotationIndex);
         if (!isCloseAboveSma10) {
             return false;
         }
 
-        isVolumeHighEnough = this.isVolumeHighEnough(quotationsSortedByDate, quotationIndex);
-        if (isVolumeHighEnough) {
+        isPriceExtended = this.isLowExtendedAboveSma10(quotationsSortedByDate, quotationIndex);
+        if (!isPriceExtended) {
             return true;
         }
 
@@ -232,6 +238,35 @@ public class PocketPivotChartController extends PriceVolumeChartController {
         sma10 = movingAverageCalculator.getSimpleMovingAverage(tenDays, currentQuotation, quotations);
 
         if (currentQuotation.getClose().floatValue() > sma10) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Checks if the low of the current Quotation is extended by more than 2% above the SMA(10).
+     *
+     * @param quotationsSortedByDate A List of Quotations sorted by Date.
+     * @param quotationIndex         The index of the Quotation which is checked.
+     * @return true, if price is extended; false, if not.
+     */
+    private boolean isLowExtendedAboveSma10(final List<Quotation> quotationsSortedByDate, final int quotationIndex) {
+        QuotationArray quotations = new QuotationArray(quotationsSortedByDate);
+        Quotation currentQuotation;
+        MovingAverageCalculator movingAverageCalculator = new MovingAverageCalculator();
+        float sma10;
+        float extensionThreshold;
+        final int tenDays = 10;
+        final float twoPercent = 1.02f;
+
+        currentQuotation = quotationsSortedByDate.get(quotationIndex);
+        quotations.sortQuotationsByDate();
+
+        sma10 = movingAverageCalculator.getSimpleMovingAverage(tenDays, currentQuotation, quotations);
+        extensionThreshold = sma10 * twoPercent;
+
+        if (currentQuotation.getLow().floatValue() > extensionThreshold) {
             return true;
         }
 
