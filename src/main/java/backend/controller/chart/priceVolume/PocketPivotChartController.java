@@ -126,6 +126,7 @@ public class PocketPivotChartController extends PriceVolumeChartController {
         final boolean isUpDay;
         final boolean isVolumeHighEnough;
         final boolean isCloseAboveSma10;
+        final boolean isCloseAboveSma50;
         final boolean isPriceExtended;
         final int lookbackDaysForPPCalculation = 11;
 
@@ -137,6 +138,11 @@ public class PocketPivotChartController extends PriceVolumeChartController {
         isUpDay = this.isUpDay(quotationsSortedByDate, quotationIndex);
         if (!isUpDay) {
             return false; // A Pocket Pivot only occurs on up-days.
+        }
+
+        isCloseAboveSma50 = this.isClosingPriceAboveSma50(quotationsSortedByDate, quotationIndex);
+        if (!isCloseAboveSma50) {
+            return false;
         }
 
         isVolumeHighEnough = this.isVolumeHighEnough(quotationsSortedByDate, quotationIndex);
@@ -268,6 +274,31 @@ public class PocketPivotChartController extends PriceVolumeChartController {
         extensionThreshold = sma10 * twoPercent;
 
         if (currentQuotation.getLow().floatValue() > extensionThreshold) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Checks if the closing price of the current Quotation is above the 50-day Simple Moving Average.
+     *
+     * @param quotationsSortedByDate A List of Quotations sorted by Date.
+     * @param quotationIndex         The index of the Quotation which is checked.
+     * @return true, if price is above SMA(50); false, if not.
+     */
+    private boolean isClosingPriceAboveSma50(final List<Quotation> quotationsSortedByDate, final int quotationIndex) {
+        Quotation currentQuotation = quotationsSortedByDate.get(quotationIndex);
+
+        if (currentQuotation.getIndicator() == null) {
+            return false;
+        }
+
+        if (currentQuotation.getIndicator().getSma50() == 0) {
+            return false;
+        }
+
+        if (currentQuotation.getClose().floatValue() > currentQuotation.getIndicator().getSma50()) {
             return true;
         }
 
