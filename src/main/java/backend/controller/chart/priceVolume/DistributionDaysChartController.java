@@ -142,7 +142,7 @@ public class DistributionDaysChartController extends PriceVolumeChartController 
         Quotation previousQuotation;
         boolean priceHasAdvanced;
         boolean isDistributionDay;
-        final int numberOfAdditionalDays = 24;
+        final int numberOfAdditionalDays = 25;
         final float percentAdvanceNegatingDistributionDay = 5;
 
         for (int i = 0; i < quotationsSortedByDate.size() - 1; i++) {
@@ -185,13 +185,7 @@ public class DistributionDaysChartController extends PriceVolumeChartController 
             indexEnd = indexStart - days;
         }
 
-        indexStart--; // Do not start performance calculation at the date of the current Quotation but a day later.
-
-        if (indexStart < 0) {
-            return false; // currentQuotation is already the newest price.
-        }
-
-        for (int i = indexStart; i >= indexEnd; i--) {
+        for (int i = indexStart - 1; i >= indexEnd; i--) {
             futureQuotation = quotationsSortedByDate.get(i);
             performance = this.getPerformanceCalculator().getPerformance(futureQuotation, currentQuotation);
 
