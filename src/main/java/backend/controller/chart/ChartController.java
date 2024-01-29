@@ -20,6 +20,11 @@ import backend.dao.quotation.persistence.QuotationDAO;
  */
 public abstract class ChartController {
     /**
+     * The number of trading days per year.
+     */
+    public static final Integer TRADING_DAYS_PER_YEAR = 252;
+
+    /**
      * DAO to access Instrument data.
      */
     private InstrumentDAO instrumentDAO;

@@ -38,7 +38,7 @@ public class DistributionDaysChartController extends PriceVolumeChartController 
      */
     public JFreeChart getDistributionDaysChart(final Integer instrumentId)
             throws NoQuotationsExistException, Exception {
-        Instrument instrument = this.getInstrumentWithQuotations(instrumentId);
+        Instrument instrument = this.getInstrumentWithQuotations(instrumentId, TRADING_DAYS_PER_YEAR);
         JFreeChart chart;
         DateAxis dateAxis = this.getDateAxis(instrument); // The shared time axis of all subplots.
         final int candleStickPlotWeight = 4;

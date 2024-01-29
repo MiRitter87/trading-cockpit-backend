@@ -114,7 +114,7 @@ public class PriceVolumeChartController extends ChartController {
             final boolean withVolume, final boolean withSma30Volume, final Indicator indicator,
             final Integer rsInstrumentId) throws NoQuotationsExistException, Exception {
 
-        Instrument instrument = this.getInstrumentWithQuotations(instrumentId);
+        Instrument instrument = this.getInstrumentWithQuotations(instrumentId, TRADING_DAYS_PER_YEAR);
         JFreeChart chart;
         DateAxis dateAxis = this.getDateAxis(instrument); // The shared time axis of all subplots.
         CombinedDomainXYPlot combinedPlot = new CombinedDomainXYPlot();
@@ -156,20 +156,29 @@ public class PriceVolumeChartController extends ChartController {
     /**
      * Returns the Instrument with its quotations based on the given Instrument ID.
      *
-     * @param instrumentId The ID of the Instrument.
+     * @param instrumentId  The ID of the Instrument.
+     * @param maxQuotations The maximum number of quotations returned with the Instrument.
      * @return The Instrument with its quotations.
      * @throws NoQuotationsExistException No Quotations exist.
      * @throws Exception                  Error during data retrieval.
      */
-    protected Instrument getInstrumentWithQuotations(final Integer instrumentId)
+    protected Instrument getInstrumentWithQuotations(final Integer instrumentId, final Integer maxQuotations)
             throws NoQuotationsExistException, Exception {
         Instrument instrument;
+        List<Quotation> requestedNumberOfQuotations;
 
         instrument = this.getInstrumentDAO().getInstrument(instrumentId);
         instrument.setQuotations(this.getQuotationDAO().getQuotationsOfInstrument(instrumentId));
 
         if (instrument.getQuotations().size() == 0) {
             throw new NoQuotationsExistException();
+        }
+
+        requestedNumberOfQuotations = instrument.getQuotationsSortedByDate();
+
+        if (requestedNumberOfQuotations.size() > maxQuotations) {
+            requestedNumberOfQuotations = requestedNumberOfQuotations.subList(0, maxQuotations);
+            instrument.setQuotations(requestedNumberOfQuotations);
         }
 
         return instrument;

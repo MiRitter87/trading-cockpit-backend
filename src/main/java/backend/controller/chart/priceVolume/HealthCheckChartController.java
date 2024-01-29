@@ -47,7 +47,7 @@ public class HealthCheckChartController extends PriceVolumeChartController {
     public JFreeChart getHealthCheckChart(final Integer instrumentId, final HealthCheckProfile profile,
             final Integer lookbackPeriod) throws NoQuotationsExistException, Exception {
 
-        Instrument instrument = this.getInstrumentWithQuotations(instrumentId);
+        Instrument instrument = this.getInstrumentWithQuotations(instrumentId, TRADING_DAYS_PER_YEAR);
         JFreeChart chart;
         DateAxis dateAxis = this.getDateAxis(instrument); // The shared time axis of all subplots.
         final int candleStickPlotWeight = 4;
