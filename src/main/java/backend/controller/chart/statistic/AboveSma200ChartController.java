@@ -33,7 +33,7 @@ public class AboveSma200ChartController extends StatisticChartController {
     public JFreeChart getInstrumentsAboveSma200Chart(final InstrumentType instrumentType, final Integer listId)
             throws Exception {
 
-        List<Statistic> statistics = this.getStatistics(instrumentType, listId);
+        List<Statistic> statistics = this.getStatistics(instrumentType, listId, TRADING_DAYS_PER_YEAR);
         XYDataset dataset = this.getInstrumentsAboveSma200Dataset(statistics);
 
         JFreeChart chart = ChartFactory.createTimeSeriesChart(

@@ -32,7 +32,7 @@ public class AdvanceDeclineNumberChartController extends StatisticChartControlle
      */
     public JFreeChart getAdvanceDeclineNumberChart(final InstrumentType instrumentType, final Integer listId)
             throws Exception {
-        List<Statistic> statistics = this.getStatistics(instrumentType, listId);
+        List<Statistic> statistics = this.getStatistics(instrumentType, listId, TRADING_DAYS_PER_YEAR);
         XYDataset dataset = this.getAdvanceDeclineNumberDataset(statistics);
 
         JFreeChart chart = ChartFactory.createTimeSeriesChart(this.getResources().getString("chart.adNumber.titleName"),

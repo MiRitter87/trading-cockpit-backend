@@ -33,7 +33,7 @@ public class RitterMarketTrendChartController extends StatisticChartController {
      */
     public JFreeChart getRitterMarketTrendChart(final InstrumentType instrumentType, final Integer listId)
             throws Exception {
-        List<Statistic> statistics = this.getStatistics(instrumentType, listId);
+        List<Statistic> statistics = this.getStatistics(instrumentType, listId, TRADING_DAYS_PER_YEAR);
         XYDataset dataset = this.getRitterMarketTrendDataset(statistics);
 
         JFreeChart chart = ChartFactory.createTimeSeriesChart(
@@ -99,13 +99,11 @@ public class RitterMarketTrendChartController extends StatisticChartController {
         final int hundredPercent = 100;
 
         if ((beginIndex + numberDaysTooLowForCalculation - 1) >= statistics.size()) {
-            throw new Exception(
-                    "At least 30 days of statistic are required for RMT calculation.");
+            throw new Exception("At least 30 days of statistic are required for RMT calculation.");
         }
 
         if (endIndex >= statistics.size()) {
-            throw new Exception(
-                    "Not enough historical statistical values available to calculate moving average.");
+            throw new Exception("Not enough historical statistical values available to calculate moving average.");
         }
 
         for (int i = beginIndex; i <= endIndex; i++) {

@@ -48,7 +48,8 @@ public class RitterPatternIndicatorChartController extends ChartController {
      */
     public JFreeChart getRitterPatternIndicatorChart(final InstrumentType instrumentType, final Integer listId)
             throws Exception {
-        List<Instrument> instruments = this.getAllInstrumentsWithQuotations(instrumentType, listId);
+        List<Instrument> instruments = this.getAllInstrumentsWithQuotations(instrumentType, listId,
+                TRADING_DAYS_PER_YEAR);
         TreeMap<Date, Integer> patternIndicatorValues;
         XYDataset dataset;
 
@@ -72,13 +73,15 @@ public class RitterPatternIndicatorChartController extends ChartController {
      *
      * @param instrumentType The IntrumentType.
      * @param listId         The List id.
+     * @param maxQuotations  The maximum number of quotations returned with each Instrument.
      * @return All instruments with their quotations.
      * @throws Exception Instrument or Quotation retrieval failed.
      */
-    private List<Instrument> getAllInstrumentsWithQuotations(final InstrumentType instrumentType, final Integer listId)
-            throws Exception {
+    private List<Instrument> getAllInstrumentsWithQuotations(final InstrumentType instrumentType, final Integer listId,
+            final Integer maxQuotations) throws Exception {
         List<Instrument> instruments = new ArrayList<>();
         backend.model.list.List list;
+        List<Quotation> requestedNumberOfQuotations;
 
         // Initialize instruments.
         if (listId != null) {
@@ -91,6 +94,13 @@ public class RitterPatternIndicatorChartController extends ChartController {
         // Initialize quotations of each Instrument.
         for (Instrument instrument : instruments) {
             instrument.setQuotations(this.getQuotationDAO().getQuotationsOfInstrument(instrument.getId()));
+
+            requestedNumberOfQuotations = instrument.getQuotationsSortedByDate();
+
+            if (requestedNumberOfQuotations.size() > maxQuotations) {
+                requestedNumberOfQuotations = requestedNumberOfQuotations.subList(0, maxQuotations);
+                instrument.setQuotations(requestedNumberOfQuotations);
+            }
         }
 
         return instruments;
