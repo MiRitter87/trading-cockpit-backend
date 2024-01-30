@@ -267,7 +267,7 @@ public class InstrumentService {
      * @param profile      The HealthCheckProfile that is being used.
      * @return A Protocol with health information about the given Instrument.
      */
-    public WebServiceResult getInstrumentHealthProtocol(final Integer instrumentId, final String startDate,
+    public WebServiceResult getHealthProtocolWithStartDate(final Integer instrumentId, final String startDate,
             final HealthCheckProfile profile) {
         WebServiceResult getHealthProtocolResult = new WebServiceResult();
         InstrumentCheckController controller = new InstrumentCheckController();

@@ -102,11 +102,11 @@ public class InstrumentRestService {
      * @return A Protocol with health information about the given Instrument.
      */
     @GET
-    @Path("/{id}/health")
+    @Path("/{id}/health/startDate")
     @Produces(MediaType.APPLICATION_JSON)
-    public WebServiceResult getInstrumentHealthProtocol(@PathParam("id") final Integer id,
+    public WebServiceResult getHealthProtocolWithStartDate(@PathParam("id") final Integer id,
             @QueryParam("startDate") final String startDate, @QueryParam("profile") final HealthCheckProfile profile) {
         InstrumentService instrumentService = new InstrumentService();
-        return instrumentService.getInstrumentHealthProtocol(id, startDate, profile);
+        return instrumentService.getHealthProtocolWithStartDate(id, startDate, profile);
     }
 }
