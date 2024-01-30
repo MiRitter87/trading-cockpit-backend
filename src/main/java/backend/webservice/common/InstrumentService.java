@@ -25,6 +25,7 @@ import backend.model.instrument.InstrumentArray;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.InstrumentWS;
 import backend.model.instrument.Quotation;
+import backend.model.instrument.QuotationArray;
 import backend.model.protocol.Protocol;
 import backend.model.webservice.WebServiceMessage;
 import backend.model.webservice.WebServiceMessageType;
@@ -277,6 +278,40 @@ public class InstrumentService {
         try {
             convertedStartDate = DateTools.convertStringToDate(startDate);
             protocol = controller.checkInstrument(instrumentId, convertedStartDate, profile);
+            getHealthProtocolResult.setData(protocol);
+        } catch (NoQuotationsExistException noQuotationsExistException) {
+            getHealthProtocolResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
+                    this.resources.getString("instrument.getHealthNoQuotationsForDate")));
+        } catch (Exception e) {
+            getHealthProtocolResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
+                    this.resources.getString("instrument.getHealthError")));
+            LOGGER.error(this.resources.getString("instrument.getHealthError"), e.getMessage(), e);
+        }
+
+        return getHealthProtocolResult;
+    }
+
+    /**
+     * Checks the health of the Instrument with the given id.
+     *
+     * @param instrumentId   The ID of the instrument.
+     * @param lookbackPeriod The number of days taken into account for health check routines.
+     * @param profile        The HealthCheckProfile that is being used.
+     * @return A Protocol with health information about the given Instrument.
+     */
+    public WebServiceResult getHealthProtocolWithLookbackPeriod(final Integer instrumentId,
+            final Integer lookbackPeriod, final HealthCheckProfile profile) {
+        WebServiceResult getHealthProtocolResult = new WebServiceResult();
+        InstrumentCheckController controller = new InstrumentCheckController();
+        Protocol protocol;
+        Date startDate;
+        QuotationArray quotations;
+
+        try {
+            quotations = new QuotationArray(this.quotationDAO.getQuotationsOfInstrument(instrumentId));
+            startDate = controller.getStartDate(lookbackPeriod, quotations);
+
+            protocol = controller.checkInstrument(instrumentId, startDate, profile);
             getHealthProtocolResult.setData(protocol);
         } catch (NoQuotationsExistException noQuotationsExistException) {
             getHealthProtocolResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
