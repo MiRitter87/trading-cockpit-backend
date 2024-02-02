@@ -3,8 +3,8 @@ package backend.dao.quotation.persistence;
 import java.util.Date;
 import java.util.List;
 
-import backend.controller.scan.IndicatorCalculator;
 import backend.controller.scan.PerformanceCalculator;
+import backend.controller.scan.RelativeStrengthCalculator;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
 import backend.tools.DateTools;
@@ -40,7 +40,7 @@ public class TemplateRsSinceDateProcessor {
     public void postProcessingRsSinceDate(final String startDateAsString, final List<Quotation> quotations)
             throws Exception {
 
-        IndicatorCalculator indicatorCalculator = new IndicatorCalculator();
+        RelativeStrengthCalculator relativeStrengthCalculator = new RelativeStrengthCalculator();
         PerformanceCalculator performanceCalculator = new PerformanceCalculator();
         Date startDate = DateTools.convertStringToDate(startDateAsString);
         QuotationArray quotationsOfInstrument = new QuotationArray();
@@ -60,6 +60,6 @@ public class TemplateRsSinceDateProcessor {
         }
 
         // Calculate the RS numbers based on the newly calculated performance.
-        indicatorCalculator.calculateRsNumber(quotations);
+        relativeStrengthCalculator.calculateRsNumber(quotations);
     }
 }
