@@ -237,11 +237,12 @@ public class PocketPivotChartController extends PriceVolumeChartController {
             return false;
         }
 
-        if (currentQuotation.getIndicator().getSma10() == 0) {
+        if (currentQuotation.getIndicator().getMovingAverageData().getSma10() == 0) {
             return false;
         }
 
-        if (currentQuotation.getClose().floatValue() > currentQuotation.getIndicator().getSma10()) {
+        if (currentQuotation.getClose().floatValue() > currentQuotation.getIndicator().getMovingAverageData()
+                .getSma10()) {
             return true;
         }
 
@@ -264,11 +265,11 @@ public class PocketPivotChartController extends PriceVolumeChartController {
             return true;
         }
 
-        if (currentQuotation.getIndicator().getSma10() == 0) {
+        if (currentQuotation.getIndicator().getMovingAverageData().getSma10() == 0) {
             return true;
         }
 
-        extensionThreshold = currentQuotation.getIndicator().getSma10() * twoPercent;
+        extensionThreshold = currentQuotation.getIndicator().getMovingAverageData().getSma10() * twoPercent;
 
         if (currentQuotation.getLow().floatValue() > extensionThreshold) {
             return true;
@@ -291,11 +292,12 @@ public class PocketPivotChartController extends PriceVolumeChartController {
             return false;
         }
 
-        if (currentQuotation.getIndicator().getSma50() == 0) {
+        if (currentQuotation.getIndicator().getMovingAverageData().getSma50() == 0) {
             return false;
         }
 
-        if (currentQuotation.getClose().floatValue() > currentQuotation.getIndicator().getSma50()) {
+        if (currentQuotation.getClose().floatValue() > currentQuotation.getIndicator().getMovingAverageData()
+                .getSma50()) {
             return true;
         }
 

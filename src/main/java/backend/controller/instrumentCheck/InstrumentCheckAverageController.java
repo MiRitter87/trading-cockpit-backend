@@ -72,14 +72,17 @@ public class InstrumentCheckAverageController {
                 throw new Exception("No indicator is defined for Quotation with ID: " + currentDayQuotation.getId());
             }
 
-            if (previousDayQuotation.getClose().floatValue() >= previousDayQuotation.getIndicator().getSma50()
-                    && currentDayQuotation.getClose().floatValue() < currentDayQuotation.getIndicator().getSma50()) {
+            if (previousDayQuotation.getClose().floatValue() >= previousDayQuotation.getIndicator()
+                    .getMovingAverageData().getSma50()
+                    && currentDayQuotation.getClose().floatValue() < currentDayQuotation.getIndicator()
+                            .getMovingAverageData().getSma50()) {
 
                 protocolEntry = new ProtocolEntry();
                 protocolEntry.setCategory(ProtocolEntryCategory.VIOLATION);
                 protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(currentDayQuotation.getDate()));
 
-                if (currentDayQuotation.getVolume() >= currentDayQuotation.getIndicator().getSma30Volume()) {
+                if (currentDayQuotation.getVolume() >= currentDayQuotation.getIndicator().getMovingAverageData()
+                        .getSma30Volume()) {
                     protocolEntry.setText(this.resources.getString("protocol.closeBelowSma50HighVolume"));
                 } else {
                     protocolEntry.setText(this.resources.getString("protocol.closeBelowSma50LowVolume"));
@@ -134,8 +137,10 @@ public class InstrumentCheckAverageController {
                 throw new Exception("No indicator is defined for Quotation with ID: " + currentDayQuotation.getId());
             }
 
-            if (previousDayQuotation.getClose().floatValue() >= previousDayQuotation.getIndicator().getEma21()
-                    && currentDayQuotation.getClose().floatValue() < currentDayQuotation.getIndicator().getEma21()) {
+            if (previousDayQuotation.getClose().floatValue() >= previousDayQuotation.getIndicator()
+                    .getMovingAverageData().getEma21()
+                    && currentDayQuotation.getClose().floatValue() < currentDayQuotation.getIndicator()
+                            .getMovingAverageData().getEma21()) {
 
                 protocolEntry = new ProtocolEntry();
                 protocolEntry.setCategory(ProtocolEntryCategory.VIOLATION);
@@ -183,12 +188,12 @@ public class InstrumentCheckAverageController {
                 throw new Exception("No indicator is defined for Quotation with ID: " + currentDayQuotation.getId());
             }
 
-            if (currentDayQuotation.getIndicator().getSma200() == 0) {
+            if (currentDayQuotation.getIndicator().getMovingAverageData().getSma200() == 0) {
                 continue; // Can't perform check if no SMA(200) is available.
             }
 
             percentAboveSma200 = performanceCalculator.getPerformance(currentDayQuotation.getClose().floatValue(),
-                    currentDayQuotation.getIndicator().getSma200());
+                    currentDayQuotation.getIndicator().getMovingAverageData().getSma200());
 
             if (percentAboveSma200 >= EXTENDED_ABOVE_SMA200_THRESHOLD) {
                 protocolEntry = new ProtocolEntry();

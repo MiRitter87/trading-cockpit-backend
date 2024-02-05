@@ -229,7 +229,7 @@ public class QuotationHibernateDAOFixture {
      * @return The AppleQuotation2Indicator.
      */
     public Indicator getAppleQuotation2Indicator() {
-        Indicator indicator = new Indicator(true);
+        Indicator indicator = new Indicator(true, false);
 
         indicator.setStage(3);
         indicator.getRelativeStrengthData().setRsNumber(24);
@@ -258,7 +258,7 @@ public class QuotationHibernateDAOFixture {
      * @return The xliSectorQuotation1Indicator.
      */
     public Indicator getXliSectorQuotation1Indicator() {
-        Indicator indicator = new Indicator(true);
+        Indicator indicator = new Indicator(true, false);
 
         indicator.setStage(1);
         indicator.getRelativeStrengthData().setRsNumber(46);
@@ -272,7 +272,7 @@ public class QuotationHibernateDAOFixture {
      * @return The copperIndustryGroupQuotation1Indicator.
      */
     public Indicator getCopperIndustryGroupQuotation1Indicator() {
-        Indicator indicator = new Indicator(true);
+        Indicator indicator = new Indicator(true, false);
 
         indicator.setStage(4);
         indicator.getRelativeStrengthData().setRsNumber(12);

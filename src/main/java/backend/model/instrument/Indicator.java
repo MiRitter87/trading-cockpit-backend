@@ -50,42 +50,6 @@ public class Indicator {
     private float bollingerBandWidth;
 
     /**
-     * The exponential moving average price of the last 21 trading days.
-     */
-    @Column(name = "EMA21")
-    private float ema21;
-
-    /**
-     * The simple moving average price of the last 10 trading days.
-     */
-    @Column(name = "SMA10")
-    private float sma10;
-
-    /**
-     * The simple moving average price of the last 20 trading days.
-     */
-    @Column(name = "SMA20")
-    private float sma20;
-
-    /**
-     * The simple moving average price of the last 50 trading days.
-     */
-    @Column(name = "SMA50")
-    private float sma50;
-
-    /**
-     * The simple moving average price of the last 150 trading days.
-     */
-    @Column(name = "SMA150")
-    private float sma150;
-
-    /**
-     * The simple moving average price of the last 200 trading days.
-     */
-    @Column(name = "SMA200")
-    private float sma200;
-
-    /**
      * The difference in percent between the average volume of the last 5 days compared to the SMA(30) of the volume.
      */
     @Column(name = "VOLUME_DIFFERENTIAL_5_DAYS")
@@ -122,12 +86,6 @@ public class Indicator {
     private float liquidity20Days;
 
     /**
-     * The simple moving average volume of the last 30 trading days.
-     */
-    @Column(name = "SMA30_VOLUME")
-    private long sma30Volume;
-
-    /**
      * Relative strength data.
      */
     @OneToOne(targetEntity = RelativeStrengthData.class, cascade = CascadeType.ALL, orphanRemoval = true)
@@ -135,20 +93,32 @@ public class Indicator {
     private RelativeStrengthData relativeStrengthData;
 
     /**
+     * Moving average data.
+     */
+    @OneToOne(targetEntity = MovingAverageData.class, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "MA_DATA_ID", nullable = true)
+    private MovingAverageData movingAverageData;
+
+    /**
      * Default constructor.
      */
     public Indicator() {
-
+        this.movingAverageData = new MovingAverageData();
     }
 
     /**
      * Initializes the Indicator.
      *
      * @param withRelativeStrengthData Initialize indicators RelativeStrengthData, if true.
+     * @param withMovingAverageData    Initialize indicators MovingAverageData, if true.
      */
-    public Indicator(final boolean withRelativeStrengthData) {
+    public Indicator(final boolean withRelativeStrengthData, final boolean withMovingAverageData) {
         if (withRelativeStrengthData) {
             this.relativeStrengthData = new RelativeStrengthData();
+        }
+
+        if (withMovingAverageData) {
+            this.movingAverageData = new MovingAverageData();
         }
     }
 
@@ -220,76 +190,6 @@ public class Indicator {
      */
     public void setBollingerBandWidth(final float bollingerBandWidth) {
         this.bollingerBandWidth = bollingerBandWidth;
-    }
-
-    /**
-     * @return the sma10
-     */
-    public float getSma10() {
-        return sma10;
-    }
-
-    /**
-     * @param sma10 the sma10 to set
-     */
-    public void setSma10(final float sma10) {
-        this.sma10 = sma10;
-    }
-
-    /**
-     * @return the sma20
-     */
-    public float getSma20() {
-        return sma20;
-    }
-
-    /**
-     * @param sma20 the sma20 to set
-     */
-    public void setSma20(final float sma20) {
-        this.sma20 = sma20;
-    }
-
-    /**
-     * @return the sma50
-     */
-    public float getSma50() {
-        return sma50;
-    }
-
-    /**
-     * @param sma50 the sma50 to set
-     */
-    public void setSma50(final float sma50) {
-        this.sma50 = sma50;
-    }
-
-    /**
-     * @return the sma150
-     */
-    public float getSma150() {
-        return sma150;
-    }
-
-    /**
-     * @param sma150 the sma150 to set
-     */
-    public void setSma150(final float sma150) {
-        this.sma150 = sma150;
-    }
-
-    /**
-     * @return the sma200
-     */
-    public float getSma200() {
-        return sma200;
-    }
-
-    /**
-     * @param sma200 the sma200 to set
-     */
-    public void setSma200(final float sma200) {
-        this.sma200 = sma200;
     }
 
     /**
@@ -377,34 +277,6 @@ public class Indicator {
     }
 
     /**
-     * @return the sma30Volume
-     */
-    public long getSma30Volume() {
-        return sma30Volume;
-    }
-
-    /**
-     * @param sma30Volume the sma30Volume to set
-     */
-    public void setSma30Volume(final long sma30Volume) {
-        this.sma30Volume = sma30Volume;
-    }
-
-    /**
-     * @return the ema21
-     */
-    public float getEma21() {
-        return ema21;
-    }
-
-    /**
-     * @param ema21 the ema21 to set
-     */
-    public void setEma21(final float ema21) {
-        this.ema21 = ema21;
-    }
-
-    /**
      * @return the relativeStrengthData
      */
     public RelativeStrengthData getRelativeStrengthData() {
@@ -423,13 +295,31 @@ public class Indicator {
     }
 
     /**
+     * @return the movingAverageData
+     */
+    public MovingAverageData getMovingAverageData() {
+        return movingAverageData;
+    }
+
+    /**
+     * @param movingAverageData the movingAverageData to set
+     */
+    public void setMovingAverageData(final MovingAverageData movingAverageData) {
+        this.movingAverageData = movingAverageData;
+
+        if (this.movingAverageData != null) {
+            this.movingAverageData.setId(this.id);
+        }
+    }
+
+    /**
      * Calculates the hashCode of an Indicator.
      */
     @Override
     public int hashCode() {
-        return Objects.hash(bollingerBandWidth, distanceTo52WeekHigh, distanceTo52WeekLow, ema21, id, sma150, sma200,
-                sma50, sma10, sma20, stage, volumeDifferential5Days, volumeDifferential10Days, baseLengthWeeks,
-                upDownVolumeRatio, performance5Days, liquidity20Days, sma30Volume);
+        return Objects.hash(bollingerBandWidth, distanceTo52WeekHigh, distanceTo52WeekLow, id, stage,
+                volumeDifferential5Days, volumeDifferential10Days, baseLengthWeeks, upDownVolumeRatio, performance5Days,
+                liquidity20Days);
     }
 
     /**
@@ -450,17 +340,12 @@ public class Indicator {
         return Float.floatToIntBits(bollingerBandWidth) == Float.floatToIntBits(other.bollingerBandWidth)
                 && Float.floatToIntBits(distanceTo52WeekHigh) == Float.floatToIntBits(other.distanceTo52WeekHigh)
                 && Float.floatToIntBits(distanceTo52WeekLow) == Float.floatToIntBits(other.distanceTo52WeekLow)
-                && Objects.equals(id, other.id) && Float.floatToIntBits(sma150) == Float.floatToIntBits(other.sma150)
-                && Float.floatToIntBits(sma200) == Float.floatToIntBits(other.sma200)
-                && Float.floatToIntBits(sma50) == Float.floatToIntBits(other.sma50)
-                && Float.floatToIntBits(sma10) == Float.floatToIntBits(other.sma10)
-                && Float.floatToIntBits(sma20) == Float.floatToIntBits(other.sma20)
-                && Float.floatToIntBits(ema21) == Float.floatToIntBits(other.ema21)
+                && Objects.equals(id, other.id)
                 && Float.floatToIntBits(volumeDifferential5Days) == Float.floatToIntBits(other.volumeDifferential5Days)
                 && Float.floatToIntBits(volumeDifferential10Days) == Float
                         .floatToIntBits(other.volumeDifferential10Days)
                 && stage == other.stage && baseLengthWeeks == other.baseLengthWeeks
                 && upDownVolumeRatio == other.upDownVolumeRatio && performance5Days == other.performance5Days
-                && liquidity20Days == other.liquidity20Days && sma30Volume == other.sma30Volume;
+                && liquidity20Days == other.liquidity20Days;
     }
 }

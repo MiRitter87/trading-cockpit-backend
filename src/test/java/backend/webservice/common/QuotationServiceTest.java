@@ -692,14 +692,14 @@ public class QuotationServiceTest {
 
         // Assure SMA(10) > SMA(20) and price above SMA(20)
         quotation = quotations.getQuotations().get(0);
-        quotation.getIndicator().setSma10(1.33f);
-        quotation.getIndicator().setSma20(1.32f);
+        quotation.getIndicator().getMovingAverageData().setSma10(1.33f);
+        quotation.getIndicator().getMovingAverageData().setSma20(1.32f);
         modifiedQuotations.add(quotation);
 
         // Assure SMA(10) and SMA(20) are rising
         quotation = quotations.getQuotations().get(1);
-        quotation.getIndicator().setSma10(1.32f);
-        quotation.getIndicator().setSma20(1.31f);
+        quotation.getIndicator().getMovingAverageData().setSma10(1.32f);
+        quotation.getIndicator().getMovingAverageData().setSma20(1.31f);
         modifiedQuotations.add(quotation);
 
         // Persist the changes.

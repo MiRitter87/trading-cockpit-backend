@@ -168,11 +168,12 @@ public class StatisticCalculationController {
     private int getNumberAboveSma50(final Quotation currentQuotation) {
         BigDecimal sma50;
 
-        if (currentQuotation.getIndicator() == null || currentQuotation.getIndicator().getSma50() == 0) {
+        if (currentQuotation.getIndicator() == null
+                || currentQuotation.getIndicator().getMovingAverageData().getSma50() == 0) {
             return 0;
         }
 
-        sma50 = BigDecimal.valueOf(currentQuotation.getIndicator().getSma50());
+        sma50 = BigDecimal.valueOf(currentQuotation.getIndicator().getMovingAverageData().getSma50());
 
         if (currentQuotation.getClose().compareTo(sma50) == 1) {
             return 1;
@@ -190,11 +191,12 @@ public class StatisticCalculationController {
     private int getNumberAtOrBelowSma50(final Quotation currentQuotation) {
         BigDecimal sma50;
 
-        if (currentQuotation.getIndicator() == null || currentQuotation.getIndicator().getSma50() == 0) {
+        if (currentQuotation.getIndicator() == null
+                || currentQuotation.getIndicator().getMovingAverageData().getSma50() == 0) {
             return 0;
         }
 
-        sma50 = BigDecimal.valueOf(currentQuotation.getIndicator().getSma50());
+        sma50 = BigDecimal.valueOf(currentQuotation.getIndicator().getMovingAverageData().getSma50());
 
         if (currentQuotation.getClose().compareTo(sma50) == -1) {
             return 1;
@@ -212,11 +214,12 @@ public class StatisticCalculationController {
     private int getNumberAboveSma200(final Quotation currentQuotation) {
         BigDecimal sma200;
 
-        if (currentQuotation.getIndicator() == null || currentQuotation.getIndicator().getSma200() == 0) {
+        if (currentQuotation.getIndicator() == null
+                || currentQuotation.getIndicator().getMovingAverageData().getSma200() == 0) {
             return 0;
         }
 
-        sma200 = BigDecimal.valueOf(currentQuotation.getIndicator().getSma200());
+        sma200 = BigDecimal.valueOf(currentQuotation.getIndicator().getMovingAverageData().getSma200());
 
         if (currentQuotation.getClose().compareTo(sma200) == 1) {
             return 1;
@@ -234,11 +237,12 @@ public class StatisticCalculationController {
     private int getNumberAtOrBelowSma200(final Quotation currentQuotation) {
         BigDecimal sma200;
 
-        if (currentQuotation.getIndicator() == null || currentQuotation.getIndicator().getSma200() == 0) {
+        if (currentQuotation.getIndicator() == null
+                || currentQuotation.getIndicator().getMovingAverageData().getSma200() == 0) {
             return 0;
         }
 
-        sma200 = BigDecimal.valueOf(currentQuotation.getIndicator().getSma200());
+        sma200 = BigDecimal.valueOf(currentQuotation.getIndicator().getMovingAverageData().getSma200());
 
         if (currentQuotation.getClose().compareTo(sma200) == -1) {
             return 1;
@@ -256,13 +260,15 @@ public class StatisticCalculationController {
      */
     private int getNumberRitterMarketTrend(final Quotation currentQuotation, final Quotation previousQuotation) {
         // The indicator can't be calculated if these values are not available.
-        if (currentQuotation.getIndicator() == null || currentQuotation.getIndicator().getSma30Volume() == 0) {
+        if (currentQuotation.getIndicator() == null
+                || currentQuotation.getIndicator().getMovingAverageData().getSma30Volume() == 0) {
             return 0;
         }
 
         // Rising price.
         if (currentQuotation.getClose().compareTo(previousQuotation.getClose()) == 1) {
-            if (currentQuotation.getVolume() >= currentQuotation.getIndicator().getSma30Volume()) {
+            if (currentQuotation.getVolume() >= currentQuotation.getIndicator().getMovingAverageData()
+                    .getSma30Volume()) {
                 return 1;
             } else {
                 return -1;
@@ -271,7 +277,8 @@ public class StatisticCalculationController {
 
         // Falling price.
         if (currentQuotation.getClose().compareTo(previousQuotation.getClose()) == -1) {
-            if (currentQuotation.getVolume() >= currentQuotation.getIndicator().getSma30Volume()) {
+            if (currentQuotation.getVolume() >= currentQuotation.getIndicator().getMovingAverageData()
+                    .getSma30Volume()) {
                 return -1;
             } else {
                 return 1;

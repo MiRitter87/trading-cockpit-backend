@@ -73,8 +73,10 @@ public class TemplateSwingTradingProcessor {
             return false;
         }
 
-        if ((currentQuotation.getIndicator().getSma10() > previousQuotation.getIndicator().getSma10())
-                && (currentQuotation.getIndicator().getSma20() > previousQuotation.getIndicator().getSma20())) {
+        if ((currentQuotation.getIndicator().getMovingAverageData().getSma10() > previousQuotation.getIndicator()
+                .getMovingAverageData().getSma10())
+                && (currentQuotation.getIndicator().getMovingAverageData().getSma20() > previousQuotation.getIndicator()
+                        .getMovingAverageData().getSma20())) {
             return true;
         }
 

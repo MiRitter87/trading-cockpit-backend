@@ -314,8 +314,8 @@ public class InstrumentCheckPatternController {
 
         performance = this.performanceCalculator.getPerformance(currentQuotation, previousQuotation);
 
-        if (performance >= UP_PERFORMANCE_THRESHOLD
-                && currentQuotation.getVolume() > currentQuotation.getIndicator().getSma30Volume()) {
+        if (performance >= UP_PERFORMANCE_THRESHOLD && currentQuotation.getVolume() > currentQuotation.getIndicator()
+                .getMovingAverageData().getSma30Volume()) {
             return true;
         }
 
@@ -340,8 +340,8 @@ public class InstrumentCheckPatternController {
 
         performance = this.performanceCalculator.getPerformance(currentQuotation, previousQuotation);
 
-        if (performance <= DOWN_PERFORMANCE_THRESHOLD
-                && currentQuotation.getVolume() > currentQuotation.getIndicator().getSma30Volume()) {
+        if (performance <= DOWN_PERFORMANCE_THRESHOLD && currentQuotation.getVolume() > currentQuotation.getIndicator()
+                .getMovingAverageData().getSma30Volume()) {
             return true;
         }
 
@@ -368,8 +368,8 @@ public class InstrumentCheckPatternController {
                 .add(dailyPriceRange.multiply(new BigDecimal(REVERSAL_THRESHOLD_BEARISH)));
 
         if (currentQuotation.getOpen().compareTo(reversalThresholdPrice) <= 0
-                && currentQuotation.getClose().compareTo(reversalThresholdPrice) <= 0
-                && currentQuotation.getVolume() > currentQuotation.getIndicator().getSma30Volume()) {
+                && currentQuotation.getClose().compareTo(reversalThresholdPrice) <= 0 && currentQuotation
+                        .getVolume() > currentQuotation.getIndicator().getMovingAverageData().getSma30Volume()) {
             return true;
         }
 
@@ -396,8 +396,8 @@ public class InstrumentCheckPatternController {
                 .add(dailyPriceRange.multiply(new BigDecimal(REVERSAL_THRESHOLD_BULLISH)));
 
         if (currentQuotation.getOpen().compareTo(reversalThresholdPrice) >= 0
-                && currentQuotation.getClose().compareTo(reversalThresholdPrice) >= 0
-                && currentQuotation.getVolume() > currentQuotation.getIndicator().getSma30Volume()) {
+                && currentQuotation.getClose().compareTo(reversalThresholdPrice) >= 0 && currentQuotation
+                        .getVolume() > currentQuotation.getIndicator().getMovingAverageData().getSma30Volume()) {
             return true;
         }
 
@@ -425,8 +425,8 @@ public class InstrumentCheckPatternController {
 
         performance = this.performanceCalculator.getPerformance(currentQuotation, previousQuotation);
 
-        if (performance <= CHURNING_UP_THRESHOLD && performance >= CHURNING_DOWN_THRESHOLD
-                && currentQuotation.getVolume() > currentQuotation.getIndicator().getSma30Volume()) {
+        if (performance <= CHURNING_UP_THRESHOLD && performance >= CHURNING_DOWN_THRESHOLD && currentQuotation
+                .getVolume() > currentQuotation.getIndicator().getMovingAverageData().getSma30Volume()) {
             return true;
         }
 

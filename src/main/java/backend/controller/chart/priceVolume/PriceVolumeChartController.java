@@ -387,8 +387,8 @@ public class PriceVolumeChartController extends ChartController {
         List<Quotation> quotationsSortedByDate = instrument.getQuotationsSortedByDate();
 
         for (Quotation tempQuotation : quotationsSortedByDate) {
-            if (tempQuotation.getIndicator().getSma30Volume() > highestAverageVolume) {
-                highestAverageVolume = tempQuotation.getIndicator().getSma30Volume();
+            if (tempQuotation.getIndicator().getMovingAverageData().getSma30Volume() > highestAverageVolume) {
+                highestAverageVolume = tempQuotation.getIndicator().getMovingAverageData().getSma30Volume();
             }
         }
 

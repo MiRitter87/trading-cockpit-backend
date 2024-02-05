@@ -39,11 +39,12 @@ public class ChartOverlayProvider {
         int index = candleStickSubplot.getDatasetCount();
 
         for (Quotation tempQuotation : quotationsSortedByDate) {
-            if (tempQuotation.getIndicator().getEma21() == 0) {
+            if (tempQuotation.getIndicator().getMovingAverageData().getEma21() == 0) {
                 continue;
             }
 
-            ema21TimeSeries.add(new Day(tempQuotation.getDate()), tempQuotation.getIndicator().getEma21());
+            ema21TimeSeries.add(new Day(tempQuotation.getDate()),
+                    tempQuotation.getIndicator().getMovingAverageData().getEma21());
         }
 
         timeSeriesCollection.addSeries(ema21TimeSeries);
@@ -70,11 +71,12 @@ public class ChartOverlayProvider {
         int index = candleStickSubplot.getDatasetCount();
 
         for (Quotation tempQuotation : quotationsSortedByDate) {
-            if (tempQuotation.getIndicator().getSma50() == 0) {
+            if (tempQuotation.getIndicator().getMovingAverageData().getSma50() == 0) {
                 continue;
             }
 
-            sma50TimeSeries.add(new Day(tempQuotation.getDate()), tempQuotation.getIndicator().getSma50());
+            sma50TimeSeries.add(new Day(tempQuotation.getDate()),
+                    tempQuotation.getIndicator().getMovingAverageData().getSma50());
         }
 
         timeSeriesCollection.addSeries(sma50TimeSeries);
@@ -102,11 +104,12 @@ public class ChartOverlayProvider {
         int index = candleStickSubplot.getDatasetCount();
 
         for (Quotation tempQuotation : quotationsSortedByDate) {
-            if (tempQuotation.getIndicator().getSma150() == 0) {
+            if (tempQuotation.getIndicator().getMovingAverageData().getSma150() == 0) {
                 continue;
             }
 
-            sma150TimeSeries.add(new Day(tempQuotation.getDate()), tempQuotation.getIndicator().getSma150());
+            sma150TimeSeries.add(new Day(tempQuotation.getDate()),
+                    tempQuotation.getIndicator().getMovingAverageData().getSma150());
         }
 
         timeSeriesCollection.addSeries(sma150TimeSeries);
@@ -134,11 +137,12 @@ public class ChartOverlayProvider {
         int index = candleStickSubplot.getDatasetCount();
 
         for (Quotation tempQuotation : quotationsSortedByDate) {
-            if (tempQuotation.getIndicator().getSma200() == 0) {
+            if (tempQuotation.getIndicator().getMovingAverageData().getSma200() == 0) {
                 continue;
             }
 
-            sma200TimeSeries.add(new Day(tempQuotation.getDate()), tempQuotation.getIndicator().getSma200());
+            sma200TimeSeries.add(new Day(tempQuotation.getDate()),
+                    tempQuotation.getIndicator().getMovingAverageData().getSma200());
         }
 
         timeSeriesCollection.addSeries(sma200TimeSeries);
@@ -172,11 +176,12 @@ public class ChartOverlayProvider {
         }
 
         for (Quotation tempQuotation : quotationsSortedByDate) {
-            if (tempQuotation.getIndicator().getSma30Volume() == 0) {
+            if (tempQuotation.getIndicator().getMovingAverageData().getSma30Volume() == 0) {
                 continue;
             }
 
-            sma30VolumeTimeSeries.add(new Day(tempQuotation.getDate()), tempQuotation.getIndicator().getSma30Volume());
+            sma30VolumeTimeSeries.add(new Day(tempQuotation.getDate()),
+                    tempQuotation.getIndicator().getMovingAverageData().getSma30Volume());
         }
 
         timeSeriesCollection.addSeries(sma30VolumeTimeSeries);
@@ -203,11 +208,12 @@ public class ChartOverlayProvider {
         int index = candleStickSubplot.getDatasetCount();
 
         for (Quotation tempQuotation : quotationsSortedByDate) {
-            if (tempQuotation.getIndicator().getSma10() == 0) {
+            if (tempQuotation.getIndicator().getMovingAverageData().getSma10() == 0) {
                 continue;
             }
 
-            sma10TimeSeries.add(new Day(tempQuotation.getDate()), tempQuotation.getIndicator().getSma10());
+            sma10TimeSeries.add(new Day(tempQuotation.getDate()),
+                    tempQuotation.getIndicator().getMovingAverageData().getSma10());
         }
 
         timeSeriesCollection.addSeries(sma10TimeSeries);

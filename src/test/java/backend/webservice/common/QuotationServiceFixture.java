@@ -398,12 +398,12 @@ public class QuotationServiceFixture {
      * @return The appleQuotation2Indicator.
      */
     public Indicator getAppleQuotation2Indicator() {
-        Indicator indicator = new Indicator(true);
+        Indicator indicator = new Indicator(true, true);
 
         indicator.setStage(2);
-        indicator.setSma200(60);
-        indicator.setSma150((float) 63.45);
-        indicator.setSma50((float) 69.24);
+        indicator.getMovingAverageData().setSma200(60);
+        indicator.getMovingAverageData().setSma150((float) 63.45);
+        indicator.getMovingAverageData().setSma50((float) 69.24);
         indicator.getRelativeStrengthData().setRsNumber(71);
         indicator.setPerformance5Days((float) 12.44);
         indicator.setDistanceTo52WeekHigh((float) -4.4);
@@ -422,12 +422,12 @@ public class QuotationServiceFixture {
      * @return The fordQuotation1Indicator.
      */
     public Indicator getFordQuotation1Indicator() {
-        Indicator indicator = new Indicator(true);
+        Indicator indicator = new Indicator(true, true);
 
         indicator.setStage(3);
-        indicator.setSma200((float) 16.36);
-        indicator.setSma150((float) 15.08);
-        indicator.setSma50((float) 13.07);
+        indicator.getMovingAverageData().setSma200((float) 16.36);
+        indicator.getMovingAverageData().setSma150((float) 15.08);
+        indicator.getMovingAverageData().setSma50((float) 13.07);
         indicator.getRelativeStrengthData().setRsNumber(45);
         indicator.setPerformance5Days((float) -10.21);
         indicator.setDistanceTo52WeekHigh((float) -9.41);
@@ -446,12 +446,12 @@ public class QuotationServiceFixture {
      * @return The xleQuotation2Indicator.
      */
     public Indicator getXleQuotation2Indicator() {
-        Indicator indicator = new Indicator(true);
+        Indicator indicator = new Indicator(true, true);
 
         indicator.setStage(2);
-        indicator.setSma200((float) 74.02);
-        indicator.setSma150((float) 76.84);
-        indicator.setSma50((float) 78.15);
+        indicator.getMovingAverageData().setSma200((float) 74.02);
+        indicator.getMovingAverageData().setSma150((float) 76.84);
+        indicator.getMovingAverageData().setSma50((float) 78.15);
         indicator.getRelativeStrengthData().setRsNumber(71);
         indicator.setPerformance5Days((float) 3.17);
         indicator.setDistanceTo52WeekHigh((float) -21.4);
@@ -470,12 +470,12 @@ public class QuotationServiceFixture {
      * @return The xlbQuotation1Indicator.
      */
     public Indicator getXlbQuotation1Indicator() {
-        Indicator indicator = new Indicator(true);
+        Indicator indicator = new Indicator(true, true);
 
         indicator.setStage(4);
-        indicator.setSma200((float) 79.83);
-        indicator.setSma150((float) 78.64);
-        indicator.setSma50((float) 74.01);
+        indicator.getMovingAverageData().setSma200((float) 79.83);
+        indicator.getMovingAverageData().setSma150((float) 78.64);
+        indicator.getMovingAverageData().setSma50((float) 74.01);
         indicator.getRelativeStrengthData().setRsNumber(71);
         indicator.setPerformance5Days((float) -6.70);
         indicator.setDistanceTo52WeekHigh((float) -9.41);

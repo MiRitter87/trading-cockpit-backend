@@ -177,17 +177,17 @@ public class IndicatorCalculator {
 
         indicator.getRelativeStrengthData()
                 .setRsPercentSum(this.performanceCalculator.getRSPercentSum(quotation, sortedQuotations));
-        indicator.setEma21(
+        indicator.getMovingAverageData().setEma21(
                 this.movingAverageCalculator.getExponentialMovingAverage(DAYS_EMA21, quotation, sortedQuotations));
-        indicator
+        indicator.getMovingAverageData()
                 .setSma10(this.movingAverageCalculator.getSimpleMovingAverage(DAYS_SMA10, quotation, sortedQuotations));
-        indicator
+        indicator.getMovingAverageData()
                 .setSma20(this.movingAverageCalculator.getSimpleMovingAverage(DAYS_SMA20, quotation, sortedQuotations));
-        indicator
+        indicator.getMovingAverageData()
                 .setSma50(this.movingAverageCalculator.getSimpleMovingAverage(DAYS_SMA50, quotation, sortedQuotations));
-        indicator.setSma150(
+        indicator.getMovingAverageData().setSma150(
                 this.movingAverageCalculator.getSimpleMovingAverage(DAYS_SMA150, quotation, sortedQuotations));
-        indicator.setSma200(
+        indicator.getMovingAverageData().setSma200(
                 this.movingAverageCalculator.getSimpleMovingAverage(DAYS_SMA200, quotation, sortedQuotations));
         indicator.setDistanceTo52WeekHigh(this.getDistanceTo52WeekHigh(quotation, sortedQuotations));
         indicator.setDistanceTo52WeekLow(this.getDistanceTo52WeekLow(quotation, sortedQuotations));
@@ -203,8 +203,8 @@ public class IndicatorCalculator {
         indicator.setPerformance5Days(
                 this.performanceCalculator.getPricePerformanceForDays(DAYS_PERFORMANCE_5, quotation, sortedQuotations));
         indicator.setLiquidity20Days(this.getLiquidityForDays(DAYS_LIQUIDITY_20, quotation, sortedQuotations));
-        indicator.setSma30Volume(this.movingAverageCalculator.getSimpleMovingAverageVolume(DAYS_SMA_VOLUME_30,
-                quotation, sortedQuotations));
+        indicator.getMovingAverageData().setSma30Volume(this.movingAverageCalculator
+                .getSimpleMovingAverageVolume(DAYS_SMA_VOLUME_30, quotation, sortedQuotations));
     }
 
     /**
@@ -217,20 +217,20 @@ public class IndicatorCalculator {
     private void calculateHistoricalIndicators(final Indicator indicator, final QuotationArray sortedQuotations,
             final Quotation quotation) {
 
-        indicator
+        indicator.getMovingAverageData()
                 .setSma10(this.movingAverageCalculator.getSimpleMovingAverage(DAYS_SMA10, quotation, sortedQuotations));
-        indicator
+        indicator.getMovingAverageData()
                 .setSma20(this.movingAverageCalculator.getSimpleMovingAverage(DAYS_SMA20, quotation, sortedQuotations));
-        indicator
+        indicator.getMovingAverageData()
                 .setSma50(this.movingAverageCalculator.getSimpleMovingAverage(DAYS_SMA50, quotation, sortedQuotations));
-        indicator.setSma150(
+        indicator.getMovingAverageData().setSma150(
                 this.movingAverageCalculator.getSimpleMovingAverage(DAYS_SMA150, quotation, sortedQuotations));
-        indicator.setSma200(
+        indicator.getMovingAverageData().setSma200(
                 this.movingAverageCalculator.getSimpleMovingAverage(DAYS_SMA200, quotation, sortedQuotations));
-        indicator.setEma21(
+        indicator.getMovingAverageData().setEma21(
                 this.movingAverageCalculator.getExponentialMovingAverage(DAYS_EMA21, quotation, sortedQuotations));
-        indicator.setSma30Volume(this.movingAverageCalculator.getSimpleMovingAverageVolume(DAYS_SMA_VOLUME_30,
-                quotation, sortedQuotations));
+        indicator.getMovingAverageData().setSma30Volume(this.movingAverageCalculator
+                .getSimpleMovingAverageVolume(DAYS_SMA_VOLUME_30, quotation, sortedQuotations));
     }
 
     /**

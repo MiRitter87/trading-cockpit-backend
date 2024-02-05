@@ -332,7 +332,7 @@ public class InstrumentCheckCountingController {
                 }
 
                 if (sortedQuotations.getQuotations().get(i + j).getVolume() > sortedQuotations.getQuotations()
-                        .get(i + j).getIndicator().getSma30Volume()) {
+                        .get(i + j).getIndicator().getMovingAverageData().getSma30Volume()) {
                     numberOfDownDaysWithHighVolume++;
                 }
             }
