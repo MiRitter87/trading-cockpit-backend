@@ -262,6 +262,10 @@ public class Quotation {
             if (this.indicator.getRelativeStrengthData() != null) {
                 this.indicator.getRelativeStrengthData().setId(this.id);
             }
+
+            if (this.indicator.getMovingAverageData() != null) {
+                this.indicator.getMovingAverageData().setId(this.id);
+            }
         }
     }
 
