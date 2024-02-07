@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import backend.controller.scan.PerformanceCalculator;
+import backend.model.instrument.MovingAverageData;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
 import backend.model.protocol.ProtocolEntry;
@@ -48,6 +49,8 @@ public class InstrumentCheckAverageController {
         Quotation previousDayQuotation;
         List<ProtocolEntry> protocolEntries = new ArrayList<>();
         ProtocolEntry protocolEntry;
+        MovingAverageData currentDayMaData;
+        MovingAverageData previousDayMaData;
 
         startIndex = sortedQuotations.getIndexOfQuotationWithDate(startDate);
 
@@ -63,26 +66,21 @@ public class InstrumentCheckAverageController {
             }
 
             currentDayQuotation = sortedQuotations.getQuotations().get(i);
+            currentDayMaData = currentDayQuotation.getIndicator().getMovingAverageData();
+            previousDayMaData = previousDayQuotation.getIndicator().getMovingAverageData();
 
-            if (previousDayQuotation.getIndicator() == null) {
-                throw new Exception("No indicator is defined for Quotation with ID: " + previousDayQuotation.getId());
+            if (previousDayMaData == null || currentDayMaData == null) {
+                continue;
             }
 
-            if (currentDayQuotation.getIndicator() == null) {
-                throw new Exception("No indicator is defined for Quotation with ID: " + currentDayQuotation.getId());
-            }
-
-            if (previousDayQuotation.getClose().floatValue() >= previousDayQuotation.getIndicator()
-                    .getMovingAverageData().getSma50()
-                    && currentDayQuotation.getClose().floatValue() < currentDayQuotation.getIndicator()
-                            .getMovingAverageData().getSma50()) {
+            if (previousDayQuotation.getClose().floatValue() >= previousDayMaData.getSma50()
+                    && currentDayQuotation.getClose().floatValue() < currentDayMaData.getSma50()) {
 
                 protocolEntry = new ProtocolEntry();
                 protocolEntry.setCategory(ProtocolEntryCategory.VIOLATION);
                 protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(currentDayQuotation.getDate()));
 
-                if (currentDayQuotation.getVolume() >= currentDayQuotation.getIndicator().getMovingAverageData()
-                        .getSma30Volume()) {
+                if (currentDayQuotation.getVolume() >= currentDayMaData.getSma30Volume()) {
                     protocolEntry.setText(this.resources.getString("protocol.closeBelowSma50HighVolume"));
                 } else {
                     protocolEntry.setText(this.resources.getString("protocol.closeBelowSma50LowVolume"));
@@ -113,6 +111,8 @@ public class InstrumentCheckAverageController {
         Quotation previousDayQuotation;
         List<ProtocolEntry> protocolEntries = new ArrayList<>();
         ProtocolEntry protocolEntry;
+        MovingAverageData currentDayMaData;
+        MovingAverageData previousDayMaData;
 
         startIndex = sortedQuotations.getIndexOfQuotationWithDate(startDate);
 
@@ -128,19 +128,15 @@ public class InstrumentCheckAverageController {
             }
 
             currentDayQuotation = sortedQuotations.getQuotations().get(i);
+            currentDayMaData = currentDayQuotation.getIndicator().getMovingAverageData();
+            previousDayMaData = previousDayQuotation.getIndicator().getMovingAverageData();
 
-            if (previousDayQuotation.getIndicator() == null) {
-                throw new Exception("No indicator is defined for Quotation with ID: " + previousDayQuotation.getId());
+            if (previousDayMaData == null || currentDayMaData == null) {
+                continue;
             }
 
-            if (currentDayQuotation.getIndicator() == null) {
-                throw new Exception("No indicator is defined for Quotation with ID: " + currentDayQuotation.getId());
-            }
-
-            if (previousDayQuotation.getClose().floatValue() >= previousDayQuotation.getIndicator()
-                    .getMovingAverageData().getEma21()
-                    && currentDayQuotation.getClose().floatValue() < currentDayQuotation.getIndicator()
-                            .getMovingAverageData().getEma21()) {
+            if (previousDayQuotation.getClose().floatValue() >= previousDayMaData.getEma21()
+                    && currentDayQuotation.getClose().floatValue() < currentDayMaData.getEma21()) {
 
                 protocolEntry = new ProtocolEntry();
                 protocolEntry.setCategory(ProtocolEntryCategory.VIOLATION);
@@ -171,6 +167,7 @@ public class InstrumentCheckAverageController {
         int startIndex;
         float percentAboveSma200;
         Quotation currentDayQuotation;
+        MovingAverageData currentDayMaData;
         ProtocolEntry protocolEntry;
         List<ProtocolEntry> protocolEntries = new ArrayList<>();
         PerformanceCalculator performanceCalculator = new PerformanceCalculator();
@@ -183,17 +180,14 @@ public class InstrumentCheckAverageController {
 
         for (int i = startIndex; i >= 0; i--) {
             currentDayQuotation = sortedQuotations.getQuotations().get(i);
+            currentDayMaData = currentDayQuotation.getIndicator().getMovingAverageData();
 
-            if (currentDayQuotation.getIndicator() == null) {
-                throw new Exception("No indicator is defined for Quotation with ID: " + currentDayQuotation.getId());
-            }
-
-            if (currentDayQuotation.getIndicator().getMovingAverageData().getSma200() == 0) {
+            if (currentDayMaData == null || currentDayMaData.getSma200() == 0) {
                 continue; // Can't perform check if no SMA(200) is available.
             }
 
             percentAboveSma200 = performanceCalculator.getPerformance(currentDayQuotation.getClose().floatValue(),
-                    currentDayQuotation.getIndicator().getMovingAverageData().getSma200());
+                    currentDayMaData.getSma200());
 
             if (percentAboveSma200 >= EXTENDED_ABOVE_SMA200_THRESHOLD) {
                 protocolEntry = new ProtocolEntry();

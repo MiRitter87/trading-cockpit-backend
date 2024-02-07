@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 import backend.controller.scan.PerformanceCalculator;
+import backend.model.instrument.MovingAverageData;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
 import backend.model.protocol.ProtocolEntry;
@@ -305,6 +306,7 @@ public class InstrumentCheckCountingController {
         List<ProtocolEntry> protocolEntries = new ArrayList<>();
         ProtocolEntry protocolEntry;
         float performance;
+        MovingAverageData maData;
         final int thresholdDaysWithLowerLows = 3;
 
         startIndex = sortedQuotations.getIndexOfQuotationWithDate(startDate);
@@ -331,8 +333,13 @@ public class InstrumentCheckCountingController {
                     numberOfDownDays++;
                 }
 
-                if (sortedQuotations.getQuotations().get(i + j).getVolume() > sortedQuotations.getQuotations()
-                        .get(i + j).getIndicator().getMovingAverageData().getSma30Volume()) {
+                maData = sortedQuotations.getQuotations().get(i + j).getIndicator().getMovingAverageData();
+
+                if (maData == null || maData.getSma30Volume() == 0) {
+                    continue;
+                }
+
+                if (sortedQuotations.getQuotations().get(i + j).getVolume() > maData.getSma30Volume()) {
                     numberOfDownDaysWithHighVolume++;
                 }
             }

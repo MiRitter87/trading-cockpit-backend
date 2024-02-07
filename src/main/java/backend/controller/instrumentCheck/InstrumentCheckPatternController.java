@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import backend.controller.scan.PerformanceCalculator;
+import backend.model.instrument.MovingAverageData;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
 import backend.model.protocol.ProtocolEntry;
@@ -307,15 +308,16 @@ public class InstrumentCheckPatternController {
      */
     public boolean isUpOnVolume(final Quotation currentQuotation, final Quotation previousQuotation) throws Exception {
         float performance;
+        MovingAverageData currentDayMaData = currentQuotation.getIndicator().getMovingAverageData();
 
-        if (currentQuotation.getIndicator() == null) {
-            throw new Exception("No indicator is defined for Quotation with ID: " + currentQuotation.getId());
+        if (currentDayMaData == null || currentDayMaData.getSma30Volume() == 0) {
+            return false;
         }
 
         performance = this.performanceCalculator.getPerformance(currentQuotation, previousQuotation);
 
-        if (performance >= UP_PERFORMANCE_THRESHOLD && currentQuotation.getVolume() > currentQuotation.getIndicator()
-                .getMovingAverageData().getSma30Volume()) {
+        if (performance >= UP_PERFORMANCE_THRESHOLD
+                && currentQuotation.getVolume() > currentDayMaData.getSma30Volume()) {
             return true;
         }
 
@@ -333,15 +335,16 @@ public class InstrumentCheckPatternController {
     public boolean isDownOnVolume(final Quotation currentQuotation, final Quotation previousQuotation)
             throws Exception {
         float performance;
+        MovingAverageData currentDayMaData = currentQuotation.getIndicator().getMovingAverageData();
 
-        if (currentQuotation.getIndicator() == null) {
-            throw new Exception("No indicator is defined for Quotation with ID: " + currentQuotation.getId());
+        if (currentDayMaData == null || currentDayMaData.getSma30Volume() == 0) {
+            return false;
         }
 
         performance = this.performanceCalculator.getPerformance(currentQuotation, previousQuotation);
 
-        if (performance <= DOWN_PERFORMANCE_THRESHOLD && currentQuotation.getVolume() > currentQuotation.getIndicator()
-                .getMovingAverageData().getSma30Volume()) {
+        if (performance <= DOWN_PERFORMANCE_THRESHOLD
+                && currentQuotation.getVolume() > currentDayMaData.getSma30Volume()) {
             return true;
         }
 
@@ -358,9 +361,10 @@ public class InstrumentCheckPatternController {
     public boolean isBearishHighVolumeReversal(final Quotation currentQuotation) throws Exception {
         BigDecimal dailyPriceRange;
         BigDecimal reversalThresholdPrice;
+        MovingAverageData maData = currentQuotation.getIndicator().getMovingAverageData();
 
-        if (currentQuotation.getIndicator() == null) {
-            throw new Exception("No indicator is defined for Quotation with ID: " + currentQuotation.getId());
+        if (maData == null || maData.getSma30Volume() == 0) {
+            return false;
         }
 
         dailyPriceRange = currentQuotation.getHigh().subtract(currentQuotation.getLow());
@@ -368,8 +372,8 @@ public class InstrumentCheckPatternController {
                 .add(dailyPriceRange.multiply(new BigDecimal(REVERSAL_THRESHOLD_BEARISH)));
 
         if (currentQuotation.getOpen().compareTo(reversalThresholdPrice) <= 0
-                && currentQuotation.getClose().compareTo(reversalThresholdPrice) <= 0 && currentQuotation
-                        .getVolume() > currentQuotation.getIndicator().getMovingAverageData().getSma30Volume()) {
+                && currentQuotation.getClose().compareTo(reversalThresholdPrice) <= 0
+                && currentQuotation.getVolume() > maData.getSma30Volume()) {
             return true;
         }
 
@@ -386,9 +390,10 @@ public class InstrumentCheckPatternController {
     public boolean isBullishHighVolumeReversal(final Quotation currentQuotation) throws Exception {
         BigDecimal dailyPriceRange;
         BigDecimal reversalThresholdPrice;
+        MovingAverageData maData = currentQuotation.getIndicator().getMovingAverageData();
 
-        if (currentQuotation.getIndicator() == null) {
-            throw new Exception("No indicator is defined for Quotation with ID: " + currentQuotation.getId());
+        if (maData == null || maData.getSma30Volume() == 0) {
+            return false;
         }
 
         dailyPriceRange = currentQuotation.getHigh().subtract(currentQuotation.getLow());
@@ -396,8 +401,8 @@ public class InstrumentCheckPatternController {
                 .add(dailyPriceRange.multiply(new BigDecimal(REVERSAL_THRESHOLD_BULLISH)));
 
         if (currentQuotation.getOpen().compareTo(reversalThresholdPrice) >= 0
-                && currentQuotation.getClose().compareTo(reversalThresholdPrice) >= 0 && currentQuotation
-                        .getVolume() > currentQuotation.getIndicator().getMovingAverageData().getSma30Volume()) {
+                && currentQuotation.getClose().compareTo(reversalThresholdPrice) >= 0
+                && currentQuotation.getVolume() > maData.getSma30Volume()) {
             return true;
         }
 
@@ -414,19 +419,16 @@ public class InstrumentCheckPatternController {
      */
     public boolean isChurning(final Quotation currentQuotation, final Quotation previousQuotation) throws Exception {
         float performance;
+        MovingAverageData currentDayMaData = currentQuotation.getIndicator().getMovingAverageData();
 
-        if (previousQuotation.getIndicator() == null) {
-            throw new Exception("No indicator is defined for Quotation with ID: " + previousQuotation.getId());
-        }
-
-        if (currentQuotation.getIndicator() == null) {
-            throw new Exception("No indicator is defined for Quotation with ID: " + currentQuotation.getId());
+        if (currentDayMaData == null || currentDayMaData.getSma30Volume() == 0) {
+            return false;
         }
 
         performance = this.performanceCalculator.getPerformance(currentQuotation, previousQuotation);
 
-        if (performance <= CHURNING_UP_THRESHOLD && performance >= CHURNING_DOWN_THRESHOLD && currentQuotation
-                .getVolume() > currentQuotation.getIndicator().getMovingAverageData().getSma30Volume()) {
+        if (performance <= CHURNING_UP_THRESHOLD && performance >= CHURNING_DOWN_THRESHOLD
+                && currentQuotation.getVolume() > currentDayMaData.getSma30Volume()) {
             return true;
         }
 
