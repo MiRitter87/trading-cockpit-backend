@@ -12,6 +12,7 @@ import org.jfree.data.xy.OHLCDataset;
 
 import backend.controller.NoQuotationsExistException;
 import backend.model.instrument.Instrument;
+import backend.model.instrument.MovingAverageData;
 import backend.model.instrument.Quotation;
 
 /**
@@ -232,17 +233,13 @@ public class PocketPivotChartController extends PriceVolumeChartController {
      */
     private boolean isClosingPriceAboveSma10(final List<Quotation> quotationsSortedByDate, final int quotationIndex) {
         Quotation currentQuotation = quotationsSortedByDate.get(quotationIndex);
+        MovingAverageData maData = currentQuotation.getIndicator().getMovingAverageData();
 
-        if (currentQuotation.getIndicator() == null) {
+        if (maData == null || maData.getSma10() == 0) {
             return false;
         }
 
-        if (currentQuotation.getIndicator().getMovingAverageData().getSma10() == 0) {
-            return false;
-        }
-
-        if (currentQuotation.getClose().floatValue() > currentQuotation.getIndicator().getMovingAverageData()
-                .getSma10()) {
+        if (currentQuotation.getClose().floatValue() > maData.getSma10()) {
             return true;
         }
 
@@ -258,18 +255,15 @@ public class PocketPivotChartController extends PriceVolumeChartController {
      */
     private boolean isLowExtendedAboveSma10(final List<Quotation> quotationsSortedByDate, final int quotationIndex) {
         Quotation currentQuotation = quotationsSortedByDate.get(quotationIndex);
+        MovingAverageData maData = currentQuotation.getIndicator().getMovingAverageData();
         float extensionThreshold;
         final float twoPercent = 1.02f;
 
-        if (currentQuotation.getIndicator() == null) {
+        if (maData == null || maData.getSma10() == 0) {
             return true;
         }
 
-        if (currentQuotation.getIndicator().getMovingAverageData().getSma10() == 0) {
-            return true;
-        }
-
-        extensionThreshold = currentQuotation.getIndicator().getMovingAverageData().getSma10() * twoPercent;
+        extensionThreshold = maData.getSma10() * twoPercent;
 
         if (currentQuotation.getLow().floatValue() > extensionThreshold) {
             return true;
@@ -287,17 +281,13 @@ public class PocketPivotChartController extends PriceVolumeChartController {
      */
     private boolean isClosingPriceAboveSma50(final List<Quotation> quotationsSortedByDate, final int quotationIndex) {
         Quotation currentQuotation = quotationsSortedByDate.get(quotationIndex);
+        MovingAverageData maData = currentQuotation.getIndicator().getMovingAverageData();
 
-        if (currentQuotation.getIndicator() == null) {
+        if (maData == null || maData.getSma50() == 0) {
             return false;
         }
 
-        if (currentQuotation.getIndicator().getMovingAverageData().getSma50() == 0) {
-            return false;
-        }
-
-        if (currentQuotation.getClose().floatValue() > currentQuotation.getIndicator().getMovingAverageData()
-                .getSma50()) {
+        if (currentQuotation.getClose().floatValue() > maData.getSma50()) {
             return true;
         }
 
