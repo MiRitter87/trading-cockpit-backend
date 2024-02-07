@@ -13,6 +13,7 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 
 import backend.model.instrument.Instrument;
+import backend.model.instrument.MovingAverageData;
 import backend.model.instrument.Quotation;
 
 /**
@@ -37,14 +38,16 @@ public class ChartOverlayProvider {
         TimeSeriesCollection timeSeriesCollection = new TimeSeriesCollection();
         TimeSeries ema21TimeSeries = new TimeSeries(this.resources.getString("chart.priceVolume.timeSeriesEma21Name"));
         int index = candleStickSubplot.getDatasetCount();
+        MovingAverageData maData;
 
         for (Quotation tempQuotation : quotationsSortedByDate) {
-            if (tempQuotation.getIndicator().getMovingAverageData().getEma21() == 0) {
+            maData = tempQuotation.getIndicator().getMovingAverageData();
+
+            if (maData == null || maData.getEma21() == 0) {
                 continue;
             }
 
-            ema21TimeSeries.add(new Day(tempQuotation.getDate()),
-                    tempQuotation.getIndicator().getMovingAverageData().getEma21());
+            ema21TimeSeries.add(new Day(tempQuotation.getDate()), maData.getEma21());
         }
 
         timeSeriesCollection.addSeries(ema21TimeSeries);
@@ -69,14 +72,16 @@ public class ChartOverlayProvider {
         TimeSeriesCollection timeSeriesCollection = new TimeSeriesCollection();
         TimeSeries sma50TimeSeries = new TimeSeries(this.resources.getString("chart.priceVolume.timeSeriesSma50Name"));
         int index = candleStickSubplot.getDatasetCount();
+        MovingAverageData maData;
 
         for (Quotation tempQuotation : quotationsSortedByDate) {
-            if (tempQuotation.getIndicator().getMovingAverageData().getSma50() == 0) {
+            maData = tempQuotation.getIndicator().getMovingAverageData();
+
+            if (maData == null || maData.getSma50() == 0) {
                 continue;
             }
 
-            sma50TimeSeries.add(new Day(tempQuotation.getDate()),
-                    tempQuotation.getIndicator().getMovingAverageData().getSma50());
+            sma50TimeSeries.add(new Day(tempQuotation.getDate()), maData.getSma50());
         }
 
         timeSeriesCollection.addSeries(sma50TimeSeries);
@@ -102,14 +107,16 @@ public class ChartOverlayProvider {
         TimeSeries sma150TimeSeries = new TimeSeries(
                 this.resources.getString("chart.priceVolume.timeSeriesSma150Name"));
         int index = candleStickSubplot.getDatasetCount();
+        MovingAverageData maData;
 
         for (Quotation tempQuotation : quotationsSortedByDate) {
-            if (tempQuotation.getIndicator().getMovingAverageData().getSma150() == 0) {
+            maData = tempQuotation.getIndicator().getMovingAverageData();
+
+            if (maData == null || maData.getSma150() == 0) {
                 continue;
             }
 
-            sma150TimeSeries.add(new Day(tempQuotation.getDate()),
-                    tempQuotation.getIndicator().getMovingAverageData().getSma150());
+            sma150TimeSeries.add(new Day(tempQuotation.getDate()), maData.getSma150());
         }
 
         timeSeriesCollection.addSeries(sma150TimeSeries);
@@ -135,14 +142,16 @@ public class ChartOverlayProvider {
         TimeSeries sma200TimeSeries = new TimeSeries(
                 this.resources.getString("chart.priceVolume.timeSeriesSma200Name"));
         int index = candleStickSubplot.getDatasetCount();
+        MovingAverageData maData;
 
         for (Quotation tempQuotation : quotationsSortedByDate) {
-            if (tempQuotation.getIndicator().getMovingAverageData().getSma200() == 0) {
+            maData = tempQuotation.getIndicator().getMovingAverageData();
+
+            if (maData == null || maData.getSma200() == 0) {
                 continue;
             }
 
-            sma200TimeSeries.add(new Day(tempQuotation.getDate()),
-                    tempQuotation.getIndicator().getMovingAverageData().getSma200());
+            sma200TimeSeries.add(new Day(tempQuotation.getDate()), maData.getSma200());
         }
 
         timeSeriesCollection.addSeries(sma200TimeSeries);
@@ -170,18 +179,20 @@ public class ChartOverlayProvider {
         TimeSeries sma30VolumeTimeSeries = new TimeSeries(
                 this.resources.getString("chart.priceVolume.timeSeriesSma30VolumeName"));
         int index = volumeSubplot.getDatasetCount();
+        MovingAverageData maData;
 
         if (!withSma30Volume) {
             return;
         }
 
         for (Quotation tempQuotation : quotationsSortedByDate) {
-            if (tempQuotation.getIndicator().getMovingAverageData().getSma30Volume() == 0) {
+            maData = tempQuotation.getIndicator().getMovingAverageData();
+
+            if (maData == null || maData.getSma30Volume() == 0) {
                 continue;
             }
 
-            sma30VolumeTimeSeries.add(new Day(tempQuotation.getDate()),
-                    tempQuotation.getIndicator().getMovingAverageData().getSma30Volume());
+            sma30VolumeTimeSeries.add(new Day(tempQuotation.getDate()), maData.getSma30Volume());
         }
 
         timeSeriesCollection.addSeries(sma30VolumeTimeSeries);
@@ -206,14 +217,16 @@ public class ChartOverlayProvider {
         TimeSeriesCollection timeSeriesCollection = new TimeSeriesCollection();
         TimeSeries sma10TimeSeries = new TimeSeries(this.resources.getString("chart.pocketPivots.timeSeriesSma10Name"));
         int index = candleStickSubplot.getDatasetCount();
+        MovingAverageData maData;
 
         for (Quotation tempQuotation : quotationsSortedByDate) {
-            if (tempQuotation.getIndicator().getMovingAverageData().getSma10() == 0) {
+            maData = tempQuotation.getIndicator().getMovingAverageData();
+
+            if (maData == null || maData.getSma10() == 0) {
                 continue;
             }
 
-            sma10TimeSeries.add(new Day(tempQuotation.getDate()),
-                    tempQuotation.getIndicator().getMovingAverageData().getSma10());
+            sma10TimeSeries.add(new Day(tempQuotation.getDate()), maData.getSma10());
         }
 
         timeSeriesCollection.addSeries(sma10TimeSeries);

@@ -35,6 +35,7 @@ import backend.dao.DAOManager;
 import backend.dao.chart.ChartObjectDAO;
 import backend.model.chart.HorizontalLine;
 import backend.model.instrument.Instrument;
+import backend.model.instrument.MovingAverageData;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
 import backend.webservice.Indicator;
@@ -385,10 +386,17 @@ public class PriceVolumeChartController extends ChartController {
     private long getHighestAverageVolume(final Instrument instrument) {
         long highestAverageVolume = 0;
         List<Quotation> quotationsSortedByDate = instrument.getQuotationsSortedByDate();
+        MovingAverageData maData;
 
         for (Quotation tempQuotation : quotationsSortedByDate) {
-            if (tempQuotation.getIndicator().getMovingAverageData().getSma30Volume() > highestAverageVolume) {
-                highestAverageVolume = tempQuotation.getIndicator().getMovingAverageData().getSma30Volume();
+            maData = tempQuotation.getIndicator().getMovingAverageData();
+
+            if (maData == null) {
+                continue;
+            }
+
+            if (maData.getSma30Volume() > highestAverageVolume) {
+                highestAverageVolume = maData.getSma30Volume();
             }
         }
 
