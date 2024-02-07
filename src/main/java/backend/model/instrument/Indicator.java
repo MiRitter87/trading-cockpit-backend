@@ -103,7 +103,7 @@ public class Indicator {
      * Default constructor.
      */
     public Indicator() {
-        this.movingAverageData = new MovingAverageData();
+
     }
 
     /**
