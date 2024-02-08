@@ -8,6 +8,7 @@ import backend.model.LocalizedException;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
+import backend.model.instrument.RelativeStrengthData;
 import backend.webservice.ScanTemplate;
 
 /**
@@ -156,6 +157,7 @@ public class ScanTemplateProcessor {
 
         QuotationArray industryGroupQuotations = new QuotationArray();
         Quotation industryGroupQuotation;
+        RelativeStrengthData quotationRsData;
         int rsNumberSum;
         int compositeRsNumber;
         final int fiveComponents = 5;
@@ -168,17 +170,23 @@ public class ScanTemplateProcessor {
 
         // Determine and set the composite RS number for each quotation.
         for (Quotation quotation : quotations) {
+            quotationRsData = quotation.getIndicator().getRelativeStrengthData();
+
+            if (quotationRsData == null) {
+                continue;
+            }
+
             if (quotation.getInstrument().getIndustryGroup() != null) {
                 industryGroupQuotation = this.getQuotation(quotation.getInstrument().getIndustryGroup().getId(),
                         industryGroupQuotations);
 
                 if (industryGroupQuotation != null && this.areQuotationsOfSameDay(quotation, industryGroupQuotation)) {
-                    rsNumberSum = quotation.getIndicator().getRelativeStrengthData().getRsNumber() * 2;
+                    rsNumberSum = quotationRsData.getRsNumber() * 2;
                     rsNumberSum += industryGroupQuotation.getIndicator().getRelativeStrengthData().getRsNumber();
-                    rsNumberSum += quotation.getIndicator().getRelativeStrengthData().getRsNumberDistance52WeekHigh();
-                    rsNumberSum += quotation.getIndicator().getRelativeStrengthData().getRsNumberUpDownVolumeRatio();
+                    rsNumberSum += quotationRsData.getRsNumberDistance52WeekHigh();
+                    rsNumberSum += quotationRsData.getRsNumberUpDownVolumeRatio();
                     compositeRsNumber = (int) Math.ceil((double) rsNumberSum / fiveComponents);
-                    quotation.getIndicator().getRelativeStrengthData().setRsNumberCompositeIg(compositeRsNumber);
+                    quotationRsData.setRsNumberCompositeIg(compositeRsNumber);
                 }
             }
         }
