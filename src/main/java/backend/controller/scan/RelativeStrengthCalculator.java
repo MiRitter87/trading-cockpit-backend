@@ -5,11 +5,11 @@ import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.List;
 
-import backend.model.instrument.Indicator;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationDistanceTo52WeekHighComparator;
 import backend.model.instrument.QuotationRsPercentSumComparator;
 import backend.model.instrument.QuotationUpDownVolumeRatioComparator;
+import backend.model.instrument.RelativeStrengthData;
 
 /**
  * Performs calculations of multiple relative strength values based on the instruments quotations.
@@ -28,7 +28,7 @@ public class RelativeStrengthCalculator {
      * @param quotations The quotations on which the calculation of the rsNumber is based.
      */
     public void calculateRsNumber(final List<Quotation> quotations) {
-        Indicator indicator;
+        RelativeStrengthData rsData;
         BigDecimal rsNumber;
         BigDecimal dividend;
         BigDecimal numberOfElements;
@@ -41,9 +41,9 @@ public class RelativeStrengthCalculator {
             rsNumber = dividend.divide(numberOfElements, 2, RoundingMode.HALF_UP);
             rsNumber = rsNumber.multiply(BigDecimal.valueOf(HUNDRED_PERCENT));
 
-            indicator = quotations.get(i).getIndicator();
-            if (indicator != null) {
-                indicator.getRelativeStrengthData().setRsNumber(rsNumber.intValue());
+            rsData = quotations.get(i).getIndicator().getRelativeStrengthData();
+            if (rsData != null) {
+                rsData.setRsNumber(rsNumber.intValue());
             }
         }
     }
@@ -54,7 +54,7 @@ public class RelativeStrengthCalculator {
      * @param quotations The quotations on which the calculation of the rsNumberDistance52WeekHigh is based.
      */
     public void calculateRsNumberDistanceTo52wHigh(final List<Quotation> quotations) {
-        Indicator indicator;
+        RelativeStrengthData rsData;
         BigDecimal rsNumber;
         BigDecimal dividend;
         BigDecimal numberOfElements;
@@ -67,9 +67,9 @@ public class RelativeStrengthCalculator {
             rsNumber = dividend.divide(numberOfElements, 2, RoundingMode.HALF_UP);
             rsNumber = rsNumber.multiply(BigDecimal.valueOf(HUNDRED_PERCENT));
 
-            indicator = quotations.get(i).getIndicator();
-            if (indicator != null) {
-                indicator.getRelativeStrengthData().setRsNumberDistance52WeekHigh(rsNumber.intValue());
+            rsData = quotations.get(i).getIndicator().getRelativeStrengthData();
+            if (rsData != null) {
+                rsData.setRsNumberDistance52WeekHigh(rsNumber.intValue());
             }
         }
     }
@@ -80,7 +80,7 @@ public class RelativeStrengthCalculator {
      * @param quotations The quotations on which the calculation of the rsNumberUpDownVolumeRatio is based.
      */
     public void calculateRsNumberUpDownVolumeRatio(final List<Quotation> quotations) {
-        Indicator indicator;
+        RelativeStrengthData rsData;
         BigDecimal rsNumber;
         BigDecimal dividend;
         BigDecimal numberOfElements;
@@ -93,9 +93,9 @@ public class RelativeStrengthCalculator {
             rsNumber = dividend.divide(numberOfElements, 2, RoundingMode.HALF_UP);
             rsNumber = rsNumber.multiply(BigDecimal.valueOf(HUNDRED_PERCENT));
 
-            indicator = quotations.get(i).getIndicator();
-            if (indicator != null) {
-                indicator.getRelativeStrengthData().setRsNumberUpDownVolumeRatio(rsNumber.intValue());
+            rsData = quotations.get(i).getIndicator().getRelativeStrengthData();
+            if (rsData != null) {
+                rsData.setRsNumberUpDownVolumeRatio(rsNumber.intValue());
             }
         }
     }
