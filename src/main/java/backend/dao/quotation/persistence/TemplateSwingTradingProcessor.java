@@ -3,6 +3,7 @@ package backend.dao.quotation.persistence;
 import java.util.Iterator;
 import java.util.List;
 
+import backend.model.instrument.MovingAverageData;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
 
@@ -60,6 +61,8 @@ public class TemplateSwingTradingProcessor {
     private boolean isSwingTradingEnvironment(final QuotationArray quotationArray) {
         Quotation currentQuotation;
         Quotation previousQuotation;
+        MovingAverageData currentMaData;
+        MovingAverageData previousMaData;
 
         if (quotationArray.getQuotations().size() < 2) {
             return false;
@@ -68,15 +71,15 @@ public class TemplateSwingTradingProcessor {
         quotationArray.sortQuotationsByDate();
         currentQuotation = quotationArray.getQuotations().get(0);
         previousQuotation = quotationArray.getQuotations().get(1);
+        currentMaData = currentQuotation.getIndicator().getMovingAverageData();
+        previousMaData = previousQuotation.getIndicator().getMovingAverageData();
 
-        if (currentQuotation.getIndicator() == null || previousQuotation.getIndicator() == null) {
+        if (currentMaData == null || previousMaData == null) {
             return false;
         }
 
-        if ((currentQuotation.getIndicator().getMovingAverageData().getSma10() > previousQuotation.getIndicator()
-                .getMovingAverageData().getSma10())
-                && (currentQuotation.getIndicator().getMovingAverageData().getSma20() > previousQuotation.getIndicator()
-                        .getMovingAverageData().getSma20())) {
+        if ((currentMaData.getSma10() > previousMaData.getSma10())
+                && (currentMaData.getSma20() > previousMaData.getSma20())) {
             return true;
         }
 
