@@ -12,6 +12,7 @@ import backend.dao.quotation.persistence.QuotationDAO;
 import backend.dao.statistic.StatisticDAO;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
+import backend.model.instrument.MovingAverageData;
 import backend.model.instrument.Quotation;
 import backend.model.statistic.Statistic;
 import backend.model.statistic.StatisticArray;
@@ -167,13 +168,13 @@ public class StatisticCalculationController {
      */
     private int getNumberAboveSma50(final Quotation currentQuotation) {
         BigDecimal sma50;
+        MovingAverageData maData = currentQuotation.getIndicator().getMovingAverageData();
 
-        if (currentQuotation.getIndicator() == null
-                || currentQuotation.getIndicator().getMovingAverageData().getSma50() == 0) {
+        if (maData == null || maData.getSma50() == 0) {
             return 0;
         }
 
-        sma50 = BigDecimal.valueOf(currentQuotation.getIndicator().getMovingAverageData().getSma50());
+        sma50 = BigDecimal.valueOf(maData.getSma50());
 
         if (currentQuotation.getClose().compareTo(sma50) == 1) {
             return 1;
@@ -190,13 +191,13 @@ public class StatisticCalculationController {
      */
     private int getNumberAtOrBelowSma50(final Quotation currentQuotation) {
         BigDecimal sma50;
+        MovingAverageData maData = currentQuotation.getIndicator().getMovingAverageData();
 
-        if (currentQuotation.getIndicator() == null
-                || currentQuotation.getIndicator().getMovingAverageData().getSma50() == 0) {
+        if (maData == null || maData.getSma50() == 0) {
             return 0;
         }
 
-        sma50 = BigDecimal.valueOf(currentQuotation.getIndicator().getMovingAverageData().getSma50());
+        sma50 = BigDecimal.valueOf(maData.getSma50());
 
         if (currentQuotation.getClose().compareTo(sma50) == -1) {
             return 1;
@@ -213,13 +214,13 @@ public class StatisticCalculationController {
      */
     private int getNumberAboveSma200(final Quotation currentQuotation) {
         BigDecimal sma200;
+        MovingAverageData maData = currentQuotation.getIndicator().getMovingAverageData();
 
-        if (currentQuotation.getIndicator() == null
-                || currentQuotation.getIndicator().getMovingAverageData().getSma200() == 0) {
+        if (maData == null || maData.getSma200() == 0) {
             return 0;
         }
 
-        sma200 = BigDecimal.valueOf(currentQuotation.getIndicator().getMovingAverageData().getSma200());
+        sma200 = BigDecimal.valueOf(maData.getSma200());
 
         if (currentQuotation.getClose().compareTo(sma200) == 1) {
             return 1;
@@ -236,13 +237,13 @@ public class StatisticCalculationController {
      */
     private int getNumberAtOrBelowSma200(final Quotation currentQuotation) {
         BigDecimal sma200;
+        MovingAverageData maData = currentQuotation.getIndicator().getMovingAverageData();
 
-        if (currentQuotation.getIndicator() == null
-                || currentQuotation.getIndicator().getMovingAverageData().getSma200() == 0) {
+        if (maData == null || maData.getSma200() == 0) {
             return 0;
         }
 
-        sma200 = BigDecimal.valueOf(currentQuotation.getIndicator().getMovingAverageData().getSma200());
+        sma200 = BigDecimal.valueOf(maData.getSma200());
 
         if (currentQuotation.getClose().compareTo(sma200) == -1) {
             return 1;
@@ -259,16 +260,16 @@ public class StatisticCalculationController {
      * @return 1, if Quotation behaves bullish, -1 if it behaves bearish, 0 if behavior is neither bullish nor bearish.
      */
     private int getNumberRitterMarketTrend(final Quotation currentQuotation, final Quotation previousQuotation) {
+        MovingAverageData maData = currentQuotation.getIndicator().getMovingAverageData();
+
         // The indicator can't be calculated if these values are not available.
-        if (currentQuotation.getIndicator() == null
-                || currentQuotation.getIndicator().getMovingAverageData().getSma30Volume() == 0) {
+        if (maData == null || maData.getSma30Volume() == 0) {
             return 0;
         }
 
         // Rising price.
         if (currentQuotation.getClose().compareTo(previousQuotation.getClose()) == 1) {
-            if (currentQuotation.getVolume() >= currentQuotation.getIndicator().getMovingAverageData()
-                    .getSma30Volume()) {
+            if (currentQuotation.getVolume() >= maData.getSma30Volume()) {
                 return 1;
             } else {
                 return -1;
@@ -277,8 +278,7 @@ public class StatisticCalculationController {
 
         // Falling price.
         if (currentQuotation.getClose().compareTo(previousQuotation.getClose()) == -1) {
-            if (currentQuotation.getVolume() >= currentQuotation.getIndicator().getMovingAverageData()
-                    .getSma30Volume()) {
+            if (currentQuotation.getVolume() >= maData.getSma30Volume()) {
                 return -1;
             } else {
                 return 1;
