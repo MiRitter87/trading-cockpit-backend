@@ -1,5 +1,6 @@
 package backend.controller;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -36,8 +37,7 @@ public final class MainController {
     /**
      * Client that is used for HTTP queries of third-party WebServices.
      *
-     * The OkHttpClient instance should be shared across the whole application
-     * according to the documentation.
+     * The OkHttpClient instance should be shared across the whole application according to the documentation.
      *
      * @see https://square.github.io/okhttp/4.x/okhttp/okhttp3/-ok-http-client/
      */
@@ -75,15 +75,23 @@ public final class MainController {
         DAOManager.getInstance();
 
         try {
-            this.okHttpClient = new OkHttpClient();
-
-            this.priceAlertController = new PriceAlertController();
-            this.priceAlertController.start();
+            this.checkConfigFileExisting();
         } catch (Exception e) {
-            LOGGER.error("The query mechanism for price alerts failed to start.", e);
+            LOGGER.error(e.getMessage());
+            LOGGER.warn("Application could not be started properly.");
+            return;
         }
 
-        System.out.println("Application started.");
+        try {
+            this.okHttpClient = new OkHttpClient();
+            this.priceAlertController = new PriceAlertController();
+            this.priceAlertController.start();
+
+            LOGGER.info("Application started.");
+        } catch (Exception e) {
+            LOGGER.error("The query mechanism for price alerts failed to start.", e);
+            LOGGER.warn("Application could not be started properly.");
+        }
     }
 
     /**
@@ -97,7 +105,7 @@ public final class MainController {
                 this.priceAlertController.stop();
             }
 
-            System.out.println("Application stopped");
+            LOGGER.info("Application stopped.");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -166,5 +174,21 @@ public final class MainController {
      */
     public OkHttpClient getOkHttpClient() {
         return this.okHttpClient;
+    }
+
+    /**
+     * Checks if the configuration file with application properties is existing.
+     *
+     * @throws Exception If config file could not be found.
+     */
+    private void checkConfigFileExisting() throws Exception {
+        String workingDir = System.getProperty("user.dir");
+        String filePath = workingDir + SUBPATH_CONFIGURATION_PROPERTIES;
+
+        File f = new File(filePath);
+
+        if (!f.exists() || f.isDirectory()) {
+            throw new Exception("Could not find configuration file using path: " + filePath);
+        }
     }
 }
