@@ -154,14 +154,13 @@ public class IndicatorCalculator {
             indicator = quotation.getIndicator();
         }
 
-        this.initMovingAverageData(quotation, sortedQuotations, indicator);
-
         if (mostRecent) {
             indicator.setRelativeStrengthData(new RelativeStrengthData());
             this.calculateMostRecentIndicators(indicator, sortedQuotations, quotation);
-        } else {
-            this.calculateHistoricalIndicators(indicator, sortedQuotations, quotation);
         }
+
+        this.initMovingAverageData(quotation, sortedQuotations, indicator);
+        this.calculateHistoricalIndicators(indicator, sortedQuotations, quotation);
 
         quotation.setIndicator(indicator);
 
@@ -178,21 +177,8 @@ public class IndicatorCalculator {
     private void calculateMostRecentIndicators(final Indicator indicator, final QuotationArray sortedQuotations,
             final Quotation quotation) {
 
-        MovingAverageData maData = indicator.getMovingAverageData();
-
-        if (maData == null) {
-            return;
-        }
-
         indicator.getRelativeStrengthData()
                 .setRsPercentSum(this.performanceCalculator.getRSPercentSum(quotation, sortedQuotations));
-        maData.setEma21(
-                this.movingAverageCalculator.getExponentialMovingAverage(DAYS_EMA21, quotation, sortedQuotations));
-        maData.setSma10(this.movingAverageCalculator.getSimpleMovingAverage(DAYS_SMA10, quotation, sortedQuotations));
-        maData.setSma20(this.movingAverageCalculator.getSimpleMovingAverage(DAYS_SMA20, quotation, sortedQuotations));
-        maData.setSma50(this.movingAverageCalculator.getSimpleMovingAverage(DAYS_SMA50, quotation, sortedQuotations));
-        maData.setSma150(this.movingAverageCalculator.getSimpleMovingAverage(DAYS_SMA150, quotation, sortedQuotations));
-        maData.setSma200(this.movingAverageCalculator.getSimpleMovingAverage(DAYS_SMA200, quotation, sortedQuotations));
         indicator.setDistanceTo52WeekHigh(this.getDistanceTo52WeekHigh(quotation, sortedQuotations));
         indicator.setDistanceTo52WeekLow(this.getDistanceTo52WeekLow(quotation, sortedQuotations));
         indicator.setBollingerBandWidth(
@@ -207,8 +193,6 @@ public class IndicatorCalculator {
         indicator.setPerformance5Days(
                 this.performanceCalculator.getPricePerformanceForDays(DAYS_PERFORMANCE_5, quotation, sortedQuotations));
         indicator.setLiquidity20Days(this.getLiquidityForDays(DAYS_LIQUIDITY_20, quotation, sortedQuotations));
-        maData.setSma30Volume(this.movingAverageCalculator.getSimpleMovingAverageVolume(DAYS_SMA_VOLUME_30, quotation,
-                sortedQuotations));
     }
 
     /**
