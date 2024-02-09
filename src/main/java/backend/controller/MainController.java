@@ -22,7 +22,8 @@ public final class MainController {
     /**
      * File path to configuration properties.
      */
-    protected static final String SUBPATH_CONFIGURATION_PROPERTIES = "/conf/tradingCockpitBackend.properties";
+    protected static final String SUBPATH_CONFIGURATION_PROPERTIES = File.separator + "conf" + File.separator
+            + "tradingCockpitBackend.properties";
 
     /**
      * Instance of the main controller.
