@@ -299,40 +299,40 @@ public class StatisticCalculationControllerTest {
         List<Quotation> quotations = new ArrayList<>();
 
         try {
-            this.appleQuotation1Indicator = new Indicator(false, true);
+            this.appleQuotation1Indicator = new Indicator(true);
             this.appleQuotation1Indicator.getMovingAverageData().setSma50((float) 78.54);
             this.appleQuotation1Indicator.getMovingAverageData().setSma200((float) 75.34);
             this.appleQuotation1Indicator.getMovingAverageData().setSma30Volume(5000000);
             this.appleQuotation1.setIndicator(this.appleQuotation1Indicator);
             quotations.add(this.appleQuotation1);
 
-            this.appleQuotation2Indicator = new Indicator(false, true);
+            this.appleQuotation2Indicator = new Indicator(true);
             this.appleQuotation2Indicator.getMovingAverageData().setSma50((float) 80.54);
             this.appleQuotation2Indicator.getMovingAverageData().setSma200((float) 76.01);
             this.appleQuotation2Indicator.getMovingAverageData().setSma30Volume(5000000);
             this.appleQuotation2.setIndicator(this.appleQuotation2Indicator);
             quotations.add(this.appleQuotation2);
 
-            this.appleQuotation3Indicator = new Indicator(false, true);
+            this.appleQuotation3Indicator = new Indicator(true);
             this.appleQuotation3Indicator.getMovingAverageData().setSma50((float) 82.54);
             this.appleQuotation3.setIndicator(this.appleQuotation3Indicator);
             quotations.add(this.appleQuotation3);
 
-            this.microsoftQuotation1Indicator = new Indicator(false, true);
+            this.microsoftQuotation1Indicator = new Indicator(true);
             this.microsoftQuotation1Indicator.getMovingAverageData().setSma50((float) 247.54);
             this.microsoftQuotation1Indicator.getMovingAverageData().setSma200((float) 260.70);
             this.microsoftQuotation1Indicator.getMovingAverageData().setSma30Volume(1200000);
             this.microsoftQuotation1.setIndicator(this.microsoftQuotation1Indicator);
             quotations.add(this.microsoftQuotation1);
 
-            this.microsoftQuotation2Indicator = new Indicator(false, true);
+            this.microsoftQuotation2Indicator = new Indicator(true);
             this.microsoftQuotation2Indicator.getMovingAverageData().setSma50((float) 246.54);
             this.microsoftQuotation2Indicator.getMovingAverageData().setSma200((float) 250.60);
             this.microsoftQuotation2Indicator.getMovingAverageData().setSma30Volume(1200000);
             this.microsoftQuotation2.setIndicator(this.microsoftQuotation2Indicator);
             quotations.add(this.microsoftQuotation2);
 
-            this.microsoftQuotation3Indicator = new Indicator(false, true);
+            this.microsoftQuotation3Indicator = new Indicator(true);
             this.microsoftQuotation3Indicator.getMovingAverageData().setSma50((float) 245.54);
             this.microsoftQuotation3.setIndicator(this.microsoftQuotation3Indicator);
             quotations.add(this.microsoftQuotation3);

@@ -225,7 +225,7 @@ public class QuotationServiceFixture {
      * @return The Quotation 2 of the Apple stock.
      */
     public Quotation getAppleQuotation2(final Instrument instrument) {
-        Quotation quotation = new Quotation();
+        Quotation quotation = new Quotation(true);
         Calendar calendar = Calendar.getInstance();
 
         calendar.setTime(new Date());
@@ -237,6 +237,8 @@ public class QuotationServiceFixture {
         quotation.setCurrency(Currency.USD);
         quotation.setVolume(12373654);
         quotation.setInstrument(instrument);
+
+        quotation.getRelativeStrengthData().setRsNumber(71);
 
         return quotation;
     }
@@ -266,7 +268,7 @@ public class QuotationServiceFixture {
      * @return The Quotation 1 of the Ford stock.
      */
     public Quotation getFordQuotation1(final Instrument instrument) {
-        Quotation quotation = new Quotation();
+        Quotation quotation = new Quotation(true);
         Calendar calendar = Calendar.getInstance();
 
         calendar.setTime(new Date());
@@ -278,6 +280,8 @@ public class QuotationServiceFixture {
         quotation.setCurrency(Currency.USD);
         quotation.setVolume(48600000);
         quotation.setInstrument(instrument);
+
+        quotation.getRelativeStrengthData().setRsNumber(45);
 
         return quotation;
     }
@@ -311,7 +315,7 @@ public class QuotationServiceFixture {
      * @return The Quotation 2 of the XLE ETF.
      */
     public Quotation getXleQuotation2(final Instrument instrument) {
-        Quotation quotation = new Quotation();
+        Quotation quotation = new Quotation(true);
         Calendar calendar = Calendar.getInstance();
 
         calendar.setTime(new Date());
@@ -324,6 +328,8 @@ public class QuotationServiceFixture {
         quotation.setVolume(25187000);
         quotation.setInstrument(instrument);
 
+        quotation.getRelativeStrengthData().setRsNumber(71);
+
         return quotation;
     }
 
@@ -334,13 +340,15 @@ public class QuotationServiceFixture {
      * @return The Quotation 1 of the XLB ETF.
      */
     public Quotation getXlbQuotation1(final Instrument instrument) {
-        Quotation quotation = new Quotation();
+        Quotation quotation = new Quotation(true);
 
         quotation.setDate(new Date());
         quotation.setClose(BigDecimal.valueOf(71.25));
         quotation.setCurrency(Currency.USD);
         quotation.setVolume(79794000);
         quotation.setInstrument(instrument);
+
+        quotation.getRelativeStrengthData().setRsNumber(71);
 
         return quotation;
     }
@@ -398,13 +406,12 @@ public class QuotationServiceFixture {
      * @return The appleQuotation2Indicator.
      */
     public Indicator getAppleQuotation2Indicator() {
-        Indicator indicator = new Indicator(true, true);
+        Indicator indicator = new Indicator(true);
 
         indicator.setStage(2);
         indicator.getMovingAverageData().setSma200(60);
         indicator.getMovingAverageData().setSma150((float) 63.45);
         indicator.getMovingAverageData().setSma50((float) 69.24);
-        indicator.getRelativeStrengthData().setRsNumber(71);
         indicator.setPerformance5Days((float) 12.44);
         indicator.setDistanceTo52WeekHigh((float) -4.4);
         indicator.setDistanceTo52WeekLow((float) 78.81);
@@ -422,13 +429,12 @@ public class QuotationServiceFixture {
      * @return The fordQuotation1Indicator.
      */
     public Indicator getFordQuotation1Indicator() {
-        Indicator indicator = new Indicator(true, true);
+        Indicator indicator = new Indicator(true);
 
         indicator.setStage(3);
         indicator.getMovingAverageData().setSma200((float) 16.36);
         indicator.getMovingAverageData().setSma150((float) 15.08);
         indicator.getMovingAverageData().setSma50((float) 13.07);
-        indicator.getRelativeStrengthData().setRsNumber(45);
         indicator.setPerformance5Days((float) -10.21);
         indicator.setDistanceTo52WeekHigh((float) -9.41);
         indicator.setDistanceTo52WeekLow((float) 48.81);
@@ -446,13 +452,12 @@ public class QuotationServiceFixture {
      * @return The xleQuotation2Indicator.
      */
     public Indicator getXleQuotation2Indicator() {
-        Indicator indicator = new Indicator(true, true);
+        Indicator indicator = new Indicator(true);
 
         indicator.setStage(2);
         indicator.getMovingAverageData().setSma200((float) 74.02);
         indicator.getMovingAverageData().setSma150((float) 76.84);
         indicator.getMovingAverageData().setSma50((float) 78.15);
-        indicator.getRelativeStrengthData().setRsNumber(71);
         indicator.setPerformance5Days((float) 3.17);
         indicator.setDistanceTo52WeekHigh((float) -21.4);
         indicator.setDistanceTo52WeekLow((float) 78.81);
@@ -470,13 +475,12 @@ public class QuotationServiceFixture {
      * @return The xlbQuotation1Indicator.
      */
     public Indicator getXlbQuotation1Indicator() {
-        Indicator indicator = new Indicator(true, true);
+        Indicator indicator = new Indicator(true);
 
         indicator.setStage(4);
         indicator.getMovingAverageData().setSma200((float) 79.83);
         indicator.getMovingAverageData().setSma150((float) 78.64);
         indicator.getMovingAverageData().setSma50((float) 74.01);
-        indicator.getRelativeStrengthData().setRsNumber(71);
         indicator.setPerformance5Days((float) -6.70);
         indicator.setDistanceTo52WeekHigh((float) -9.41);
         indicator.setDistanceTo52WeekLow((float) 0.81);

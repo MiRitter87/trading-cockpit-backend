@@ -69,21 +69,21 @@ public class RelativeStrengthCalculatorTest {
      * Initializes dummy quotations of the DML Instrument.
      */
     private void initializeDmlQuotations() {
-        this.dmlQuotation1 = new Quotation();
-        this.dmlQuotation1.setIndicator(new Indicator(true, false));
-        this.dmlQuotation1.getIndicator().getRelativeStrengthData().setRsPercentSum((float) 34.5);
+        this.dmlQuotation1 = new Quotation(true);
+        this.dmlQuotation1.setIndicator(new Indicator(false));
+        this.dmlQuotation1.getRelativeStrengthData().setRsPercentSum((float) 34.5);
         this.dmlQuotation1.getIndicator().setDistanceTo52WeekHigh((float) -4.56);
         this.dmlQuotation1.getIndicator().setUpDownVolumeRatio((float) 2.44);
 
-        this.dmlQuotation2 = new Quotation();
-        this.dmlQuotation2.setIndicator(new Indicator(true, false));
-        this.dmlQuotation2.getIndicator().getRelativeStrengthData().setRsPercentSum(-5);
+        this.dmlQuotation2 = new Quotation(true);
+        this.dmlQuotation2.setIndicator(new Indicator(false));
+        this.dmlQuotation2.getRelativeStrengthData().setRsPercentSum(-5);
         this.dmlQuotation2.getIndicator().setDistanceTo52WeekHigh((float) -0.56);
         this.dmlQuotation2.getIndicator().setUpDownVolumeRatio((float) 0.87);
 
-        this.dmlQuotation3 = new Quotation();
-        this.dmlQuotation3.setIndicator(new Indicator(true, false));
-        this.dmlQuotation3.getIndicator().getRelativeStrengthData().setRsPercentSum((float) 12.35);
+        this.dmlQuotation3 = new Quotation(true);
+        this.dmlQuotation3.setIndicator(new Indicator(false));
+        this.dmlQuotation3.getRelativeStrengthData().setRsPercentSum((float) 12.35);
         this.dmlQuotation3.getIndicator().setDistanceTo52WeekHigh(-7);
         this.dmlQuotation3.getIndicator().setUpDownVolumeRatio((float) 1.01);
     }
@@ -104,9 +104,9 @@ public class RelativeStrengthCalculatorTest {
         this.relativeStrengthCalculator.calculateRsNumber(quotations);
 
         // Verify the correct calculation.
-        assertEquals(33, this.dmlQuotation2.getIndicator().getRelativeStrengthData().getRsNumber());
-        assertEquals(67, this.dmlQuotation3.getIndicator().getRelativeStrengthData().getRsNumber());
-        assertEquals(100, this.dmlQuotation1.getIndicator().getRelativeStrengthData().getRsNumber());
+        assertEquals(33, this.dmlQuotation2.getRelativeStrengthData().getRsNumber());
+        assertEquals(67, this.dmlQuotation3.getRelativeStrengthData().getRsNumber());
+        assertEquals(100, this.dmlQuotation1.getRelativeStrengthData().getRsNumber());
     }
 
     @Test
@@ -125,9 +125,9 @@ public class RelativeStrengthCalculatorTest {
         this.relativeStrengthCalculator.calculateRsNumberDistanceTo52wHigh(quotations);
 
         // Verify the correct calculation.
-        assertEquals(33, this.dmlQuotation3.getIndicator().getRelativeStrengthData().getRsNumberDistance52WeekHigh());
-        assertEquals(67, this.dmlQuotation1.getIndicator().getRelativeStrengthData().getRsNumberDistance52WeekHigh());
-        assertEquals(100, this.dmlQuotation2.getIndicator().getRelativeStrengthData().getRsNumberDistance52WeekHigh());
+        assertEquals(33, this.dmlQuotation3.getRelativeStrengthData().getRsNumberDistance52WeekHigh());
+        assertEquals(67, this.dmlQuotation1.getRelativeStrengthData().getRsNumberDistance52WeekHigh());
+        assertEquals(100, this.dmlQuotation2.getRelativeStrengthData().getRsNumberDistance52WeekHigh());
     }
 
     @Test
@@ -146,8 +146,8 @@ public class RelativeStrengthCalculatorTest {
         this.relativeStrengthCalculator.calculateRsNumberUpDownVolumeRatio(quotations);
 
         // Verify the correct calculation.
-        assertEquals(33, this.dmlQuotation2.getIndicator().getRelativeStrengthData().getRsNumberUpDownVolumeRatio());
-        assertEquals(67, this.dmlQuotation3.getIndicator().getRelativeStrengthData().getRsNumberUpDownVolumeRatio());
-        assertEquals(100, this.dmlQuotation1.getIndicator().getRelativeStrengthData().getRsNumberUpDownVolumeRatio());
+        assertEquals(33, this.dmlQuotation2.getRelativeStrengthData().getRsNumberUpDownVolumeRatio());
+        assertEquals(67, this.dmlQuotation3.getRelativeStrengthData().getRsNumberUpDownVolumeRatio());
+        assertEquals(100, this.dmlQuotation1.getRelativeStrengthData().getRsNumberUpDownVolumeRatio());
     }
 }

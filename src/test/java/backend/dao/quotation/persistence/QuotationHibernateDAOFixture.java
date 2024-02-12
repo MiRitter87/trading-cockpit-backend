@@ -147,7 +147,7 @@ public class QuotationHibernateDAOFixture {
      */
     public Quotation getAppleQuotation2(final Instrument instrument) {
         Calendar calendar = Calendar.getInstance();
-        Quotation quotation = new Quotation();
+        Quotation quotation = new Quotation(true);
 
         calendar.setTime(new Date());
         quotation = new Quotation();
@@ -156,6 +156,10 @@ public class QuotationHibernateDAOFixture {
         quotation.setCurrency(Currency.USD);
         quotation.setVolume(4584544);
         quotation.setInstrument(instrument);
+
+        quotation.getRelativeStrengthData().setRsNumber(24);
+        quotation.getRelativeStrengthData().setRsNumberDistance52WeekHigh(87);
+        quotation.getRelativeStrengthData().setRsNumberUpDownVolumeRatio(54);
 
         return quotation;
     }
@@ -168,7 +172,7 @@ public class QuotationHibernateDAOFixture {
      */
     public Quotation getXliSectorQuotation1(final Instrument instrument) {
         Calendar calendar = Calendar.getInstance();
-        Quotation quotation = new Quotation();
+        Quotation quotation = new Quotation(true);
 
         calendar.setTime(new Date());
         quotation = new Quotation();
@@ -177,6 +181,8 @@ public class QuotationHibernateDAOFixture {
         quotation.setCurrency(Currency.USD);
         quotation.setVolume(13884800);
         quotation.setInstrument(instrument);
+
+        quotation.getRelativeStrengthData().setRsNumber(46);
 
         return quotation;
     }
@@ -210,7 +216,7 @@ public class QuotationHibernateDAOFixture {
      */
     public Quotation getCopperIndustryGroupQuotation1(final Instrument instrument) {
         Calendar calendar = Calendar.getInstance();
-        Quotation quotation = new Quotation();
+        Quotation quotation = new Quotation(true);
 
         calendar.setTime(new Date());
         quotation = new Quotation();
@@ -219,6 +225,8 @@ public class QuotationHibernateDAOFixture {
         quotation.setCurrency(Currency.USD);
         quotation.setVolume(401200);
         quotation.setInstrument(instrument);
+
+        quotation.getRelativeStrengthData().setRsNumber(12);
 
         return quotation;
     }
@@ -229,12 +237,9 @@ public class QuotationHibernateDAOFixture {
      * @return The AppleQuotation2Indicator.
      */
     public Indicator getAppleQuotation2Indicator() {
-        Indicator indicator = new Indicator(true, false);
+        Indicator indicator = new Indicator(false);
 
         indicator.setStage(3);
-        indicator.getRelativeStrengthData().setRsNumber(24);
-        indicator.getRelativeStrengthData().setRsNumberDistance52WeekHigh(87);
-        indicator.getRelativeStrengthData().setRsNumberUpDownVolumeRatio(54);
 
         return indicator;
     }
@@ -258,10 +263,9 @@ public class QuotationHibernateDAOFixture {
      * @return The xliSectorQuotation1Indicator.
      */
     public Indicator getXliSectorQuotation1Indicator() {
-        Indicator indicator = new Indicator(true, false);
+        Indicator indicator = new Indicator(false);
 
         indicator.setStage(1);
-        indicator.getRelativeStrengthData().setRsNumber(46);
 
         return indicator;
     }
@@ -272,10 +276,9 @@ public class QuotationHibernateDAOFixture {
      * @return The copperIndustryGroupQuotation1Indicator.
      */
     public Indicator getCopperIndustryGroupQuotation1Indicator() {
-        Indicator indicator = new Indicator(true, false);
+        Indicator indicator = new Indicator(false);
 
         indicator.setStage(4);
-        indicator.getRelativeStrengthData().setRsNumber(12);
 
         return indicator;
     }

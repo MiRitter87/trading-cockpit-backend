@@ -549,24 +549,22 @@ public class QuotationHibernateDAOTest {
             assertEquals(this.appleQuotation2, databaseQuotation);
 
             // Assure the RS number of the sector and industry group is provided. These are transient attributes.
-            assertEquals(this.xliSectorQuotation1Indicator.getRelativeStrengthData().getRsNumber(),
-                    databaseQuotation.getIndicator().getRelativeStrengthData().getRsNumberSector());
-            assertEquals(this.copperIndustryGroupQuotation1Indicator.getRelativeStrengthData().getRsNumber(),
-                    databaseQuotation.getIndicator().getRelativeStrengthData().getRsNumberIndustryGroup());
+            assertEquals(this.xliSectorQuotation1.getRelativeStrengthData().getRsNumber(),
+                    databaseQuotation.getRelativeStrengthData().getRsNumberSector());
+            assertEquals(this.copperIndustryGroupQuotation1.getRelativeStrengthData().getRsNumber(),
+                    databaseQuotation.getRelativeStrengthData().getRsNumberIndustryGroup());
 
             // Assure the composite RS number based on an Instrument and its industry group is provided.
-            expectedCompositeRsNumberIg = this.appleQuotation2.getIndicator().getRelativeStrengthData().getRsNumber()
-                    * 2;
-            expectedCompositeRsNumberIg += this.copperIndustryGroupQuotation1Indicator.getRelativeStrengthData()
-                    .getRsNumber();
-            expectedCompositeRsNumberIg += this.appleQuotation2.getIndicator().getRelativeStrengthData()
+            expectedCompositeRsNumberIg = this.appleQuotation2.getRelativeStrengthData().getRsNumber() * 2;
+            expectedCompositeRsNumberIg += this.copperIndustryGroupQuotation1.getRelativeStrengthData().getRsNumber();
+            expectedCompositeRsNumberIg += this.appleQuotation2.getRelativeStrengthData()
                     .getRsNumberDistance52WeekHigh();
-            expectedCompositeRsNumberIg += this.appleQuotation2.getIndicator().getRelativeStrengthData()
+            expectedCompositeRsNumberIg += this.appleQuotation2.getRelativeStrengthData()
                     .getRsNumberUpDownVolumeRatio();
             expectedCompositeRsNumberIg = (int) Math.ceil((double) expectedCompositeRsNumberIg / 5);
 
             assertEquals(expectedCompositeRsNumberIg,
-                    databaseQuotation.getIndicator().getRelativeStrengthData().getRsNumberCompositeIg());
+                    databaseQuotation.getRelativeStrengthData().getRsNumberCompositeIg());
         } catch (Exception e) {
             fail(e.getMessage());
         }
