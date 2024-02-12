@@ -86,13 +86,6 @@ public class Indicator {
     private float liquidity20Days;
 
     /**
-     * Relative strength data.
-     */
-    @OneToOne(targetEntity = RelativeStrengthData.class, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "RS_DATA_ID", nullable = true)
-    private RelativeStrengthData relativeStrengthData;
-
-    /**
      * Moving average data.
      */
     @OneToOne(targetEntity = MovingAverageData.class, cascade = CascadeType.ALL, orphanRemoval = true)
@@ -109,14 +102,9 @@ public class Indicator {
     /**
      * Initializes the Indicator.
      *
-     * @param withRelativeStrengthData Initialize indicators RelativeStrengthData, if true.
-     * @param withMovingAverageData    Initialize indicators MovingAverageData, if true.
+     * @param withMovingAverageData Initialize indicators MovingAverageData, if true.
      */
-    public Indicator(final boolean withRelativeStrengthData, final boolean withMovingAverageData) {
-        if (withRelativeStrengthData) {
-            this.relativeStrengthData = new RelativeStrengthData();
-        }
-
+    public Indicator(final boolean withMovingAverageData) {
         if (withMovingAverageData) {
             this.movingAverageData = new MovingAverageData();
         }
@@ -274,24 +262,6 @@ public class Indicator {
      */
     public void setLiquidity20Days(final float liquidity20Days) {
         this.liquidity20Days = liquidity20Days;
-    }
-
-    /**
-     * @return the relativeStrengthData
-     */
-    public RelativeStrengthData getRelativeStrengthData() {
-        return relativeStrengthData;
-    }
-
-    /**
-     * @param relativeStrengthData the relativeStrengthData to set
-     */
-    public void setRelativeStrengthData(final RelativeStrengthData relativeStrengthData) {
-        this.relativeStrengthData = relativeStrengthData;
-
-        if (this.relativeStrengthData != null) {
-            this.relativeStrengthData.setId(this.id);
-        }
     }
 
     /**

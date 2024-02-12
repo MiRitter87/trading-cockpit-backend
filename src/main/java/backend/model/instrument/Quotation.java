@@ -111,10 +111,28 @@ public class Quotation {
     private Indicator indicator;
 
     /**
+     * Relative strength data.
+     */
+    @OneToOne(targetEntity = RelativeStrengthData.class, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "RS_DATA_ID", nullable = true)
+    private RelativeStrengthData relativeStrengthData;
+
+    /**
      * Default constructor.
      */
     public Quotation() {
 
+    }
+
+    /**
+     * Initializes the Quotation.
+     *
+     * @param withRelativeStrengthData Initialize indicators RelativeStrengthData, if true.
+     */
+    public Quotation(final boolean withRelativeStrengthData) {
+        if (withRelativeStrengthData) {
+            this.relativeStrengthData = new RelativeStrengthData();
+        }
     }
 
     /**
@@ -251,6 +269,24 @@ public class Quotation {
     }
 
     /**
+     * @return the relativeStrengthData
+     */
+    public RelativeStrengthData getRelativeStrengthData() {
+        return relativeStrengthData;
+    }
+
+    /**
+     * @param relativeStrengthData the relativeStrengthData to set
+     */
+    public void setRelativeStrengthData(final RelativeStrengthData relativeStrengthData) {
+        this.relativeStrengthData = relativeStrengthData;
+
+        if (this.relativeStrengthData != null) {
+            this.relativeStrengthData.setId(this.id);
+        }
+    }
+
+    /**
      * @param indicator the indicator to set
      */
     public void setIndicator(final Indicator indicator) {
@@ -258,10 +294,6 @@ public class Quotation {
 
         if (this.indicator != null) {
             this.indicator.setId(this.id);
-
-            if (this.indicator.getRelativeStrengthData() != null) {
-                this.indicator.getRelativeStrengthData().setId(this.id);
-            }
 
             if (this.indicator.getMovingAverageData() != null) {
                 this.indicator.getMovingAverageData().setId(this.id);
@@ -274,7 +306,8 @@ public class Quotation {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(currency, date, id, indicator, instrument, open, high, low, close, volume);
+        return Objects.hash(currency, date, id, indicator, instrument, open, high, low, close, volume,
+                relativeStrengthData);
     }
 
     /**
@@ -335,6 +368,6 @@ public class Quotation {
 
         return currency == other.currency && Objects.equals(date, other.date) && Objects.equals(id, other.id)
                 && Objects.equals(indicator, other.indicator) && Objects.equals(instrument, other.instrument)
-                && volume == other.volume;
+                && Objects.equals(relativeStrengthData, other.relativeStrengthData) && volume == other.volume;
     }
 }
