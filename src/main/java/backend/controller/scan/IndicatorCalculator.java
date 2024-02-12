@@ -155,7 +155,7 @@ public class IndicatorCalculator {
         }
 
         if (mostRecent) {
-            indicator.setRelativeStrengthData(new RelativeStrengthData());
+            quotation.setRelativeStrengthData(new RelativeStrengthData());
             this.calculateMostRecentIndicators(indicator, sortedQuotations, quotation);
         }
 
@@ -177,7 +177,7 @@ public class IndicatorCalculator {
     private void calculateMostRecentIndicators(final Indicator indicator, final QuotationArray sortedQuotations,
             final Quotation quotation) {
 
-        indicator.getRelativeStrengthData()
+        quotation.getRelativeStrengthData()
                 .setRsPercentSum(this.performanceCalculator.getRSPercentSum(quotation, sortedQuotations));
         indicator.setDistanceTo52WeekHigh(this.getDistanceTo52WeekHigh(quotation, sortedQuotations));
         indicator.setDistanceTo52WeekLow(this.getDistanceTo52WeekLow(quotation, sortedQuotations));

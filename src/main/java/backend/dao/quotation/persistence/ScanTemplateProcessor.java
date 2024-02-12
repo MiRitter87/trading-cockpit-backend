@@ -106,8 +106,8 @@ public class ScanTemplateProcessor {
                 sectorQuotation = this.getQuotation(quotation.getInstrument().getSector().getId(), sectorQuotations);
 
                 if (sectorQuotation != null && this.areQuotationsOfSameDay(quotation, sectorQuotation)) {
-                    quotation.getIndicator().getRelativeStrengthData()
-                            .setRsNumberSector(sectorQuotation.getIndicator().getRelativeStrengthData().getRsNumber());
+                    quotation.getRelativeStrengthData()
+                            .setRsNumberSector(sectorQuotation.getRelativeStrengthData().getRsNumber());
                 }
             }
         }
@@ -138,8 +138,8 @@ public class ScanTemplateProcessor {
                         industryGroupQuotations);
 
                 if (industryGroupQuotation != null && this.areQuotationsOfSameDay(quotation, industryGroupQuotation)) {
-                    quotation.getIndicator().getRelativeStrengthData().setRsNumberIndustryGroup(
-                            industryGroupQuotation.getIndicator().getRelativeStrengthData().getRsNumber());
+                    quotation.getRelativeStrengthData()
+                            .setRsNumberIndustryGroup(industryGroupQuotation.getRelativeStrengthData().getRsNumber());
                 }
             }
         }
@@ -170,7 +170,7 @@ public class ScanTemplateProcessor {
 
         // Determine and set the composite RS number for each quotation.
         for (Quotation quotation : quotations) {
-            quotationRsData = quotation.getIndicator().getRelativeStrengthData();
+            quotationRsData = quotation.getRelativeStrengthData();
 
             if (quotationRsData == null) {
                 continue;
@@ -182,7 +182,7 @@ public class ScanTemplateProcessor {
 
                 if (industryGroupQuotation != null && this.areQuotationsOfSameDay(quotation, industryGroupQuotation)) {
                     rsNumberSum = quotationRsData.getRsNumber() * 2;
-                    rsNumberSum += industryGroupQuotation.getIndicator().getRelativeStrengthData().getRsNumber();
+                    rsNumberSum += industryGroupQuotation.getRelativeStrengthData().getRsNumber();
                     rsNumberSum += quotationRsData.getRsNumberDistance52WeekHigh();
                     rsNumberSum += quotationRsData.getRsNumberUpDownVolumeRatio();
                     compositeRsNumber = (int) Math.ceil((double) rsNumberSum / fiveComponents);

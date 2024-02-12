@@ -13,22 +13,16 @@ public class QuotationRsPercentSumComparator implements Comparator<Quotation> {
      */
     @Override
     public int compare(final Quotation quotation1, final Quotation quotation2) {
-        // Handle possible null values of Indicator.
-        if (quotation1.getIndicator() == null || quotation2.getIndicator() == null) {
-            return 0;
-        }
-
         // Handle possible null values of RelativeStrengthData.
-        if (quotation1.getIndicator().getRelativeStrengthData() == null
-                || quotation2.getIndicator().getRelativeStrengthData() == null) {
+        if (quotation1.getRelativeStrengthData() == null || quotation2.getRelativeStrengthData() == null) {
             return 0;
         }
 
-        if (quotation1.getIndicator().getRelativeStrengthData().getRsPercentSum() > quotation2.getIndicator()
-                .getRelativeStrengthData().getRsPercentSum()) {
+        if (quotation1.getRelativeStrengthData().getRsPercentSum() > quotation2.getRelativeStrengthData()
+                .getRsPercentSum()) {
             return -1;
-        } else if (quotation1.getIndicator().getRelativeStrengthData().getRsPercentSum() < quotation2.getIndicator()
-                .getRelativeStrengthData().getRsPercentSum()) {
+        } else if (quotation1.getRelativeStrengthData().getRsPercentSum() < quotation2.getRelativeStrengthData()
+                .getRsPercentSum()) {
             return 1;
         } else {
             return 0;

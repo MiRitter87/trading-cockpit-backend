@@ -41,7 +41,7 @@ public class RelativeStrengthCalculator {
             rsNumber = dividend.divide(numberOfElements, 2, RoundingMode.HALF_UP);
             rsNumber = rsNumber.multiply(BigDecimal.valueOf(HUNDRED_PERCENT));
 
-            rsData = quotations.get(i).getIndicator().getRelativeStrengthData();
+            rsData = quotations.get(i).getRelativeStrengthData();
             if (rsData != null) {
                 rsData.setRsNumber(rsNumber.intValue());
             }
@@ -67,7 +67,7 @@ public class RelativeStrengthCalculator {
             rsNumber = dividend.divide(numberOfElements, 2, RoundingMode.HALF_UP);
             rsNumber = rsNumber.multiply(BigDecimal.valueOf(HUNDRED_PERCENT));
 
-            rsData = quotations.get(i).getIndicator().getRelativeStrengthData();
+            rsData = quotations.get(i).getRelativeStrengthData();
             if (rsData != null) {
                 rsData.setRsNumberDistance52WeekHigh(rsNumber.intValue());
             }
@@ -93,7 +93,7 @@ public class RelativeStrengthCalculator {
             rsNumber = dividend.divide(numberOfElements, 2, RoundingMode.HALF_UP);
             rsNumber = rsNumber.multiply(BigDecimal.valueOf(HUNDRED_PERCENT));
 
-            rsData = quotations.get(i).getIndicator().getRelativeStrengthData();
+            rsData = quotations.get(i).getRelativeStrengthData();
             if (rsData != null) {
                 rsData.setRsNumberUpDownVolumeRatio(rsNumber.intValue());
             }
