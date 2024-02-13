@@ -22,6 +22,7 @@ import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
+import backend.model.instrument.RelativeStrengthData;
 import backend.model.webservice.WebServiceResult;
 import backend.tools.WebServiceTools;
 import backend.webservice.ScanTemplate;
@@ -166,6 +167,7 @@ public class QuotationServiceTest {
         this.fixtureHelper = new QuotationServiceFixture();
         this.createDummyInstruments();
         this.createDummyQuotations();
+        this.createRelativeStrengthData();
         this.createDummyIndicators();
     }
 
@@ -303,6 +305,35 @@ public class QuotationServiceTest {
                 this.denisonMinesQuotations));
 
         try {
+            quotationDAO.updateQuotations(quotations);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    /**
+     * Creates relative strength data.
+     */
+    private void createRelativeStrengthData() {
+        List<Quotation> quotations = new ArrayList<>();
+
+        try {
+            this.appleQuotation2.setRelativeStrengthData(new RelativeStrengthData());
+            this.appleQuotation2.getRelativeStrengthData().setRsNumber(71);
+            quotations.add(this.appleQuotation2);
+
+            this.fordQuotation1.setRelativeStrengthData(new RelativeStrengthData());
+            this.fordQuotation1.getRelativeStrengthData().setRsNumber(45);
+            quotations.add(this.fordQuotation1);
+
+            this.xleQuotation2.setRelativeStrengthData(new RelativeStrengthData());
+            this.xleQuotation2.getRelativeStrengthData().setRsNumber(71);
+            quotations.add(this.xleQuotation2);
+
+            this.xlbQuotation1.setRelativeStrengthData(new RelativeStrengthData());
+            this.xlbQuotation1.getRelativeStrengthData().setRsNumber(71);
+            quotations.add(this.xlbQuotation1);
+
             quotationDAO.updateQuotations(quotations);
         } catch (Exception e) {
             fail(e.getMessage());

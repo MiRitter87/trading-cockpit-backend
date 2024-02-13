@@ -225,7 +225,7 @@ public class QuotationServiceFixture {
      * @return The Quotation 2 of the Apple stock.
      */
     public Quotation getAppleQuotation2(final Instrument instrument) {
-        Quotation quotation = new Quotation(true);
+        Quotation quotation = new Quotation();
         Calendar calendar = Calendar.getInstance();
 
         calendar.setTime(new Date());
@@ -237,8 +237,6 @@ public class QuotationServiceFixture {
         quotation.setCurrency(Currency.USD);
         quotation.setVolume(12373654);
         quotation.setInstrument(instrument);
-
-        quotation.getRelativeStrengthData().setRsNumber(71);
 
         return quotation;
     }
@@ -268,7 +266,7 @@ public class QuotationServiceFixture {
      * @return The Quotation 1 of the Ford stock.
      */
     public Quotation getFordQuotation1(final Instrument instrument) {
-        Quotation quotation = new Quotation(true);
+        Quotation quotation = new Quotation();
         Calendar calendar = Calendar.getInstance();
 
         calendar.setTime(new Date());
@@ -280,8 +278,6 @@ public class QuotationServiceFixture {
         quotation.setCurrency(Currency.USD);
         quotation.setVolume(48600000);
         quotation.setInstrument(instrument);
-
-        quotation.getRelativeStrengthData().setRsNumber(45);
 
         return quotation;
     }
@@ -315,7 +311,7 @@ public class QuotationServiceFixture {
      * @return The Quotation 2 of the XLE ETF.
      */
     public Quotation getXleQuotation2(final Instrument instrument) {
-        Quotation quotation = new Quotation(true);
+        Quotation quotation = new Quotation();
         Calendar calendar = Calendar.getInstance();
 
         calendar.setTime(new Date());
@@ -328,8 +324,6 @@ public class QuotationServiceFixture {
         quotation.setVolume(25187000);
         quotation.setInstrument(instrument);
 
-        quotation.getRelativeStrengthData().setRsNumber(71);
-
         return quotation;
     }
 
@@ -340,15 +334,13 @@ public class QuotationServiceFixture {
      * @return The Quotation 1 of the XLB ETF.
      */
     public Quotation getXlbQuotation1(final Instrument instrument) {
-        Quotation quotation = new Quotation(true);
+        Quotation quotation = new Quotation();
 
         quotation.setDate(new Date());
         quotation.setClose(BigDecimal.valueOf(71.25));
         quotation.setCurrency(Currency.USD);
         quotation.setVolume(79794000);
         quotation.setInstrument(instrument);
-
-        quotation.getRelativeStrengthData().setRsNumber(71);
 
         return quotation;
     }
