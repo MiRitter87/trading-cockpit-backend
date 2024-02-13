@@ -26,6 +26,7 @@ import backend.model.instrument.Indicator;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
+import backend.model.instrument.RelativeStrengthData;
 import backend.webservice.ScanTemplate;
 
 /**
@@ -169,6 +170,7 @@ public class QuotationHibernateDAOTest {
     private void createTestData() {
         this.createInstruments();
         this.createQuotations();
+        this.createRelativeStrengthData();
         this.createIndicators();
     }
 
@@ -253,6 +255,33 @@ public class QuotationHibernateDAOTest {
             this.copperIndustryGroupQuotation1Indicator = this.fixtureHelper
                     .getCopperIndustryGroupQuotation1Indicator();
             this.copperIndustryGroupQuotation1.setIndicator(this.copperIndustryGroupQuotation1Indicator);
+            quotations.add(this.copperIndustryGroupQuotation1);
+
+            quotationDAO.updateQuotations(quotations);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    /**
+     * Creates relative strength data.
+     */
+    private void createRelativeStrengthData() {
+        List<Quotation> quotations = new ArrayList<>();
+
+        try {
+            this.appleQuotation2.setRelativeStrengthData(new RelativeStrengthData());
+            this.appleQuotation2.getRelativeStrengthData().setRsNumber(24);
+            this.appleQuotation2.getRelativeStrengthData().setRsNumberDistance52WeekHigh(87);
+            this.appleQuotation2.getRelativeStrengthData().setRsNumberUpDownVolumeRatio(54);
+            quotations.add(this.appleQuotation2);
+
+            this.xliSectorQuotation1.setRelativeStrengthData(new RelativeStrengthData());
+            this.xliSectorQuotation1.getRelativeStrengthData().setRsNumber(46);
+            quotations.add(this.xliSectorQuotation1);
+
+            this.copperIndustryGroupQuotation1.setRelativeStrengthData(new RelativeStrengthData());
+            this.copperIndustryGroupQuotation1.getRelativeStrengthData().setRsNumber(12);
             quotations.add(this.copperIndustryGroupQuotation1);
 
             quotationDAO.updateQuotations(quotations);

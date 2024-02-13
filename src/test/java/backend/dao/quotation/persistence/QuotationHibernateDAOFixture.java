@@ -147,7 +147,7 @@ public class QuotationHibernateDAOFixture {
      */
     public Quotation getAppleQuotation2(final Instrument instrument) {
         Calendar calendar = Calendar.getInstance();
-        Quotation quotation = new Quotation(true);
+        Quotation quotation = new Quotation();
 
         calendar.setTime(new Date());
         quotation = new Quotation();
@@ -156,10 +156,6 @@ public class QuotationHibernateDAOFixture {
         quotation.setCurrency(Currency.USD);
         quotation.setVolume(4584544);
         quotation.setInstrument(instrument);
-
-        quotation.getRelativeStrengthData().setRsNumber(24);
-        quotation.getRelativeStrengthData().setRsNumberDistance52WeekHigh(87);
-        quotation.getRelativeStrengthData().setRsNumberUpDownVolumeRatio(54);
 
         return quotation;
     }
@@ -172,7 +168,7 @@ public class QuotationHibernateDAOFixture {
      */
     public Quotation getXliSectorQuotation1(final Instrument instrument) {
         Calendar calendar = Calendar.getInstance();
-        Quotation quotation = new Quotation(true);
+        Quotation quotation = new Quotation();
 
         calendar.setTime(new Date());
         quotation = new Quotation();
@@ -181,8 +177,6 @@ public class QuotationHibernateDAOFixture {
         quotation.setCurrency(Currency.USD);
         quotation.setVolume(13884800);
         quotation.setInstrument(instrument);
-
-        quotation.getRelativeStrengthData().setRsNumber(46);
 
         return quotation;
     }
@@ -216,7 +210,7 @@ public class QuotationHibernateDAOFixture {
      */
     public Quotation getCopperIndustryGroupQuotation1(final Instrument instrument) {
         Calendar calendar = Calendar.getInstance();
-        Quotation quotation = new Quotation(true);
+        Quotation quotation = new Quotation();
 
         calendar.setTime(new Date());
         quotation = new Quotation();
@@ -225,8 +219,6 @@ public class QuotationHibernateDAOFixture {
         quotation.setCurrency(Currency.USD);
         quotation.setVolume(401200);
         quotation.setInstrument(instrument);
-
-        quotation.getRelativeStrengthData().setRsNumber(12);
 
         return quotation;
     }
