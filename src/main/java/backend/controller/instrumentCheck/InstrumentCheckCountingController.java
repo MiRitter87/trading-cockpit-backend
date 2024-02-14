@@ -333,7 +333,7 @@ public class InstrumentCheckCountingController {
                     numberOfDownDays++;
                 }
 
-                maData = sortedQuotations.getQuotations().get(i + j).getIndicator().getMovingAverageData();
+                maData = sortedQuotations.getQuotations().get(i + j).getMovingAverageData();
 
                 if (maData == null || maData.getSma30Volume() == 0) {
                     continue;

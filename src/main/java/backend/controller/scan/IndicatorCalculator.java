@@ -148,21 +148,20 @@ public class IndicatorCalculator {
         QuotationArray sortedQuotations = new QuotationArray(instrument.getQuotationsSortedByDate());
         Indicator indicator;
 
-        if (quotation.getIndicator() == null) {
-            indicator = new Indicator();
-        } else {
-            indicator = quotation.getIndicator();
-        }
-
         if (mostRecent) {
+            if (quotation.getIndicator() == null) {
+                indicator = new Indicator();
+                quotation.setIndicator(indicator);
+            } else {
+                indicator = quotation.getIndicator();
+            }
+
             quotation.setRelativeStrengthData(new RelativeStrengthData());
-            this.calculateMostRecentIndicators(indicator, sortedQuotations, quotation);
+            this.calculateMostRecentIndicators(indicator, quotation, sortedQuotations);
         }
 
-        this.initMovingAverageData(quotation, sortedQuotations, indicator);
-        this.calculateHistoricalIndicators(indicator, sortedQuotations, quotation);
-
-        quotation.setIndicator(indicator);
+        this.initMovingAverageData(quotation, sortedQuotations);
+        this.calculateHistoricalIndicators(quotation, sortedQuotations);
 
         return quotation;
     }
@@ -174,8 +173,8 @@ public class IndicatorCalculator {
      * @param sortedQuotations The quotations that build the trading history.
      * @param quotation        The Quotation for which indicators are calculated.
      */
-    private void calculateMostRecentIndicators(final Indicator indicator, final QuotationArray sortedQuotations,
-            final Quotation quotation) {
+    private void calculateMostRecentIndicators(final Indicator indicator, final Quotation quotation,
+            final QuotationArray sortedQuotations) {
 
         quotation.getRelativeStrengthData()
                 .setRsPercentSum(this.performanceCalculator.getRSPercentSum(quotation, sortedQuotations));
@@ -198,14 +197,11 @@ public class IndicatorCalculator {
     /**
      * Calculates the indicators that are relevant for historical quotations.
      *
-     * @param indicator        The Indicator whose values are calculated.
-     * @param sortedQuotations The quotations that build the trading history.
      * @param quotation        The Quotation for which indicators are calculated.
+     * @param sortedQuotations The quotations that build the trading history.
      */
-    private void calculateHistoricalIndicators(final Indicator indicator, final QuotationArray sortedQuotations,
-            final Quotation quotation) {
-
-        MovingAverageData maData = indicator.getMovingAverageData();
+    private void calculateHistoricalIndicators(final Quotation quotation, final QuotationArray sortedQuotations) {
+        MovingAverageData maData = quotation.getMovingAverageData();
 
         if (maData == null) {
             return;
@@ -477,25 +473,22 @@ public class IndicatorCalculator {
     }
 
     /**
-     * Initializes the MovingAverageData of the Indicator based on the current quotation and the quotation history.
+     * Initializes the MovingAverageData of the Quotation based on the current quotation and the quotation history.
      * MovingAverageData are only initialized if the history is big enough to allow at least the calculation of the
      * shortest Simple Moving Average. In the actual case this is the SMA(10). Therefore at least 9 quotations have to
      * exist that are older than the given quotation.
      *
      * @param currentQuotation The current Quotation for which indicators are to be calculated.
      * @param sortedQuotations A list of quotations sorted by date that build the trading history
-     * @param indicator        The Indicator whose values are calculated.
      */
-    private void initMovingAverageData(final Quotation currentQuotation, final QuotationArray sortedQuotations,
-            final Indicator indicator) {
-
+    private void initMovingAverageData(final Quotation currentQuotation, final QuotationArray sortedQuotations) {
         int indexOfCurrentQuotation = sortedQuotations.getQuotations().indexOf(currentQuotation);
         int numberOfQuotations = sortedQuotations.getQuotations().size();
         final int minNumberOfQuotations = 10;
 
         if ((numberOfQuotations - indexOfCurrentQuotation) >= minNumberOfQuotations) {
-            if (indicator.getMovingAverageData() == null) {
-                indicator.setMovingAverageData(new MovingAverageData());
+            if (currentQuotation.getMovingAverageData() == null) {
+                currentQuotation.setMovingAverageData(new MovingAverageData());
             }
         }
     }

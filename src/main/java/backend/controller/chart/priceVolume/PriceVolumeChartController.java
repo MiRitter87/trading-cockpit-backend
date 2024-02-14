@@ -389,7 +389,7 @@ public class PriceVolumeChartController extends ChartController {
         MovingAverageData maData;
 
         for (Quotation tempQuotation : quotationsSortedByDate) {
-            maData = tempQuotation.getIndicator().getMovingAverageData();
+            maData = tempQuotation.getMovingAverageData();
 
             if (maData == null) {
                 continue;

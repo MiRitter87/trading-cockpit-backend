@@ -168,7 +168,7 @@ public class StatisticCalculationController {
      */
     private int getNumberAboveSma50(final Quotation currentQuotation) {
         BigDecimal sma50;
-        MovingAverageData maData = currentQuotation.getIndicator().getMovingAverageData();
+        MovingAverageData maData = currentQuotation.getMovingAverageData();
 
         if (maData == null || maData.getSma50() == 0) {
             return 0;
@@ -191,7 +191,7 @@ public class StatisticCalculationController {
      */
     private int getNumberAtOrBelowSma50(final Quotation currentQuotation) {
         BigDecimal sma50;
-        MovingAverageData maData = currentQuotation.getIndicator().getMovingAverageData();
+        MovingAverageData maData = currentQuotation.getMovingAverageData();
 
         if (maData == null || maData.getSma50() == 0) {
             return 0;
@@ -214,7 +214,7 @@ public class StatisticCalculationController {
      */
     private int getNumberAboveSma200(final Quotation currentQuotation) {
         BigDecimal sma200;
-        MovingAverageData maData = currentQuotation.getIndicator().getMovingAverageData();
+        MovingAverageData maData = currentQuotation.getMovingAverageData();
 
         if (maData == null || maData.getSma200() == 0) {
             return 0;
@@ -237,7 +237,7 @@ public class StatisticCalculationController {
      */
     private int getNumberAtOrBelowSma200(final Quotation currentQuotation) {
         BigDecimal sma200;
-        MovingAverageData maData = currentQuotation.getIndicator().getMovingAverageData();
+        MovingAverageData maData = currentQuotation.getMovingAverageData();
 
         if (maData == null || maData.getSma200() == 0) {
             return 0;
@@ -260,7 +260,7 @@ public class StatisticCalculationController {
      * @return 1, if Quotation behaves bullish, -1 if it behaves bearish, 0 if behavior is neither bullish nor bearish.
      */
     private int getNumberRitterMarketTrend(final Quotation currentQuotation, final Quotation previousQuotation) {
-        MovingAverageData maData = currentQuotation.getIndicator().getMovingAverageData();
+        MovingAverageData maData = currentQuotation.getMovingAverageData();
 
         // The indicator can't be calculated if these values are not available.
         if (maData == null || maData.getSma30Volume() == 0) {

@@ -308,7 +308,7 @@ public class InstrumentCheckPatternController {
      */
     public boolean isUpOnVolume(final Quotation currentQuotation, final Quotation previousQuotation) throws Exception {
         float performance;
-        MovingAverageData currentDayMaData = currentQuotation.getIndicator().getMovingAverageData();
+        MovingAverageData currentDayMaData = currentQuotation.getMovingAverageData();
 
         if (currentDayMaData == null || currentDayMaData.getSma30Volume() == 0) {
             return false;
@@ -335,7 +335,7 @@ public class InstrumentCheckPatternController {
     public boolean isDownOnVolume(final Quotation currentQuotation, final Quotation previousQuotation)
             throws Exception {
         float performance;
-        MovingAverageData currentDayMaData = currentQuotation.getIndicator().getMovingAverageData();
+        MovingAverageData currentDayMaData = currentQuotation.getMovingAverageData();
 
         if (currentDayMaData == null || currentDayMaData.getSma30Volume() == 0) {
             return false;
@@ -361,7 +361,7 @@ public class InstrumentCheckPatternController {
     public boolean isBearishHighVolumeReversal(final Quotation currentQuotation) throws Exception {
         BigDecimal dailyPriceRange;
         BigDecimal reversalThresholdPrice;
-        MovingAverageData maData = currentQuotation.getIndicator().getMovingAverageData();
+        MovingAverageData maData = currentQuotation.getMovingAverageData();
 
         if (maData == null || maData.getSma30Volume() == 0) {
             return false;
@@ -390,7 +390,7 @@ public class InstrumentCheckPatternController {
     public boolean isBullishHighVolumeReversal(final Quotation currentQuotation) throws Exception {
         BigDecimal dailyPriceRange;
         BigDecimal reversalThresholdPrice;
-        MovingAverageData maData = currentQuotation.getIndicator().getMovingAverageData();
+        MovingAverageData maData = currentQuotation.getMovingAverageData();
 
         if (maData == null || maData.getSma30Volume() == 0) {
             return false;
@@ -419,7 +419,7 @@ public class InstrumentCheckPatternController {
      */
     public boolean isChurning(final Quotation currentQuotation, final Quotation previousQuotation) throws Exception {
         float performance;
-        MovingAverageData currentDayMaData = currentQuotation.getIndicator().getMovingAverageData();
+        MovingAverageData currentDayMaData = currentQuotation.getMovingAverageData();
 
         if (currentDayMaData == null || currentDayMaData.getSma30Volume() == 0) {
             return false;

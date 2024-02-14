@@ -233,7 +233,7 @@ public class PocketPivotChartController extends PriceVolumeChartController {
      */
     private boolean isClosingPriceAboveSma10(final List<Quotation> quotationsSortedByDate, final int quotationIndex) {
         Quotation currentQuotation = quotationsSortedByDate.get(quotationIndex);
-        MovingAverageData maData = currentQuotation.getIndicator().getMovingAverageData();
+        MovingAverageData maData = currentQuotation.getMovingAverageData();
 
         if (maData == null || maData.getSma10() == 0) {
             return false;
@@ -255,7 +255,7 @@ public class PocketPivotChartController extends PriceVolumeChartController {
      */
     private boolean isLowExtendedAboveSma10(final List<Quotation> quotationsSortedByDate, final int quotationIndex) {
         Quotation currentQuotation = quotationsSortedByDate.get(quotationIndex);
-        MovingAverageData maData = currentQuotation.getIndicator().getMovingAverageData();
+        MovingAverageData maData = currentQuotation.getMovingAverageData();
         float extensionThreshold;
         final float twoPercent = 1.02f;
 
@@ -281,7 +281,7 @@ public class PocketPivotChartController extends PriceVolumeChartController {
      */
     private boolean isClosingPriceAboveSma50(final List<Quotation> quotationsSortedByDate, final int quotationIndex) {
         Quotation currentQuotation = quotationsSortedByDate.get(quotationIndex);
-        MovingAverageData maData = currentQuotation.getIndicator().getMovingAverageData();
+        MovingAverageData maData = currentQuotation.getMovingAverageData();
 
         if (maData == null || maData.getSma50() == 0) {
             return false;

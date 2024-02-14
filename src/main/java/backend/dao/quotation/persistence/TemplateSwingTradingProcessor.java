@@ -71,8 +71,8 @@ public class TemplateSwingTradingProcessor {
         quotationArray.sortQuotationsByDate();
         currentQuotation = quotationArray.getQuotations().get(0);
         previousQuotation = quotationArray.getQuotations().get(1);
-        currentMaData = currentQuotation.getIndicator().getMovingAverageData();
-        previousMaData = previousQuotation.getIndicator().getMovingAverageData();
+        currentMaData = currentQuotation.getMovingAverageData();
+        previousMaData = previousQuotation.getMovingAverageData();
 
         if (currentMaData == null || previousMaData == null) {
             return false;

@@ -41,7 +41,7 @@ public class ChartOverlayProvider {
         MovingAverageData maData;
 
         for (Quotation tempQuotation : quotationsSortedByDate) {
-            maData = tempQuotation.getIndicator().getMovingAverageData();
+            maData = tempQuotation.getMovingAverageData();
 
             if (maData == null || maData.getEma21() == 0) {
                 continue;
@@ -75,7 +75,7 @@ public class ChartOverlayProvider {
         MovingAverageData maData;
 
         for (Quotation tempQuotation : quotationsSortedByDate) {
-            maData = tempQuotation.getIndicator().getMovingAverageData();
+            maData = tempQuotation.getMovingAverageData();
 
             if (maData == null || maData.getSma50() == 0) {
                 continue;
@@ -110,7 +110,7 @@ public class ChartOverlayProvider {
         MovingAverageData maData;
 
         for (Quotation tempQuotation : quotationsSortedByDate) {
-            maData = tempQuotation.getIndicator().getMovingAverageData();
+            maData = tempQuotation.getMovingAverageData();
 
             if (maData == null || maData.getSma150() == 0) {
                 continue;
@@ -145,7 +145,7 @@ public class ChartOverlayProvider {
         MovingAverageData maData;
 
         for (Quotation tempQuotation : quotationsSortedByDate) {
-            maData = tempQuotation.getIndicator().getMovingAverageData();
+            maData = tempQuotation.getMovingAverageData();
 
             if (maData == null || maData.getSma200() == 0) {
                 continue;
@@ -186,7 +186,7 @@ public class ChartOverlayProvider {
         }
 
         for (Quotation tempQuotation : quotationsSortedByDate) {
-            maData = tempQuotation.getIndicator().getMovingAverageData();
+            maData = tempQuotation.getMovingAverageData();
 
             if (maData == null || maData.getSma30Volume() == 0) {
                 continue;
@@ -220,7 +220,7 @@ public class ChartOverlayProvider {
         MovingAverageData maData;
 
         for (Quotation tempQuotation : quotationsSortedByDate) {
-            maData = tempQuotation.getIndicator().getMovingAverageData();
+            maData = tempQuotation.getMovingAverageData();
 
             if (maData == null || maData.getSma10() == 0) {
                 continue;

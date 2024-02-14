@@ -66,8 +66,8 @@ public class InstrumentCheckAverageController {
             }
 
             currentDayQuotation = sortedQuotations.getQuotations().get(i);
-            currentDayMaData = currentDayQuotation.getIndicator().getMovingAverageData();
-            previousDayMaData = previousDayQuotation.getIndicator().getMovingAverageData();
+            currentDayMaData = currentDayQuotation.getMovingAverageData();
+            previousDayMaData = previousDayQuotation.getMovingAverageData();
 
             if (previousDayMaData == null || currentDayMaData == null) {
                 continue;
@@ -128,8 +128,8 @@ public class InstrumentCheckAverageController {
             }
 
             currentDayQuotation = sortedQuotations.getQuotations().get(i);
-            currentDayMaData = currentDayQuotation.getIndicator().getMovingAverageData();
-            previousDayMaData = previousDayQuotation.getIndicator().getMovingAverageData();
+            currentDayMaData = currentDayQuotation.getMovingAverageData();
+            previousDayMaData = previousDayQuotation.getMovingAverageData();
 
             if (previousDayMaData == null || currentDayMaData == null) {
                 continue;
@@ -180,7 +180,7 @@ public class InstrumentCheckAverageController {
 
         for (int i = startIndex; i >= 0; i--) {
             currentDayQuotation = sortedQuotations.getQuotations().get(i);
-            currentDayMaData = currentDayQuotation.getIndicator().getMovingAverageData();
+            currentDayMaData = currentDayQuotation.getMovingAverageData();
 
             if (currentDayMaData == null || currentDayMaData.getSma200() == 0) {
                 continue; // Can't perform check if no SMA(200) is available.
