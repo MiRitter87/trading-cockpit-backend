@@ -79,10 +79,6 @@ public class InstrumentCheckClimaxController {
         for (int i = startIndex; i >= 0; i--) {
             currentDayQuotation = sortedQuotations.getQuotations().get(i);
 
-            if (currentDayQuotation.getIndicator() == null) {
-                throw new Exception("No indicator is defined for Quotation with ID: " + currentDayQuotation.getId());
-            }
-
             performanceOneWeek = this.performanceCalculator.getPricePerformanceForDays(daysInWeek, currentDayQuotation,
                     sortedQuotations);
 
@@ -124,10 +120,6 @@ public class InstrumentCheckClimaxController {
 
         for (int i = startIndex; i >= 0; i--) {
             currentDayQuotation = sortedQuotations.getQuotations().get(i);
-
-            if (currentDayQuotation.getIndicator() == null) {
-                throw new Exception("No indicator is defined for Quotation with ID: " + currentDayQuotation.getId());
-            }
 
             performanceThreeWeeks = this.performanceCalculator.getPricePerformanceForDays(daysInThreeWeeks,
                     currentDayQuotation, sortedQuotations);
