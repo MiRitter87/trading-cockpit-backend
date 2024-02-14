@@ -2,12 +2,9 @@ package backend.model.instrument;
 
 import java.util.Objects;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 /**
@@ -86,28 +83,10 @@ public class Indicator {
     private float liquidity20Days;
 
     /**
-     * Moving average data.
-     */
-    @OneToOne(targetEntity = MovingAverageData.class, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "MA_DATA_ID", nullable = true)
-    private MovingAverageData movingAverageData;
-
-    /**
      * Default constructor.
      */
     public Indicator() {
 
-    }
-
-    /**
-     * Initializes the Indicator.
-     *
-     * @param withMovingAverageData Initialize indicators MovingAverageData, if true.
-     */
-    public Indicator(final boolean withMovingAverageData) {
-        if (withMovingAverageData) {
-            this.movingAverageData = new MovingAverageData();
-        }
     }
 
     /**
@@ -262,24 +241,6 @@ public class Indicator {
      */
     public void setLiquidity20Days(final float liquidity20Days) {
         this.liquidity20Days = liquidity20Days;
-    }
-
-    /**
-     * @return the movingAverageData
-     */
-    public MovingAverageData getMovingAverageData() {
-        return movingAverageData;
-    }
-
-    /**
-     * @param movingAverageData the movingAverageData to set
-     */
-    public void setMovingAverageData(final MovingAverageData movingAverageData) {
-        this.movingAverageData = movingAverageData;
-
-        if (this.movingAverageData != null) {
-            this.movingAverageData.setId(this.id);
-        }
     }
 
     /**

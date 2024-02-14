@@ -118,6 +118,13 @@ public class Quotation {
     private RelativeStrengthData relativeStrengthData;
 
     /**
+     * Moving average data.
+     */
+    @OneToOne(targetEntity = MovingAverageData.class, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "MA_DATA_ID", nullable = true)
+    private MovingAverageData movingAverageData;
+
+    /**
      * Default constructor.
      */
     public Quotation() {
@@ -128,10 +135,15 @@ public class Quotation {
      * Initializes the Quotation.
      *
      * @param withRelativeStrengthData Initialize indicators RelativeStrengthData, if true.
+     * @param withMovingAverageData    Initialize indicators MovingAverageData, if true.
      */
-    public Quotation(final boolean withRelativeStrengthData) {
+    public Quotation(final boolean withRelativeStrengthData, final boolean withMovingAverageData) {
         if (withRelativeStrengthData) {
             this.relativeStrengthData = new RelativeStrengthData();
+        }
+
+        if (withMovingAverageData) {
+            this.movingAverageData = new MovingAverageData();
         }
     }
 
@@ -269,6 +281,17 @@ public class Quotation {
     }
 
     /**
+     * @param indicator the indicator to set
+     */
+    public void setIndicator(final Indicator indicator) {
+        this.indicator = indicator;
+
+        if (this.indicator != null) {
+            this.indicator.setId(this.id);
+        }
+    }
+
+    /**
      * @return the relativeStrengthData
      */
     public RelativeStrengthData getRelativeStrengthData() {
@@ -287,17 +310,20 @@ public class Quotation {
     }
 
     /**
-     * @param indicator the indicator to set
+     * @return the movingAverageData
      */
-    public void setIndicator(final Indicator indicator) {
-        this.indicator = indicator;
+    public MovingAverageData getMovingAverageData() {
+        return movingAverageData;
+    }
 
-        if (this.indicator != null) {
-            this.indicator.setId(this.id);
+    /**
+     * @param movingAverageData the movingAverageData to set
+     */
+    public void setMovingAverageData(final MovingAverageData movingAverageData) {
+        this.movingAverageData = movingAverageData;
 
-            if (this.indicator.getMovingAverageData() != null) {
-                this.indicator.getMovingAverageData().setId(this.id);
-            }
+        if (this.movingAverageData != null) {
+            this.movingAverageData.setId(this.id);
         }
     }
 
@@ -307,7 +333,7 @@ public class Quotation {
     @Override
     public int hashCode() {
         return Objects.hash(currency, date, id, indicator, instrument, open, high, low, close, volume,
-                relativeStrengthData);
+                relativeStrengthData, movingAverageData);
     }
 
     /**
@@ -368,6 +394,7 @@ public class Quotation {
 
         return currency == other.currency && Objects.equals(date, other.date) && Objects.equals(id, other.id)
                 && Objects.equals(indicator, other.indicator) && Objects.equals(instrument, other.instrument)
-                && Objects.equals(relativeStrengthData, other.relativeStrengthData) && volume == other.volume;
+                && Objects.equals(relativeStrengthData, other.relativeStrengthData) && volume == other.volume
+                && Objects.equals(movingAverageData, other.movingAverageData);
     }
 }
