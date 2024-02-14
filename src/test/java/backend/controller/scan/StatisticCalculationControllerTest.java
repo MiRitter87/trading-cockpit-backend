@@ -22,9 +22,9 @@ import backend.dao.instrument.InstrumentDAO;
 import backend.dao.quotation.persistence.QuotationDAO;
 import backend.model.Currency;
 import backend.model.StockExchange;
-import backend.model.instrument.Indicator;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
+import backend.model.instrument.MovingAverageData;
 import backend.model.instrument.Quotation;
 import backend.model.statistic.Statistic;
 import backend.model.statistic.StatisticArray;
@@ -86,36 +86,6 @@ public class StatisticCalculationControllerTest {
      */
     private Quotation microsoftQuotation3;
 
-    /**
-     * The Indicator of the first Quotation of the Apple stock.
-     */
-    private Indicator appleQuotation1Indicator;
-
-    /**
-     * The Indicator of the second Quotation of the Apple stock.
-     */
-    private Indicator appleQuotation2Indicator;
-
-    /**
-     * The Indicator of the third Quotation of the Apple stock.
-     */
-    private Indicator appleQuotation3Indicator;
-
-    /**
-     * The Indicator of the first Quotation of the Microsoft stock.
-     */
-    private Indicator microsoftQuotation1Indicator;
-
-    /**
-     * The Indicator of the second Quotation of the Microsoft stock.
-     */
-    private Indicator microsoftQuotation2Indicator;
-
-    /**
-     * The Indicator of the third Quotation of the Microsoft stock.
-     */
-    private Indicator microsoftQuotation3Indicator;
-
     @BeforeAll
     /**
      * Tasks to be performed once at startup of test class.
@@ -163,7 +133,7 @@ public class StatisticCalculationControllerTest {
     private void createTestData() {
         this.createDummyInstruments();
         this.createDummyQuotations();
-        this.createDummyIndicators();
+        this.createDummyMovingAverageData();
     }
 
     /**
@@ -293,48 +263,42 @@ public class StatisticCalculationControllerTest {
     }
 
     /**
-     * Initializes the database with dummy indicators.
+     * Initializes the database with dummy MovingAverageData.
      */
-    private void createDummyIndicators() {
+    private void createDummyMovingAverageData() {
         List<Quotation> quotations = new ArrayList<>();
 
         try {
-            this.appleQuotation1Indicator = new Indicator(true);
-            this.appleQuotation1Indicator.getMovingAverageData().setSma50((float) 78.54);
-            this.appleQuotation1Indicator.getMovingAverageData().setSma200((float) 75.34);
-            this.appleQuotation1Indicator.getMovingAverageData().setSma30Volume(5000000);
-            this.appleQuotation1.setIndicator(this.appleQuotation1Indicator);
+            this.appleQuotation1.setMovingAverageData(new MovingAverageData());
+            this.appleQuotation1.getMovingAverageData().setSma50((float) 78.54);
+            this.appleQuotation1.getMovingAverageData().setSma200((float) 75.34);
+            this.appleQuotation1.getMovingAverageData().setSma30Volume(5000000);
             quotations.add(this.appleQuotation1);
 
-            this.appleQuotation2Indicator = new Indicator(true);
-            this.appleQuotation2Indicator.getMovingAverageData().setSma50((float) 80.54);
-            this.appleQuotation2Indicator.getMovingAverageData().setSma200((float) 76.01);
-            this.appleQuotation2Indicator.getMovingAverageData().setSma30Volume(5000000);
-            this.appleQuotation2.setIndicator(this.appleQuotation2Indicator);
+            this.appleQuotation2.setMovingAverageData(new MovingAverageData());
+            this.appleQuotation2.getMovingAverageData().setSma50((float) 80.54);
+            this.appleQuotation2.getMovingAverageData().setSma200((float) 76.01);
+            this.appleQuotation2.getMovingAverageData().setSma30Volume(5000000);
             quotations.add(this.appleQuotation2);
 
-            this.appleQuotation3Indicator = new Indicator(true);
-            this.appleQuotation3Indicator.getMovingAverageData().setSma50((float) 82.54);
-            this.appleQuotation3.setIndicator(this.appleQuotation3Indicator);
+            this.appleQuotation3.setMovingAverageData(new MovingAverageData());
+            this.appleQuotation3.getMovingAverageData().setSma50((float) 82.54);
             quotations.add(this.appleQuotation3);
 
-            this.microsoftQuotation1Indicator = new Indicator(true);
-            this.microsoftQuotation1Indicator.getMovingAverageData().setSma50((float) 247.54);
-            this.microsoftQuotation1Indicator.getMovingAverageData().setSma200((float) 260.70);
-            this.microsoftQuotation1Indicator.getMovingAverageData().setSma30Volume(1200000);
-            this.microsoftQuotation1.setIndicator(this.microsoftQuotation1Indicator);
+            this.microsoftQuotation1.setMovingAverageData(new MovingAverageData());
+            this.microsoftQuotation1.getMovingAverageData().setSma50((float) 247.54);
+            this.microsoftQuotation1.getMovingAverageData().setSma200((float) 260.70);
+            this.microsoftQuotation1.getMovingAverageData().setSma30Volume(1200000);
             quotations.add(this.microsoftQuotation1);
 
-            this.microsoftQuotation2Indicator = new Indicator(true);
-            this.microsoftQuotation2Indicator.getMovingAverageData().setSma50((float) 246.54);
-            this.microsoftQuotation2Indicator.getMovingAverageData().setSma200((float) 250.60);
-            this.microsoftQuotation2Indicator.getMovingAverageData().setSma30Volume(1200000);
-            this.microsoftQuotation2.setIndicator(this.microsoftQuotation2Indicator);
+            this.microsoftQuotation2.setMovingAverageData(new MovingAverageData());
+            this.microsoftQuotation2.getMovingAverageData().setSma50((float) 246.54);
+            this.microsoftQuotation2.getMovingAverageData().setSma200((float) 250.60);
+            this.microsoftQuotation2.getMovingAverageData().setSma30Volume(1200000);
             quotations.add(this.microsoftQuotation2);
 
-            this.microsoftQuotation3Indicator = new Indicator(true);
-            this.microsoftQuotation3Indicator.getMovingAverageData().setSma50((float) 245.54);
-            this.microsoftQuotation3.setIndicator(this.microsoftQuotation3Indicator);
+            this.microsoftQuotation3.setMovingAverageData(new MovingAverageData());
+            this.microsoftQuotation3.getMovingAverageData().setSma50((float) 245.54);
             quotations.add(this.microsoftQuotation3);
 
             quotationDAO.updateQuotations(quotations);

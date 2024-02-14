@@ -20,6 +20,7 @@ import backend.dao.instrument.InstrumentDAO;
 import backend.dao.quotation.persistence.QuotationDAO;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
+import backend.model.instrument.MovingAverageData;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
 import backend.model.instrument.RelativeStrengthData;
@@ -168,6 +169,7 @@ public class QuotationServiceTest {
         this.createDummyInstruments();
         this.createDummyQuotations();
         this.createRelativeStrengthData();
+        this.createMovingAverageData();
         this.createDummyIndicators();
     }
 
@@ -312,7 +314,7 @@ public class QuotationServiceTest {
     }
 
     /**
-     * Creates relative strength data.
+     * Creates RelativeStrengthData.
      */
     private void createRelativeStrengthData() {
         List<Quotation> quotations = new ArrayList<>();
@@ -332,6 +334,43 @@ public class QuotationServiceTest {
 
             this.xlbQuotation1.setRelativeStrengthData(new RelativeStrengthData());
             this.xlbQuotation1.getRelativeStrengthData().setRsNumber(71);
+            quotations.add(this.xlbQuotation1);
+
+            quotationDAO.updateQuotations(quotations);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    /**
+     * Creates MovingAverageData.
+     */
+    private void createMovingAverageData() {
+        List<Quotation> quotations = new ArrayList<>();
+
+        try {
+            this.appleQuotation2.setMovingAverageData(new MovingAverageData());
+            this.appleQuotation2.getMovingAverageData().setSma200(60);
+            this.appleQuotation2.getMovingAverageData().setSma150((float) 63.45);
+            this.appleQuotation2.getMovingAverageData().setSma50((float) 69.24);
+            quotations.add(this.appleQuotation2);
+
+            this.fordQuotation1.setMovingAverageData(new MovingAverageData());
+            this.fordQuotation1.getMovingAverageData().setSma200((float) 16.36);
+            this.fordQuotation1.getMovingAverageData().setSma150((float) 15.08);
+            this.fordQuotation1.getMovingAverageData().setSma50((float) 13.07);
+            quotations.add(this.fordQuotation1);
+
+            this.xleQuotation2.setMovingAverageData(new MovingAverageData());
+            this.xleQuotation2.getMovingAverageData().setSma200((float) 74.02);
+            this.xleQuotation2.getMovingAverageData().setSma150((float) 76.84);
+            this.xleQuotation2.getMovingAverageData().setSma50((float) 78.15);
+            quotations.add(this.xleQuotation2);
+
+            this.xlbQuotation1.setMovingAverageData(new MovingAverageData());
+            this.xlbQuotation1.getMovingAverageData().setSma200((float) 79.83);
+            this.xlbQuotation1.getMovingAverageData().setSma150((float) 78.64);
+            this.xlbQuotation1.getMovingAverageData().setSma50((float) 74.01);
             quotations.add(this.xlbQuotation1);
 
             quotationDAO.updateQuotations(quotations);
@@ -723,14 +762,14 @@ public class QuotationServiceTest {
 
         // Assure SMA(10) > SMA(20) and price above SMA(20)
         quotation = quotations.getQuotations().get(0);
-        quotation.getIndicator().getMovingAverageData().setSma10(1.33f);
-        quotation.getIndicator().getMovingAverageData().setSma20(1.32f);
+        quotation.getMovingAverageData().setSma10(1.33f);
+        quotation.getMovingAverageData().setSma20(1.32f);
         modifiedQuotations.add(quotation);
 
         // Assure SMA(10) and SMA(20) are rising
         quotation = quotations.getQuotations().get(1);
-        quotation.getIndicator().getMovingAverageData().setSma10(1.32f);
-        quotation.getIndicator().getMovingAverageData().setSma20(1.31f);
+        quotation.getMovingAverageData().setSma10(1.32f);
+        quotation.getMovingAverageData().setSma20(1.31f);
         modifiedQuotations.add(quotation);
 
         // Persist the changes.

@@ -69,20 +69,20 @@ public class RelativeStrengthCalculatorTest {
      * Initializes dummy quotations of the DML Instrument.
      */
     private void initializeDmlQuotations() {
-        this.dmlQuotation1 = new Quotation(true);
-        this.dmlQuotation1.setIndicator(new Indicator(false));
+        this.dmlQuotation1 = new Quotation(true, false);
+        this.dmlQuotation1.setIndicator(new Indicator());
         this.dmlQuotation1.getRelativeStrengthData().setRsPercentSum((float) 34.5);
         this.dmlQuotation1.getIndicator().setDistanceTo52WeekHigh((float) -4.56);
         this.dmlQuotation1.getIndicator().setUpDownVolumeRatio((float) 2.44);
 
-        this.dmlQuotation2 = new Quotation(true);
-        this.dmlQuotation2.setIndicator(new Indicator(false));
+        this.dmlQuotation2 = new Quotation(true, false);
+        this.dmlQuotation2.setIndicator(new Indicator());
         this.dmlQuotation2.getRelativeStrengthData().setRsPercentSum(-5);
         this.dmlQuotation2.getIndicator().setDistanceTo52WeekHigh((float) -0.56);
         this.dmlQuotation2.getIndicator().setUpDownVolumeRatio((float) 0.87);
 
-        this.dmlQuotation3 = new Quotation(true);
-        this.dmlQuotation3.setIndicator(new Indicator(false));
+        this.dmlQuotation3 = new Quotation(true, false);
+        this.dmlQuotation3.setIndicator(new Indicator());
         this.dmlQuotation3.getRelativeStrengthData().setRsPercentSum((float) 12.35);
         this.dmlQuotation3.getIndicator().setDistanceTo52WeekHigh(-7);
         this.dmlQuotation3.getIndicator().setUpDownVolumeRatio((float) 1.01);
