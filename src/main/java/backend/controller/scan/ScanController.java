@@ -103,7 +103,7 @@ public class ScanController {
      */
     public void checkAndExecute(final Scan scan, final Scan databaseScan) {
         if (scan.getExecutionStatus() != ScanExecutionStatus.IN_PROGRESS
-                || databaseScan.getExecutionStatus() != ScanExecutionStatus.FINISHED) {
+                || databaseScan.getExecutionStatus() == ScanExecutionStatus.IN_PROGRESS) {
             return;
         }
 

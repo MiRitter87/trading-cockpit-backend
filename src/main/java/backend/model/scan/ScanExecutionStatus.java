@@ -7,6 +7,11 @@ package backend.model.scan;
  */
 public enum ScanExecutionStatus {
     /**
+     * The initial status of a Scan that has not been executed yet.
+     */
+    NOT_EXECUTED,
+
+    /**
      * The scan process is currently running.
      */
     IN_PROGRESS,

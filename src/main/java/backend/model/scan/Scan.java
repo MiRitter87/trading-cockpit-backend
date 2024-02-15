@@ -145,7 +145,7 @@ public class Scan {
      * Default constructor.
      */
     public Scan() {
-        this.executionStatus = ScanExecutionStatus.FINISHED;
+        this.executionStatus = ScanExecutionStatus.NOT_EXECUTED;
         this.completionStatus = ScanCompletionStatus.COMPLETE;
         this.progress = 0;
         this.lists = new HashSet<List>();
