@@ -142,6 +142,8 @@ public class ChartIndicatorProvider {
         bbwPlot.setRenderer(bbwRenderer);
         bbwPlot.setRangeAxisLocation(AxisLocation.TOP_OR_RIGHT);
 
+        this.addBollingerBandWidthTriggerLine(bbwPlot);
+
         return bbwPlot;
     }
 
@@ -253,5 +255,19 @@ public class ChartIndicatorProvider {
 
         valueMarker = new ValueMarker(upperTriggerLine);
         slowStochasticPlot.addRangeMarker(valueMarker);
+    }
+
+    /**
+     * Adds a horizontal trigger line to the Bollinger BandWidth plot.
+     *
+     * @param bollingerBandWidthPlot The Bollinger BandWidth plot.
+     */
+    private void addBollingerBandWidthTriggerLine(final XYPlot bollingerBandWidthPlot) {
+        ValueMarker valueMarker;
+        final double triggerLine = 10;
+
+        // Add value marker at 10.
+        valueMarker = new ValueMarker(triggerLine);
+        bollingerBandWidthPlot.addRangeMarker(valueMarker);
     }
 }
