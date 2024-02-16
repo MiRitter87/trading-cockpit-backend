@@ -206,7 +206,7 @@ public class PocketPivotChartController extends PriceVolumeChartController {
         quotationVolume = currentQuotation.getVolume();
 
         // Check if the volume of the current Quotation is higher than the highest down-volume of the last 10 trading
-        // days.
+        // days. The caller has to assure, that at least 11 historical trading days exist after the current Quotation.
         for (int i = quotationIndex + 1; i <= quotationIndex + lookbackDaysForVolume; i++) {
             currentQuotation = quotationsSortedByDate.get(i);
             previousQuotation = quotationsSortedByDate.get(i + 1);

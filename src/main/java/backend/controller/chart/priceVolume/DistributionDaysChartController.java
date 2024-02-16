@@ -133,6 +133,9 @@ public class DistributionDaysChartController extends PriceVolumeChartController 
     /**
      * Determines a List of index numbers of quotations that constitute a Distribution Day.
      *
+     * Normally Distribution Days are no longer counted if 25 days have passed. In order to visualize past distribution
+     * days, they are only invalidated, if the price rises at least 5% within 25 days.
+     *
      * @param quotationsSortedByDate A List of Quotations sorted by Date.
      * @return A List of index numbers of the given List that constitute a Distribution Day.
      */
