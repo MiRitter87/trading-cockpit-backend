@@ -93,17 +93,19 @@ public class RitterMarketTrendChartController extends StatisticChartController {
         int endIndex = beginIndex + period - 1;
         int sum = 0;
         int normalizedDailyValue;
+        int lastValidBeginIndex;
         Statistic statistic;
         BigDecimal movingAverage;
-        final int numberDaysTooLowForCalculation = 29;
+        final int numberAdditionalDaysForSmaVolume = 29;
         final int hundredPercent = 100;
 
-        if ((beginIndex + numberDaysTooLowForCalculation - 1) >= statistics.size()) {
-            throw new Exception("At least 30 days of statistic are required for RMT calculation.");
-        }
+        // At least "30 + period" days have to exist to calculate the Moving Average of the RMT.
+        // 30 days are needed because this is the minimum number of values needed for availability of SMA(30) of volume.
+        // The period is added, because this is the number of days needed for moving average calculation of RMT.
+        lastValidBeginIndex = statistics.size() - numberAdditionalDaysForSmaVolume - period;
 
-        if (endIndex >= statistics.size()) {
-            throw new Exception("Not enough historical statistical values available to calculate moving average.");
+        if (beginIndex > lastValidBeginIndex) {
+            throw new Exception("Not enough statistical values exist to calculate moving average of RMT.");
         }
 
         for (int i = beginIndex; i <= endIndex; i++) {
