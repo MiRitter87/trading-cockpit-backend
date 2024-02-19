@@ -299,7 +299,8 @@ public class InstrumentCheckPatternController {
     }
 
     /**
-     * Checks if the current Quotation has traded up on volume against the previous Quotation.
+     * Checks if the current Quotation has traded up by at least 3% on above-average volume against the previous
+     * Quotation.
      *
      * @param currentQuotation  The current Quotation.
      * @param previousQuotation The previous Quotation.
@@ -325,7 +326,8 @@ public class InstrumentCheckPatternController {
     }
 
     /**
-     * Checks if the current Quotation has traded down on volume against the previous Quotation.
+     * Checks if the current Quotation has traded down by at least 3% on above-average volume on volume against the
+     * previous Quotation.
      *
      * @param currentQuotation  The current Quotation.
      * @param previousQuotation The previous Quotation.
