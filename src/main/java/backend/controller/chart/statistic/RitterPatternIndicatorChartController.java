@@ -259,20 +259,20 @@ public class RitterPatternIndicatorChartController extends ChartController {
         int endIndex = beginIndex + period - 1;
         int sum = 0;
         int normalizedDailyValue;
+        int lastValidBeginIndex;
         Integer instrumentsPerDate;
         Map.Entry<Date, Integer> patternIndicatorValue;
         BigDecimal movingAverage;
-        final int numberDaysTooLowForCalculation = 29;
+        final int numberAdditionalDaysForSmaVolume = 29;
         final int hundredPercent = 100;
 
-        if ((beginIndex + numberDaysTooLowForCalculation - 1) >= patternIndicatorValues.size()) {
-            throw new Exception(
-                    "The RPI is not available for the oldest 29 days because SMA(30) of volume is not available.");
-        }
+        // At least "30 + period" days have to exist to calculate the Moving Average of the RPI.
+        // 30 days are needed because this is the minimum number of values needed for availability of SMA(30) of volume.
+        // The period is added, because this is the number of days needed for moving average calculation of RPI.
+        lastValidBeginIndex = patternIndicatorValues.size() - numberAdditionalDaysForSmaVolume - period;
 
-        if (endIndex >= patternIndicatorValues.size()) {
-            throw new Exception(
-                    "Not enough historical values available to calculate moving average for the given period.");
+        if (beginIndex > lastValidBeginIndex) {
+            throw new Exception("Not enough statistical values exist to calculate moving average of RPI.");
         }
 
         for (int i = beginIndex; i <= endIndex; i++) {
