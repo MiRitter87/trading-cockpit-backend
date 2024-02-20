@@ -29,8 +29,8 @@ public class ExcelExportController {
     private ResourceBundle resources = ResourceBundle.getBundle("backend");
 
     /**
-     * Generates a Workbook that contains price data of the given quotations. The
-     * workbook contains the following data for each quotation: Symbol, Date, Price.
+     * Generates a Workbook that contains price data of the given quotations. The workbook contains the following data
+     * for each quotation: Symbol, Date, Price.
      *
      * @param quotations A List of quotations.
      * @return A Workbook containing price data of the given quotations.
@@ -38,38 +38,9 @@ public class ExcelExportController {
     public Workbook getPriceDataOfQuotations(final List<Quotation> quotations) {
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet();
-        Row tableRow;
-        Cell tableCell;
-        int rowNumber;
 
-        // Define the table header cells.
-        tableRow = sheet.createRow(0);
-        tableCell = tableRow.createCell(0);
-        tableCell.setCellValue(this.resources.getString("instrument.attribute.symbol"));
-        tableCell = tableRow.createCell(1);
-        tableCell.setCellValue(this.resources.getString("quotation.attribute.date"));
-        tableCell = tableRow.createCell(2);
-        tableCell.setCellValue(this.resources.getString("quotation.attribute.price"));
-
-        // Define the cells containing the Quotation data.
-        for (Quotation tempQuotation : quotations) {
-            rowNumber = quotations.indexOf(tempQuotation) + 1;
-
-            tableRow = sheet.createRow(rowNumber);
-
-            // Symbol Cell
-            tableCell = tableRow.createCell(0);
-            tableCell.setCellValue(tempQuotation.getInstrument().getSymbol());
-
-            // Date Cell - Not formatted as Date but as a simple string. It seems the
-            // Framework does not support the needed format.
-            tableCell = tableRow.createCell(1);
-            tableCell.setCellValue(this.getDateAsExcelString(tempQuotation.getDate()));
-
-            // Price Cell
-            tableCell = tableRow.createCell(2);
-            tableCell.setCellValue(tempQuotation.getClose().doubleValue());
-        }
+        this.createTableHeaderCells(sheet);
+        this.createCellContent(quotations, sheet);
 
         return workbook;
     }
@@ -129,5 +100,54 @@ public class ExcelExportController {
         stringBuilder.append(calendar.get(Calendar.YEAR));
 
         return stringBuilder.toString();
+    }
+
+    /**
+     * Creates the table header cells in the given Excel worksheet.
+     *
+     * @param sheet The Excel worksheet.
+     */
+    private void createTableHeaderCells(final Sheet sheet) {
+        Row tableRow;
+        Cell tableCell;
+
+        tableRow = sheet.createRow(0);
+        tableCell = tableRow.createCell(0);
+        tableCell.setCellValue(this.resources.getString("instrument.attribute.symbol"));
+        tableCell = tableRow.createCell(1);
+        tableCell.setCellValue(this.resources.getString("quotation.attribute.date"));
+        tableCell = tableRow.createCell(2);
+        tableCell.setCellValue(this.resources.getString("quotation.attribute.price"));
+    }
+
+    /**
+     * Creates the table cell content containing the Quotation data.
+     *
+     * @param quotations A List of quotations.
+     * @param sheet      The Excel worksheet.
+     */
+    private void createCellContent(final List<Quotation> quotations, final Sheet sheet) {
+        Row tableRow;
+        Cell tableCell;
+        int rowNumber;
+
+        for (Quotation tempQuotation : quotations) {
+            rowNumber = quotations.indexOf(tempQuotation) + 1;
+
+            tableRow = sheet.createRow(rowNumber);
+
+            // Symbol Cell
+            tableCell = tableRow.createCell(0);
+            tableCell.setCellValue(tempQuotation.getInstrument().getSymbol());
+
+            // Date Cell - Not formatted as Date but as a simple string. It seems the
+            // Framework does not support the needed format.
+            tableCell = tableRow.createCell(1);
+            tableCell.setCellValue(this.getDateAsExcelString(tempQuotation.getDate()));
+
+            // Price Cell
+            tableCell = tableRow.createCell(2);
+            tableCell.setCellValue(tempQuotation.getClose().doubleValue());
+        }
     }
 }
