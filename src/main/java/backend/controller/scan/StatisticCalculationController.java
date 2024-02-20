@@ -98,36 +98,45 @@ public class StatisticCalculationController {
                     statistics.addStatistic(statistic);
                 }
 
-                // Calculate statistical values.
-                statistic.setNumberOfInstruments(statistic.getNumberOfInstruments() + 1);
-                statistic.setNumberAdvance(
-                        statistic.getNumberAdvance() + this.getNumberAdvance(currentQuotation, previousQuotation));
-                statistic.setNumberDecline(
-                        statistic.getNumberDecline() + this.getNumberDecline(currentQuotation, previousQuotation));
-                statistic.setNumberAboveSma50(
-                        statistic.getNumberAboveSma50() + this.getNumberAboveSma50(currentQuotation));
-                statistic.setNumberAtOrBelowSma50(
-                        statistic.getNumberAtOrBelowSma50() + this.getNumberAtOrBelowSma50(currentQuotation));
-                statistic.setNumberAboveSma200(
-                        statistic.getNumberAboveSma200() + this.getNumberAboveSma200(currentQuotation));
-                statistic.setNumberAtOrBelowSma200(
-                        statistic.getNumberAtOrBelowSma200() + this.getNumberAtOrBelowSma200(currentQuotation));
-                statistic.setNumberRitterMarketTrend(statistic.getNumberRitterMarketTrend()
-                        + this.getNumberRitterMarketTrend(currentQuotation, previousQuotation));
-                statistic.setNumberUpOnVolume(statistic.getNumberUpOnVolume()
-                        + this.getNumberUpOnVolume(currentQuotation, previousQuotation));
-                statistic.setNumberDownOnVolume(statistic.getNumberDownOnVolume()
-                        + this.getNumberDownOnVolume(currentQuotation, previousQuotation));
-                statistic.setNumberBearishReversal(
-                        statistic.getNumberBearishReversal() + this.getNumberBearishReversal(currentQuotation));
-                statistic.setNumberBullishReversal(
-                        statistic.getNumberBullishReversal() + this.getNumberBullishReversal(currentQuotation));
-                statistic.setNumberChurning(
-                        statistic.getNumberChurning() + this.getNumberChurning(currentQuotation, previousQuotation));
+                this.calculateStatistics(statistic, currentQuotation, previousQuotation);
             }
         }
 
         return statistics.getStatisticsSortedByDate();
+    }
+
+    /**
+     * Calculates the statistical values of the given Statistic.
+     *
+     * @param statistic         The Statistic whose values are calculated.
+     * @param currentQuotation  The current Quotation.
+     * @param previousQuotation The previous Quotation.
+     */
+    private void calculateStatistics(final Statistic statistic, final Quotation currentQuotation,
+            final Quotation previousQuotation) {
+        statistic.setNumberOfInstruments(statistic.getNumberOfInstruments() + 1);
+        statistic.setNumberAdvance(
+                statistic.getNumberAdvance() + this.getNumberAdvance(currentQuotation, previousQuotation));
+        statistic.setNumberDecline(
+                statistic.getNumberDecline() + this.getNumberDecline(currentQuotation, previousQuotation));
+        statistic.setNumberAboveSma50(statistic.getNumberAboveSma50() + this.getNumberAboveSma50(currentQuotation));
+        statistic.setNumberAtOrBelowSma50(
+                statistic.getNumberAtOrBelowSma50() + this.getNumberAtOrBelowSma50(currentQuotation));
+        statistic.setNumberAboveSma200(statistic.getNumberAboveSma200() + this.getNumberAboveSma200(currentQuotation));
+        statistic.setNumberAtOrBelowSma200(
+                statistic.getNumberAtOrBelowSma200() + this.getNumberAtOrBelowSma200(currentQuotation));
+        statistic.setNumberRitterMarketTrend(statistic.getNumberRitterMarketTrend()
+                + this.getNumberRitterMarketTrend(currentQuotation, previousQuotation));
+        statistic.setNumberUpOnVolume(
+                statistic.getNumberUpOnVolume() + this.getNumberUpOnVolume(currentQuotation, previousQuotation));
+        statistic.setNumberDownOnVolume(
+                statistic.getNumberDownOnVolume() + this.getNumberDownOnVolume(currentQuotation, previousQuotation));
+        statistic.setNumberBearishReversal(
+                statistic.getNumberBearishReversal() + this.getNumberBearishReversal(currentQuotation));
+        statistic.setNumberBullishReversal(
+                statistic.getNumberBullishReversal() + this.getNumberBullishReversal(currentQuotation));
+        statistic.setNumberChurning(
+                statistic.getNumberChurning() + this.getNumberChurning(currentQuotation, previousQuotation));
     }
 
     /**
