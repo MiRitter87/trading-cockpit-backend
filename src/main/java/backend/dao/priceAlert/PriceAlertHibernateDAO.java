@@ -99,11 +99,9 @@ public class PriceAlertHibernateDAO implements PriceAlertDAO {
 
         List<PriceAlert> priceAlerts = null;
         EntityManager entityManager = this.sessionFactory.createEntityManager();
-
-        // Use entity graphs to load data of referenced Instrument instances.
         EntityGraph<PriceAlert> graph = entityManager.createEntityGraph(PriceAlert.class);
-        graph.addAttributeNodes("instrument");
-        graph.addSubgraph("instrument").addAttributeNodes("sector", "industryGroup");
+
+        this.addRequestedNodesToGraph(graph);
 
         entityManager.getTransaction().begin();
 
@@ -153,12 +151,10 @@ public class PriceAlertHibernateDAO implements PriceAlertDAO {
     @Override
     public PriceAlert getPriceAlert(final Integer id) throws Exception {
         EntityManager entityManager = this.sessionFactory.createEntityManager();
-
-        // Use entity graphs to load data of referenced instrument instance.
         EntityGraph<PriceAlert> graph = entityManager.createEntityGraph(PriceAlert.class);
-        graph.addAttributeNodes("instrument");
-        graph.addSubgraph("instrument").addAttributeNodes("sector", "industryGroup");
         Map<String, Object> hints = new HashMap<String, Object>();
+
+        this.addRequestedNodesToGraph(graph);
         hints.put("jakarta.persistence.loadgraph", graph);
 
         entityManager.getTransaction().begin();
@@ -292,5 +288,16 @@ public class PriceAlertHibernateDAO implements PriceAlertDAO {
         } else if (priceAlertOrderAttribute == PriceAlertOrderAttribute.LAST_STOCK_QUOTE_TIME) {
             criteriaQuery.orderBy(criteriaBuilder.asc(criteria.get("lastStockQuoteTime")));
         }
+    }
+
+    /**
+     * Adds nodes and subgraphs with nodes to the given EntityGraph. These represent object associations that are
+     * eagerly loaded.
+     *
+     * @param graph The root EntityGraph of the requested price alerts.
+     */
+    private void addRequestedNodesToGraph(final EntityGraph<PriceAlert> graph) {
+        graph.addAttributeNodes("instrument");
+        graph.addSubgraph("instrument").addAttributeNodes("sector", "industryGroup");
     }
 }
