@@ -2,6 +2,10 @@ package backend.dao.quotation.persistence;
 
 import java.util.List;
 
+import backend.model.LocalizedException;
+import backend.model.instrument.InstrumentType;
+import backend.model.instrument.Quotation;
+import backend.webservice.ScanTemplate;
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -10,10 +14,6 @@ import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
-import backend.model.LocalizedException;
-import backend.model.instrument.InstrumentType;
-import backend.model.instrument.Quotation;
-import backend.webservice.ScanTemplate;
 
 /**
  * Provides access to Quotation database persistence using Hibernate.
@@ -143,12 +143,9 @@ public class QuotationHibernateDAO implements QuotationDAO {
     public List<Quotation> getQuotationsOfInstrument(final Integer instrumentId) throws Exception {
         List<Quotation> quotations = null;
         EntityManager entityManager = this.sessionFactory.createEntityManager();
-
-        // Use entity graphs to load data of referenced Instrument instances.
         EntityGraph<Quotation> graph = entityManager.createEntityGraph(Quotation.class);
-        graph.addAttributeNodes("instrument");
-        graph.addAttributeNodes("indicator");
-        graph.addSubgraph("instrument").addAttributeNodes("sector", "industryGroup");
+
+        this.addRequestedNodesToGraph(graph);
 
         entityManager.getTransaction().begin();
 
@@ -315,47 +312,14 @@ public class QuotationHibernateDAO implements QuotationDAO {
              * The selection is split into two selects because JOINs with sub-queries are only possible in native SQL.
              * But the needed JOIN FETCH is not possible in native SQL.
              */
+            // The first query gets the IDs of the newest Quotation of each Instrument.
             query = quotationQueryProvider.getQueryForQuotationIdsWithMaxDate(instrumentType);
             quotationIdsWithMaxDate = query.getResultList();
 
-            // Find all quotations that have an Indicator defined and where the Quotation is the most recent one of an
-            // Instrument.
-            // Also fetch the Instrument data of those records. Apply the criteria of the given template.
-            switch (scanTemplate) {
-            case MINERVINI_TREND_TEMPLATE:
-                query = quotationQueryProvider.getQueryForMinerviniTrendTemplate();
-                break;
-            case BREAKOUT_CANDIDATES:
-                query = quotationQueryProvider.getQueryForBreakoutCandidatesTemplate();
-                break;
-            case VOLATILITY_CONTRACTION_10_DAYS:
-                query = quotationQueryProvider.getQueryForVolatilityContractionTemplate();
-                break;
-            case UP_ON_VOLUME:
-                query = quotationQueryProvider.getQueryForUpOnVolumeTemplate();
-                break;
-            case DOWN_ON_VOLUME:
-                query = quotationQueryProvider.getQueryForDownOnVolumeTemplate();
-                break;
-            case NEAR_52_WEEK_HIGH:
-                query = quotationQueryProvider.getQueryForNear52WeekHighTemplate();
-                break;
-            case NEAR_52_WEEK_LOW:
-                query = quotationQueryProvider.getQueryForNear52WeekLowTemplate();
-                break;
-            case HIGH_TIGHT_FLAG:
-                query = quotationQueryProvider.getQueryForHighTightFlagTemplate();
-                break;
-            case SWING_TRADING_ENVIRONMENT:
-                query = quotationQueryProvider.getQueryForSwingTradingEnvironmentTemplate();
-                break;
-            case ALL:
-            case RS_SINCE_DATE:
-            case THREE_WEEKS_TIGHT:
-            case RS_NEAR_HIGH_IG:
-                query = quotationQueryProvider.getQueryForQuotationsWithInstrument(true);
-                break;
-            default:
+            // The second query applies the given ScanTemplate to further narrow down the result.
+            query = this.getQueryForScanTemplate(scanTemplate, quotationQueryProvider);
+
+            if (query == null) {
                 entityManager.getTransaction().commit();
                 entityManager.close();
                 return null;
@@ -380,5 +344,69 @@ public class QuotationHibernateDAO implements QuotationDAO {
         this.scanTemplateProcessor.templateBasedPostProcessing(scanTemplate, startDate, quotations);
 
         return quotations;
+    }
+
+    /**
+     * Adds nodes and subgraphs with nodes to the given EntityGraph. These represent object associations that are
+     * eagerly loaded.
+     *
+     * @param graph The root EntityGraph of the requested quotations.
+     */
+    private void addRequestedNodesToGraph(final EntityGraph<Quotation> graph) {
+        graph.addAttributeNodes("instrument");
+        graph.addAttributeNodes("indicator");
+        graph.addSubgraph("instrument").addAttributeNodes("sector", "industryGroup");
+    }
+
+    /**
+     * Provides the Query based on the given ScanTemplate.
+     *
+     * @param scanTemplate           The ScanTemplate.
+     * @param quotationQueryProvider The QuotationQueryProvider used to construct the Query.
+     * @return The Query for the given ScanTemplate.
+     */
+    private Query getQueryForScanTemplate(final ScanTemplate scanTemplate,
+            final QuotationQueryProvider quotationQueryProvider) {
+        Query query;
+
+        switch (scanTemplate) {
+        case MINERVINI_TREND_TEMPLATE:
+            query = quotationQueryProvider.getQueryForMinerviniTrendTemplate();
+            break;
+        case BREAKOUT_CANDIDATES:
+            query = quotationQueryProvider.getQueryForBreakoutCandidatesTemplate();
+            break;
+        case VOLATILITY_CONTRACTION_10_DAYS:
+            query = quotationQueryProvider.getQueryForVolatilityContractionTemplate();
+            break;
+        case UP_ON_VOLUME:
+            query = quotationQueryProvider.getQueryForUpOnVolumeTemplate();
+            break;
+        case DOWN_ON_VOLUME:
+            query = quotationQueryProvider.getQueryForDownOnVolumeTemplate();
+            break;
+        case NEAR_52_WEEK_HIGH:
+            query = quotationQueryProvider.getQueryForNear52WeekHighTemplate();
+            break;
+        case NEAR_52_WEEK_LOW:
+            query = quotationQueryProvider.getQueryForNear52WeekLowTemplate();
+            break;
+        case HIGH_TIGHT_FLAG:
+            query = quotationQueryProvider.getQueryForHighTightFlagTemplate();
+            break;
+        case SWING_TRADING_ENVIRONMENT:
+            query = quotationQueryProvider.getQueryForSwingTradingEnvironmentTemplate();
+            break;
+        case ALL:
+        case RS_SINCE_DATE:
+        case THREE_WEEKS_TIGHT:
+        case RS_NEAR_HIGH_IG:
+            query = quotationQueryProvider.getQueryForQuotationsWithInstrument(true);
+            break;
+        default:
+            query = null;
+        }
+
+        return query;
     }
 }
