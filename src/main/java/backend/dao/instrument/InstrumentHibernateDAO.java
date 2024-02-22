@@ -105,15 +105,9 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
     public List<Instrument> getInstruments(final InstrumentType instrumentType) throws Exception {
         List<Instrument> instruments = null;
         EntityManager entityManager = this.sessionFactory.createEntityManager();
-
-        // Use entity graphs to load data of referenced object instances.
         EntityGraph<Instrument> graph = entityManager.createEntityGraph(Instrument.class);
-        graph.addAttributeNodes("sector");
-        graph.addAttributeNodes("industryGroup");
-        graph.addAttributeNodes("dividend");
-        graph.addAttributeNodes("divisor");
-        graph.addSubgraph("dividend").addAttributeNodes("sector", "industryGroup");
-        graph.addSubgraph("divisor").addAttributeNodes("sector", "industryGroup");
+
+        this.addRequestedNodesToGraph(graph);
 
         entityManager.getTransaction().begin();
 
@@ -156,15 +150,9 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
     @Override
     public Instrument getInstrument(final Integer id) throws Exception {
         EntityManager entityManager = this.sessionFactory.createEntityManager();
-
-        // Use entity graphs to load data of referenced sector instance.
         EntityGraph<Instrument> graph = entityManager.createEntityGraph(Instrument.class);
-        graph.addAttributeNodes("sector");
-        graph.addAttributeNodes("industryGroup");
-        graph.addAttributeNodes("dividend");
-        graph.addAttributeNodes("divisor");
-        graph.addSubgraph("dividend").addAttributeNodes("sector", "industryGroup");
-        graph.addSubgraph("divisor").addAttributeNodes("sector", "industryGroup");
+
+        this.addRequestedNodesToGraph(graph);
 
         Map<String, Object> hints = new HashMap<String, Object>();
         hints.put("jakarta.persistence.loadgraph", graph);
@@ -460,5 +448,20 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
         }
 
         return null;
+    }
+
+    /**
+     * Adds nodes and subgraphs with nodes to the given EntityGraph. These represent object associations that are
+     * eagerly loaded.
+     *
+     * @param graph The root EntityGraph of the requested instruments.
+     */
+    private void addRequestedNodesToGraph(final EntityGraph<Instrument> graph) {
+        graph.addAttributeNodes("sector");
+        graph.addAttributeNodes("industryGroup");
+        graph.addAttributeNodes("dividend");
+        graph.addAttributeNodes("divisor");
+        graph.addSubgraph("dividend").addAttributeNodes("sector", "industryGroup");
+        graph.addSubgraph("divisor").addAttributeNodes("sector", "industryGroup");
     }
 }
