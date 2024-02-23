@@ -368,20 +368,16 @@ public class QuotationProviderYahooDAO extends AbstractQuotationProviderDAO impl
 
         switch (stockExchange) {
         case TSX:
-            stockExchangeBuilder.append(".");
-            stockExchangeBuilder.append("TO");
+            stockExchangeBuilder.append(".TO");
             return stockExchangeBuilder.toString();
         case TSXV:
-            stockExchangeBuilder.append(".");
-            stockExchangeBuilder.append("V");
+            stockExchangeBuilder.append(".V");
             return stockExchangeBuilder.toString();
         case CSE:
-            stockExchangeBuilder.append(".");
-            stockExchangeBuilder.append("CN");
+            stockExchangeBuilder.append(".CN");
             return stockExchangeBuilder.toString();
         case LSE:
-            stockExchangeBuilder.append(".");
-            stockExchangeBuilder.append("L");
+            stockExchangeBuilder.append(".L");
             return stockExchangeBuilder.toString();
         case NYSE:
         case NDQ:
