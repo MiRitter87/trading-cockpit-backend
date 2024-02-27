@@ -501,7 +501,7 @@ public class PriceVolumeChartController extends ChartController {
      * @param quotationsSortedByDate A List of Quotations sorted by Date.
      * @return true, if day of current Quotation is Distribution Day; false, if not.
      */
-    protected boolean isDistributionDay(final Quotation currentQuotation, final Quotation previousQuotation,
+    public boolean isDistributionDay(final Quotation currentQuotation, final Quotation previousQuotation,
             final List<Quotation> quotationsSortedByDate) {
 
         float performance;
