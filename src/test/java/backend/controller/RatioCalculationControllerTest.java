@@ -1,11 +1,17 @@
 package backend.controller;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.math.BigDecimal;
 import java.util.Calendar;
+import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
+import backend.model.Currency;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
 
@@ -45,11 +51,17 @@ public class RatioCalculationControllerTest {
      */
     private Quotation divisorQuotation2;
 
+    /**
+     * The RatioCalculationController under test.
+     */
+    private RatioCalculationController ratioCalculationController;
+
     @BeforeEach
     /**
      * Tasks to be performed before each test is run.
      */
     private void setUp() {
+        this.ratioCalculationController = new RatioCalculationController();
         this.createTestData();
     }
 
@@ -59,6 +71,7 @@ public class RatioCalculationControllerTest {
      */
     private void tearDown() {
         this.deleteTestData();
+        this.ratioCalculationController = null;
     }
 
     /**
@@ -97,6 +110,7 @@ public class RatioCalculationControllerTest {
         this.dividendQuotation1.setLow(new BigDecimal(30.18));
         this.dividendQuotation1.setClose(new BigDecimal(31.28));
         this.dividendQuotation1.setVolume(21714395);
+        this.dividendQuotation1.setCurrency(Currency.USD);
         this.dividendInstrument.addQuotation(this.dividendQuotation1);
 
         this.dividendQuotation2 = new Quotation();
@@ -107,6 +121,7 @@ public class RatioCalculationControllerTest {
         this.dividendQuotation2.setLow(new BigDecimal(30.71));
         this.dividendQuotation2.setClose(new BigDecimal(30.89));
         this.dividendQuotation2.setVolume(30588446);
+        this.dividendQuotation2.setCurrency(Currency.USD);
         this.dividendInstrument.addQuotation(this.dividendQuotation2);
     }
 
@@ -125,6 +140,7 @@ public class RatioCalculationControllerTest {
         this.divisorQuotation1.setLow(new BigDecimal(26.01));
         this.divisorQuotation1.setClose(new BigDecimal(26.66));
         this.divisorQuotation1.setVolume(27368364);
+        this.divisorQuotation1.setCurrency(Currency.USD);
         this.divisorInstrument.addQuotation(this.divisorQuotation1);
 
         this.divisorQuotation2 = new Quotation();
@@ -135,6 +151,69 @@ public class RatioCalculationControllerTest {
         this.divisorQuotation2.setLow(new BigDecimal(26.06));
         this.divisorQuotation2.setClose(new BigDecimal(26.16));
         this.divisorQuotation2.setVolume(27627548);
+        this.divisorQuotation2.setCurrency(Currency.USD);
         this.divisorInstrument.addQuotation(this.divisorQuotation2);
+    }
+
+    /**
+     * Provides the expected ratio Quotation based on dividendQuotation1 and divisorQuotation1.
+     *
+     * @return The expected ratio Quotation 1.
+     */
+    private Quotation getExpectedRatioQuotation1() {
+        Quotation quotation = new Quotation();
+
+        quotation.setDate(this.dividendQuotation1.getDate());
+        quotation.setCurrency(Currency.USD);
+        quotation.setOpen(new BigDecimal("1.184"));
+        quotation.setHigh(new BigDecimal("1.176"));
+        quotation.setLow(new BigDecimal("1.160"));
+        quotation.setClose(new BigDecimal("1.173"));
+
+        return quotation;
+    }
+
+    /**
+     * Provides the expected ratio Quotation based on dividendQuotation2 and divisorQuotation2.
+     *
+     * @return The expected ratio Quotation 2.
+     */
+    private Quotation getExpectedRatioQuotation2() {
+        Quotation quotation = new Quotation();
+
+        quotation.setDate(this.dividendQuotation2.getDate());
+        quotation.setCurrency(Currency.USD);
+        quotation.setOpen(new BigDecimal("1.236"));
+        quotation.setHigh(new BigDecimal("1.241"));
+        quotation.setLow(new BigDecimal("1.178"));
+        quotation.setClose(new BigDecimal("1.181"));
+
+        return quotation;
+    }
+
+    @Test
+    /**
+     * Tests the calculation of ratio quotations between two instruments.
+     */
+    public void testGetRatios() {
+        List<Quotation> ratioQuotations;
+        Quotation expectedQuotation1 = this.getExpectedRatioQuotation1();
+        Quotation expectedQuotation2 = this.getExpectedRatioQuotation2();
+        Quotation ratioQuotation;
+
+        try {
+            ratioQuotations = this.ratioCalculationController.getRatios(this.dividendInstrument,
+                    this.divisorInstrument);
+
+            assertEquals(2, ratioQuotations.size());
+
+            ratioQuotation = ratioQuotations.get(0);
+            assertEquals(expectedQuotation1, ratioQuotation);
+
+            ratioQuotation = ratioQuotations.get(1);
+            assertEquals(expectedQuotation2, ratioQuotation);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
     }
 }
