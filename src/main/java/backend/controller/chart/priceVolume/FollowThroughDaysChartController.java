@@ -274,7 +274,7 @@ public class FollowThroughDaysChartController extends PriceVolumeChartController
      * @param quotationsSortedByDate A List of Quotations sorted by Date.
      * @return true, if day of current Quotation is Follow-Through Day; false, if not.
      */
-    private boolean isFollowThroughDay(final Quotation currentQuotation, final Quotation previousQuotation,
+    public boolean isFollowThroughDay(final Quotation currentQuotation, final Quotation previousQuotation,
             final List<Quotation> quotationsSortedByDate) {
 
         float performance;

@@ -1,5 +1,7 @@
 package backend.controller.chart.priceVolume;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
@@ -9,6 +11,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import backend.dao.quotation.provider.QuotationProviderDAO;
 import backend.dao.quotation.provider.QuotationProviderYahooDAOStub;
@@ -99,5 +102,57 @@ public class FollowThroughDaysChartControllerTest {
         } catch (Exception e) {
             fail(e.getMessage());
         }
+    }
+
+    @Test
+    /**
+     * Tests the check if the current Quotation constitutes a Follow-Through Day. In this test the necessary
+     * requirements for a Follow-Through Day are met.
+     */
+    public void testIsFollowThroughDay() {
+        List<Quotation> quotationsSortedByDate = this.dmlStock.getQuotationsSortedByDate();
+        Quotation currentQuotation = quotationsSortedByDate.get(6);
+        Quotation previousQuotation = quotationsSortedByDate.get(7);
+
+        boolean isFollowThroughDay = this.followThroughDaysChartController.isFollowThroughDay(currentQuotation,
+                previousQuotation, quotationsSortedByDate);
+
+        assertTrue(isFollowThroughDay);
+    }
+
+    @Test
+    /**
+     * Tests the check if the current Quotation constitutes a Follow-Through Day. In this test the volume is not higher
+     * than the previous days volume. Therefore no Follow-Through Day is given.
+     */
+    public void testNoFTDVolumeTooLow() {
+        List<Quotation> quotationsSortedByDate = this.dmlStock.getQuotationsSortedByDate();
+        Quotation currentQuotation = quotationsSortedByDate.get(6);
+        Quotation previousQuotation = quotationsSortedByDate.get(7);
+
+        currentQuotation.setVolume(previousQuotation.getVolume() - 1);
+
+        boolean isFollowThroughDay = this.followThroughDaysChartController.isFollowThroughDay(currentQuotation,
+                previousQuotation, quotationsSortedByDate);
+
+        assertFalse(isFollowThroughDay);
+    }
+
+    @Test
+    /**
+     * Tests the check if the current Quotation constitutes a Follow-Through Day. In this test the performance is not
+     * high enough to constitute a Follow-Through Day.
+     */
+    public void testNoFTDPerformanceTooLow() {
+        List<Quotation> quotationsSortedByDate = this.dmlStock.getQuotationsSortedByDate();
+        Quotation currentQuotation = quotationsSortedByDate.get(6);
+        Quotation previousQuotation = quotationsSortedByDate.get(7);
+
+        currentQuotation.setClose(previousQuotation.getClose());
+
+        boolean isFollowThroughDay = this.followThroughDaysChartController.isFollowThroughDay(currentQuotation,
+                previousQuotation, quotationsSortedByDate);
+
+        assertFalse(isFollowThroughDay);
     }
 }
