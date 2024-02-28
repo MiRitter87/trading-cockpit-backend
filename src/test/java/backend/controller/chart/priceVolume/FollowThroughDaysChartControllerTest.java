@@ -165,11 +165,12 @@ public class FollowThroughDaysChartControllerTest {
     public void testGetLowPricePast() {
         List<Quotation> quotationsSortedByDate = this.dmlStock.getQuotationsSortedByDate();
         Quotation currentQuotation = quotationsSortedByDate.get(9);
-        final int daysBefore = 5;
+        final int daysBefore = -5;
         BigDecimal actualLowPrice;
         BigDecimal expectedLowPrice = new BigDecimal("1.19");
 
-        actualLowPrice = this.followThroughDaysChartController.getLowPrice(currentQuotation, quotationsSortedByDate, daysBefore);
+        actualLowPrice = this.followThroughDaysChartController.getLowPrice(currentQuotation, quotationsSortedByDate,
+                daysBefore);
         assertEquals(expectedLowPrice, actualLowPrice);
     }
 
@@ -180,11 +181,12 @@ public class FollowThroughDaysChartControllerTest {
     public void testGetLowPriceFuture() {
         List<Quotation> quotationsSortedByDate = this.dmlStock.getQuotationsSortedByDate();
         Quotation currentQuotation = quotationsSortedByDate.get(9);
-        final int daysAfter = -5;
+        final int daysAfter = 5;
         BigDecimal actualLowPrice;
         BigDecimal expectedLowPrice = new BigDecimal("1.24");
 
-        actualLowPrice = this.followThroughDaysChartController.getLowPrice(currentQuotation, quotationsSortedByDate, daysAfter);
+        actualLowPrice = this.followThroughDaysChartController.getLowPrice(currentQuotation, quotationsSortedByDate,
+                daysAfter);
         assertEquals(expectedLowPrice, actualLowPrice);
     }
 }

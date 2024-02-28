@@ -312,8 +312,8 @@ public class FollowThroughDaysChartController extends PriceVolumeChartController
     private boolean isLowBeforeFTDUndercut(final Quotation quotation, final List<Quotation> quotationsSortedByDate,
             final int daysBeforeFTD, final int daysAfterFTD) {
 
-        BigDecimal lowBeforeFTD = this.getLowPrice(quotation, quotationsSortedByDate, daysBeforeFTD);
-        BigDecimal lowAfterFTD = this.getLowPrice(quotation, quotationsSortedByDate, -daysAfterFTD);
+        BigDecimal lowBeforeFTD = this.getLowPrice(quotation, quotationsSortedByDate, -daysBeforeFTD);
+        BigDecimal lowAfterFTD = this.getLowPrice(quotation, quotationsSortedByDate, daysAfterFTD);
 
         if (lowBeforeFTD.compareTo(lowAfterFTD) < 1) {
             return false;
@@ -327,7 +327,7 @@ public class FollowThroughDaysChartController extends PriceVolumeChartController
      *
      * @param quotation              The Quotation from which the low price determination is started.
      * @param quotationsSortedByDate A sorted List of quotations building the trading history.
-     * @param days                   The number of days in the past (positive number) or future (negative number).
+     * @param days                   The number of days in the past (negative number) or future (positive number).
      * @return The low price of the period inclusive the day of the given Quotation.
      */
     public BigDecimal getLowPrice(final Quotation quotation, final List<Quotation> quotationsSortedByDate,
@@ -339,16 +339,16 @@ public class FollowThroughDaysChartController extends PriceVolumeChartController
 
         indexStart = quotationsSortedByDate.indexOf(quotation);
 
-        if ((indexStart + days) >= quotationsSortedByDate.size() - 1) {
+        if ((indexStart - days) >= quotationsSortedByDate.size() - 1) {
             indexEnd = quotationsSortedByDate.size() - 1;
-        } else if ((indexStart + days) < 0) {
+        } else if ((indexStart - days) < 0) {
             indexEnd = 0;
         } else {
-            indexEnd = indexStart + days;
+            indexEnd = indexStart - days;
         }
 
         // Calculate low price of past quotations.
-        if (days > 0) {
+        if (days < 0) {
             for (int i = indexStart; i <= indexEnd; i++) {
                 currentQuotation = quotationsSortedByDate.get(i);
                 if (currentQuotation.getLow().compareTo(lowPrice) == -1) {
@@ -358,7 +358,7 @@ public class FollowThroughDaysChartController extends PriceVolumeChartController
         }
 
         // Calculate low price of future quotations.
-        if (days < 0) {
+        if (days > 0) {
             for (int i = indexStart; i >= indexEnd; i--) {
                 currentQuotation = quotationsSortedByDate.get(i);
                 if (currentQuotation.getLow().compareTo(lowPrice) == -1) {
