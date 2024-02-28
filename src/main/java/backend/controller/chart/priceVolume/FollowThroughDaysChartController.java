@@ -328,9 +328,9 @@ public class FollowThroughDaysChartController extends PriceVolumeChartController
      * @param quotation              The Quotation from which the low price determination is started.
      * @param quotationsSortedByDate A sorted List of quotations building the trading history.
      * @param days                   The number of days in the past (positive number) or future (negative number).
-     * @return The low price of the period.
+     * @return The low price of the period inclusive the day of the given Quotation.
      */
-    private BigDecimal getLowPrice(final Quotation quotation, final List<Quotation> quotationsSortedByDate,
+    public BigDecimal getLowPrice(final Quotation quotation, final List<Quotation> quotationsSortedByDate,
             final int days) {
         BigDecimal lowPrice = quotation.getLow();
         Quotation currentQuotation;

@@ -1,9 +1,11 @@
 package backend.controller.chart.priceVolume;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -154,5 +156,35 @@ public class FollowThroughDaysChartControllerTest {
                 previousQuotation, quotationsSortedByDate);
 
         assertFalse(isFollowThroughDay);
+    }
+
+    @Test
+    /**
+     * Tests determination of the low price of the past number of days.
+     */
+    public void testGetLowPricePast() {
+        List<Quotation> quotationsSortedByDate = this.dmlStock.getQuotationsSortedByDate();
+        Quotation currentQuotation = quotationsSortedByDate.get(9);
+        final int daysBefore = 5;
+        BigDecimal actualLowPrice;
+        BigDecimal expectedLowPrice = new BigDecimal("1.19");
+
+        actualLowPrice = this.followThroughDaysChartController.getLowPrice(currentQuotation, quotationsSortedByDate, daysBefore);
+        assertEquals(expectedLowPrice, actualLowPrice);
+    }
+
+    @Test
+    /**
+     * Tests determination of the low price of the future number of days.
+     */
+    public void testGetLowPriceFuture() {
+        List<Quotation> quotationsSortedByDate = this.dmlStock.getQuotationsSortedByDate();
+        Quotation currentQuotation = quotationsSortedByDate.get(9);
+        final int daysAfter = -5;
+        BigDecimal actualLowPrice;
+        BigDecimal expectedLowPrice = new BigDecimal("1.24");
+
+        actualLowPrice = this.followThroughDaysChartController.getLowPrice(currentQuotation, quotationsSortedByDate, daysAfter);
+        assertEquals(expectedLowPrice, actualLowPrice);
     }
 }
