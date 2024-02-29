@@ -121,7 +121,7 @@ public class PocketPivotChartController extends PriceVolumeChartController {
      * @param quotationIndex         The index of the Quotation which is checked.
      * @return true, if Quotation with given index is Pocket Pivot; false, if not.
      */
-    private boolean isPocketPivot(final List<Quotation> quotationsSortedByDate, final int quotationIndex) {
+    public boolean isPocketPivot(final List<Quotation> quotationsSortedByDate, final int quotationIndex) {
         final boolean isUpDay;
         final boolean isVolumeHighEnough;
         final boolean isCloseAboveSma10;
