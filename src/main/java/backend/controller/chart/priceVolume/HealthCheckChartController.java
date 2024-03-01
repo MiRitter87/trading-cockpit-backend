@@ -181,6 +181,9 @@ public class HealthCheckChartController extends PriceVolumeChartController {
      */
     private void setHealthEventBarColor(final XYBarRenderer healthEventRenderer, final HealthCheckProfile profile) {
         switch (profile) {
+        case ALL:
+            healthEventRenderer.setSeriesPaint(0, Color.BLUE);
+            break;
         case CONFIRMATIONS:
             healthEventRenderer.setSeriesPaint(0, Color.GREEN);
             break;
@@ -206,6 +209,10 @@ public class HealthCheckChartController extends PriceVolumeChartController {
         String timeSeriesName;
 
         switch (profile) {
+        case ALL:
+            timeSeriesName = MessageFormat
+                    .format(this.getResources().getString("chart.healthCheck.timeSeriesEventName.all"), lookbackPeriod);
+            break;
         case CONFIRMATIONS:
             timeSeriesName = MessageFormat.format(
                     this.getResources().getString("chart.healthCheck.timeSeriesEventName.confirmations"),
