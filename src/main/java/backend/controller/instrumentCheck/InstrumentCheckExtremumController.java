@@ -139,6 +139,7 @@ public class InstrumentCheckExtremumController {
         Quotation largestSpreadQuotation;
         List<ProtocolEntry> protocolEntries = new ArrayList<>();
         ProtocolEntry protocolEntry;
+        float spreadSizePercent;
 
         startIndex = sortedQuotations.getIndexOfQuotationWithDate(startDate);
 
@@ -149,12 +150,15 @@ public class InstrumentCheckExtremumController {
         for (int i = startIndex; i >= 0; i--) {
             currentQuotation = sortedQuotations.getQuotations().get(i);
             largestSpreadQuotation = this.getLargestDailySpread(sortedQuotations.getQuotations(), currentQuotation);
+            spreadSizePercent = this.performanceCalculator.getPerformance(largestSpreadQuotation.getHigh().floatValue(),
+                    largestSpreadQuotation.getLow().floatValue());
 
             if (largestSpreadQuotation.equals(currentQuotation)) {
                 protocolEntry = new ProtocolEntry();
                 protocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
                 protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(largestSpreadQuotation.getDate()));
-                protocolEntry.setText(this.resources.getString("protocol.largestDailySpread"));
+                protocolEntry.setText(MessageFormat.format(this.resources.getString("protocol.largestDailySpread"),
+                        spreadSizePercent));
                 protocolEntries.add(protocolEntry);
             }
         }
@@ -204,7 +208,7 @@ public class InstrumentCheckExtremumController {
     /**
      * Determines the largest down-day of the given trading history.
      *
-     * @param quotations A list of quotations sorted by date that build the trading history.
+     * @param quotations   A list of quotations sorted by date that build the trading history.
      * @param endQuotation The latest Quotation for which the check is executed.
      * @return The Quotation of the largest down-day.
      */
@@ -282,6 +286,7 @@ public class InstrumentCheckExtremumController {
         float largestDailySpread = 0;
         float currentSpread;
         Quotation largestSpreadQuotation = null;
+        final int hundredPercent = 100;
 
         // Determine the Quotation with the largest daily high/low-spread.
         for (Quotation currentQuotation : quotations) {
@@ -289,7 +294,9 @@ public class InstrumentCheckExtremumController {
                 continue;
             }
 
-            currentSpread = currentQuotation.getHigh().floatValue() - currentQuotation.getLow().floatValue();
+            currentSpread = currentQuotation.getHigh().floatValue() / currentQuotation.getLow().floatValue();
+            //Convert to percentage value
+            currentSpread = (currentSpread - 1) * hundredPercent;
 
             if (currentSpread > largestDailySpread) {
                 largestDailySpread = currentSpread;

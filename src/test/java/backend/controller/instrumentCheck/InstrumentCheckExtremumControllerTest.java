@@ -196,25 +196,27 @@ public class InstrumentCheckExtremumControllerTest {
      * Tests the check if Instrument had largest daily high/low-spread of the year.
      */
     public void testCheckLargestDailySpread() {
+        List<ProtocolEntry> protocolEntries;
+        Calendar calendar = Calendar.getInstance();
         ProtocolEntry expectedProtocolEntry1 = new ProtocolEntry();
         ProtocolEntry expectedProtocolEntry2 = new ProtocolEntry();
         ProtocolEntry actualProtocolEntry;
-        List<ProtocolEntry> protocolEntries;
-        Calendar calendar = Calendar.getInstance();
+        float expectedPercentage1 = 15.08f;
+        float expectedPercentage2 = 17.34f;
 
         // Define the expected protocol entries.
-        calendar.set(2021, 9, 12); // Largest daily high/low-spread occurred on 12.10.21.
+        calendar.set(2021, 8, 10); // Largest daily high/low-spread occurred on 10.09.21
         expectedProtocolEntry1.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
         expectedProtocolEntry1.setCategory(ProtocolEntryCategory.UNCERTAIN);
-        expectedProtocolEntry1.setText(this.resources.getString("protocol.largestDailySpread"));
+        expectedProtocolEntry1.setText(MessageFormat.format(this.resources.getString("protocol.largestDailySpread"), expectedPercentage1));
 
-        calendar.set(2022, 2, 9); // A new largest daily high/low-spread occurred on 09.03.22.
+        calendar.set(2021, 9, 12); // A new largest daily high/low-spread occurred on 12.10.21.
         expectedProtocolEntry2.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
         expectedProtocolEntry2.setCategory(ProtocolEntryCategory.UNCERTAIN);
-        expectedProtocolEntry2.setText(this.resources.getString("protocol.largestDailySpread"));
+        expectedProtocolEntry2.setText(MessageFormat.format(this.resources.getString("protocol.largestDailySpread"), expectedPercentage2));
 
         // Call controller to perform check.
-        calendar.set(2021, 9, 1); // Begin check on 01.10.21.
+        calendar.set(2021, 8, 6); // Begin check on 06.09.21.
         try {
             protocolEntries = this.instrumentCheckExtremumController.checkLargestDailySpread(calendar.getTime(),
                     this.dmlQuotations);
