@@ -54,7 +54,7 @@ public class InstrumentCheckClimaxController {
     }
 
     /**
-     * Checks if the Instrument has a climax movement advancing at least 25% within a week or 50% within three weeks.
+     * Checks if the Instrument has a climax movement advancing at least 25% within a week.
      *
      * @param startDate        The date at which the check starts.
      * @param sortedQuotations The quotations sorted by date that build the trading history.
