@@ -27,6 +27,7 @@ import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
 import backend.model.protocol.Protocol;
 import backend.model.protocol.ProtocolEntry;
+import backend.model.protocol.ProtocolEntryCategory;
 
 /**
  * Controller for the creation of a chart displaying an Instrument with health check events.
@@ -158,19 +159,70 @@ public class HealthCheckChartController extends PriceVolumeChartController {
         List<Quotation> quotationsSortedByDate = instrument.getQuotationsSortedByDate();
         TimeSeriesCollection dataset = new TimeSeriesCollection();
         TimeSeries healthEventTimeSeries;
-        List<ProtocolEntry> entriesOfDate;
         String timeSeriesName = this.getHealthEventTimeSeriesName(profile, lookbackPeriod);
+        int eventNumber;
 
         healthEventTimeSeries = new TimeSeries(timeSeriesName);
 
         for (Quotation tempQuotation : quotationsSortedByDate) {
-            entriesOfDate = protocol.getEntriesOfDate(tempQuotation.getDate());
-            healthEventTimeSeries.add(new Day(tempQuotation.getDate()), entriesOfDate.size());
+            eventNumber = this.getEventNumber(protocol, profile, tempQuotation);
+            healthEventTimeSeries.add(new Day(tempQuotation.getDate()), eventNumber);
         }
 
         dataset.addSeries(healthEventTimeSeries);
 
         return dataset;
+    }
+
+    /**
+     * Determines the number of events in the given Protocol for the day of the given Quotation. The calculation method
+     * is based on the given HealthCheckProfile.
+     *
+     * @param protocol  The Protocol that contains the health check events.
+     * @param profile   The HealthCheckProfile that is used.
+     * @param quotation The Quotation containing the date information.
+     * @return The calculated health check event number.
+     */
+    public int getEventNumber(final Protocol protocol, final HealthCheckProfile profile, final Quotation quotation) {
+        List<ProtocolEntry> entriesOfDate;
+        int eventNumber = 0;
+
+        entriesOfDate = protocol.getEntriesOfDate(quotation.getDate());
+
+        for (ProtocolEntry tempEntry : entriesOfDate) {
+            if (profile == HealthCheckProfile.CONFIRMATIONS
+                    && tempEntry.getCategory() == ProtocolEntryCategory.CONFIRMATION) {
+                eventNumber++;
+            }
+
+            if (profile == HealthCheckProfile.SELLING_INTO_WEAKNESS
+                    && tempEntry.getCategory() == ProtocolEntryCategory.VIOLATION) {
+                eventNumber++;
+            }
+
+            if (profile == HealthCheckProfile.SELLING_INTO_STRENGTH
+                    && tempEntry.getCategory() == ProtocolEntryCategory.UNCERTAIN) {
+                eventNumber++;
+            }
+
+            if (profile == HealthCheckProfile.ALL) {
+                switch (tempEntry.getCategory()) {
+                case CONFIRMATION:
+                    eventNumber++;
+                    break;
+                case VIOLATION:
+                    eventNumber--;
+                    break;
+                case UNCERTAIN:
+                    eventNumber--;
+                    break;
+                default:
+                    break;
+                }
+            }
+        }
+
+        return eventNumber;
     }
 
     /**
