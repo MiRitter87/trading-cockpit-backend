@@ -83,6 +83,12 @@ public class Indicator {
     private float liquidity20Days;
 
     /**
+     * The Average True Range Percent during the last 20 trading days.
+     */
+    @Column(name = "ATRP_20_DAYS")
+    private float averageTrueRangePercent20;
+
+    /**
      * Default constructor.
      */
     public Indicator() {
@@ -244,13 +250,27 @@ public class Indicator {
     }
 
     /**
+     * @return the averageTrueRangePercent20
+     */
+    public float getAverageTrueRangePercent20() {
+        return averageTrueRangePercent20;
+    }
+
+    /**
+     * @param averageTrueRangePercent20 the averageTrueRangePercent20 to set
+     */
+    public void setAverageTrueRangePercent20(final float averageTrueRangePercent20) {
+        this.averageTrueRangePercent20 = averageTrueRangePercent20;
+    }
+
+    /**
      * Calculates the hashCode of an Indicator.
      */
     @Override
     public int hashCode() {
         return Objects.hash(bollingerBandWidth, distanceTo52WeekHigh, distanceTo52WeekLow, id, stage,
                 volumeDifferential5Days, volumeDifferential10Days, baseLengthWeeks, upDownVolumeRatio, performance5Days,
-                liquidity20Days);
+                liquidity20Days, averageTrueRangePercent20);
     }
 
     /**
@@ -277,6 +297,7 @@ public class Indicator {
                         .floatToIntBits(other.volumeDifferential10Days)
                 && stage == other.stage && baseLengthWeeks == other.baseLengthWeeks
                 && upDownVolumeRatio == other.upDownVolumeRatio && performance5Days == other.performance5Days
-                && liquidity20Days == other.liquidity20Days;
+                && liquidity20Days == other.liquidity20Days
+                && averageTrueRangePercent20 == other.averageTrueRangePercent20;
     }
 }
