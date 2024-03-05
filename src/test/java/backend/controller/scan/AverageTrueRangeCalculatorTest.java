@@ -105,7 +105,7 @@ public class AverageTrueRangeCalculatorTest {
         }
     }
 
-    //@Test
+    // @Test
     /**
      * Tests the calculation of the 20-day Average True Range Percent indicator.
      */
@@ -118,5 +118,20 @@ public class AverageTrueRangeCalculatorTest {
                 sortedQuotations.getQuotations().get(0), sortedQuotations);
 
         assertEquals(expectedAtrp, actualAtrp);
+    }
+
+    @Test
+    /**
+     * Tests the calculation of the True Range.
+     */
+    public void testGetTrueRange() {
+        Quotation currentQuotation = this.dmlStock.getQuotations().get(0);
+        Quotation previousQuotation = this.dmlStock.getQuotations().get(1);
+        float actualTrueRange;
+        float expectedTrueRange = 0.13f;
+
+        actualTrueRange = this.averageTrueRangeCalculator.getTrueRange(currentQuotation, previousQuotation);
+
+        assertEquals(expectedTrueRange, actualTrueRange);
     }
 }
