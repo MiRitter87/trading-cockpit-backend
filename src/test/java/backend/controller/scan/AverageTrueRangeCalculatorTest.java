@@ -1,5 +1,6 @@
 package backend.controller.scan;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import backend.dao.quotation.provider.QuotationProviderDAO;
 import backend.dao.quotation.provider.QuotationProviderYahooDAOStub;
@@ -16,6 +18,7 @@ import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
+import backend.model.instrument.QuotationArray;
 
 /**
  * Tests the AverageTrueRangeCalculator.
@@ -100,5 +103,20 @@ public class AverageTrueRangeCalculatorTest {
         } catch (Exception e) {
             fail(e.getMessage());
         }
+    }
+
+    //@Test
+    /**
+     * Tests the calculation of the 20-day Average True Range Percent indicator.
+     */
+    public void testGetAverageTrueRangePercent() {
+        QuotationArray sortedQuotations = new QuotationArray(this.dmlStock.getQuotationsSortedByDate());
+        float actualAtrp;
+        float expectedAtrp = 6.64f;
+
+        actualAtrp = this.averageTrueRangeCalculator.getAverageTrueRangePercent(20,
+                sortedQuotations.getQuotations().get(0), sortedQuotations);
+
+        assertEquals(expectedAtrp, actualAtrp);
     }
 }
