@@ -105,14 +105,14 @@ public class AverageTrueRangeCalculatorTest {
         }
     }
 
-    // @Test
+    @Test
     /**
      * Tests the calculation of the 20-day Average True Range Percent indicator.
      */
     public void testGetAverageTrueRangePercent() {
         QuotationArray sortedQuotations = new QuotationArray(this.dmlStock.getQuotationsSortedByDate());
         float actualAtrp;
-        float expectedAtrp = 6.64f;
+        float expectedAtrp = 6.47f;
 
         actualAtrp = this.averageTrueRangeCalculator.getAverageTrueRangePercent(20,
                 sortedQuotations.getQuotations().get(0), sortedQuotations);

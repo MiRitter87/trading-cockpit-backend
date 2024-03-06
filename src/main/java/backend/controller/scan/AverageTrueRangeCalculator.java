@@ -22,10 +22,42 @@ public class AverageTrueRangeCalculator {
      */
     public float getAverageTrueRangePercent(final int days, final Quotation quotation,
             final QuotationArray sortedQuotations) {
+        Quotation currentQuotation;
+        Quotation previousQuotation;
+        int indexOfQuotation = 0;
+        float trueRangeSum = 0;
+        float atrp = 0;
+        BigDecimal roundedAtrp;
+        final int twoDecimals = 2;
 
-        // Round to two decimal places.
+        // Get the starting point of ATRP calculation.
+        indexOfQuotation = sortedQuotations.getQuotations().indexOf(quotation);
 
-        return 0;
+        // Check if enough quotations exist for ATRP calculation.
+        // - 1 is used because an additional quotation is necessary for True Range calculation: the previous trading
+        // day is taken into account when calculating the True Range..
+        if ((sortedQuotations.getQuotations().size() - days - indexOfQuotation - 1) < 0) {
+            return 0;
+        }
+
+        // Calculate the sum of the True Range values of the last x days.
+        for (int i = indexOfQuotation; i < (days + indexOfQuotation); i++) {
+            currentQuotation = sortedQuotations.getQuotations().get(i);
+            previousQuotation = sortedQuotations.getQuotations().get(i + 1);
+            trueRangeSum = trueRangeSum + this.getTrueRange(currentQuotation, previousQuotation);
+        }
+
+        // Build the average.
+        atrp = trueRangeSum / days;
+
+        // Scale as percentage value.
+        atrp = atrp / quotation.getClose().floatValue() * 100;
+
+        // Round result to two decimal places.
+        roundedAtrp = new BigDecimal(atrp);
+        roundedAtrp = roundedAtrp.setScale(twoDecimals, RoundingMode.HALF_UP);
+
+        return roundedAtrp.floatValue();
     }
 
     /**
