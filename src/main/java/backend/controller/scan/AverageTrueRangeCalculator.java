@@ -29,6 +29,7 @@ public class AverageTrueRangeCalculator {
         float atrp = 0;
         BigDecimal roundedAtrp;
         final int twoDecimals = 2;
+        final int hundredPercent = 100;
 
         // Get the starting point of ATRP calculation.
         indexOfQuotation = sortedQuotations.getQuotations().indexOf(quotation);
@@ -51,7 +52,7 @@ public class AverageTrueRangeCalculator {
         atrp = trueRangeSum / days;
 
         // Scale as percentage value.
-        atrp = atrp / quotation.getClose().floatValue() * 100;
+        atrp = atrp / quotation.getClose().floatValue() * hundredPercent;
 
         // Round result to two decimal places.
         roundedAtrp = new BigDecimal(atrp);

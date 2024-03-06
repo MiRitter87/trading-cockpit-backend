@@ -104,6 +104,11 @@ public class IndicatorCalculator {
     private static final int DAYS_SMA_VOLUME_30 = 30;
 
     /**
+     * Number of days used to calculate the Average True Range Percent.
+     */
+    private static final int DAYS_ATRP_20 = 20;
+
+    /**
      * Calculator for moving averages of price and volume.
      */
     private MovingAverageCalculator movingAverageCalculator;
@@ -124,6 +129,11 @@ public class IndicatorCalculator {
     private RelativeStrengthCalculator relativeStrengthCalculator;
 
     /**
+     * Calculator for Average True Range Percent.
+     */
+    private AverageTrueRangeCalculator averageTrueRangeCalculator;
+
+    /**
      * Default constructor.
      */
     public IndicatorCalculator() {
@@ -131,6 +141,7 @@ public class IndicatorCalculator {
         this.bollingerCalculator = new BollingerCalculator();
         this.performanceCalculator = new PerformanceCalculator();
         this.relativeStrengthCalculator = new RelativeStrengthCalculator();
+        this.averageTrueRangeCalculator = new AverageTrueRangeCalculator();
     }
 
     /**
@@ -192,6 +203,8 @@ public class IndicatorCalculator {
         indicator.setPerformance5Days(
                 this.performanceCalculator.getPricePerformanceForDays(DAYS_PERFORMANCE_5, quotation, sortedQuotations));
         indicator.setLiquidity20Days(this.getLiquidityForDays(DAYS_LIQUIDITY_20, quotation, sortedQuotations));
+        indicator.setAverageTrueRangePercent20(
+                this.averageTrueRangeCalculator.getAverageTrueRangePercent(DAYS_ATRP_20, quotation, sortedQuotations));
     }
 
     /**
