@@ -408,6 +408,7 @@ public class QuotationServiceFixture {
         indicator.setVolumeDifferential5Days((float) 47.18);
         indicator.setVolumeDifferential10Days((float) 19.34);
         indicator.setBaseLengthWeeks(32);
+        indicator.setLiquidity20Days(959205658);
 
         return indicator;
     }
@@ -428,6 +429,7 @@ public class QuotationServiceFixture {
         indicator.setVolumeDifferential5Days((float) 25.55);
         indicator.setVolumeDifferential10Days((float) -9.67);
         indicator.setBaseLengthWeeks(3);
+        indicator.setLiquidity20Days(771768000);
 
         return indicator;
     }

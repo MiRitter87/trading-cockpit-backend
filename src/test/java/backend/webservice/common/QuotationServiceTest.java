@@ -833,4 +833,32 @@ public class QuotationServiceTest {
             }
         }
     }
+
+    @Test
+    /**
+     * Tests the retrieval of the most recent quotation with its corresponding Indicator and Instrument. Only those
+     * quotations should be returned that have an Indicator associated with them. Instruments are filtered by a minimum
+     * amount of liquidity.
+     */
+    public void testGetRecentQuotationsLiquidity() {
+        QuotationArray quotations;
+        WebServiceResult getQuotationsResult;
+        Quotation actualQuotation;
+        final float minLiquidity = 900000000;
+
+        // Get the quotations.
+        QuotationService service = new QuotationService();
+        getQuotationsResult = service.getQuotations(ScanTemplate.ALL, InstrumentType.STOCK, null, minLiquidity);
+        quotations = (QuotationArray) getQuotationsResult.getData();
+
+        // Assure no error message exists
+        assertTrue(WebServiceTools.resultContainsErrorMessage(getQuotationsResult) == false);
+
+        // Check if one quotation is returned.
+        assertEquals(1, quotations.getQuotations().size());
+
+        // Check if the correct quotation is returned.
+        actualQuotation = quotations.getQuotations().get(0);
+        assertEquals(this.appleQuotation2, actualQuotation);
+    }
 }
