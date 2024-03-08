@@ -568,7 +568,7 @@ public class QuotationHibernateDAOTest {
         int expectedCompositeRsNumberIg;
 
         try {
-            quotations = quotationDAO.getQuotationsByTemplate(ScanTemplate.ALL, InstrumentType.STOCK, null, null);
+            quotations = quotationDAO.getQuotationsByTemplate(ScanTemplate.ALL, InstrumentType.STOCK, null, null, null);
 
             // Assure one Quotation is returned.
             assertEquals(1, quotations.size());

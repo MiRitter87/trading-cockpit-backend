@@ -53,10 +53,11 @@ public class QuotationService {
      * @param startDate      The start date for the RS number determination. Format used: yyyy-MM-dd. Parameter can be
      *                       omitted (null).
      * @param minLiquidity   The minimum trading liquidity that is required. Parameter can be omitted (null).
+     * @param minAtrp        The minimum Average True Range Percent that is required. Parameter can be omitted (null).
      * @return A list of the most recent Quotation of each Instrument.
      */
     public WebServiceResult getQuotations(final ScanTemplate scanTemplate, final InstrumentType instrumentType,
-            final String startDate, final Float minLiquidity) {
+            final String startDate, final Float minLiquidity, final Float minAtrp) {
 
         QuotationArray quotations = new QuotationArray();
         WebServiceResult getRecentQuotationsResult = new WebServiceResult(null);
@@ -68,8 +69,8 @@ public class QuotationService {
         }
 
         try {
-            quotations.setQuotations(
-                    this.quotationDAO.getQuotationsByTemplate(scanTemplate, instrumentType, startDate, minLiquidity));
+            quotations.setQuotations(this.quotationDAO.getQuotationsByTemplate(scanTemplate, instrumentType, startDate,
+                    minLiquidity, minAtrp));
             getRecentQuotationsResult.setData(quotations);
         } catch (LocalizedException localizedException) {
             getRecentQuotationsResult.addMessage(

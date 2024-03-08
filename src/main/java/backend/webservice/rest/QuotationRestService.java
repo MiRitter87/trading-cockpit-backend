@@ -27,16 +27,18 @@ public class QuotationRestService {
      * @param startDate      The start date for the RS number determination. Format used: yyyy-MM-dd. Parameter can be
      *                       omitted (null).
      * @param minLiquidity   The minimum trading liquidity that is required. Parameter can be omitted (null).
+     * @param minAtrp        The minimum Average True Range Percent that is required. Parameter can be omitted (null).
      * @return A list of all quotations.
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public WebServiceResult getQuotations(@QueryParam("scanTemplate") final ScanTemplate scanTemplate,
             @QueryParam("instrumentType") final InstrumentType instrumentType,
-            @QueryParam("startDate") final String startDate, @QueryParam("minLiquidity") final Float minLiquidity) {
+            @QueryParam("startDate") final String startDate, @QueryParam("minLiquidity") final Float minLiquidity,
+            @QueryParam("minAtrp") final Float minAtrp) {
 
         QuotationService quotationService = new QuotationService();
-        return quotationService.getQuotations(scanTemplate, instrumentType, startDate, minLiquidity);
+        return quotationService.getQuotations(scanTemplate, instrumentType, startDate, minLiquidity, minAtrp);
     }
 
     /**

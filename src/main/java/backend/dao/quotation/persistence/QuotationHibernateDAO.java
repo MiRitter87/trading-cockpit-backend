@@ -297,7 +297,8 @@ public class QuotationHibernateDAO implements QuotationDAO {
     @SuppressWarnings("unchecked")
     @Override
     public List<Quotation> getQuotationsByTemplate(final ScanTemplate scanTemplate, final InstrumentType instrumentType,
-            final String startDate, final Float minLiquidity) throws LocalizedException, Exception {
+            final String startDate, final Float minLiquidity, final Float minAtrp)
+            throws LocalizedException, Exception {
 
         EntityManager entityManager = this.sessionFactory.createEntityManager();
         List<Quotation> quotations;

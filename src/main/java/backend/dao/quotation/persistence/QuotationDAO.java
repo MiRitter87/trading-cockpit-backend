@@ -83,10 +83,11 @@ public interface QuotationDAO {
      * @param startDate      The start date for the RS number determination. Format used: yyyy-MM-dd. Parameter can be
      *                       omitted (null).
      * @param minLiquidity   The minimum trading liquidity that is required. Parameter can be omitted (null).
+     * @param minAtrp        The minimum Average True Range Percent that is required. Parameter can be omitted (null).
      * @return The most recent Quotation of each Instrument that matches the given Template.
      * @throws LocalizedException Exception with error message to be displayed to the user.
      * @throws Exception          Quotation determination failed.
      */
     List<Quotation> getQuotationsByTemplate(ScanTemplate scanTemplate, InstrumentType instrumentType, String startDate,
-            Float minLiquidity) throws LocalizedException, Exception;
+            Float minLiquidity, Float minAtrp) throws LocalizedException, Exception;
 }
