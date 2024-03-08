@@ -867,4 +867,32 @@ public class QuotationServiceTest {
         actualQuotation = quotations.getQuotations().get(0);
         assertEquals(this.appleQuotation2, actualQuotation);
     }
+
+    @Test
+    /**
+     * Tests the retrieval of the most recent quotation with its corresponding Indicator and Instrument. Only those
+     * quotations should be returned that have an Indicator associated with them. Instruments are filtered by a minimum
+     * value of the Average True Range Percent.
+     */
+    public void testGetRecentQuotationsAtrp() {
+        QuotationArray quotations;
+        WebServiceResult getQuotationsResult;
+        Quotation actualQuotation;
+        final float minAtrp = 3.5f;
+
+        // Get the quotations.
+        QuotationService service = new QuotationService();
+        getQuotationsResult = service.getQuotations(ScanTemplate.ALL, InstrumentType.STOCK, null, null, minAtrp);
+        quotations = (QuotationArray) getQuotationsResult.getData();
+
+        // Assure no error message exists
+        assertTrue(WebServiceTools.resultContainsErrorMessage(getQuotationsResult) == false);
+
+        // Check if one quotation is returned.
+        assertEquals(1, quotations.getQuotations().size());
+
+        // Check if the correct quotation is returned.
+        actualQuotation = quotations.getQuotations().get(0);
+        assertEquals(this.denisonMinesQuotations.get(0), actualQuotation);
+    }
 }

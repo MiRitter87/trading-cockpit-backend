@@ -244,10 +244,12 @@ public class ScanTemplateProcessor {
      * removed from the List.
      *
      * @param minLiquidity The minimum trading liquidity that is required. Parameter can be omitted (null).
+     * @param minAtrp      The minimum Average True Range Percent that is required. Parameter can be omitted (null).
      * @param quotations   The quotations on which the filtering is performed.
      */
-    protected void applyFilters(final Float minLiquidity, final List<Quotation> quotations) {
+    protected void applyFilters(final Float minLiquidity, final Float minAtrp, final List<Quotation> quotations) {
         this.filterByMinLiquidity(minLiquidity, quotations);
+        this.filterByMinAverageTrueRangePercent(minAtrp, quotations);
     }
 
     /**
@@ -268,6 +270,29 @@ public class ScanTemplateProcessor {
             currentQuotation = quotationIterator.next();
 
             if (currentQuotation.getIndicator().getLiquidity20Days() < minLiquidity) {
+                quotationIterator.remove();
+            }
+        }
+    }
+
+    /**
+     * Filters the given quotations by the minimum Average True Range Percent.
+     *
+     * @param minAtrp    The minimum Average True Range Percent that is required. Parameter can be omitted (null).
+     * @param quotations The quotations on which the filtering is performed.
+     */
+    private void filterByMinAverageTrueRangePercent(final Float minAtrp, final List<Quotation> quotations) {
+        Iterator<Quotation> quotationIterator = quotations.iterator();
+        Quotation currentQuotation;
+
+        if (minAtrp == null) {
+            return;
+        }
+
+        while (quotationIterator.hasNext()) {
+            currentQuotation = quotationIterator.next();
+
+            if (currentQuotation.getIndicator().getAverageTrueRangePercent20() < minAtrp) {
                 quotationIterator.remove();
             }
         }
