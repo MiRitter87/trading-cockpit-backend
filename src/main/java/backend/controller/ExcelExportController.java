@@ -35,7 +35,7 @@ public class ExcelExportController {
      * @param quotations A List of quotations.
      * @return A Workbook containing price data of the given quotations.
      */
-    public Workbook getPriceDataOfQuotations(final List<Quotation> quotations) {
+    public Workbook getQuotationDataWorkbook(final List<Quotation> quotations) {
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet();
 

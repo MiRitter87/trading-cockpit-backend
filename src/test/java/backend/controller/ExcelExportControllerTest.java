@@ -139,7 +139,7 @@ public class ExcelExportControllerTest {
 		List<String> tableRowAttributes;
 
 		//Construct an Excel workbook for the given quotations.
-		Workbook workbook = excelExportController.getPriceDataOfQuotations(this.quotations);
+		Workbook workbook = excelExportController.getQuotationDataWorkbook(this.quotations);
 
 		//Check if the content of the workbook matches the expectations.
 		workbookContent = excelExportController.readWorkbook(workbook);

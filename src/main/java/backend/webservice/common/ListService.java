@@ -262,8 +262,8 @@ public class ListService {
             quotationsOfList.setQuotations(quotationDAO.getRecentQuotationsForList(list));
             quotationsOfList.sortQuotationsBySymbol();
 
-            // Generate the Excel workbook with price data.
-            workbook = excelExportController.getPriceDataOfQuotations(quotationsOfList.getQuotations());
+            // Generate the Excel workbook with Quotation data.
+            workbook = excelExportController.getQuotationDataWorkbook(quotationsOfList.getQuotations());
 
             streamingOutput = new StreamingOutput() {
                 @Override
