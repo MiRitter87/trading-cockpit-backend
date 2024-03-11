@@ -248,7 +248,7 @@ public class ListService {
      * @param id The id of the List.
      * @return A Response containing the generated Excel file.
      */
-    public Response getRecentPricesOfListAsExcel(final Integer id) {
+    public Response getQuotationDataOfListAsExcel(final Integer id) {
         QuotationDAO quotationDAO = DAOManager.getInstance().getQuotationDAO();
         List list;
         ExcelExportController excelExportController = new ExcelExportController();

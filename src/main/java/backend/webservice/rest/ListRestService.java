@@ -47,14 +47,15 @@ public class ListRestService {
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @JacksonFeatures(serializationDisable = {SerializationFeature.FAIL_ON_EMPTY_BEANS})
+    @JacksonFeatures(serializationDisable = { SerializationFeature.FAIL_ON_EMPTY_BEANS })
     public WebServiceResult getLists() {
         ListService listService = new ListService();
         return listService.getLists();
     }
 
     /**
-     * Provides an Excel file that contains the most recent price of each Instrument of the List with the given ID.
+     * Provides an Excel file that contains Quotation data of each Instrument of the List with the given ID. Those data
+     * include Symbol, Date, Price and RS number of the most recent Quotation of each Instrument.
      *
      * @param id The ID of the List.
      * @return The Excel file.
@@ -62,9 +63,9 @@ public class ListRestService {
     @GET
     @Path("/{id}/excel")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    public Response getRecentPricesOfListAsExcel(@PathParam("id") final Integer id) {
+    public Response getQuotationDataOfListAsExcel(@PathParam("id") final Integer id) {
         ListService listService = new ListService();
-        return listService.getRecentPricesOfListAsExcel(id);
+        return listService.getQuotationDataOfListAsExcel(id);
     }
 
     /**

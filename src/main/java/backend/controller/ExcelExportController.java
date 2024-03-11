@@ -49,7 +49,7 @@ public class ExcelExportController {
     private ResourceBundle resources = ResourceBundle.getBundle("backend");
 
     /**
-     * Generates a Workbook that contains price data of the given quotations. The workbook contains the following data
+     * Generates a Workbook that contains data of the given quotations. The workbook contains the following data
      * for each quotation: Symbol, Date, Price, RS Number.
      *
      * @param quotations A List of quotations.
