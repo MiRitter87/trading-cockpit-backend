@@ -24,13 +24,33 @@ import backend.model.instrument.Quotation;
  */
 public class ExcelExportController {
     /**
+     * The index number of the Symbol Cell.
+     */
+    private static final int SYMBOL_CELL_INDEX = 0;
+
+    /**
+     * The index number of the Date Cell.
+     */
+    private static final int DATE_CELL_INDEX = 1;
+
+    /**
+     * The index number of the Closing Price Cell.
+     */
+    private static final int PRICE_CELL_INDEX = 2;
+
+    /**
+     * The index number of the RS Number Cell.
+     */
+    private static final int RS_CELL_INDEX = 3;
+
+    /**
      * Access to localized application resources.
      */
     private ResourceBundle resources = ResourceBundle.getBundle("backend");
 
     /**
      * Generates a Workbook that contains price data of the given quotations. The workbook contains the following data
-     * for each quotation: Symbol, Date, Price.
+     * for each quotation: Symbol, Date, Price, RS Number.
      *
      * @param quotations A List of quotations.
      * @return A Workbook containing price data of the given quotations.
@@ -112,12 +132,14 @@ public class ExcelExportController {
         Cell tableCell;
 
         tableRow = sheet.createRow(0);
-        tableCell = tableRow.createCell(0);
+        tableCell = tableRow.createCell(SYMBOL_CELL_INDEX);
         tableCell.setCellValue(this.resources.getString("instrument.attribute.symbol"));
-        tableCell = tableRow.createCell(1);
+        tableCell = tableRow.createCell(DATE_CELL_INDEX);
         tableCell.setCellValue(this.resources.getString("quotation.attribute.date"));
-        tableCell = tableRow.createCell(2);
+        tableCell = tableRow.createCell(PRICE_CELL_INDEX);
         tableCell.setCellValue(this.resources.getString("quotation.attribute.price"));
+        tableCell = tableRow.createCell(RS_CELL_INDEX);
+        tableCell.setCellValue(this.resources.getString("quotation.attribute.rsNumber"));
     }
 
     /**
@@ -137,17 +159,21 @@ public class ExcelExportController {
             tableRow = sheet.createRow(rowNumber);
 
             // Symbol Cell
-            tableCell = tableRow.createCell(0);
+            tableCell = tableRow.createCell(SYMBOL_CELL_INDEX);
             tableCell.setCellValue(tempQuotation.getInstrument().getSymbol());
 
             // Date Cell - Not formatted as Date but as a simple string. It seems the
             // Framework does not support the needed format.
-            tableCell = tableRow.createCell(1);
+            tableCell = tableRow.createCell(DATE_CELL_INDEX);
             tableCell.setCellValue(this.getDateAsExcelString(tempQuotation.getDate()));
 
             // Price Cell
-            tableCell = tableRow.createCell(2);
+            tableCell = tableRow.createCell(PRICE_CELL_INDEX);
             tableCell.setCellValue(tempQuotation.getClose().doubleValue());
+
+            // RS number Cell
+            tableCell = tableRow.createCell(RS_CELL_INDEX);
+            tableCell.setCellValue(tempQuotation.getRelativeStrengthData().getRsNumber());
         }
     }
 }
