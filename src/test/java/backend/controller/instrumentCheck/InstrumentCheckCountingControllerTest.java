@@ -342,13 +342,13 @@ public class InstrumentCheckCountingControllerTest {
         Calendar calendar = Calendar.getInstance();
 
         // Define the expected protocol entry.
-        calendar.set(2022, 5, 14); // The day on which threee lower lows occurred (14.06.22).
+        calendar.set(2022, 4, 9); // The day on which three lower lows occurred (09.05.22).
         expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
         expectedProtocolEntry.setCategory(ProtocolEntryCategory.VIOLATION);
-        expectedProtocolEntry.setText(this.resources.getString("protocol.threeLowerClosesLowVolume"));
+        expectedProtocolEntry.setText(this.resources.getString("protocol.threeLowerCloses"));
 
         // Call controller to perform check.
-        calendar.set(2022, 5, 14); // Begin check on 14.06.22.
+        calendar.set(2022, 3, 28); // Begin check on 28.04.22.
         try {
             protocolEntries = this.instrumentCheckCountingController.checkThreeLowerCloses(calendar.getTime(),
                     this.dmlQuotations);

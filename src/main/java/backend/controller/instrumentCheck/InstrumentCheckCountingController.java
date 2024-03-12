@@ -291,7 +291,7 @@ public class InstrumentCheckCountingController {
     }
 
     /**
-     * Checks if three lower closes have occurred.
+     * Checks if three lower closes on above-average volume have occurred.
      *
      * @param startDate        The date at which the check starts.
      * @param sortedQuotations The quotations sorted by date that build the trading history.
@@ -302,12 +302,13 @@ public class InstrumentCheckCountingController {
             throws Exception {
         int startIndex;
         int numberOfDownDays;
-        int numberOfDownDaysWithHighVolume;
         List<ProtocolEntry> protocolEntries = new ArrayList<>();
         ProtocolEntry protocolEntry;
         float performance;
         MovingAverageData maData;
         final int thresholdDaysWithLowerLows = 3;
+        long downVolumeSum;
+        long averageVolumeSum;
 
         startIndex = sortedQuotations.getIndexOfQuotationWithDate(startDate);
 
@@ -322,40 +323,33 @@ public class InstrumentCheckCountingController {
             }
 
             numberOfDownDays = 0;
-            numberOfDownDaysWithHighVolume = 0;
+            downVolumeSum = 0;
+            averageVolumeSum = 0;
 
             // Count the number of lower closes within the last three trading days.
             for (int j = 0; j < thresholdDaysWithLowerLows; j++) {
-                performance = this.performanceCalculator.getPerformance(sortedQuotations.getQuotations().get(i + j),
-                        sortedQuotations.getQuotations().get(i + j + 1));
-
-                if (performance < 0) {
-                    numberOfDownDays++;
-                }
-
                 maData = sortedQuotations.getQuotations().get(i + j).getMovingAverageData();
 
                 if (maData == null || maData.getSma30Volume() == 0) {
                     continue;
                 }
 
-                if (sortedQuotations.getQuotations().get(i + j).getVolume() > maData.getSma30Volume()) {
-                    numberOfDownDaysWithHighVolume++;
+                performance = this.performanceCalculator.getPerformance(sortedQuotations.getQuotations().get(i + j),
+                        sortedQuotations.getQuotations().get(i + j + 1));
+
+                if (performance < 0) {
+                    numberOfDownDays++;
+                    downVolumeSum = downVolumeSum + sortedQuotations.getQuotations().get(i + j).getVolume();
+                    averageVolumeSum = averageVolumeSum + maData.getSma30Volume();
                 }
             }
 
-            if (numberOfDownDays == thresholdDaysWithLowerLows) {
+            if (numberOfDownDays == thresholdDaysWithLowerLows && downVolumeSum > averageVolumeSum) {
                 protocolEntry = new ProtocolEntry();
                 protocolEntry.setCategory(ProtocolEntryCategory.VIOLATION);
                 protocolEntry.setDate(
                         DateTools.getDateWithoutIntradayAttributes(sortedQuotations.getQuotations().get(i).getDate()));
-
-                if (numberOfDownDaysWithHighVolume == thresholdDaysWithLowerLows) {
-                    protocolEntry.setText(this.resources.getString("protocol.threeLowerClosesHighVolume"));
-                } else {
-                    protocolEntry.setText(this.resources.getString("protocol.threeLowerClosesLowVolume"));
-                }
-
+                protocolEntry.setText(this.resources.getString("protocol.threeLowerCloses"));
                 protocolEntries.add(protocolEntry);
             }
         }
