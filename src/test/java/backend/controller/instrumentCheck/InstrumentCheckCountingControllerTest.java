@@ -364,7 +364,7 @@ public class InstrumentCheckCountingControllerTest {
         }
     }
 
-    // @Test
+    @Test
     /**
      * Tests the check if three higher closes have occurred.
      */

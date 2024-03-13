@@ -368,7 +368,61 @@ public class InstrumentCheckCountingController {
     public List<ProtocolEntry> checkThreeHigherCloses(final Date startDate, final QuotationArray sortedQuotations)
             throws Exception {
 
-        return null;
+        int startIndex;
+        int numberOfUpDays;
+        List<ProtocolEntry> protocolEntries = new ArrayList<>();
+        ProtocolEntry protocolEntry;
+        float performance;
+        MovingAverageData maData;
+        final int thresholdDaysWithHigherCloses = 3;
+        long upVolumeSum;
+        long averageVolumeSum;
+
+        startIndex = sortedQuotations.getIndexOfQuotationWithDate(startDate);
+
+        if (startIndex == -1) {
+            throw new Exception("Could not find a quotation at or after the given start date.");
+        }
+
+        for (int i = startIndex; i >= 0; i--) {
+            // Skip this Quotation, if not at least 3 previous days of trading history exist.
+            if ((i + thresholdDaysWithHigherCloses) >= sortedQuotations.getQuotations().size()) {
+                continue;
+            }
+
+            numberOfUpDays = 0;
+            upVolumeSum = 0;
+            averageVolumeSum = 0;
+
+            // Count the number of higher closes within the last three trading days.
+            for (int j = 0; j < thresholdDaysWithHigherCloses; j++) {
+                maData = sortedQuotations.getQuotations().get(i + j).getMovingAverageData();
+
+                if (maData == null || maData.getSma30Volume() == 0) {
+                    continue;
+                }
+
+                performance = this.performanceCalculator.getPerformance(sortedQuotations.getQuotations().get(i + j),
+                        sortedQuotations.getQuotations().get(i + j + 1));
+
+                if (performance > 0) {
+                    numberOfUpDays++;
+                    upVolumeSum = upVolumeSum + sortedQuotations.getQuotations().get(i + j).getVolume();
+                    averageVolumeSum = averageVolumeSum + maData.getSma30Volume();
+                }
+            }
+
+            if (numberOfUpDays == thresholdDaysWithHigherCloses && upVolumeSum > averageVolumeSum) {
+                protocolEntry = new ProtocolEntry();
+                protocolEntry.setCategory(ProtocolEntryCategory.CONFIRMATION);
+                protocolEntry.setDate(
+                        DateTools.getDateWithoutIntradayAttributes(sortedQuotations.getQuotations().get(i).getDate()));
+                protocolEntry.setText(this.resources.getString("protocol.threeHigherCloses"));
+                protocolEntries.add(protocolEntry);
+            }
+        }
+
+        return protocolEntries;
     }
 
     /**

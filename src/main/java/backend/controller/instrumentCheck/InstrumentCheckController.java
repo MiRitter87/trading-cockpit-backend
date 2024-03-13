@@ -122,6 +122,7 @@ public class InstrumentCheckController {
 
         confirmations.addAll(this.instrumentCheckCountingController.checkMoreUpThanDownDays(startDate, quotations));
         confirmations.addAll(this.instrumentCheckCountingController.checkMoreGoodThanBadCloses(startDate, quotations));
+        confirmations.addAll(this.instrumentCheckCountingController.checkThreeHigherCloses(startDate, quotations));
         confirmations.addAll(this.instrumentCheckPatternController.checkUpOnVolume(startDate, quotations));
 
         this.setProfile(confirmations, HealthCheckProfile.CONFIRMATIONS);
