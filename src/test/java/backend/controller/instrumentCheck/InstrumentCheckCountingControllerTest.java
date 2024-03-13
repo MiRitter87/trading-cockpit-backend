@@ -342,7 +342,7 @@ public class InstrumentCheckCountingControllerTest {
         Calendar calendar = Calendar.getInstance();
 
         // Define the expected protocol entry.
-        calendar.set(2022, 4, 9); // The day on which three lower lows occurred (09.05.22).
+        calendar.set(2022, 4, 9); // The day on which three lower closes occurred (09.05.22).
         expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
         expectedProtocolEntry.setCategory(ProtocolEntryCategory.VIOLATION);
         expectedProtocolEntry.setText(this.resources.getString("protocol.threeLowerCloses"));
@@ -351,6 +351,39 @@ public class InstrumentCheckCountingControllerTest {
         calendar.set(2022, 3, 28); // Begin check on 28.04.22.
         try {
             protocolEntries = this.instrumentCheckCountingController.checkThreeLowerCloses(calendar.getTime(),
+                    this.dmlQuotations);
+
+            // Verify the check result.
+            assertEquals(1, protocolEntries.size());
+
+            // Validate the protocol entry.
+            actualProtocolEntry = protocolEntries.get(0);
+            assertEquals(expectedProtocolEntry, actualProtocolEntry);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    // @Test
+    /**
+     * Tests the check if three higher closes have occurred.
+     */
+    public void testCheckThreeHigherCloses() {
+        ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
+        ProtocolEntry actualProtocolEntry;
+        List<ProtocolEntry> protocolEntries;
+        Calendar calendar = Calendar.getInstance();
+
+        // Define the expected protocol entry.
+        calendar.set(2022, 2, 10); // The day on which three higher closes occurred (10.03.22).
+        expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
+        expectedProtocolEntry.setCategory(ProtocolEntryCategory.CONFIRMATION);
+        expectedProtocolEntry.setText(this.resources.getString("protocol.threeHigherCloses"));
+
+        // Call controller to perform check.
+        calendar.set(2022, 2, 10); // Begin check on 10.03.22.
+        try {
+            protocolEntries = this.instrumentCheckCountingController.checkThreeHigherCloses(calendar.getTime(),
                     this.dmlQuotations);
 
             // Verify the check result.
