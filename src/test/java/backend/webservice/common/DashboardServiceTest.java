@@ -1,5 +1,7 @@
 package backend.webservice.common;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
@@ -8,12 +10,16 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
 import backend.model.StockExchange;
+import backend.model.dashboard.MarketHealthStatus;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
+import backend.model.webservice.WebServiceResult;
+import backend.tools.WebServiceTools;
 
 /**
  * Tests the DashboardService.
@@ -64,7 +70,7 @@ public class DashboardServiceTest {
      * Tasks to be performed after each test has been run.
      */
     private void tearDown() {
-        this.copperIndustryGroup = null;
+        this.deleteDummyInstruments();
     }
 
     /**
@@ -75,6 +81,17 @@ public class DashboardServiceTest {
 
         try {
             instrumentDAO.insertInstrument(this.copperIndustryGroup);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    /**
+     * Deletes the dummy instruments from the database.
+     */
+    private void deleteDummyInstruments() {
+        try {
+            instrumentDAO.deleteInstrument(this.copperIndustryGroup);
         } catch (Exception e) {
             fail(e.getMessage());
         }
@@ -94,5 +111,26 @@ public class DashboardServiceTest {
         instrument.setType(InstrumentType.IND_GROUP);
 
         return instrument;
+    }
+
+    @Test
+    /**
+     * Tests the determination of the MarketHealthStatus.
+     */
+    public void testGetMarketHealthStatus() {
+        MarketHealthStatus marketHealthStatus;
+        WebServiceResult getMarketHealthStatusResult;
+        DashboardService dashboardService = new DashboardService();
+
+        getMarketHealthStatusResult = dashboardService.getMarketHealthStatus(this.copperIndustryGroup.getId());
+
+        // Assure no error message exists
+        assertTrue(WebServiceTools.resultContainsErrorMessage(getMarketHealthStatusResult) == false);
+
+        // Check attributes of the provided MarketHealthStatus object.
+        marketHealthStatus = (MarketHealthStatus) getMarketHealthStatusResult.getData();
+        assertTrue(marketHealthStatus instanceof MarketHealthStatus);
+        assertEquals(this.copperIndustryGroup.getSymbol(), marketHealthStatus.getSymbol());
+        assertEquals(this.copperIndustryGroup.getName(), marketHealthStatus.getName());
     }
 }
