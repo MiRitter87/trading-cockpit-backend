@@ -129,7 +129,13 @@ public class QuotationProviderMarketWatchDAO extends AbstractQuotationProviderDA
 
         Request request = new Request.Builder()
                 .url(this.getQueryUrlQuotationHistory(symbol, stockExchange, instrumentType, years))
-                .header("Connection", "close").build();
+                .header("Connection", "close")
+                .header("Accept",
+                        "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8")
+                .header("Accept-Language", "de,en-US;q=0.7,en;q=0.3").header("Accept-Encoding", "gzip, deflate, br")
+                .header("User-Agent",
+                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:123.0) Gecko/20100101 Firefox/123.0")
+                .build();
         Response response;
         String csvResult;
 
