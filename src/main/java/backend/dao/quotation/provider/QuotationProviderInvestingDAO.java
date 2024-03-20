@@ -191,8 +191,7 @@ public class QuotationProviderInvestingDAO extends AbstractQuotationProviderDAO 
 
         final List<DomElement> divs = htmlPage.getElementsByTagName("div");
         for (DomElement element : divs) {
-            if (element.getAttribute("class")
-                    .equals("text-5xl/9 font-bold md:text-[42px] md:leading-[60px] text-[#232526]")) {
+            if (this.isDomElementDivPrice(element)) {
                 quotation = new Quotation();
                 quotation.setCurrency(this.getCurrencyForStockExchange(instrument.getStockExchange()));
                 currentPrice = element.getFirstChild().asNormalizedText();
@@ -201,5 +200,24 @@ public class QuotationProviderInvestingDAO extends AbstractQuotationProviderDAO 
         }
 
         return quotation;
+    }
+
+    /**
+     * Checks if the given DOM element 'div' contains the current price.
+     *
+     * @param element The DOM element of type 'div'.
+     * @return True, if element contains current price; false if not.
+     */
+    private boolean isDomElementDivPrice(final DomElement element) {
+        // The order of the attributes within the class attribute may vary.
+        // Thats why multiple constellations are checked here.
+        if (element.getAttribute("class").equals("text-5xl/9 font-bold md:text-[42px] md:leading-[60px] text-[#232526]")
+                || element.getAttribute("class")
+                        .equals("text-5xl/9 font-bold text-[#232526] md:text-[42px] md:leading-[60px]")) {
+
+            return true;
+        }
+
+        return false;
     }
 }
