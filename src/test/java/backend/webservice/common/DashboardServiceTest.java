@@ -5,6 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import org.junit.jupiter.api.AfterAll;
@@ -15,10 +18,12 @@ import org.junit.jupiter.api.Test;
 
 import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
+import backend.dao.quotation.persistence.QuotationDAO;
 import backend.model.StockExchange;
 import backend.model.dashboard.MarketHealthStatus;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
+import backend.model.instrument.Quotation;
 import backend.model.webservice.WebServiceResult;
 import backend.tools.WebServiceTools;
 
@@ -39,9 +44,24 @@ public class DashboardServiceTest {
     private static InstrumentDAO instrumentDAO;
 
     /**
+     * DAO to access Quotation data.
+     */
+    private static QuotationDAO quotationDAO;
+
+    /**
      * Industry Group: Copper Miners.
      */
     private Instrument copperIndustryGroup;
+
+    /**
+     * The first Quotation of the Copper IG.
+     */
+    private Quotation copperIgQuotation1;
+
+    /**
+     * The second Quotation of the Copper IG.
+     */
+    private Quotation copperIgQuotation2;
 
     @BeforeAll
     /**
@@ -49,6 +69,7 @@ public class DashboardServiceTest {
      */
     public static void setUpClass() {
         instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
+        quotationDAO = DAOManager.getInstance().getQuotationDAO();
     }
 
     @AfterAll
@@ -69,6 +90,7 @@ public class DashboardServiceTest {
      */
     private void setUp() {
         this.createDummyInstruments();
+        this.createDummyQuotations();
     }
 
     @AfterEach
@@ -76,6 +98,7 @@ public class DashboardServiceTest {
      * Tasks to be performed after each test has been run.
      */
     private void tearDown() {
+        this.deleteDummyQuotations();
         this.deleteDummyInstruments();
     }
 
@@ -98,6 +121,47 @@ public class DashboardServiceTest {
     private void deleteDummyInstruments() {
         try {
             instrumentDAO.deleteInstrument(this.copperIndustryGroup);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    /**
+     * Initializes the database with dummy quotations.
+     */
+    private void createDummyQuotations() {
+        List<Quotation> quotations = new ArrayList<>();
+        Calendar calendar = Calendar.getInstance();
+
+        this.copperIgQuotation1 = new Quotation();
+        this.copperIgQuotation1.setInstrument(this.copperIndustryGroup);
+        this.copperIgQuotation1.setDate(calendar.getTime());
+        quotations.add(this.copperIgQuotation1);
+
+        this.copperIgQuotation2 = new Quotation();
+        this.copperIgQuotation2.setInstrument(this.copperIndustryGroup);
+        calendar.add(Calendar.DAY_OF_MONTH, -1);
+        this.copperIgQuotation2.setDate(calendar.getTime());
+        quotations.add(this.copperIgQuotation2);
+
+        try {
+            quotationDAO.insertQuotations(quotations);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    /**
+     * Deletes the dummy quotations from the database.
+     */
+    private void deleteDummyQuotations() {
+        List<Quotation> quotations = new ArrayList<>();
+
+        quotations.add(this.copperIgQuotation1);
+        quotations.add(this.copperIgQuotation2);
+
+        try {
+            quotationDAO.deleteQuotations(quotations);
         } catch (Exception e) {
             fail(e.getMessage());
         }
@@ -138,6 +202,7 @@ public class DashboardServiceTest {
         assertTrue(marketHealthStatus instanceof MarketHealthStatus);
         assertEquals(this.copperIndustryGroup.getSymbol(), marketHealthStatus.getSymbol());
         assertEquals(this.copperIndustryGroup.getName(), marketHealthStatus.getName());
+        assertEquals(this.copperIgQuotation1.getDate().getTime(), marketHealthStatus.getDate().getTime());
     }
 
     @Test
@@ -151,7 +216,7 @@ public class DashboardServiceTest {
         String expectedErrorMessage = this.resources.getString("dashboard.wrongInstrumentType");
         String actualErrorMessage;
 
-        //Change type of Copper industry group to ETF. This type is not allowed.
+        // Change type of Copper industry group to ETF. This type is not allowed.
         this.copperIndustryGroup.setType(InstrumentType.ETF);
         try {
             instrumentDAO.updateInstrument(this.copperIndustryGroup);
