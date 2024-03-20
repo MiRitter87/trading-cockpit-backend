@@ -1,9 +1,14 @@
 package backend.webservice.common;
 
+import java.text.MessageFormat;
+import java.util.ResourceBundle;
+
 import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
 import backend.model.dashboard.MarketHealthStatus;
 import backend.model.instrument.Instrument;
+import backend.model.webservice.WebServiceMessage;
+import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
 
 /**
@@ -16,6 +21,11 @@ public class DashboardService {
      * DAO to access Instrument data.
      */
     private InstrumentDAO instrumentDAO;
+
+    /**
+     * Access to localized application resources.
+     */
+    private ResourceBundle resources = ResourceBundle.getBundle("backend");
 
     /**
      * Initializes the DashboardService.
@@ -33,12 +43,22 @@ public class DashboardService {
     public WebServiceResult getMarketHealthStatus(final Integer instrumentId) {
         WebServiceResult getStatusResult = new WebServiceResult(null);
         MarketHealthStatus marketHealthStatus = new MarketHealthStatus();
+        Instrument instrument;
 
         try {
-            this.fillInstrumentData(instrumentId, marketHealthStatus);
+            instrument = this.instrumentDAO.getInstrument(instrumentId);
+
+            if (instrument == null) {
+                getStatusResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
+                        MessageFormat.format(this.resources.getString("instrument.notFound"), instrumentId)));
+                return getStatusResult;
+            }
+
+            this.fillInstrumentData(instrument, marketHealthStatus);
             getStatusResult.setData(marketHealthStatus);
         } catch (Exception e) {
-            // TODO Implement handling. Write error message to result.
+            getStatusResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
+                    this.resources.getString("dashboard.getMarketHealthStatusError")));
         }
 
         return getStatusResult;
@@ -47,14 +67,10 @@ public class DashboardService {
     /**
      * Fills the Instrument data of the MarketHealthStatus.
      *
-     * @param instrumentId       The ID of the Instrument.
+     * @param instrument         The Instrument.
      * @param marketHealthStatus The MarketHealthStatus whose data are filled.
-     * @throws Exception Could not fill Instrument data.
      */
-    private void fillInstrumentData(final Integer instrumentId, final MarketHealthStatus marketHealthStatus)
-            throws Exception {
-        Instrument instrument = this.instrumentDAO.getInstrument(instrumentId);
-
+    private void fillInstrumentData(final Instrument instrument, final MarketHealthStatus marketHealthStatus) {
         marketHealthStatus.setSymbol(instrument.getSymbol());
         marketHealthStatus.setName(instrument.getName());
     }

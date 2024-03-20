@@ -133,4 +133,13 @@ public class DashboardServiceTest {
         assertEquals(this.copperIndustryGroup.getSymbol(), marketHealthStatus.getSymbol());
         assertEquals(this.copperIndustryGroup.getName(), marketHealthStatus.getName());
     }
+
+    @Test
+    /**
+     * Tests the determination of the MarketHealthStatus. Checks if a correct error is provided if an Instrument of the
+     * wrong type is being given.
+     */
+    public void testGetMarketHealthStatusWrongType() {
+
+    }
 }
