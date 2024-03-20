@@ -5,8 +5,10 @@ import java.util.ResourceBundle;
 
 import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
+import backend.model.LocalizedException;
 import backend.model.dashboard.MarketHealthStatus;
 import backend.model.instrument.Instrument;
+import backend.model.instrument.InstrumentType;
 import backend.model.webservice.WebServiceMessage;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
@@ -54,8 +56,12 @@ public class DashboardService {
                 return getStatusResult;
             }
 
+            this.validateInstrumentType(instrument);
             this.fillInstrumentData(instrument, marketHealthStatus);
             getStatusResult.setData(marketHealthStatus);
+        } catch (LocalizedException localizedException) {
+            getStatusResult.addMessage(
+                    new WebServiceMessage(WebServiceMessageType.E, localizedException.getLocalizedMessage()));
         } catch (Exception e) {
             getStatusResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
                     this.resources.getString("dashboard.getMarketHealthStatusError")));
@@ -73,5 +79,18 @@ public class DashboardService {
     private void fillInstrumentData(final Instrument instrument, final MarketHealthStatus marketHealthStatus) {
         marketHealthStatus.setSymbol(instrument.getSymbol());
         marketHealthStatus.setName(instrument.getName());
+    }
+
+    /**
+     * Validates the InstrumentType of the given Instrument. The market health status can only be determined for
+     * instruments of type sector or industry group.
+     *
+     * @param instrument The Instrument.
+     * @throws LocalizedException In case the InstrumentType is not allowed.
+     */
+    private void validateInstrumentType(Instrument instrument) throws LocalizedException {
+        if (instrument.getType() != InstrumentType.SECTOR && instrument.getType() != InstrumentType.IND_GROUP) {
+            throw new LocalizedException("dashboard.wrongInstrumentType");
+        }
     }
 }

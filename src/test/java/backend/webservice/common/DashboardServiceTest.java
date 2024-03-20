@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
+import java.util.ResourceBundle;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -27,6 +28,11 @@ import backend.tools.WebServiceTools;
  * @author Michael
  */
 public class DashboardServiceTest {
+    /**
+     * Access to localized application resources.
+     */
+    private ResourceBundle resources = ResourceBundle.getBundle("backend");
+
     /**
      * DAO to access instrument data.
      */
@@ -140,6 +146,26 @@ public class DashboardServiceTest {
      * wrong type is being given.
      */
     public void testGetMarketHealthStatusWrongType() {
+        WebServiceResult getMarketHealthStatusResult;
+        DashboardService dashboardService = new DashboardService();
+        String expectedErrorMessage = this.resources.getString("dashboard.wrongInstrumentType");
+        String actualErrorMessage;
 
+        //Change type of Copper industry group to ETF. This type is not allowed.
+        this.copperIndustryGroup.setType(InstrumentType.ETF);
+        try {
+            instrumentDAO.updateInstrument(this.copperIndustryGroup);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+
+        getMarketHealthStatusResult = dashboardService.getMarketHealthStatus(this.copperIndustryGroup.getId());
+
+        // Assure an error message exists
+        assertTrue(WebServiceTools.resultContainsErrorMessage(getMarketHealthStatusResult) == true);
+
+        // Verify the given error message.
+        actualErrorMessage = getMarketHealthStatusResult.getMessages().get(0).getText();
+        assertEquals(expectedErrorMessage, actualErrorMessage);
     }
 }
