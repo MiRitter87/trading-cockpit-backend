@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -23,6 +24,7 @@ import backend.model.StockExchange;
 import backend.model.dashboard.MarketHealthStatus;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
+import backend.model.instrument.MovingAverageData;
 import backend.model.instrument.Quotation;
 import backend.model.webservice.WebServiceResult;
 import backend.tools.WebServiceTools;
@@ -91,6 +93,7 @@ public class DashboardServiceTest {
     private void setUp() {
         this.createDummyInstruments();
         this.createDummyQuotations();
+        this.createMovingAverageData();
     }
 
     @AfterEach
@@ -136,12 +139,14 @@ public class DashboardServiceTest {
         this.copperIgQuotation1 = new Quotation();
         this.copperIgQuotation1.setInstrument(this.copperIndustryGroup);
         this.copperIgQuotation1.setDate(calendar.getTime());
+        this.copperIgQuotation1.setClose(new BigDecimal(100));
         quotations.add(this.copperIgQuotation1);
 
         this.copperIgQuotation2 = new Quotation();
         this.copperIgQuotation2.setInstrument(this.copperIndustryGroup);
         calendar.add(Calendar.DAY_OF_MONTH, -1);
         this.copperIgQuotation2.setDate(calendar.getTime());
+        this.copperIgQuotation2.setClose(new BigDecimal(99));
         quotations.add(this.copperIgQuotation2);
 
         try {
@@ -162,6 +167,31 @@ public class DashboardServiceTest {
 
         try {
             quotationDAO.deleteQuotations(quotations);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    /**
+     * Creates MovingAverageData.
+     */
+    private void createMovingAverageData() {
+        List<Quotation> quotations = new ArrayList<>();
+        MovingAverageData maData1 = new MovingAverageData();
+        MovingAverageData maData2 = new MovingAverageData();
+
+        try {
+            maData1.setSma10(95);
+            maData1.setSma20(90);
+            this.copperIgQuotation1.setMovingAverageData(maData1);
+            quotations.add(this.copperIgQuotation1);
+
+            maData2.setSma10(94);
+            maData2.setSma20(89);
+            this.copperIgQuotation2.setMovingAverageData(maData2);
+            quotations.add(this.copperIgQuotation2);
+
+            quotationDAO.updateQuotations(quotations);
         } catch (Exception e) {
             fail(e.getMessage());
         }
