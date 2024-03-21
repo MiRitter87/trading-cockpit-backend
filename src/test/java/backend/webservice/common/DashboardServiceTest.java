@@ -235,6 +235,7 @@ public class DashboardServiceTest {
         assertEquals(this.copperIndustryGroup.getSymbol(), marketHealthStatus.getSymbol());
         assertEquals(this.copperIndustryGroup.getName(), marketHealthStatus.getName());
         assertEquals(this.copperIgQuotation1.getDate().getTime(), marketHealthStatus.getDate().getTime());
+        assertEquals(SwingTradingEnvironmentStatus.GREEN, marketHealthStatus.getSwingTradingEnvironmentStatus());
     }
 
     @Test

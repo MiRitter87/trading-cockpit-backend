@@ -78,6 +78,7 @@ public class DashboardService {
             this.validateInstrumentType(instrument);
             instrument.setQuotations(this.quotationDAO.getQuotationsOfInstrument(instrumentId));
             this.fillInstrumentData(instrument, marketHealthStatus);
+            marketHealthStatus.setSwingTradingEnvironmentStatus(this.getSwingTradingEnvironmentStatus(instrument));
             getStatusResult.setData(marketHealthStatus);
         } catch (LocalizedException localizedException) {
             getStatusResult.addMessage(
