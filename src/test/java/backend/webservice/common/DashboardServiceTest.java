@@ -294,4 +294,20 @@ public class DashboardServiceTest {
         actualStatus = dashboardService.getSwingTradingEnvironmentStatus(this.copperIndustryGroup);
         assertEquals(expectedStatus, actualStatus);
     }
+
+    @Test
+    /**
+     * Tests determination of the SwingTradingEnvironmentStatus 'RED'.
+     */
+    public void testGetSwingTradingEnvironmentStatusRed() {
+        DashboardService dashboardService = new DashboardService();
+        SwingTradingEnvironmentStatus actualStatus;
+        SwingTradingEnvironmentStatus expectedStatus = SwingTradingEnvironmentStatus.RED;
+
+        // Modify Quotation data to assure status 'RED' is given. Price below SMA(20).
+        this.copperIgQuotation1.setClose(new BigDecimal(this.copperIgQuotation1.getMovingAverageData().getSma20() - 1));
+
+        actualStatus = dashboardService.getSwingTradingEnvironmentStatus(this.copperIndustryGroup);
+        assertEquals(expectedStatus, actualStatus);
+    }
 }
