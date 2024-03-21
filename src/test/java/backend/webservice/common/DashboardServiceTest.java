@@ -22,6 +22,7 @@ import backend.dao.instrument.InstrumentDAO;
 import backend.dao.quotation.persistence.QuotationDAO;
 import backend.model.StockExchange;
 import backend.model.dashboard.MarketHealthStatus;
+import backend.model.dashboard.SwingTradingEnvironmentStatus;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.MovingAverageData;
@@ -151,6 +152,7 @@ public class DashboardServiceTest {
 
         try {
             quotationDAO.insertQuotations(quotations);
+            this.copperIndustryGroup.getQuotations().addAll(quotations);
         } catch (Exception e) {
             fail(e.getMessage());
         }
@@ -262,5 +264,18 @@ public class DashboardServiceTest {
         // Verify the given error message.
         actualErrorMessage = getMarketHealthStatusResult.getMessages().get(0).getText();
         assertEquals(expectedErrorMessage, actualErrorMessage);
+    }
+
+    @Test
+    /**
+     * Tests determination of the SwingTradingEnvironmentStatus 'GREEN'.
+     */
+    public void testGetSwingTradingEnvironmentStatusGreen() {
+        DashboardService dashboardService = new DashboardService();
+        SwingTradingEnvironmentStatus actualStatus;
+        SwingTradingEnvironmentStatus expectedStatus = SwingTradingEnvironmentStatus.GREEN;
+
+        actualStatus = dashboardService.getSwingTradingEnvironmentStatus(this.copperIndustryGroup);
+        assertEquals(expectedStatus, actualStatus);
     }
 }

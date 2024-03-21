@@ -12,8 +12,10 @@ import backend.dao.instrument.InstrumentDAO;
 import backend.dao.quotation.persistence.QuotationDAO;
 import backend.model.LocalizedException;
 import backend.model.dashboard.MarketHealthStatus;
+import backend.model.dashboard.SwingTradingEnvironmentStatus;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
+import backend.model.instrument.MovingAverageData;
 import backend.model.instrument.Quotation;
 import backend.model.webservice.WebServiceMessage;
 import backend.model.webservice.WebServiceMessageType;
@@ -92,7 +94,7 @@ public class DashboardService {
     /**
      * Fills the Instrument data of the MarketHealthStatus.
      *
-     * @param instrument         The Instrument.
+     * @param instrument         The Instrument with the Quotation history.
      * @param marketHealthStatus The MarketHealthStatus whose data are filled.
      */
     private void fillInstrumentData(final Instrument instrument, final MarketHealthStatus marketHealthStatus) {
@@ -117,5 +119,65 @@ public class DashboardService {
         if (instrument.getType() != InstrumentType.SECTOR && instrument.getType() != InstrumentType.IND_GROUP) {
             throw new LocalizedException("dashboard.wrongInstrumentType");
         }
+    }
+
+    /**
+     * Determine the traffic-light status of the Swingtrading Environment.
+     *
+     * @param instrument The Instrument with the Quotation history.
+     * @return The SwingTradingEnvironmentStatus.
+     */
+    public SwingTradingEnvironmentStatus getSwingTradingEnvironmentStatus(final Instrument instrument) {
+        if (this.isStatusGreen(instrument)) {
+            return SwingTradingEnvironmentStatus.GREEN;
+        }
+
+        return null;
+    }
+
+    /**
+     * Checks if the SwingTradingEnvironmentStatus of the given Instrument is 'GREEN'.
+     *
+     * @param instrument The Instrument with the Quotation history.
+     * @return true, if status is 'GREEN'; false, if not.
+     */
+    private boolean isStatusGreen(final Instrument instrument) {
+        List<Quotation> quotations;
+        Quotation actualQuotation;
+        Quotation previousQuotation;
+        MovingAverageData actualMa;
+        MovingAverageData previousMa;
+
+        if (instrument == null || instrument.getQuotations() == null || instrument.getQuotations().size() < 2) {
+            return false;
+        }
+
+        quotations = instrument.getQuotationsSortedByDate();
+        actualQuotation = quotations.get(0);
+        previousQuotation = quotations.get(1);
+        actualMa = actualQuotation.getMovingAverageData();
+        previousMa = previousQuotation.getMovingAverageData();
+
+        if(actualMa == null || previousMa == null) {
+            return false;
+        }
+
+        if(actualMa.getSma10() <= actualMa.getSma20()) {
+            return false;
+        }
+
+        if(actualMa.getSma10() <= previousMa.getSma10()) {
+            return false;
+        }
+
+        if(actualMa.getSma20() <= previousMa.getSma20()) {
+            return false;
+        }
+
+        if(actualQuotation.getClose().floatValue() <= actualMa.getSma20()) {
+            return false;
+        }
+
+        return true;
     }
 }
