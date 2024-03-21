@@ -130,6 +130,8 @@ public class DashboardService {
     public SwingTradingEnvironmentStatus getSwingTradingEnvironmentStatus(final Instrument instrument) {
         if (this.isStatusGreen(instrument)) {
             return SwingTradingEnvironmentStatus.GREEN;
+        } else if (this.isStatusYellow(instrument)) {
+            return SwingTradingEnvironmentStatus.YELLOW;
         }
 
         return null;
@@ -158,23 +160,61 @@ public class DashboardService {
         actualMa = actualQuotation.getMovingAverageData();
         previousMa = previousQuotation.getMovingAverageData();
 
-        if(actualMa == null || previousMa == null) {
+        if (actualMa == null || previousMa == null) {
             return false;
         }
 
-        if(actualMa.getSma10() <= actualMa.getSma20()) {
+        if (actualMa.getSma10() <= actualMa.getSma20()) {
             return false;
         }
 
-        if(actualMa.getSma10() <= previousMa.getSma10()) {
+        if (actualMa.getSma10() <= previousMa.getSma10()) {
             return false;
         }
 
-        if(actualMa.getSma20() <= previousMa.getSma20()) {
+        if (actualMa.getSma20() <= previousMa.getSma20()) {
             return false;
         }
 
-        if(actualQuotation.getClose().floatValue() <= actualMa.getSma20()) {
+        if (actualQuotation.getClose().floatValue() <= actualMa.getSma20()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Checks if the SwingTradingEnvironmentStatus of the given Instrument is 'YELLOW'.
+     *
+     * @param instrument The Instrument with the Quotation history.
+     * @return true, if status is 'YELLOW'; false, if not.
+     */
+    private boolean isStatusYellow(final Instrument instrument) {
+        List<Quotation> quotations;
+        Quotation actualQuotation;
+        Quotation previousQuotation;
+        MovingAverageData actualMa;
+        MovingAverageData previousMa;
+
+        if (instrument == null || instrument.getQuotations() == null || instrument.getQuotations().size() < 2) {
+            return false;
+        }
+
+        quotations = instrument.getQuotationsSortedByDate();
+        actualQuotation = quotations.get(0);
+        previousQuotation = quotations.get(1);
+        actualMa = actualQuotation.getMovingAverageData();
+        previousMa = previousQuotation.getMovingAverageData();
+
+        if (actualMa == null || previousMa == null) {
+            return false;
+        }
+
+        if (actualMa.getSma10() <= actualMa.getSma20()) {
+            return false;
+        }
+
+        if (actualQuotation.getClose().floatValue() <= actualMa.getSma20()) {
             return false;
         }
 
