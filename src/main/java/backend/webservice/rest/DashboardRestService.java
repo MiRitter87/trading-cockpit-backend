@@ -22,7 +22,7 @@ public class DashboardRestService {
      * @return The health status.
      */
     @GET
-    @Path("/marketHealthStatus/{id}")
+    @Path("/marketHealthStatus/{instrumentId}")
     @Produces(MediaType.APPLICATION_JSON)
     public WebServiceResult getMarketHealthStatus(@PathParam("instrumentId") final Integer instrumentId) {
         DashboardService dashboardService = new DashboardService();
