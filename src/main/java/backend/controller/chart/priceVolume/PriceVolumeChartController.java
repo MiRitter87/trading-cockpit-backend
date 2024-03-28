@@ -254,7 +254,8 @@ public class PriceVolumeChartController extends ChartController {
         OHLCDataset instrumentPriceData = this.getInstrumentOHLCDataset(instrument);
         LogAxis valueAxisCandlestick = new LogAxis("");
         NumberFormat logAxisNumberFormat = NumberFormat.getInstance();
-        CandlestickRenderer candlestickRenderer = new CandlestickRenderer();
+        final float candleWidth = 3.89f;
+        CandlestickRenderer candlestickRenderer = new CandlestickRenderer(candleWidth);
 
         // Customize LogarithmicAxis for price.
         logAxisNumberFormat.setMaximumFractionDigits(2);
