@@ -98,6 +98,13 @@ public class PriceVolumeChartController extends ChartController {
     }
 
     /**
+     * @return the chartIndicatorProvider
+     */
+    public ChartIndicatorProvider getChartIndicatorProvider() {
+        return chartIndicatorProvider;
+    }
+
+    /**
      * Gets a chart of an Instrument with volume information.
      *
      * @param instrumentId    The ID of the Instrument used for chart creation.
