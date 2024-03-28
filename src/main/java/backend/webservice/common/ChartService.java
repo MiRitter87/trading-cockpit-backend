@@ -19,6 +19,7 @@ import backend.controller.NoQuotationsExistException;
 import backend.controller.chart.priceVolume.DistributionDaysChartController;
 import backend.controller.chart.priceVolume.FollowThroughDaysChartController;
 import backend.controller.chart.priceVolume.HealthCheckChartController;
+import backend.controller.chart.priceVolume.MiniPriceVolumeChartController;
 import backend.controller.chart.priceVolume.PocketPivotChartController;
 import backend.controller.chart.priceVolume.PriceVolumeChartController;
 import backend.controller.chart.statistic.AboveSma200ChartController;
@@ -46,6 +47,16 @@ public class ChartService {
      * The standard height of charts.
      */
     private static final int CHART_HEIGHT = 700;
+
+    /**
+     * The width of miniature charts.
+     */
+    private static final int CHART_WIDTH_MINI = 600;
+
+    /**
+     * The height of miniature charts.
+     */
+    private static final int CHART_HEIGHT_MINI = 400;
 
     /**
      * Access to localized application resources.
@@ -334,6 +345,37 @@ public class ChartService {
                     this.resources.getString("chart.priceVolume.noQuotationsError")).build();
         } catch (Exception exception) {
             LOGGER.error(this.resources.getString("chart.priceVolume.getError"), exception);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+        }
+
+        return Response.ok(streamingOutput).build();
+    }
+
+    /**
+     * Provides a miniature price/volume chart of an Instrument.
+     *
+     * @param instrumentId The ID of the Instrument used for chart creation.
+     * @return A Response containing the generated chart.
+     */
+    public Response getMiniPriceVolumeChart(final Integer instrumentId) {
+        MiniPriceVolumeChartController miniPriceVolumeChartController = new MiniPriceVolumeChartController();
+        JFreeChart chart;
+        StreamingOutput streamingOutput = null;
+
+        try {
+            chart = miniPriceVolumeChartController.getMiniPriceVolumeChart(instrumentId);
+
+            streamingOutput = new StreamingOutput() {
+                @Override
+                public void write(final OutputStream output) throws IOException, WebApplicationException {
+                    ChartUtils.writeChartAsPNG(output, chart, CHART_WIDTH_MINI, CHART_HEIGHT_MINI);
+                }
+            };
+        } catch (NoQuotationsExistException noQuotationsExistException) {
+            return Response.status(Status.NOT_FOUND.getStatusCode(),
+                    this.resources.getString("chart.priceVolumeMini.noQuotationsError")).build();
+        } catch (Exception exception) {
+            LOGGER.error(this.resources.getString("chart.priceVolumeMini.getError"), exception);
             return Response.status(Status.INTERNAL_SERVER_ERROR).build();
         }
 

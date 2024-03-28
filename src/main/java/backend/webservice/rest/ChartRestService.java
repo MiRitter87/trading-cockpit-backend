@@ -159,6 +159,20 @@ public class ChartRestService {
     }
 
     /**
+     * Provides miniature price/volume chart of an Instrument.
+     *
+     * @param instrumentId The ID of the Instrument used for chart creation.
+     * @return The chart.
+     */
+    @GET
+    @Path("/priceVolume/mini/{instrumentId}")
+    @Produces("image/png")
+    public Response getMiniPriceVolumeChart(@PathParam("instrumentId") final Integer instrumentId) {
+        ChartService chartService = new ChartService();
+        return chartService.getMiniPriceVolumeChart(instrumentId);
+    }
+
+    /**
      * Provides a chart of an Instrument marked with health check events.
      *
      * @param instrumentId   The ID of the Instrument used for chart creation.
