@@ -132,11 +132,9 @@ public class DistributionDaysChartControllerTest {
         int expectedDDSum = 1;
         int actualDDSum;
         Quotation latestQuotation = this.dmlStock.getQuotationsSortedByDate().get(0);
-        List<Integer> indexOfDistributionDays = this.distributionDaysChartController
-                .getIndexOfDistributionDays(this.dmlStock.getQuotationsSortedByDate());
 
         actualDDSum = this.distributionDaysChartController.getDistributionDaysSum(latestQuotation,
-                this.dmlStock.getQuotationsSortedByDate(), indexOfDistributionDays);
+                this.dmlStock.getQuotationsSortedByDate());
 
         assertEquals(expectedDDSum, actualDDSum);
     }

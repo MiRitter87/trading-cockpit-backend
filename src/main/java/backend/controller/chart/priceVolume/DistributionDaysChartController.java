@@ -122,7 +122,7 @@ public class DistributionDaysChartController extends PriceVolumeChartController 
      *                                Distribution Day.
      * @return The rolling 25-day sum of Distribution Days.
      */
-    public int getDistributionDaysSum(final Quotation quotation, final List<Quotation> quotationsSortedByDate,
+    private int getDistributionDaysSum(final Quotation quotation, final List<Quotation> quotationsSortedByDate,
             final List<Integer> indexOfDistributionDays) {
 
         int indexStart;
@@ -150,6 +150,21 @@ public class DistributionDaysChartController extends PriceVolumeChartController 
     }
 
     /**
+     * Determines the rolling 25-day sum of Distribution Days for the given Quotation.
+     *
+     * @param quotation              The Quotation for which the sum is calculated.
+     * @param quotationsSortedByDate A List of Quotations sorted by Date.
+     * @return The rolling 25-day sum of Distribution Days.
+     */
+    public int getDistributionDaysSum(final Quotation quotation, final List<Quotation> quotationsSortedByDate) {
+        List<Integer> indexOfDistributionDays = this.getIndexOfDistributionDays(quotationsSortedByDate);
+        int numberOfDistributionDays = this.getDistributionDaysSum(quotation, quotationsSortedByDate,
+                indexOfDistributionDays);
+
+        return numberOfDistributionDays;
+    }
+
+    /**
      * Determines a List of index numbers of quotations that constitute a Distribution Day.
      *
      * Normally Distribution Days are no longer counted if 25 days have passed. In order to visualize past distribution
@@ -158,7 +173,7 @@ public class DistributionDaysChartController extends PriceVolumeChartController 
      * @param quotationsSortedByDate A List of Quotations sorted by Date.
      * @return A List of index numbers of the given List that constitute a Distribution Day.
      */
-    public List<Integer> getIndexOfDistributionDays(final List<Quotation> quotationsSortedByDate) {
+    private List<Integer> getIndexOfDistributionDays(final List<Quotation> quotationsSortedByDate) {
         List<Integer> indexOfDistributionDays = new ArrayList<>();
         Quotation currentQuotation;
         Quotation previousQuotation;
