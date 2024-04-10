@@ -243,7 +243,7 @@ public class ListService {
 
     /**
      * Determines the most recent Quotation of each Instrument contained in the List with the given id. An Excel file is
-     * generated that contains Symbol, Date, Price and RS Number of each Quotation.
+     * generated that contains Symbol, Date, Price, RS Number and ATR% of each Quotation.
      *
      * @param id The id of the List.
      * @return A Response containing the generated Excel file.

@@ -44,13 +44,18 @@ public class ExcelExportController {
     private static final int RS_CELL_INDEX = 3;
 
     /**
+     * The index number of the ATR% Number Cell.
+     */
+    private static final int ATRP_CELL_INDEX = 4;
+
+    /**
      * Access to localized application resources.
      */
     private ResourceBundle resources = ResourceBundle.getBundle("backend");
 
     /**
-     * Generates a Workbook that contains data of the given quotations. The workbook contains the following data
-     * for each quotation: Symbol, Date, Price, RS Number.
+     * Generates a Workbook that contains data of the given quotations. The workbook contains the following data for
+     * each quotation: Symbol, Date, Price, RS Number, ATR%.
      *
      * @param quotations A List of quotations.
      * @return A Workbook containing price data of the given quotations.
@@ -140,6 +145,8 @@ public class ExcelExportController {
         tableCell.setCellValue(this.resources.getString("quotation.attribute.price"));
         tableCell = tableRow.createCell(RS_CELL_INDEX);
         tableCell.setCellValue(this.resources.getString("quotation.attribute.rsNumber"));
+        tableCell = tableRow.createCell(ATRP_CELL_INDEX);
+        tableCell.setCellValue(this.resources.getString("quotation.attribute.atrp"));
     }
 
     /**
@@ -174,6 +181,10 @@ public class ExcelExportController {
             // RS number Cell
             tableCell = tableRow.createCell(RS_CELL_INDEX);
             tableCell.setCellValue(tempQuotation.getRelativeStrengthData().getRsNumber());
+
+            // Average True Range Percent Cell
+            tableCell = tableRow.createCell(ATRP_CELL_INDEX);
+            tableCell.setCellValue(tempQuotation.getIndicator().getAverageTrueRangePercent20());
         }
     }
 }

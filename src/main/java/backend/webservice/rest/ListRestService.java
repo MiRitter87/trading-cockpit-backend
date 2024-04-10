@@ -55,7 +55,7 @@ public class ListRestService {
 
     /**
      * Provides an Excel file that contains Quotation data of each Instrument of the List with the given ID. Those data
-     * include Symbol, Date, Price and RS number of the most recent Quotation of each Instrument.
+     * include Symbol, Date, Price, RS number and ATR% of the most recent Quotation of each Instrument.
      *
      * @param id The ID of the List.
      * @return The Excel file.
