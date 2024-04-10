@@ -97,37 +97,56 @@ public class DistributionDaysChartController extends PriceVolumeChartController 
         TimeSeriesCollection dataset = new TimeSeriesCollection();
         TimeSeries distributionDaysTimeSeries = new TimeSeries(
                 this.getResources().getString("chart.distributionDays.timeSeriesDDSumName"));
-        int indexStart;
-        int indexEnd;
         int numberOfDistributionDays;
-        final int additionalDaysForRollingSum = 24;
 
         indexOfDistributionDays = this.getIndexOfDistributionDays(quotationsSortedByDate);
 
         // Determine the rolling 25-day sum of distribution days.
         for (Quotation tempQuotation : quotationsSortedByDate) {
-            indexStart = quotationsSortedByDate.indexOf(tempQuotation);
-
-            if ((indexStart + additionalDaysForRollingSum) < quotationsSortedByDate.size()) {
-                indexEnd = indexStart + additionalDaysForRollingSum;
-            } else {
-                indexEnd = quotationsSortedByDate.size() - 1;
-            }
-
-            // Count the number of distribution days from indexStart to indexEnd
-            numberOfDistributionDays = 0;
-            for (int distributionDayIndex : indexOfDistributionDays) {
-                if (distributionDayIndex >= indexStart && distributionDayIndex <= indexEnd) {
-                    numberOfDistributionDays++;
-                }
-            }
-
+            numberOfDistributionDays = this.getDistributionDaysSum(tempQuotation, quotationsSortedByDate,
+                    indexOfDistributionDays);
             distributionDaysTimeSeries.add(new Day(tempQuotation.getDate()), numberOfDistributionDays);
         }
 
         dataset.addSeries(distributionDaysTimeSeries);
 
         return dataset;
+    }
+
+    /**
+     * Determines the rolling 25-day sum of Distribution Days for the given Quotation.
+     *
+     * @param quotation               The Quotation for which the sum is calculated.
+     * @param quotationsSortedByDate  A List of Quotations sorted by Date.
+     * @param indexOfDistributionDays The index numbers of the quotationsSortedByDate List that constitute a
+     *                                Distribution Day.
+     * @return The rolling 25-day sum of Distribution Days.
+     */
+    public int getDistributionDaysSum(final Quotation quotation, final List<Quotation> quotationsSortedByDate,
+            final List<Integer> indexOfDistributionDays) {
+
+        int indexStart;
+        int indexEnd;
+        int numberOfDistributionDays;
+        final int additionalDaysForRollingSum = 24;
+
+        indexStart = quotationsSortedByDate.indexOf(quotation);
+
+        if ((indexStart + additionalDaysForRollingSum) < quotationsSortedByDate.size()) {
+            indexEnd = indexStart + additionalDaysForRollingSum;
+        } else {
+            indexEnd = quotationsSortedByDate.size() - 1;
+        }
+
+        // Count the number of distribution days from indexStart to indexEnd
+        numberOfDistributionDays = 0;
+        for (int distributionDayIndex : indexOfDistributionDays) {
+            if (distributionDayIndex >= indexStart && distributionDayIndex <= indexEnd) {
+                numberOfDistributionDays++;
+            }
+        }
+
+        return numberOfDistributionDays;
     }
 
     /**
@@ -139,7 +158,7 @@ public class DistributionDaysChartController extends PriceVolumeChartController 
      * @param quotationsSortedByDate A List of Quotations sorted by Date.
      * @return A List of index numbers of the given List that constitute a Distribution Day.
      */
-    private List<Integer> getIndexOfDistributionDays(final List<Quotation> quotationsSortedByDate) {
+    public List<Integer> getIndexOfDistributionDays(final List<Quotation> quotationsSortedByDate) {
         List<Integer> indexOfDistributionDays = new ArrayList<>();
         Quotation currentQuotation;
         Quotation previousQuotation;

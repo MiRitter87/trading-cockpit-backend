@@ -1,5 +1,6 @@
 package backend.controller.chart.priceVolume;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import backend.controller.scan.IndicatorCalculator;
 import backend.dao.quotation.provider.QuotationProviderDAO;
@@ -120,5 +122,22 @@ public class DistributionDaysChartControllerTest {
             else
                 quotation = indicatorCalculator.calculateIndicators(this.dmlStock, quotation, false);
         }
+    }
+
+    @Test
+    /**
+     * Tests the determination of the 25-day rolling sum of Distribution Days.
+     */
+    public void testGetDistributionDaysSum() {
+        int expectedDDSum = 1;
+        int actualDDSum;
+        Quotation latestQuotation = this.dmlStock.getQuotationsSortedByDate().get(0);
+        List<Integer> indexOfDistributionDays = this.distributionDaysChartController
+                .getIndexOfDistributionDays(this.dmlStock.getQuotationsSortedByDate());
+
+        actualDDSum = this.distributionDaysChartController.getDistributionDaysSum(latestQuotation,
+                this.dmlStock.getQuotationsSortedByDate(), indexOfDistributionDays);
+
+        assertEquals(expectedDDSum, actualDDSum);
     }
 }
