@@ -31,6 +31,11 @@ public class MarketHealthStatus {
     private SwingTradingEnvironmentStatus swingTradingEnvironmentStatus;
 
     /**
+     * The sum of Distribution Days within the last 25 trading days.
+     */
+    private int distributionDaysSum;
+
+    /**
      * @return the symbol
      */
     public String getSymbol() {
@@ -84,5 +89,19 @@ public class MarketHealthStatus {
      */
     public void setSwingTradingEnvironmentStatus(final SwingTradingEnvironmentStatus swingTradingEnvironmentStatus) {
         this.swingTradingEnvironmentStatus = swingTradingEnvironmentStatus;
+    }
+
+    /**
+     * @return the distributionDaysSum
+     */
+    public int getDistributionDaysSum() {
+        return distributionDaysSum;
+    }
+
+    /**
+     * @param distributionDaysSum the distributionDaysSum to set
+     */
+    public void setDistributionDaysSum(final int distributionDaysSum) {
+        this.distributionDaysSum = distributionDaysSum;
     }
 }

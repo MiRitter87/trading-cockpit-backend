@@ -7,6 +7,7 @@ import java.util.ResourceBundle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import backend.controller.chart.priceVolume.DistributionDaysChartController;
 import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
 import backend.dao.quotation.persistence.QuotationDAO;
@@ -79,6 +80,7 @@ public class DashboardService {
             instrument.setQuotations(this.quotationDAO.getQuotationsOfInstrument(instrumentId));
             this.fillInstrumentData(instrument, marketHealthStatus);
             marketHealthStatus.setSwingTradingEnvironmentStatus(this.getSwingTradingEnvironmentStatus(instrument));
+            marketHealthStatus.setDistributionDaysSum(this.getDistributionDaysSum(instrument));
             getStatusResult.setData(marketHealthStatus);
         } catch (LocalizedException localizedException) {
             getStatusResult.addMessage(
@@ -249,5 +251,19 @@ public class DashboardService {
         }
 
         return false;
+    }
+
+    /**
+     * Determines the sum of Distribution Days within the last 25 trading days.
+     *
+     * @param instrument The Instrument.
+     * @return The sum of Distribution Days.
+     */
+    private int getDistributionDaysSum(final Instrument instrument) {
+        DistributionDaysChartController distributionDaysChartController = new DistributionDaysChartController();
+        List<Quotation> quotationsSortedByDate = instrument.getQuotationsSortedByDate();
+
+        return distributionDaysChartController.getDistributionDaysSum(quotationsSortedByDate.get(0),
+                quotationsSortedByDate);
     }
 }
