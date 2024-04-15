@@ -78,7 +78,7 @@ public class DashboardService {
 
             this.validateInstrumentType(instrument);
             instrument.setQuotations(this.quotationDAO.getQuotationsOfInstrument(instrumentId));
-            this.fillInstrumentData(instrument, marketHealthStatus);
+            this.fillBasicData(instrument, marketHealthStatus);
             marketHealthStatus.setSwingTradingEnvironmentStatus(this.getSwingTradingEnvironmentStatus(instrument));
             marketHealthStatus.setDistributionDaysSum(this.getDistributionDaysSum(instrument));
             getStatusResult.setData(marketHealthStatus);
@@ -95,12 +95,13 @@ public class DashboardService {
     }
 
     /**
-     * Fills the Instrument data of the MarketHealthStatus.
+     * Fills the basic data of the MarketHealthStatus. These are data than are directly copied from an Instrument or its
+     * referenced Quotation and Indicator.
      *
      * @param instrument         The Instrument with the Quotation history.
      * @param marketHealthStatus The MarketHealthStatus whose data are filled.
      */
-    private void fillInstrumentData(final Instrument instrument, final MarketHealthStatus marketHealthStatus) {
+    private void fillBasicData(final Instrument instrument, final MarketHealthStatus marketHealthStatus) {
         List<Quotation> quotationsSortedByDate = instrument.getQuotationsSortedByDate();
 
         marketHealthStatus.setSymbol(instrument.getSymbol());
@@ -108,6 +109,8 @@ public class DashboardService {
 
         if (quotationsSortedByDate.size() > 0) {
             marketHealthStatus.setDate(quotationsSortedByDate.get(0).getDate());
+            marketHealthStatus
+                    .setUpDownVolumeRatio(quotationsSortedByDate.get(0).getIndicator().getUpDownVolumeRatio());
         }
     }
 

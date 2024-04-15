@@ -23,6 +23,7 @@ import backend.dao.quotation.persistence.QuotationDAO;
 import backend.model.StockExchange;
 import backend.model.dashboard.MarketHealthStatus;
 import backend.model.dashboard.SwingTradingEnvironmentStatus;
+import backend.model.instrument.Indicator;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.MovingAverageData;
@@ -95,6 +96,7 @@ public class DashboardServiceTest {
         this.createDummyInstruments();
         this.createDummyQuotations();
         this.createMovingAverageData();
+        this.createIndicators();
     }
 
     @AfterEach
@@ -200,6 +202,22 @@ public class DashboardServiceTest {
     }
 
     /**
+     * Creates Indicator data.
+     */
+    private void createIndicators() {
+        List<Quotation> quotations = new ArrayList<>();
+        try {
+            this.copperIgQuotation1.setIndicator(new Indicator());
+            this.copperIgQuotation1.getIndicator().setUpDownVolumeRatio(1.33f);
+            quotations.add(this.copperIgQuotation1);
+
+            quotationDAO.updateQuotations(quotations);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    /**
      * Gets the Instrument of the Copper Miners Industry Group.
      *
      * @return The Instrument of the Copper Miners Industry Group.
@@ -236,6 +254,8 @@ public class DashboardServiceTest {
         assertEquals(this.copperIndustryGroup.getName(), marketHealthStatus.getName());
         assertEquals(this.copperIgQuotation1.getDate().getTime(), marketHealthStatus.getDate().getTime());
         assertEquals(SwingTradingEnvironmentStatus.GREEN, marketHealthStatus.getSwingTradingEnvironmentStatus());
+        assertEquals(this.copperIgQuotation1.getIndicator().getUpDownVolumeRatio(),
+                marketHealthStatus.getUpDownVolumeRatio());
     }
 
     @Test
