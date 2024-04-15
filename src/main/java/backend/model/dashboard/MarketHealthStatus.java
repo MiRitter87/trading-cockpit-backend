@@ -36,6 +36,11 @@ public class MarketHealthStatus {
     private int distributionDaysSum;
 
     /**
+     * The ratio of the volume between up-days and down-days.
+     */
+    private float upDownVolumeRatio;
+
+    /**
      * @return the symbol
      */
     public String getSymbol() {
@@ -103,5 +108,19 @@ public class MarketHealthStatus {
      */
     public void setDistributionDaysSum(final int distributionDaysSum) {
         this.distributionDaysSum = distributionDaysSum;
+    }
+
+    /**
+     * @return the upDownVolumeRatio
+     */
+    public float getUpDownVolumeRatio() {
+        return upDownVolumeRatio;
+    }
+
+    /**
+     * @param upDownVolumeRatio the upDownVolumeRatio to set
+     */
+    public void setUpDownVolumeRatio(final float upDownVolumeRatio) {
+        this.upDownVolumeRatio = upDownVolumeRatio;
     }
 }
