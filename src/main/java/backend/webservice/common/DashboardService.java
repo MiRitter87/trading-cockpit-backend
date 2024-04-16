@@ -111,6 +111,7 @@ public class DashboardService {
             marketHealthStatus.setDate(quotationsSortedByDate.get(0).getDate());
             marketHealthStatus
                     .setUpDownVolumeRatio(quotationsSortedByDate.get(0).getIndicator().getUpDownVolumeRatio());
+            marketHealthStatus.setRsNumber(quotationsSortedByDate.get(0).getRelativeStrengthData().getRsNumber());
         }
     }
 

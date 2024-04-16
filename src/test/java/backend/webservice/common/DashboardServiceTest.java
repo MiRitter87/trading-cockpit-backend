@@ -28,6 +28,7 @@ import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.MovingAverageData;
 import backend.model.instrument.Quotation;
+import backend.model.instrument.RelativeStrengthData;
 import backend.model.webservice.WebServiceResult;
 import backend.tools.WebServiceTools;
 
@@ -96,6 +97,7 @@ public class DashboardServiceTest {
         this.createDummyInstruments();
         this.createDummyQuotations();
         this.createMovingAverageData();
+        this.createRelativeStrengthData();
         this.createIndicators();
     }
 
@@ -202,6 +204,24 @@ public class DashboardServiceTest {
     }
 
     /**
+     * Creates RelativeStrengthData.
+     */
+    private void createRelativeStrengthData() {
+        List<Quotation> quotations = new ArrayList<>();
+        RelativeStrengthData rsData1 = new RelativeStrengthData();
+
+        try {
+            rsData1.setRsNumber(50);
+            this.copperIgQuotation1.setRelativeStrengthData(rsData1);
+            quotations.add(this.copperIgQuotation1);
+
+            quotationDAO.updateQuotations(quotations);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    /**
      * Creates Indicator data.
      */
     private void createIndicators() {
@@ -256,6 +276,7 @@ public class DashboardServiceTest {
         assertEquals(SwingTradingEnvironmentStatus.GREEN, marketHealthStatus.getSwingTradingEnvironmentStatus());
         assertEquals(this.copperIgQuotation1.getIndicator().getUpDownVolumeRatio(),
                 marketHealthStatus.getUpDownVolumeRatio());
+        assertEquals(this.copperIgQuotation1.getRelativeStrengthData().getRsNumber(), marketHealthStatus.getRsNumber());
     }
 
     @Test
