@@ -41,6 +41,12 @@ public class MarketHealthStatus {
     private float upDownVolumeRatio;
 
     /**
+     * The relative strength percentile of the instrument in relation to a set of other instruments. This is a measure
+     * of the price performance over a period of 3 months, 6 months, 9 months and 12 months.
+     */
+    private int rsNumber;
+
+    /**
      * @return the symbol
      */
     public String getSymbol() {
@@ -122,5 +128,19 @@ public class MarketHealthStatus {
      */
     public void setUpDownVolumeRatio(final float upDownVolumeRatio) {
         this.upDownVolumeRatio = upDownVolumeRatio;
+    }
+
+    /**
+     * @return the rsNumber
+     */
+    public int getRsNumber() {
+        return rsNumber;
+    }
+
+    /**
+     * @param rsNumber the rsNumber to set
+     */
+    public void setRsNumber(final int rsNumber) {
+        this.rsNumber = rsNumber;
     }
 }
