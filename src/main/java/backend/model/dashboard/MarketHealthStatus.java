@@ -47,6 +47,16 @@ public class MarketHealthStatus {
     private int rsNumber;
 
     /**
+     * The number of instruments trading within 5% of the 52-week high.
+     */
+    private int numberNear52wHigh;
+
+    /**
+     * The number of instruments trading within 5% of the 52-week low.
+     */
+    private int numberNear52wLow;
+
+    /**
      * @return the symbol
      */
     public String getSymbol() {
@@ -142,5 +152,33 @@ public class MarketHealthStatus {
      */
     public void setRsNumber(final int rsNumber) {
         this.rsNumber = rsNumber;
+    }
+
+    /**
+     * @return the numberNear52wHigh
+     */
+    public int getNumberNear52wHigh() {
+        return numberNear52wHigh;
+    }
+
+    /**
+     * @param numberNear52wHigh the numberNear52wHigh to set
+     */
+    public void setNumberNear52wHigh(final int numberNear52wHigh) {
+        this.numberNear52wHigh = numberNear52wHigh;
+    }
+
+    /**
+     * @return the numberNear52wLow
+     */
+    public int getNumberNear52wLow() {
+        return numberNear52wLow;
+    }
+
+    /**
+     * @param numberNear52wLow the numberNear52wLow to set
+     */
+    public void setNumberNear52wLow(final int numberNear52wLow) {
+        this.numberNear52wLow = numberNear52wLow;
     }
 }
