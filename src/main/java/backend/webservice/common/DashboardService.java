@@ -21,6 +21,7 @@ import backend.model.instrument.Quotation;
 import backend.model.webservice.WebServiceMessage;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
+import backend.webservice.ScanTemplate;
 
 /**
  * Common implementation of the Dashboard service that can be used by multiple service interfaces like SOAP or REST.
@@ -81,6 +82,8 @@ public class DashboardService {
             this.fillBasicData(instrument, marketHealthStatus);
             marketHealthStatus.setSwingTradingEnvironmentStatus(this.getSwingTradingEnvironmentStatus(instrument));
             marketHealthStatus.setDistributionDaysSum(this.getDistributionDaysSum(instrument));
+            marketHealthStatus.setNumberNear52wHigh(this.getNumberNear52wHigh(instrument));
+            marketHealthStatus.setNumberNear52wLow(this.getNumberNear52wLow(instrument));
             getStatusResult.setData(marketHealthStatus);
         } catch (LocalizedException localizedException) {
             getStatusResult.addMessage(
@@ -269,5 +272,77 @@ public class DashboardService {
 
         return distributionDaysChartController.getDistributionDaysSum(quotationsSortedByDate.get(0),
                 quotationsSortedByDate);
+    }
+
+    /**
+     * Determines the number of instruments that trade near the 52-week high. Only those instruments are taken into
+     * account where the given Instrument is referenced as sector or industry group.
+     *
+     * @param instrument The Instrument that constitutes a sector or industry group.
+     * @return The number of instruments near the 52-week high.
+     */
+    private int getNumberNear52wHigh(final Instrument instrument) {
+        List<Quotation> allInstrumentsNear52wHigh;
+        int numberNear52wHigh = 0;
+        Instrument sector;
+        Instrument industryGroup;
+
+        try {
+            allInstrumentsNear52wHigh = this.quotationDAO.getQuotationsByTemplate(ScanTemplate.NEAR_52_WEEK_HIGH,
+                    InstrumentType.STOCK, null, null, null);
+
+            for (Quotation tempQuotation : allInstrumentsNear52wHigh) {
+                sector = tempQuotation.getInstrument().getSector();
+                industryGroup = tempQuotation.getInstrument().getIndustryGroup();
+
+                if (industryGroup != null && industryGroup.getId().equals(instrument.getId())
+                        && instrument.getType() == InstrumentType.IND_GROUP) {
+                    numberNear52wHigh++;
+                } else if (sector != null && sector.getId().equals(instrument.getId())
+                        && instrument.getType() == InstrumentType.SECTOR) {
+                    numberNear52wHigh++;
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("Failed to determine number of stocks near 52-week high.", e);
+        }
+
+        return numberNear52wHigh;
+    }
+
+    /**
+     * Determines the number of instruments that trade near the 52-week low. Only those instruments are taken into
+     * account where the given Instrument is referenced as sector or industry group.
+     *
+     * @param instrument The Instrument that constitutes a sector or industry group.
+     * @return The number of instruments near the 52-week low.
+     */
+    private int getNumberNear52wLow(final Instrument instrument) {
+        List<Quotation> allInstrumentsNear52wLow;
+        int numberNear52wLow = 0;
+        Instrument sector;
+        Instrument industryGroup;
+
+        try {
+            allInstrumentsNear52wLow = this.quotationDAO.getQuotationsByTemplate(ScanTemplate.NEAR_52_WEEK_LOW,
+                    InstrumentType.STOCK, null, null, null);
+
+            for (Quotation tempQuotation : allInstrumentsNear52wLow) {
+                sector = tempQuotation.getInstrument().getSector();
+                industryGroup = tempQuotation.getInstrument().getIndustryGroup();
+
+                if (industryGroup != null && industryGroup.getId().equals(instrument.getId())
+                        && instrument.getType() == InstrumentType.IND_GROUP) {
+                    numberNear52wLow++;
+                } else if (sector != null && sector.getId().equals(instrument.getId())
+                        && instrument.getType() == InstrumentType.SECTOR) {
+                    numberNear52wLow++;
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("Failed to determine number of stocks near 52-week low.", e);
+        }
+
+        return numberNear52wLow;
     }
 }
