@@ -297,11 +297,9 @@ public class DashboardService {
                 sector = tempQuotation.getInstrument().getSector();
                 industryGroup = tempQuotation.getInstrument().getIndustryGroup();
 
-                if (industryGroup != null && industryGroup.getId().equals(instrument.getId())
-                        && instrument.getType() == InstrumentType.IND_GROUP) {
+                if (industryGroup != null && industryGroup.getId().equals(instrument.getId())) {
                     numberNear52wHigh++;
-                } else if (sector != null && sector.getId().equals(instrument.getId())
-                        && instrument.getType() == InstrumentType.SECTOR) {
+                } else if (sector != null && sector.getId().equals(instrument.getId())) {
                     numberNear52wHigh++;
                 }
             }
@@ -333,11 +331,9 @@ public class DashboardService {
                 sector = tempQuotation.getInstrument().getSector();
                 industryGroup = tempQuotation.getInstrument().getIndustryGroup();
 
-                if (industryGroup != null && industryGroup.getId().equals(instrument.getId())
-                        && instrument.getType() == InstrumentType.IND_GROUP) {
+                if (industryGroup != null && industryGroup.getId().equals(instrument.getId())) {
                     numberNear52wLow++;
-                } else if (sector != null && sector.getId().equals(instrument.getId())
-                        && instrument.getType() == InstrumentType.SECTOR) {
+                } else if (sector != null && sector.getId().equals(instrument.getId())) {
                     numberNear52wLow++;
                 }
             }
@@ -370,11 +366,9 @@ public class DashboardService {
                 sector = tempQuotation.getInstrument().getSector();
                 industryGroup = tempQuotation.getInstrument().getIndustryGroup();
 
-                if (industryGroup != null && industryGroup.getId().equals(instrument.getId())
-                        && instrument.getType() == InstrumentType.IND_GROUP) {
+                if (industryGroup != null && industryGroup.getId().equals(instrument.getId())) {
                     numberUpOnVolume++;
-                } else if (sector != null && sector.getId().equals(instrument.getId())
-                        && instrument.getType() == InstrumentType.SECTOR) {
+                } else if (sector != null && sector.getId().equals(instrument.getId())) {
                     numberUpOnVolume++;
                 }
             }
@@ -407,11 +401,9 @@ public class DashboardService {
                 sector = tempQuotation.getInstrument().getSector();
                 industryGroup = tempQuotation.getInstrument().getIndustryGroup();
 
-                if (industryGroup != null && industryGroup.getId().equals(instrument.getId())
-                        && instrument.getType() == InstrumentType.IND_GROUP) {
+                if (industryGroup != null && industryGroup.getId().equals(instrument.getId())) {
                     numberDownOnVolume++;
-                } else if (sector != null && sector.getId().equals(instrument.getId())
-                        && instrument.getType() == InstrumentType.SECTOR) {
+                } else if (sector != null && sector.getId().equals(instrument.getId())) {
                     numberDownOnVolume++;
                 }
             }
