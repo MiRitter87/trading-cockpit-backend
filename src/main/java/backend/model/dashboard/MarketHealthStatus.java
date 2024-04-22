@@ -57,6 +57,18 @@ public class MarketHealthStatus {
     private int numberNear52wLow;
 
     /**
+     * The number of instruments that have a 5-day performance of at least 10% with a volume that is at least 25% above
+     * the 30-day average.
+     */
+    private int numberUpOnVolume;
+
+    /**
+     * The number of instruments that have a 5-day performance of -10% or lower with a volume that is at least 25% above
+     * the 30-day average.
+     */
+    private int numberDownOnVolume;
+
+    /**
      * @return the symbol
      */
     public String getSymbol() {
@@ -180,5 +192,33 @@ public class MarketHealthStatus {
      */
     public void setNumberNear52wLow(final int numberNear52wLow) {
         this.numberNear52wLow = numberNear52wLow;
+    }
+
+    /**
+     * @return the numberUpOnVolume
+     */
+    public int getNumberUpOnVolume() {
+        return numberUpOnVolume;
+    }
+
+    /**
+     * @param numberUpOnVolume the numberUpOnVolume to set
+     */
+    public void setNumberUpOnVolume(final int numberUpOnVolume) {
+        this.numberUpOnVolume = numberUpOnVolume;
+    }
+
+    /**
+     * @return the numberDownOnVolume
+     */
+    public int getNumberDownOnVolume() {
+        return numberDownOnVolume;
+    }
+
+    /**
+     * @param numberDownOnVolume the numberDownOnVolume to set
+     */
+    public void setNumberDownOnVolume(final int numberDownOnVolume) {
+        this.numberDownOnVolume = numberDownOnVolume;
     }
 }
