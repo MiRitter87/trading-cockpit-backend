@@ -84,6 +84,8 @@ public class DashboardService {
             marketHealthStatus.setDistributionDaysSum(this.getDistributionDaysSum(instrument));
             marketHealthStatus.setNumberNear52wHigh(this.getNumberNear52wHigh(instrument));
             marketHealthStatus.setNumberNear52wLow(this.getNumberNear52wLow(instrument));
+            marketHealthStatus.setNumberUpOnVolume(this.getNumberUpOnVolume(instrument));
+            marketHealthStatus.setNumberDownOnVolume(this.getNumberDownOnVolume(instrument));
             getStatusResult.setData(marketHealthStatus);
         } catch (LocalizedException localizedException) {
             getStatusResult.addMessage(
@@ -344,5 +346,79 @@ public class DashboardService {
         }
 
         return numberNear52wLow;
+    }
+
+    /**
+     * Determines the number of instruments that trade "Up on Volume". That is at least 10% up over a 5-day period with
+     * a volume that is at least 25% above the 30-day average. Only those instruments are taken into account where the
+     * given Instrument is referenced as sector or industry group.
+     *
+     * @param instrument The Instrument that constitutes a sector or industry group.
+     * @return The number of instruments trading "Up on Volume".
+     */
+    private int getNumberUpOnVolume(final Instrument instrument) {
+        List<Quotation> allInstrumentsUpOnVolume;
+        int numberUpOnVolume = 0;
+        Instrument sector;
+        Instrument industryGroup;
+
+        try {
+            allInstrumentsUpOnVolume = this.quotationDAO.getQuotationsByTemplate(ScanTemplate.UP_ON_VOLUME,
+                    InstrumentType.STOCK, null, null, null);
+
+            for (Quotation tempQuotation : allInstrumentsUpOnVolume) {
+                sector = tempQuotation.getInstrument().getSector();
+                industryGroup = tempQuotation.getInstrument().getIndustryGroup();
+
+                if (industryGroup != null && industryGroup.getId().equals(instrument.getId())
+                        && instrument.getType() == InstrumentType.IND_GROUP) {
+                    numberUpOnVolume++;
+                } else if (sector != null && sector.getId().equals(instrument.getId())
+                        && instrument.getType() == InstrumentType.SECTOR) {
+                    numberUpOnVolume++;
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("Failed to determine number of stocks trading Up on Volume.", e);
+        }
+
+        return numberUpOnVolume;
+    }
+
+    /**
+     * Determines the number of instruments that trade "Down on Volume". That is at least -10% up over a 5-day period
+     * with a volume that is at least 25% above the 30-day average. Only those instruments are taken into account where
+     * the given Instrument is referenced as sector or industry group.
+     *
+     * @param instrument The Instrument that constitutes a sector or industry group.
+     * @return The number of instruments trading "Down on Volume".
+     */
+    private int getNumberDownOnVolume(final Instrument instrument) {
+        List<Quotation> allInstrumentsDownOnVolume;
+        int numberDownOnVolume = 0;
+        Instrument sector;
+        Instrument industryGroup;
+
+        try {
+            allInstrumentsDownOnVolume = this.quotationDAO.getQuotationsByTemplate(ScanTemplate.DOWN_ON_VOLUME,
+                    InstrumentType.STOCK, null, null, null);
+
+            for (Quotation tempQuotation : allInstrumentsDownOnVolume) {
+                sector = tempQuotation.getInstrument().getSector();
+                industryGroup = tempQuotation.getInstrument().getIndustryGroup();
+
+                if (industryGroup != null && industryGroup.getId().equals(instrument.getId())
+                        && instrument.getType() == InstrumentType.IND_GROUP) {
+                    numberDownOnVolume++;
+                } else if (sector != null && sector.getId().equals(instrument.getId())
+                        && instrument.getType() == InstrumentType.SECTOR) {
+                    numberDownOnVolume++;
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("Failed to determine number of stocks trading Down on Volume.", e);
+        }
+
+        return numberDownOnVolume;
     }
 }
