@@ -14,10 +14,11 @@
   	<description>Backend of the Trading Cockpit.</description>
   
   	<properties>
-		<maven.compiler.version>3.11.0</maven.compiler.version>
-		<maven.surefire.version>3.1.2</maven.surefire.version>
+		<maven.compiler.version>3.13.0</maven.compiler.version>
+		<maven.surefire.version>3.2.5</maven.surefire.version>
 		<maven.war.version>3.4.0</maven.war.version>
-		<maven.checkstyle.version>3.3.0</maven.checkstyle.version>
+		<maven.checkstyle.version>3.3.1</maven.checkstyle.version>
+		<maven.resources.version>3.3.1</maven.resources.version>
 		<hsql.version>2.7.2</hsql.version>
 		<hibernate.core.version>6.4.5.Final</hibernate.core.version>
 		<hibernate.validator.version>8.0.1.Final</hibernate.validator.version>
@@ -204,7 +205,7 @@
             <!-- Copy the properties file for application configuration. -->
 			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
-				<version>3.2.0</version>
+				<version>${maven.resources.version}</version>
 				<executions>
 					<execution>
 						<id>copy-resources</id>
