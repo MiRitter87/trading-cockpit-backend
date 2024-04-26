@@ -28,7 +28,7 @@
 		<jakarta.servlet.version>6.0.0</jakarta.servlet.version>
 		<okhttp.version>4.12.0</okhttp.version>
 		<apache.poi.version>5.2.5</apache.poi.version>
-		<opencsv.version>5.7.1</opencsv.version>
+		<opencsv.version>5.9</opencsv.version>
 		<jfreechart.version>1.5.3</jfreechart.version>
 		<htmlunit.version>2.70.0</htmlunit.version>
 		<angus.mail.version>2.0.2</angus.mail.version>
