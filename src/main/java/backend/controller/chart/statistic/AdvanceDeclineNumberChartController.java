@@ -15,6 +15,7 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 
+import backend.controller.scan.MovingAverageCalculator;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
@@ -96,17 +97,43 @@ public class AdvanceDeclineNumberChartController extends StatisticChartControlle
     }
 
     /**
-     * Provides a TimeSeriesCollection with the values of the SMA(50).
+     * Provides a TimeSeriesCollection with the values of the SMA(50) of the cumulative A/D number.
      *
      * @param statistics Statistics used for cumulative A/D number calculation.
      * @return The TimeSeriesCollection with the values of the SMA(50).
      */
     private TimeSeriesCollection getSma50TimeSeriesCollection(final List<Statistic> statistics) {
+        MovingAverageCalculator maCalculator = new MovingAverageCalculator();
         TimeSeriesCollection timeSeriesCollection = new TimeSeriesCollection();
         TimeSeries sma50TimeSeries = new TimeSeries(this.resources.getString("chart.adNumber.timeSeriesSma50Name"));
         QuotationArray quotationArray = this.getAdNumbersAsQuotationArray(statistics);
+        ListIterator<Quotation> iterator;
+        Quotation quotation;
+        float sma50;
+        final int days50 = 50;
+        int indexOfQuotation;
 
-        return null;
+        quotationArray.sortQuotationsByDate();
+
+        // Iterate quotations backwards because XYDatasets are constructed from oldest to newest value.
+        iterator = quotationArray.getQuotations().listIterator(quotationArray.getQuotations().size());
+        while (iterator.hasPrevious()) {
+            quotation = iterator.previous();
+            indexOfQuotation = quotationArray.getQuotations().indexOf(quotation);
+
+            // Skip SMA(50) calculation for the oldest 49 days.
+            if ((quotationArray.getQuotations().size() - days50 - indexOfQuotation) < 0) {
+                continue;
+            }
+
+            sma50 = maCalculator.getSimpleMovingAverage(days50, quotation, quotationArray);
+            sma50TimeSeries.add(new Day(quotation.getDate()), sma50);
+        }
+
+        timeSeriesCollection.addSeries(sma50TimeSeries);
+        timeSeriesCollection.setXPosition(TimePeriodAnchor.MIDDLE);
+
+        return timeSeriesCollection;
     }
 
     /**
