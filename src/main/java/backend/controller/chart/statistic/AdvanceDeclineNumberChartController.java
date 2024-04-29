@@ -1,5 +1,6 @@
 package backend.controller.chart.statistic;
 
+import java.awt.Color;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.ListIterator;
@@ -9,6 +10,10 @@ import java.util.TimeZone;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.AxisLocation;
+import org.jfree.chart.plot.DatasetRenderingOrder;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYItemRenderer;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.TimePeriodAnchor;
 import org.jfree.data.time.TimeSeries;
@@ -92,8 +97,19 @@ public class AdvanceDeclineNumberChartController extends StatisticChartControlle
      */
     private void addSma50(final JFreeChart chart, final List<Statistic> statistics) {
         TimeSeriesCollection sma50TimeSeriesCollection;
+        XYPlot plot = (XYPlot) chart.getPlot();
+        XYItemRenderer smaRenderer = new XYLineAndShapeRenderer(true, false);
+        int index = plot.getDatasetCount();
 
         sma50TimeSeriesCollection = this.getSma50TimeSeriesCollection(statistics);
+
+        plot.setDataset(index, sma50TimeSeriesCollection);
+        plot.mapDatasetToRangeAxis(index, 0);
+
+        smaRenderer.setSeriesPaint(0, Color.BLUE);
+
+        plot.setRenderer(index, smaRenderer);
+        plot.setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
     }
 
     /**
