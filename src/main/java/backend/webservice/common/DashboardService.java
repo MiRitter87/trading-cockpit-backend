@@ -425,9 +425,15 @@ public class DashboardService {
      */
     private int getAggregateIndicator(final Instrument instrument) {
         float slowStochasticDaily = this.getSlowStochasticDaily(instrument);
+        float slowStochasticWeekly = this.getSlowStochasticWeekly(instrument);
         float aggregateIndicator;
 
-        aggregateIndicator = slowStochasticDaily;
+        if (slowStochasticDaily == 0 || slowStochasticWeekly == 0) {
+            return 0;
+        }
+
+        aggregateIndicator = slowStochasticDaily + slowStochasticWeekly;
+        aggregateIndicator = aggregateIndicator / 2;
 
         return Math.round(aggregateIndicator);
     }
@@ -450,5 +456,26 @@ public class DashboardService {
                 quotations.getQuotations().get(0), quotations);
 
         return slowStochasticDaily;
+    }
+
+    /**
+     * Determines the weekly Slow Stochastic.
+     *
+     * @param instrument The Instrument that constitutes a sector or industry group.
+     * @return The weekly Slow Stochastic.
+     */
+    private float getSlowStochasticWeekly(final Instrument instrument) {
+        QuotationArray quotations = instrument.getQuotationArray();
+        QuotationArray weeklyQuotations = new QuotationArray(quotations.getWeeklyQuotations());
+        StochasticCalculator stochasticCalculator = new StochasticCalculator();
+        final int slowStochasticPeriodWeeks = 14;
+        final int smoothingPeriodWeeks = 3;
+        float slowStochasticWeekly;
+
+        weeklyQuotations.sortQuotationsByDate();
+        slowStochasticWeekly = stochasticCalculator.getSlowStochastic(slowStochasticPeriodWeeks, smoothingPeriodWeeks,
+                weeklyQuotations.getQuotations().get(0), weeklyQuotations);
+
+        return slowStochasticWeekly;
     }
 }
