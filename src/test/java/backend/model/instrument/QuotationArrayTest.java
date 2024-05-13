@@ -199,7 +199,8 @@ public class QuotationArrayTest {
         weeklyQuotations = this.quotationArray.getWeeklyQuotations();
 
         // Assure that there is one Quotation for each week of the year.
-        assertEquals(52, weeklyQuotations.size());
+        // The last two days are part of week 53.
+        assertEquals(53, weeklyQuotations.size());
 
         // Check the newest two weekly quotations.
         currentQuotation = weeklyQuotations.get(0);
@@ -207,5 +208,39 @@ public class QuotationArrayTest {
 
         currentQuotation = weeklyQuotations.get(1);
         assertEquals(quotation2, currentQuotation);
+    }
+
+    @Test
+    /**
+     * Tests the determination of weekly quotations if only quotations of two days exist.
+     */
+    public void testGetWeeklyQuotations2Days() {
+        QuotationArray twoDaysQuotationArray = new QuotationArray();
+        List<Quotation> weeklyQuotations;
+        Quotation currentQuotation;
+        Quotation expectedQuotation;
+
+        // Initialize QuotationArray with quotations of two days.
+        twoDaysQuotationArray.getQuotations().add(this.quotationArray.getQuotations().get(0));
+        twoDaysQuotationArray.getQuotations().add(this.quotationArray.getQuotations().get(1));
+
+        // Define the expected weekly Quotation.
+        expectedQuotation = new Quotation();
+        expectedQuotation.setDate(this.quotationArray.getQuotations().get(1).getDate());
+        expectedQuotation.setCurrency(Currency.CAD);
+        expectedQuotation.setVolume(3244200);
+        expectedQuotation.setOpen(new BigDecimal("1.50"));
+        expectedQuotation.setHigh(new BigDecimal("1.52"));
+        expectedQuotation.setLow(new BigDecimal("1.35"));
+        expectedQuotation.setClose(new BigDecimal("1.36"));
+
+        weeklyQuotations = twoDaysQuotationArray.getWeeklyQuotations();
+
+        // Assure that there is one Quotation.
+        assertEquals(1, weeklyQuotations.size());
+
+        // Verify the weekly Quotation.
+        currentQuotation = weeklyQuotations.get(0);
+        assertEquals(expectedQuotation, currentQuotation);
     }
 }

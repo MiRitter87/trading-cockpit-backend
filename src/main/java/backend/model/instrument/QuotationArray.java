@@ -256,6 +256,13 @@ public class QuotationArray {
                         && (dailyQuotation.getLow().doubleValue() < weeklyQuotation.getLow().doubleValue())) {
                     weeklyQuotation.setLow(dailyQuotation.getLow());
                 }
+
+                // No more quotations following.
+                if (this.quotations.indexOf(dailyQuotation) == this.quotations.size() - 1) {
+                    weeklyQuotation.setDate(dailyQuotation.getDate());
+                    weeklyQuotation.setOpen(dailyQuotation.getOpen());
+                    weeklyQuotations.add(weeklyQuotation);
+                }
             }
 
             weeklyQuotation.setVolume(weeklyQuotation.getVolume() + dailyQuotation.getVolume());
