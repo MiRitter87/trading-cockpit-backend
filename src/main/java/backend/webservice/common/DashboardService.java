@@ -8,6 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import backend.controller.chart.priceVolume.DistributionDaysChartController;
+import backend.controller.scan.StochasticCalculator;
 import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
 import backend.dao.quotation.persistence.QuotationDAO;
@@ -18,6 +19,7 @@ import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.MovingAverageData;
 import backend.model.instrument.Quotation;
+import backend.model.instrument.QuotationArray;
 import backend.model.webservice.WebServiceMessage;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
@@ -86,6 +88,7 @@ public class DashboardService {
             marketHealthStatus.setNumberNear52wLow(this.getNumberNear52wLow(instrument));
             marketHealthStatus.setNumberUpOnVolume(this.getNumberUpOnVolume(instrument));
             marketHealthStatus.setNumberDownOnVolume(this.getNumberDownOnVolume(instrument));
+            marketHealthStatus.setAggregateIndicator(this.getAggregateIndicator(instrument));
             getStatusResult.setData(marketHealthStatus);
         } catch (LocalizedException localizedException) {
             getStatusResult.addMessage(
@@ -412,5 +415,40 @@ public class DashboardService {
         }
 
         return numberDownOnVolume;
+    }
+
+    /**
+     * Determines the aggregate indicator.
+     *
+     * @param instrument The Instrument that constitutes a sector or industry group.
+     * @return The value of the aggregate indicator.
+     */
+    private int getAggregateIndicator(final Instrument instrument) {
+        float slowStochasticDaily = this.getSlowStochasticDaily(instrument);
+        float aggregateIndicator;
+
+        aggregateIndicator = slowStochasticDaily;
+
+        return Math.round(aggregateIndicator);
+    }
+
+    /**
+     * Determines the daily Slow Stochastic.
+     *
+     * @param instrument The Instrument that constitutes a sector or industry group.
+     * @return The daily Slow Stochastic.
+     */
+    private float getSlowStochasticDaily(final Instrument instrument) {
+        QuotationArray quotations = instrument.getQuotationArray();
+        StochasticCalculator stochasticCalculator = new StochasticCalculator();
+        final int slowStochasticPeriodDays = 14;
+        final int smoothingPeriodDays = 3;
+        float slowStochasticDaily;
+
+        quotations.sortQuotationsByDate();
+        slowStochasticDaily = stochasticCalculator.getSlowStochastic(slowStochasticPeriodDays, smoothingPeriodDays,
+                quotations.getQuotations().get(0), quotations);
+
+        return slowStochasticDaily;
     }
 }
