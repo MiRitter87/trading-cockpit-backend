@@ -69,6 +69,12 @@ public class MarketHealthStatus {
     private int numberDownOnVolume;
 
     /**
+     * The aggregate indicator value. This is a value between 0 and 100 that is the average of Slow Stochastic daily,
+     * Slow Stochastic weekly and the SMA(10) of "percentage of stocks above SMA(50)".
+     */
+    private int aggregateIndicator;
+
+    /**
      * @return the symbol
      */
     public String getSymbol() {
@@ -220,5 +226,19 @@ public class MarketHealthStatus {
      */
     public void setNumberDownOnVolume(final int numberDownOnVolume) {
         this.numberDownOnVolume = numberDownOnVolume;
+    }
+
+    /**
+     * @return the aggregateIndicator
+     */
+    public int getAggregateIndicator() {
+        return aggregateIndicator;
+    }
+
+    /**
+     * @param aggregateIndicator the aggregateIndicator to set
+     */
+    public void setAggregateIndicator(final int aggregateIndicator) {
+        this.aggregateIndicator = aggregateIndicator;
     }
 }
