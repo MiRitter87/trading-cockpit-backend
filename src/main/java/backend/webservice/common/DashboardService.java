@@ -9,6 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import backend.controller.chart.priceVolume.DistributionDaysChartController;
+import backend.controller.scan.StatisticCalculationController;
 import backend.controller.scan.StochasticCalculator;
 import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
@@ -21,6 +22,7 @@ import backend.model.instrument.InstrumentType;
 import backend.model.instrument.MovingAverageData;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
+import backend.model.statistic.Statistic;
 import backend.model.webservice.WebServiceMessage;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
@@ -491,11 +493,11 @@ public class DashboardService {
      */
     private int getSma10OfPercentAboveSma50(final Instrument instrument) throws Exception {
         List<Instrument> instruments;
+        List<Statistic> statistics;
+        StatisticCalculationController statisticCalculationController = new StatisticCalculationController();
 
-        // Build list of all instruments of a sector / industry group
         instruments = this.getInstrumentsOfSectorOrIg(instrument);
-
-        // Calculate statistic for given list
+        statistics = statisticCalculationController.calculateStatistics(instruments);
 
         // calculate SMA(10) of the latest instruments above SMA(50) metric.
 
