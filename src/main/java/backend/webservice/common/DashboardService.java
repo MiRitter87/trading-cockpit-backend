@@ -1,6 +1,7 @@
 package backend.webservice.common;
 
 import java.text.MessageFormat;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -422,10 +423,12 @@ public class DashboardService {
      *
      * @param instrument The Instrument that constitutes a sector or industry group.
      * @return The value of the aggregate indicator.
+     * @throws Exception Error during data retrieval.
      */
-    private int getAggregateIndicator(final Instrument instrument) {
+    private int getAggregateIndicator(final Instrument instrument) throws Exception {
         float slowStochasticDaily = this.getSlowStochasticDaily(instrument);
         float slowStochasticWeekly = this.getSlowStochasticWeekly(instrument);
+        int percentAboveSma50 = this.getSma10OfPercentAboveSma50(instrument);
         float aggregateIndicator;
 
         if (slowStochasticDaily == 0 || slowStochasticWeekly == 0) {
@@ -477,5 +480,69 @@ public class DashboardService {
                 weeklyQuotations.getQuotations().get(0), weeklyQuotations);
 
         return slowStochasticWeekly;
+    }
+
+    /**
+     * Determines the SMA(10) of percentage of instruments above SMA(50).
+     *
+     * @param instrument The Instrument that constitutes a sector or industry group.
+     * @return The SMA(10) of percentage of instruments above SMA(50).
+     * @throws Exception Error during data retrieval.
+     */
+    private int getSma10OfPercentAboveSma50(final Instrument instrument) throws Exception {
+        List<Instrument> instruments;
+
+        // Build list of all instruments of a sector / industry group
+        instruments = this.getInstrumentsOfSectorOrIg(instrument);
+
+        // Calculate statistic for given list
+
+        // calculate SMA(10) of the latest instruments above SMA(50) metric.
+
+        return 0;
+    }
+
+    /**
+     * Determines all instruments that belong to the given sector or industry group.
+     *
+     * @param instrument The Instrument that constitutes a sector or industry group.
+     * @return A List of instruments.
+     * @throws Exception Error during data retrieval.
+     */
+    private List<Instrument> getInstrumentsOfSectorOrIg(final Instrument instrument) throws Exception {
+        List<Instrument> instruments;
+        Iterator<Instrument> iterator;
+        Instrument currentInstrument;
+
+        instruments = this.instrumentDAO.getInstruments(InstrumentType.STOCK);
+
+        iterator = instruments.iterator();
+        while (iterator.hasNext()) {
+            currentInstrument = iterator.next();
+
+            if (instrument.getType() == InstrumentType.IND_GROUP && currentInstrument.getIndustryGroup() == null) {
+                iterator.remove();
+                continue;
+            }
+
+            if (instrument.getType() == InstrumentType.SECTOR && currentInstrument.getSector() == null) {
+                iterator.remove();
+                continue;
+            }
+
+            if (instrument.getType() == InstrumentType.IND_GROUP && currentInstrument.getIndustryGroup() != null
+                    && !currentInstrument.getIndustryGroup().getId().equals(instrument.getId())) {
+                iterator.remove();
+                continue;
+            }
+
+            if (instrument.getType() == InstrumentType.SECTOR && currentInstrument.getIndustryGroup() != null
+                    && !currentInstrument.getSector().getId().equals(instrument.getId())) {
+                iterator.remove();
+                continue;
+            }
+        }
+
+        return instruments;
     }
 }
