@@ -430,15 +430,16 @@ public class DashboardService {
     private int getAggregateIndicator(final Instrument instrument) throws Exception {
         float slowStochasticDaily = this.getSlowStochasticDaily(instrument);
         float slowStochasticWeekly = this.getSlowStochasticWeekly(instrument);
-        int percentAboveSma50 = this.getSma10OfPercentAboveSma50(instrument);
+        float percentAboveSma50 = this.getSma10OfPercentAboveSma50(instrument);
         float aggregateIndicator;
+        final int threeComponents = 3;
 
         if (slowStochasticDaily == 0 || slowStochasticWeekly == 0) {
             return 0;
         }
 
-        aggregateIndicator = slowStochasticDaily + slowStochasticWeekly;
-        aggregateIndicator = aggregateIndicator / 2;
+        aggregateIndicator = slowStochasticDaily + slowStochasticWeekly + percentAboveSma50;
+        aggregateIndicator = aggregateIndicator / threeComponents;
 
         return Math.round(aggregateIndicator);
     }
@@ -491,17 +492,30 @@ public class DashboardService {
      * @return The SMA(10) of percentage of instruments above SMA(50).
      * @throws Exception Error during data retrieval.
      */
-    private int getSma10OfPercentAboveSma50(final Instrument instrument) throws Exception {
+    private float getSma10OfPercentAboveSma50(final Instrument instrument) throws Exception {
         List<Instrument> instruments;
         List<Statistic> statistics;
         StatisticCalculationController statisticCalculationController = new StatisticCalculationController();
+        Statistic statistic;
+        float percentAboveSma50 = 0;
+        final int tenDays = 10;
 
         instruments = this.getInstrumentsOfSectorOrIg(instrument);
         statistics = statisticCalculationController.calculateStatistics(instruments);
 
-        // calculate SMA(10) of the latest instruments above SMA(50) metric.
+        if (statistics.size() < tenDays) {
+            return percentAboveSma50;
+        }
 
-        return 0;
+        // calculate SMA(10) of the latest 'instruments above SMA(50)' metric.
+        for (int i = 0; i < tenDays; i++) {
+            statistic = statistics.get(i);
+            percentAboveSma50 = percentAboveSma50 + statistic.getPercentAboveSma50();
+        }
+
+        percentAboveSma50 = percentAboveSma50 / tenDays;
+
+        return percentAboveSma50;
     }
 
     /**
