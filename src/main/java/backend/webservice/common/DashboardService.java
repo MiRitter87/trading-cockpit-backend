@@ -434,8 +434,10 @@ public class DashboardService {
         float aggregateIndicator;
         final int threeComponents = 3;
 
-        if (slowStochasticDaily == 0 || slowStochasticWeekly == 0) {
-            return 0;
+        // If any component of the aggregate indicator is missing, the value can't be calculated.
+        // -1 informs the frontend about an incomplete calculation.
+        if (slowStochasticDaily == 0 || slowStochasticWeekly == 0 || percentAboveSma50 == -1) {
+            return -1;
         }
 
         aggregateIndicator = slowStochasticDaily + slowStochasticWeekly + percentAboveSma50;
@@ -504,7 +506,7 @@ public class DashboardService {
         statistics = statisticCalculationController.calculateStatistics(instruments);
 
         if (statistics.size() < tenDays) {
-            return percentAboveSma50;
+            return -1;
         }
 
         // calculate SMA(10) of the latest 'instruments above SMA(50)' metric.
