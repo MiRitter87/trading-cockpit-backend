@@ -46,14 +46,26 @@ public class Statistic {
     private Date date;
 
     /**
-     * The InstrumentType.
+     * The InstrumentType of the instruments this Statistic is based on.
      */
     @Column(name = "INSTRUMENT_TYPE", length = MAX_TYPE_LENGTH)
     @Enumerated(EnumType.STRING)
     private InstrumentType instrumentType;
 
     /**
-     * The total number of instruments the Statistic is based on.
+     * The ID of the sector this Statistic is based on.
+     */
+    @Column(name = "SECTOR_ID")
+    private Integer sectorId;
+
+    /**
+     * The ID of the industry group this Statistic is based on.
+     */
+    @Column(name = "INDUSTRY_GROUP_ID")
+    private Integer industryGroupId;
+
+    /**
+     * The total number of instruments this Statistic is based on.
      */
     @Column(name = "NUMBER_OF_INSTRUMENTS")
     private int numberOfInstruments;
@@ -195,6 +207,34 @@ public class Statistic {
      */
     public void setInstrumentType(final InstrumentType instrumentType) {
         this.instrumentType = instrumentType;
+    }
+
+    /**
+     * @return the sectorId
+     */
+    public Integer getSectorId() {
+        return sectorId;
+    }
+
+    /**
+     * @param sectorId the sectorId to set
+     */
+    public void setSectorId(final Integer sectorId) {
+        this.sectorId = sectorId;
+    }
+
+    /**
+     * @return the industryGroupId
+     */
+    public Integer getIndustryGroupId() {
+        return industryGroupId;
+    }
+
+    /**
+     * @param industryGroupId the industryGroupId to set
+     */
+    public void setIndustryGroupId(final Integer industryGroupId) {
+        this.industryGroupId = industryGroupId;
     }
 
     /**
@@ -451,10 +491,10 @@ public class Statistic {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(advanceDeclineNumber, date, id, instrumentType, numberAboveSma50, numberAdvance,
-                numberAtOrBelowSma50, numberDecline, numberOfInstruments, numberRitterMarketTrend, percentAboveSma50,
-                numberAboveSma200, numberAtOrBelowSma200, percentAboveSma200, numberUpOnVolume, numberDownOnVolume,
-                numberBearishReversal, numberBullishReversal, numberChurning);
+        return Objects.hash(advanceDeclineNumber, date, id, industryGroupId, instrumentType, numberAboveSma50,
+                numberAdvance, numberAtOrBelowSma50, numberDecline, numberOfInstruments, numberRitterMarketTrend,
+                percentAboveSma50, numberAboveSma200, numberAtOrBelowSma200, percentAboveSma200, numberUpOnVolume,
+                numberDownOnVolume, numberBearishReversal, numberBullishReversal, numberChurning, sectorId);
     }
 
     /**
@@ -485,6 +525,7 @@ public class Statistic {
         }
 
         return advanceDeclineNumber == other.advanceDeclineNumber && Objects.equals(id, other.id)
+                && Objects.equals(industryGroupId, other.industryGroupId) && Objects.equals(sectorId, other.sectorId)
                 && instrumentType == other.instrumentType && numberAboveSma50 == other.numberAboveSma50
                 && numberAdvance == other.numberAdvance && numberAtOrBelowSma50 == other.numberAtOrBelowSma50
                 && numberAboveSma200 == other.numberAboveSma200 && numberAtOrBelowSma200 == other.numberAtOrBelowSma200
