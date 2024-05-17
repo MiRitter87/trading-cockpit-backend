@@ -90,7 +90,7 @@ public class StatisticCalculationController {
                 }
 
                 previousQuotation = quotationsSortedByDate.get(currentQuotationIndex + 1);
-                statistic = statistics.getStatisticOfDate(currentQuotation.getDate());
+                statistic = statistics.getStatistic(currentQuotation.getDate(), null, null);
 
                 if (statistic == null) {
                     statistic = new Statistic();
@@ -139,7 +139,7 @@ public class StatisticCalculationController {
                 previousQuotation = quotationsSortedByDate.get(currentQuotationIndex + 1);
 
                 // Statistic for all instruments irrespective of sector or industry group.
-                statistic = statistics.getStatisticOfDate(currentQuotation.getDate());
+                statistic = statistics.getStatistic(currentQuotation.getDate(), null, null);
 
                 if (statistic == null) {
                     statistic = new Statistic();
@@ -523,7 +523,8 @@ public class StatisticCalculationController {
         Statistic databaseStatistic;
 
         for (Statistic newStatistic : newStatistics) {
-            databaseStatistic = databaseStatisticArray.getStatisticOfDate(newStatistic.getDate());
+            databaseStatistic = databaseStatisticArray.getStatistic(newStatistic.getDate(), newStatistic.getSectorId(),
+                    newStatistic.getIndustryGroupId());
 
             if (databaseStatistic == null) {
                 statisticInsert.add(newStatistic);
@@ -550,7 +551,8 @@ public class StatisticCalculationController {
         Statistic newStatistic;
 
         for (Statistic databaseStatistic : databaseStatistics) {
-            newStatistic = newStatisticsArray.getStatisticOfDate(databaseStatistic.getDate());
+            newStatistic = newStatisticsArray.getStatistic(databaseStatistic.getDate(), databaseStatistic.getSectorId(),
+                    databaseStatistic.getIndustryGroupId());
 
             if (newStatistic == null) {
                 statisticDelete.add(databaseStatistic);
@@ -577,7 +579,8 @@ public class StatisticCalculationController {
         Statistic databaseStatistic;
 
         for (Statistic newStatistic : newStatistics) {
-            databaseStatistic = databaseStatisticArray.getStatisticOfDate(newStatistic.getDate());
+            databaseStatistic = databaseStatisticArray.getStatistic(newStatistic.getDate(), newStatistic.getSectorId(),
+                    newStatistic.getIndustryGroupId());
 
             if (databaseStatistic != null) {
                 databaseStatistic.setNumberOfInstruments(newStatistic.getNumberOfInstruments());
