@@ -63,7 +63,8 @@ public class StatisticCalculationController {
     }
 
     /**
-     * Calculates the statistics based on the given instruments.
+     * Calculates the statistics based on the given instruments. For each day only one Statistic is being created. The
+     * referenced sector or industry group of an Instrument is not taken into account.
      *
      * @param instruments The instruments for which the statistics are to be calculated.
      * @return The statistics.
@@ -99,6 +100,59 @@ public class StatisticCalculationController {
                 }
 
                 this.calculateStatistics(statistic, currentQuotation, previousQuotation);
+            }
+        }
+
+        return statistics.getStatisticsSortedByDate();
+    }
+
+    /**
+     * Calculates the statistics based on the given instruments. If an Instrument has its industry group or sector
+     * defined an additional Statistic is created for sector and / or industry group. Therefore one Instrument can
+     * belong to three different kind of statistics per day: An overall Statistic with all instruments irrespective of
+     * their sector or industry group, a Statistic for all instruments of an industry group, a Statistic for all
+     * instruments of a sector.
+     *
+     * @param instruments The instruments for which the statistics are to be calculated.
+     * @return The statistics.
+     * @throws Exception Statistic calculation failed.
+     */
+    private List<Statistic> calculateEnhancedStatistics(final List<Instrument> instruments) throws Exception {
+        StatisticArray statistics = new StatisticArray();
+        Statistic statistic;
+        List<Quotation> quotationsSortedByDate;
+        Quotation previousQuotation;
+        int currentQuotationIndex;
+
+        for (Instrument instrument : instruments) {
+            instrument.setQuotations(quotationDAO.getQuotationsOfInstrument(instrument.getId()));
+            quotationsSortedByDate = instrument.getQuotationsSortedByDate();
+
+            for (Quotation currentQuotation : quotationsSortedByDate) {
+                currentQuotationIndex = quotationsSortedByDate.indexOf(currentQuotation);
+
+                // Stop Statistic calculation for the current Instrument if no previous Quotation exists.
+                if (currentQuotationIndex == (quotationsSortedByDate.size() - 1)) {
+                    break;
+                }
+
+                previousQuotation = quotationsSortedByDate.get(currentQuotationIndex + 1);
+
+                // Statistic for all instruments irrespective of sector or industry group.
+                statistic = statistics.getStatisticOfDate(currentQuotation.getDate());
+
+                if (statistic == null) {
+                    statistic = new Statistic();
+                    statistic.setInstrumentType(instrument.getType());
+                    statistic.setDate(DateTools.getDateWithoutIntradayAttributes(currentQuotation.getDate()));
+                    statistics.addStatistic(statistic);
+                }
+
+                this.calculateStatistics(statistic, currentQuotation, previousQuotation);
+
+                // Statistic for all instruments of a certain sector.
+
+                // Statistic for all instruments of a certain industry group.
             }
         }
 
