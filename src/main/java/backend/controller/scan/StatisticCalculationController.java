@@ -151,8 +151,36 @@ public class StatisticCalculationController {
                 this.calculateStatistics(statistic, currentQuotation, previousQuotation);
 
                 // Statistic for all instruments of a certain sector.
+                if (instrument.getSector() != null) {
+                    statistic = statistics.getStatistic(currentQuotation.getDate(), instrument.getSector().getId(),
+                            null);
+
+                    if (statistic == null) {
+                        statistic = new Statistic();
+                        statistic.setInstrumentType(instrument.getType());
+                        statistic.setSectorId(instrument.getSector().getId());
+                        statistic.setDate(DateTools.getDateWithoutIntradayAttributes(currentQuotation.getDate()));
+                        statistics.addStatistic(statistic);
+                    }
+
+                    this.calculateStatistics(statistic, currentQuotation, previousQuotation);
+                }
 
                 // Statistic for all instruments of a certain industry group.
+                if (instrument.getIndustryGroup() != null) {
+                    statistic = statistics.getStatistic(currentQuotation.getDate(),
+                            instrument.getIndustryGroup().getId(), null);
+
+                    if (statistic == null) {
+                        statistic = new Statistic();
+                        statistic.setInstrumentType(instrument.getType());
+                        statistic.setIndustryGroupId(instrument.getIndustryGroup().getId());
+                        statistic.setDate(DateTools.getDateWithoutIntradayAttributes(currentQuotation.getDate()));
+                        statistics.addStatistic(statistic);
+                    }
+
+                    this.calculateStatistics(statistic, currentQuotation, previousQuotation);
+                }
             }
         }
 
