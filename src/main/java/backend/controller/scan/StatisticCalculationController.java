@@ -49,7 +49,7 @@ public class StatisticCalculationController {
     }
 
     /**
-     * Updates the statistic.
+     * Updates the statistic that is persisted in the database.
      *
      * @throws Exception Statistic calculation or database access failed.
      */
@@ -58,7 +58,7 @@ public class StatisticCalculationController {
         List<Statistic> statisticNew;
 
         stocks = instrumentDAO.getInstruments(InstrumentType.STOCK);
-        statisticNew = this.calculateStatistics(stocks);
+        statisticNew = this.calculateEnhancedStatistics(stocks);
         this.persistStatistics(statisticNew);
     }
 
@@ -72,7 +72,6 @@ public class StatisticCalculationController {
      */
     public List<Statistic> calculateStatistics(final List<Instrument> instruments) throws Exception {
         StatisticArray statistics = new StatisticArray();
-        Statistic statistic;
         List<Quotation> quotationsSortedByDate;
         Quotation previousQuotation;
         int currentQuotationIndex;
@@ -90,16 +89,7 @@ public class StatisticCalculationController {
                 }
 
                 previousQuotation = quotationsSortedByDate.get(currentQuotationIndex + 1);
-                statistic = statistics.getStatistic(currentQuotation.getDate(), null, null);
-
-                if (statistic == null) {
-                    statistic = new Statistic();
-                    statistic.setInstrumentType(instrument.getType());
-                    statistic.setDate(DateTools.getDateWithoutIntradayAttributes(currentQuotation.getDate()));
-                    statistics.addStatistic(statistic);
-                }
-
-                this.calculateStatistics(statistic, currentQuotation, previousQuotation);
+                this.calculateGeneralStatistic(statistics, currentQuotation, previousQuotation, instrument);
             }
         }
 
@@ -119,7 +109,6 @@ public class StatisticCalculationController {
      */
     private List<Statistic> calculateEnhancedStatistics(final List<Instrument> instruments) throws Exception {
         StatisticArray statistics = new StatisticArray();
-        Statistic statistic;
         List<Quotation> quotationsSortedByDate;
         Quotation previousQuotation;
         int currentQuotationIndex;
@@ -138,53 +127,98 @@ public class StatisticCalculationController {
 
                 previousQuotation = quotationsSortedByDate.get(currentQuotationIndex + 1);
 
-                // Statistic for all instruments irrespective of sector or industry group.
-                statistic = statistics.getStatistic(currentQuotation.getDate(), null, null);
-
-                if (statistic == null) {
-                    statistic = new Statistic();
-                    statistic.setInstrumentType(instrument.getType());
-                    statistic.setDate(DateTools.getDateWithoutIntradayAttributes(currentQuotation.getDate()));
-                    statistics.addStatistic(statistic);
-                }
-
-                this.calculateStatistics(statistic, currentQuotation, previousQuotation);
-
-                // Statistic for all instruments of a certain sector.
-                if (instrument.getSector() != null) {
-                    statistic = statistics.getStatistic(currentQuotation.getDate(), instrument.getSector().getId(),
-                            null);
-
-                    if (statistic == null) {
-                        statistic = new Statistic();
-                        statistic.setInstrumentType(instrument.getType());
-                        statistic.setSectorId(instrument.getSector().getId());
-                        statistic.setDate(DateTools.getDateWithoutIntradayAttributes(currentQuotation.getDate()));
-                        statistics.addStatistic(statistic);
-                    }
-
-                    this.calculateStatistics(statistic, currentQuotation, previousQuotation);
-                }
-
-                // Statistic for all instruments of a certain industry group.
-                if (instrument.getIndustryGroup() != null) {
-                    statistic = statistics.getStatistic(currentQuotation.getDate(),
-                            instrument.getIndustryGroup().getId(), null);
-
-                    if (statistic == null) {
-                        statistic = new Statistic();
-                        statistic.setInstrumentType(instrument.getType());
-                        statistic.setIndustryGroupId(instrument.getIndustryGroup().getId());
-                        statistic.setDate(DateTools.getDateWithoutIntradayAttributes(currentQuotation.getDate()));
-                        statistics.addStatistic(statistic);
-                    }
-
-                    this.calculateStatistics(statistic, currentQuotation, previousQuotation);
-                }
+                this.calculateGeneralStatistic(statistics, currentQuotation, previousQuotation, instrument);
+                this.calculateSectorStatistic(statistics, currentQuotation, previousQuotation, instrument);
+                this.calculateIndustryGroupStatistic(statistics, currentQuotation, previousQuotation, instrument);
             }
         }
 
         return statistics.getStatisticsSortedByDate();
+    }
+
+    /**
+     * Calculates the general Statistic irrespective of sector or industry group.
+     *
+     * @param statistics        The StatisticArray containing all statistics that have been calculated so far.
+     * @param currentQuotation  The current Quotation for which the statistics are calculated.
+     * @param previousQuotation The previous Quotation used for statistics calculation.
+     * @param instrument        The Instrument whose statistics are calculated.
+     */
+    private void calculateGeneralStatistic(final StatisticArray statistics, final Quotation currentQuotation,
+            final Quotation previousQuotation, final Instrument instrument) {
+
+        Statistic statistic;
+
+        statistic = statistics.getStatistic(currentQuotation.getDate(), null, null);
+
+        if (statistic == null) {
+            statistic = new Statistic();
+            statistic.setInstrumentType(instrument.getType());
+            statistic.setDate(DateTools.getDateWithoutIntradayAttributes(currentQuotation.getDate()));
+            statistics.addStatistic(statistic);
+        }
+
+        this.calculateStatistics(statistic, currentQuotation, previousQuotation);
+    }
+
+    /**
+     * Calculates the sector-specific Statistic.
+     *
+     * @param statistics        The StatisticArray containing all statistics that have been calculated so far.
+     * @param currentQuotation  The current Quotation for which the statistics are calculated.
+     * @param previousQuotation The previous Quotation used for statistics calculation.
+     * @param instrument        The Instrument whose statistics are calculated.
+     */
+    private void calculateSectorStatistic(final StatisticArray statistics, final Quotation currentQuotation,
+            final Quotation previousQuotation, final Instrument instrument) {
+
+        Statistic statistic;
+
+        if (instrument.getSector() == null) {
+            return;
+        }
+
+        statistic = statistics.getStatistic(currentQuotation.getDate(), instrument.getSector().getId(), null);
+
+        if (statistic == null) {
+            statistic = new Statistic();
+            statistic.setInstrumentType(instrument.getType());
+            statistic.setSectorId(instrument.getSector().getId());
+            statistic.setDate(DateTools.getDateWithoutIntradayAttributes(currentQuotation.getDate()));
+            statistics.addStatistic(statistic);
+        }
+
+        this.calculateStatistics(statistic, currentQuotation, previousQuotation);
+    }
+
+    /**
+     * Calculates the industry group specific Statistic.
+     *
+     * @param statistics        The StatisticArray containing all statistics that have been calculated so far.
+     * @param currentQuotation  The current Quotation for which the statistics are calculated.
+     * @param previousQuotation The previous Quotation used for statistics calculation.
+     * @param instrument        The Instrument whose statistics are calculated.
+     */
+    private void calculateIndustryGroupStatistic(final StatisticArray statistics, final Quotation currentQuotation,
+            final Quotation previousQuotation, final Instrument instrument) {
+
+        Statistic statistic;
+
+        if (instrument.getIndustryGroup() == null) {
+            return;
+        }
+
+        statistic = statistics.getStatistic(currentQuotation.getDate(), null, instrument.getIndustryGroup().getId());
+
+        if (statistic == null) {
+            statistic = new Statistic();
+            statistic.setInstrumentType(instrument.getType());
+            statistic.setIndustryGroupId(instrument.getIndustryGroup().getId());
+            statistic.setDate(DateTools.getDateWithoutIntradayAttributes(currentQuotation.getDate()));
+            statistics.addStatistic(statistic);
+        }
+
+        this.calculateStatistics(statistic, currentQuotation, previousQuotation);
     }
 
     /**
