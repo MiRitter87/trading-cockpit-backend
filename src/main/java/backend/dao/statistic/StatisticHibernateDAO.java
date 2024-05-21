@@ -161,12 +161,15 @@ public class StatisticHibernateDAO implements StatisticDAO {
     /**
      * Gets the Statistic with the given InstrumentType / Date combination.
      *
-     * @param instrumentType The InstrumentType.
-     * @param date The Date.
+     * @param instrumentType  The InstrumentType.
+     * @param date            The Date.
+     * @param sectorId        The id of the sector the Statistic belongs to.
+     * @param industryGroupId The id of the industry group the Statistic belongs to.
      * @return The Statistic.
      * @throws Exception In case an error occurred during determination of the Statistic stored at the database.
      */
-    private Statistic getStatistic(final InstrumentType instrumentType, final Date date) throws Exception {
+    private Statistic getStatistic(final InstrumentType instrumentType, final Date date, final Integer sectorId,
+            final Integer industryGroupId) throws Exception {
         List<Statistic> statistics = null;
         EntityManager entityManager = this.sessionFactory.createEntityManager();
         entityManager.getTransaction().begin();
@@ -180,6 +183,19 @@ public class StatisticHibernateDAO implements StatisticDAO {
 
             predicates.add(criteriaBuilder.equal(criteria.get("instrumentType"), instrumentType));
             predicates.add(criteriaBuilder.equal(criteria.get("date"), date));
+
+            if (sectorId == null) {
+                predicates.add(criteriaBuilder.isNull(criteria.get("sectorId")));
+            } else {
+                predicates.add(criteriaBuilder.equal(criteria.get("sectorId"), sectorId));
+            }
+
+            if (industryGroupId == null) {
+                predicates.add(criteriaBuilder.isNull(criteria.get("industryGroupId")));
+            } else {
+                predicates.add(criteriaBuilder.equal(criteria.get("industryGroupId"), sectorId));
+            }
+
             criteriaQuery.where(predicates.toArray(new Predicate[predicates.size()]));
 
             TypedQuery<Statistic> typedQuery = entityManager.createQuery(criteriaQuery);
@@ -213,7 +229,8 @@ public class StatisticHibernateDAO implements StatisticDAO {
      *                                     database.
      */
     private void checkStatisticExistsCreate(final Statistic statistic) throws DuplicateStatisticException, Exception {
-        Statistic databaseStatistic = this.getStatistic(statistic.getInstrumentType(), statistic.getDate());
+        Statistic databaseStatistic = this.getStatistic(statistic.getInstrumentType(), statistic.getDate(),
+                statistic.getSectorId(), statistic.getIndustryGroupId());
 
         if (databaseStatistic != null) {
             throw new DuplicateStatisticException(databaseStatistic.getInstrumentType(), databaseStatistic.getDate());
