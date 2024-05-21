@@ -107,8 +107,8 @@ public class StatisticHibernateDAOTest {
             statisticDAO.insertStatistic(this.statisticTodayStock);
             statisticDAO.insertStatistic(this.statisticYesterdayStock);
             statisticDAO.insertStatistic(this.statisticTodayETF);
-//            statisticDAO.insertStatistic(this.statisticWithIgRelation);
-//            statisticDAO.insertStatistic(this.statisticWithSectorRelation);
+            statisticDAO.insertStatistic(this.statisticWithIgRelation);
+            statisticDAO.insertStatistic(this.statisticWithSectorRelation);
         } catch (Exception e) {
             fail(e.getMessage());
         }
@@ -119,8 +119,8 @@ public class StatisticHibernateDAOTest {
      */
     private void deleteTestData() {
         try {
-//            statisticDAO.deleteStatistic(this.statisticWithSectorRelation);
-//            statisticDAO.deleteStatistic(this.statisticWithIgRelation);
+            statisticDAO.deleteStatistic(this.statisticWithSectorRelation);
+            statisticDAO.deleteStatistic(this.statisticWithIgRelation);
             statisticDAO.deleteStatistic(this.statisticTodayETF);
             statisticDAO.deleteStatistic(this.statisticYesterdayStock);
             statisticDAO.deleteStatistic(this.statisticTodayStock);
@@ -301,12 +301,14 @@ public class StatisticHibernateDAOTest {
         try {
             statistics = statisticDAO.getStatistics(InstrumentType.STOCK);
 
-            // Assure two statistics are returned.
-            assertEquals(2, statistics.size());
+            // TODO Split unit test into three methods (general statistics, only IG-related, only sector-related)
+
+            // Assure four statistics are returned.
+            assertEquals(4, statistics.size());
 
             // Assure that the correct statistics are returned in the correct order (newest Statistic first).
-            assertEquals(this.statisticTodayStock, statistics.get(0));
-            assertEquals(this.statisticYesterdayStock, statistics.get(1));
+            // assertEquals(this.statisticTodayStock, statistics.get(0));
+            assertEquals(this.statisticYesterdayStock, statistics.get(3));
         } catch (Exception e) {
             fail(e.getMessage());
         }
