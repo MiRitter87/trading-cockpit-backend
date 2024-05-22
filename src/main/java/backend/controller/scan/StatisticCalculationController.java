@@ -545,7 +545,7 @@ public class StatisticCalculationController {
         List<Statistic> statisticsForUpdate;
         List<Statistic> statisticsForDeletion;
 
-        statisticsDatabase = statisticDAO.getStatistics(InstrumentType.STOCK);
+        statisticsDatabase = statisticDAO.getStatisticsOfInstrumentType(InstrumentType.STOCK);
 
         statisticsForInsertion = this.getStatisticsForInsertion(newStatistics, statisticsDatabase);
         statisticsForDeletion = this.getStatisticsForDeletion(newStatistics, statisticsDatabase);

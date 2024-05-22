@@ -93,7 +93,7 @@ public class StatisticHibernateDAO implements StatisticDAO {
      * Gets all statistics of the given InstrumentType.
      */
     @Override
-    public List<Statistic> getStatistics(final InstrumentType instrumentType) throws Exception {
+    public List<Statistic> getStatisticsOfInstrumentType(final InstrumentType instrumentType) throws Exception {
         List<Statistic> statistics = null;
         EntityManager entityManager = this.sessionFactory.createEntityManager();
         entityManager.getTransaction().begin();

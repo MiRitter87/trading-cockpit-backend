@@ -295,19 +295,16 @@ public class StatisticHibernateDAOTest {
     /**
      * Tests the retrieval of all statistics of type STOCK.
      */
-    public void testGetStatisticsTypeStock() {
+    public void testGetAllStatisticsTypeStock() {
         List<Statistic> statistics;
 
         try {
-            statistics = statisticDAO.getStatistics(InstrumentType.STOCK);
-
-            // TODO Split unit test into three methods (general statistics, only IG-related, only sector-related)
+            statistics = statisticDAO.getStatisticsOfInstrumentType(InstrumentType.STOCK);
 
             // Assure four statistics are returned.
             assertEquals(4, statistics.size());
 
             // Assure that the correct statistics are returned in the correct order (newest Statistic first).
-            // assertEquals(this.statisticTodayStock, statistics.get(0));
             assertEquals(this.statisticYesterdayStock, statistics.get(3));
         } catch (Exception e) {
             fail(e.getMessage());

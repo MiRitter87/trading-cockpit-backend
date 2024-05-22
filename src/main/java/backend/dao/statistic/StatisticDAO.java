@@ -30,13 +30,14 @@ public interface StatisticDAO {
     void deleteStatistic(Statistic statistic) throws Exception;
 
     /**
-     * Gets all statistics of the given InstrumentType.
+     * Gets all statistics of the given InstrumentType. This includes all statistics irrespective of the sector or
+     * industry group they belong to.
      *
      * @param instrumentType The type of the statistics requested.
      * @return All statistics.
      * @throws Exception Statistic retrieval failed.
      */
-    List<Statistic> getStatistics(InstrumentType instrumentType) throws Exception;
+    List<Statistic> getStatisticsOfInstrumentType(InstrumentType instrumentType) throws Exception;
 
     /**
      * Gets the Statistic with the given id.

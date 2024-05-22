@@ -52,7 +52,7 @@ public class StatisticService {
         WebServiceResult getStatisticsResult = new WebServiceResult(null);
 
         try {
-            statistics.setStatistics(this.statisticDAO.getStatistics(instrumentType));
+            statistics.setStatistics(this.statisticDAO.getStatisticsOfInstrumentType(instrumentType));
             getStatisticsResult.setData(statistics);
         } catch (Exception e) {
             getStatisticsResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
