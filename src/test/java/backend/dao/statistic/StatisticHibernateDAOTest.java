@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -17,6 +18,7 @@ import org.junit.jupiter.api.Test;
 
 import backend.dao.DAOManager;
 import backend.dao.ObjectUnchangedException;
+import backend.model.LocalizedException;
 import backend.model.instrument.InstrumentType;
 import backend.model.statistic.Statistic;
 
@@ -26,6 +28,11 @@ import backend.model.statistic.Statistic;
  * @author Michael
  */
 public class StatisticHibernateDAOTest {
+    /**
+     * Access to localized application resources.
+     */
+    private ResourceBundle resources = ResourceBundle.getBundle("backend");
+
     /**
      * DAO to access Statistic data.
      */
@@ -374,6 +381,26 @@ public class StatisticHibernateDAOTest {
 
     @Test
     /**
+     * Tests the retrieval of all statistics using the ids of both sector and industry group. An Exception is expected
+     * because a statistic can either be related to a sector, industry group or none of both.
+     */
+    public void testGetStatisticsWithBothIds() {
+        String expectedMessage = this.resources.getString("statistic.errorOnSectorAndIgRequested");
+        String actualMessage = "";
+
+        try {
+            statisticDAO.getStatistics(InstrumentType.STOCK, 2, 1);
+            fail("The 'getStatistics' method should have thrown a LocalizedException");
+        } catch (LocalizedException expected) {
+            actualMessage = expected.getLocalizedMessage();
+            assertEquals(expectedMessage, actualMessage);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    /**
      * Tries to insert a Statistic of a certain type and date for which a Statistic already exists.
      */
     public void testInsertDuplicateStatistic() {
@@ -389,7 +416,7 @@ public class StatisticHibernateDAOTest {
             statisticDAO.insertStatistic(newStatistic);
             fail("The 'insertStatistic' method should have thrown a DuplicateStatisticException.");
         } catch (DuplicateStatisticException expected) {
-            // All is welll.
+            // All is well.
         } catch (Exception e) {
             fail(e.getMessage());
         }

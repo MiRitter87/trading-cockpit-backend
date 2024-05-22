@@ -13,6 +13,7 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
 import backend.dao.ObjectUnchangedException;
+import backend.model.LocalizedException;
 import backend.model.instrument.InstrumentType;
 import backend.model.statistic.Statistic;
 
@@ -132,13 +133,19 @@ public class StatisticHibernateDAO implements StatisticDAO {
      */
     @Override
     public List<Statistic> getStatistics(final InstrumentType instrumentType, final Integer sectorId,
-            final Integer industryGroupId) throws Exception {
+            final Integer industryGroupId) throws LocalizedException, Exception {
         List<Statistic> statistics = null;
-        EntityManager entityManager = this.sessionFactory.createEntityManager();
+        EntityManager entityManager;
+        List<Predicate> predicates = new ArrayList<Predicate>();
+
+        if (sectorId != null && industryGroupId != null) {
+            throw new LocalizedException("statistic.errorOnSectorAndIgRequested");
+        }
+
+        entityManager = this.sessionFactory.createEntityManager();
         entityManager.getTransaction().begin();
 
         try {
-            List<Predicate> predicates = new ArrayList<Predicate>();
             CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
             CriteriaQuery<Statistic> criteriaQuery = criteriaBuilder.createQuery(Statistic.class);
             Root<Statistic> criteria = criteriaQuery.from(Statistic.class);

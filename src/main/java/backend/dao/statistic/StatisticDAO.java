@@ -3,6 +3,7 @@ package backend.dao.statistic;
 import java.util.List;
 
 import backend.dao.ObjectUnchangedException;
+import backend.model.LocalizedException;
 import backend.model.instrument.InstrumentType;
 import backend.model.statistic.Statistic;
 
@@ -44,14 +45,18 @@ public interface StatisticDAO {
      * statistics are returned that represent all instruments of the sector or industry group with the given id. If no
      * id of sector or industry group is provided, the general statistics of all instruments are returned.
      *
+     * The ID of sector and industry group can't be set both, because there are no statistics available that belong to
+     * both sector and industry group.
+     *
      * @param instrumentType  The type of the statistics requested.
      * @param sectorId        The id of the sector the statistics belong to (can be null).
      * @param industryGroupId The id of the industry group the statistics belong to (can be null).
      * @return The statistics that match the criteria.
-     * @throws Exception Statistics retrieval failed.
+     * @throws Exception          Statistics retrieval failed.
+     * @throws LocalizedException An exception containing an error message to be displayed to the user.
      */
     List<Statistic> getStatistics(InstrumentType instrumentType, Integer sectorId, Integer industryGroupId)
-            throws Exception;
+            throws LocalizedException, Exception;
 
     /**
      * Gets the Statistic with the given id.
