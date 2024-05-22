@@ -127,6 +127,58 @@ public class StatisticHibernateDAO implements StatisticDAO {
     }
 
     /**
+     * Gets all statistics of the given InstrumentType with relation to the given sector or industry group. If no ids
+     * are provided, the general statistics are provided irrespective of sector or industry group.
+     */
+    @Override
+    public List<Statistic> getStatistics(final InstrumentType instrumentType, final Integer sectorId,
+            final Integer industryGroupId) throws Exception {
+        List<Statistic> statistics = null;
+        EntityManager entityManager = this.sessionFactory.createEntityManager();
+        entityManager.getTransaction().begin();
+
+        try {
+            List<Predicate> predicates = new ArrayList<Predicate>();
+            CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+            CriteriaQuery<Statistic> criteriaQuery = criteriaBuilder.createQuery(Statistic.class);
+            Root<Statistic> criteria = criteriaQuery.from(Statistic.class);
+            criteriaQuery.select(criteria);
+            criteriaQuery.orderBy(criteriaBuilder.desc(criteria.get("date")));
+
+            predicates.add(criteriaBuilder.equal(criteria.get("instrumentType"), instrumentType));
+
+            if (sectorId == null) {
+                predicates.add(criteriaBuilder.isNull(criteria.get("sectorId")));
+            } else {
+                predicates.add(criteriaBuilder.equal(criteria.get("sectorId"), sectorId));
+            }
+
+            if (industryGroupId == null) {
+                predicates.add(criteriaBuilder.isNull(criteria.get("industryGroupId")));
+            } else {
+                predicates.add(criteriaBuilder.equal(criteria.get("industryGroupId"), industryGroupId));
+            }
+
+            criteriaQuery.where(predicates.toArray(new Predicate[predicates.size()]));
+
+            TypedQuery<Statistic> typedQuery = entityManager.createQuery(criteriaQuery);
+            statistics = typedQuery.getResultList();
+
+            entityManager.getTransaction().commit();
+        } catch (Exception exception) {
+            // If something breaks a rollback is necessary.
+            if (entityManager.getTransaction().isActive()) {
+                entityManager.getTransaction().rollback();
+            }
+            throw exception;
+        } finally {
+            entityManager.close();
+        }
+
+        return statistics;
+    }
+
+    /**
      * Gets the Statistic with the given ID.
      */
     @Override
@@ -193,7 +245,7 @@ public class StatisticHibernateDAO implements StatisticDAO {
             if (industryGroupId == null) {
                 predicates.add(criteriaBuilder.isNull(criteria.get("industryGroupId")));
             } else {
-                predicates.add(criteriaBuilder.equal(criteria.get("industryGroupId"), sectorId));
+                predicates.add(criteriaBuilder.equal(criteria.get("industryGroupId"), industryGroupId));
             }
 
             criteriaQuery.where(predicates.toArray(new Predicate[predicates.size()]));

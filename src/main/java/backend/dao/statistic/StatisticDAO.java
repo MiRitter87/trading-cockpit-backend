@@ -35,9 +35,23 @@ public interface StatisticDAO {
      *
      * @param instrumentType The type of the statistics requested.
      * @return All statistics.
-     * @throws Exception Statistic retrieval failed.
+     * @throws Exception Statistics retrieval failed.
      */
     List<Statistic> getStatisticsOfInstrumentType(InstrumentType instrumentType) throws Exception;
+
+    /**
+     * Gets all statistics of the given InstrumentType. By specifying the id of the sector or industry group only those
+     * statistics are returned that represent all instruments of the sector or industry group with the given id. If no
+     * id of sector or industry group is provided, the general statistics of all instruments are returned.
+     *
+     * @param instrumentType  The type of the statistics requested.
+     * @param sectorId        The id of the sector the statistics belong to (can be null).
+     * @param industryGroupId The id of the industry group the statistics belong to (can be null).
+     * @return The statistics that match the criteria.
+     * @throws Exception Statistics retrieval failed.
+     */
+    List<Statistic> getStatistics(InstrumentType instrumentType, Integer sectorId, Integer industryGroupId)
+            throws Exception;
 
     /**
      * Gets the Statistic with the given id.

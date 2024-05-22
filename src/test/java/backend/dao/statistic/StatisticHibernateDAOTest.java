@@ -313,6 +313,67 @@ public class StatisticHibernateDAOTest {
 
     @Test
     /**
+     * Tests the retrieval of all general statistics of type STOCK.
+     */
+    public void testGetStatisticsStockGeneral() {
+        List<Statistic> statistics;
+
+        try {
+            statistics = statisticDAO.getStatistics(InstrumentType.STOCK, null, null);
+
+            // Assure two statistics are returned.
+            assertEquals(2, statistics.size());
+
+            // Assure that the correct statistics are returned in the correct order (newest Statistic first).
+            assertEquals(this.statisticTodayStock, statistics.get(0));
+            assertEquals(this.statisticYesterdayStock, statistics.get(1));
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    /**
+     * Tests the retrieval of all industry group related statistics of type STOCK.
+     */
+    public void testGetStatisticsStockIndustryGroup() {
+        List<Statistic> statistics;
+
+        try {
+            statistics = statisticDAO.getStatistics(InstrumentType.STOCK, null, 1);
+
+            // Assure two statistics are returned.
+            assertEquals(1, statistics.size());
+
+            // Assure that the correct statistics are returned in the correct order (newest Statistic first).
+            assertEquals(this.statisticWithIgRelation, statistics.get(0));
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    /**
+     * Tests the retrieval of all sector-related statistics of type STOCK.
+     */
+    public void testGetStatisticsStockSector() {
+        List<Statistic> statistics;
+
+        try {
+            statistics = statisticDAO.getStatistics(InstrumentType.STOCK, 2, null);
+
+            // Assure two statistics are returned.
+            assertEquals(1, statistics.size());
+
+            // Assure that the correct statistics are returned in the correct order (newest Statistic first).
+            assertEquals(this.statisticWithSectorRelation, statistics.get(0));
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    /**
      * Tries to insert a Statistic of a certain type and date for which a Statistic already exists.
      */
     public void testInsertDuplicateStatistic() {
