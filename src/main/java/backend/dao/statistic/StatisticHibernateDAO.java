@@ -45,6 +45,7 @@ public class StatisticHibernateDAO implements StatisticDAO {
         EntityManager entityManager = this.sessionFactory.createEntityManager();
 
         this.checkStatisticExistsCreate(statistic);
+        statistic.validate();
 
         entityManager.getTransaction().begin();
 
@@ -209,6 +210,7 @@ public class StatisticHibernateDAO implements StatisticDAO {
         EntityManager entityManager;
 
         this.checkStatisticDataChanged(statistic);
+        statistic.validate();
 
         entityManager = this.sessionFactory.createEntityManager();
         entityManager.getTransaction().begin();
