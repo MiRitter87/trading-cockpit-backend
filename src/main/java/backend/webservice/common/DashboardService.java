@@ -1,7 +1,7 @@
 package backend.webservice.common;
 
 import java.text.MessageFormat;
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -9,11 +9,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import backend.controller.chart.priceVolume.DistributionDaysChartController;
-import backend.controller.scan.StatisticCalculationController;
 import backend.controller.scan.StochasticCalculator;
 import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
 import backend.dao.quotation.persistence.QuotationDAO;
+import backend.dao.statistic.StatisticDAO;
 import backend.model.LocalizedException;
 import backend.model.dashboard.MarketHealthStatus;
 import backend.model.dashboard.SwingTradingEnvironmentStatus;
@@ -45,6 +45,11 @@ public class DashboardService {
     private QuotationDAO quotationDAO;
 
     /**
+     * DAO for Statistic access.
+     */
+    private StatisticDAO statisticDAO;
+
+    /**
      * Access to localized application resources.
      */
     private ResourceBundle resources = ResourceBundle.getBundle("backend");
@@ -60,6 +65,7 @@ public class DashboardService {
     public DashboardService() {
         this.instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
         this.quotationDAO = DAOManager.getInstance().getQuotationDAO();
+        this.statisticDAO = DAOManager.getInstance().getStatisticDAO();
     }
 
     /**
@@ -495,15 +501,12 @@ public class DashboardService {
      * @throws Exception Error during data retrieval.
      */
     private float getSma10OfPercentAboveSma50(final Instrument instrument) throws Exception {
-        List<Instrument> instruments;
         List<Statistic> statistics;
-        StatisticCalculationController statisticCalculationController = new StatisticCalculationController();
         Statistic statistic;
         float percentAboveSma50 = 0;
         final int tenDays = 10;
 
-        instruments = this.getInstrumentsOfSectorOrIg(instrument);
-        statistics = statisticCalculationController.calculateStatistics(instruments);
+        statistics = this.getStatistics(instrument);
 
         if (statistics.size() < tenDays) {
             return -1;
@@ -521,46 +524,22 @@ public class DashboardService {
     }
 
     /**
-     * Determines all instruments that belong to the given sector or industry group.
+     * Determines the statistics for the given Instrument.
      *
      * @param instrument The Instrument that constitutes a sector or industry group.
-     * @return A List of instruments.
-     * @throws Exception Error during data retrieval.
+     * @return The statistics.
+     * @throws Exception Determination of statistics failed.
      */
-    private List<Instrument> getInstrumentsOfSectorOrIg(final Instrument instrument) throws Exception {
-        List<Instrument> instruments;
-        Iterator<Instrument> iterator;
-        Instrument currentInstrument;
+    private List<Statistic> getStatistics(final Instrument instrument) throws Exception {
+        List<Statistic> statistics = new ArrayList<>();
 
-        instruments = this.instrumentDAO.getInstruments(InstrumentType.STOCK);
-
-        iterator = instruments.iterator();
-        while (iterator.hasNext()) {
-            currentInstrument = iterator.next();
-
-            if (instrument.getType() == InstrumentType.IND_GROUP && currentInstrument.getIndustryGroup() == null) {
-                iterator.remove();
-                continue;
-            }
-
-            if (instrument.getType() == InstrumentType.SECTOR && currentInstrument.getSector() == null) {
-                iterator.remove();
-                continue;
-            }
-
-            if (instrument.getType() == InstrumentType.IND_GROUP && currentInstrument.getIndustryGroup() != null
-                    && !currentInstrument.getIndustryGroup().getId().equals(instrument.getId())) {
-                iterator.remove();
-                continue;
-            }
-
-            if (instrument.getType() == InstrumentType.SECTOR && currentInstrument.getIndustryGroup() != null
-                    && !currentInstrument.getSector().getId().equals(instrument.getId())) {
-                iterator.remove();
-                continue;
-            }
+        if (instrument.getSector() != null && instrument.getIndustryGroup() == null) {
+            statistics = this.statisticDAO.getStatistics(InstrumentType.STOCK, instrument.getSector().getId(), null);
+        } else if (instrument.getSector() == null && instrument.getIndustryGroup() != null) {
+            statistics = this.statisticDAO.getStatistics(InstrumentType.STOCK, null,
+                    instrument.getIndustryGroup().getId());
         }
 
-        return instruments;
+        return statistics;
     }
 }
