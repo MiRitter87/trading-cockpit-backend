@@ -1,10 +1,15 @@
 package backend.model.statistic;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.util.ResourceBundle;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import backend.model.LocalizedException;
 
 /**
  * Tests the Statistic model.
@@ -12,6 +17,11 @@ import org.junit.jupiter.api.Test;
  * @author Michael
  */
 public class StatisticTest {
+    /**
+     * Access to localized application resources.
+     */
+    private ResourceBundle resources = ResourceBundle.getBundle("backend");
+
     /**
      * The Statistic under test.
      */
@@ -57,5 +67,25 @@ public class StatisticTest {
         final int expectedPercentAboveSma200 = 40;
 
         assertEquals(expectedPercentAboveSma200, percentAboveSma200);
+    }
+
+    @Test
+    /**
+     * Tests validation of a Statistic where both the id of sector and industry group are defined.
+     */
+    public void testValidateSectorAndIgDefined() {
+        String expectedErrorMessage = this.resources.getString("statistic.sectorAndIgDefined");
+        String actualErrorMessage;
+
+        this.statistic.setSectorId(1);
+        this.statistic.setIndustryGroupId(2);
+
+        try {
+            this.statistic.validate();
+            fail("Validation should have failed because statistic is referenced to both sector and IG.");
+        } catch (LocalizedException expected) {
+            actualErrorMessage = expected.getLocalizedMessage();
+            assertEquals(expectedErrorMessage, actualErrorMessage);
+        }
     }
 }

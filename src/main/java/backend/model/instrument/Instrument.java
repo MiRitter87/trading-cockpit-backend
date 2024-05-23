@@ -498,7 +498,6 @@ public class Instrument {
     /**
      * Validates the instrument.
      *
-     * @throws A                  general exception containing a localized message.
      * @throws LocalizedException A general exception containing a localized message.
      * @throws Exception          In case a general validation error occurred.
      */

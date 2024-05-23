@@ -14,7 +14,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-
+import backend.model.LocalizedException;
 import backend.model.instrument.InstrumentType;
 
 /**
@@ -536,5 +536,25 @@ public class Statistic {
                 && numberBearishReversal == other.numberBearishReversal
                 && numberBullishReversal == other.numberBullishReversal && numberChurning == other.numberChurning
                 && Float.floatToIntBits(percentAboveSma50) == Float.floatToIntBits(other.percentAboveSma50);
+    }
+
+    /**
+     * Validates the Statistic.
+     *
+     * @throws LocalizedException A general exception containing a localized message.
+     */
+    public void validate() throws LocalizedException {
+        this.validateSectorAndIgDefined();
+    }
+
+    /**
+     * Validates sector and industry group reference. Only one of them or none can be defined.
+     *
+     * @throws LocalizedException If validation failed.
+     */
+    private void validateSectorAndIgDefined() throws LocalizedException {
+        if (this.sectorId != null && this.industryGroupId != null) {
+            throw new LocalizedException("statistic.sectorAndIgDefined");
+        }
     }
 }
