@@ -44,15 +44,18 @@ public class StatisticService {
     /**
      * Provides a list of all statistics of the given InstrumentType.
      *
-     * @param instrumentType The InstrumentType.
+     * @param instrumentType  The InstrumentType.
+     * @param sectorId        The id of the sector the statistics belong to (can be null).
+     * @param industryGroupId The id of the industry group the statistics belong to (can be null).
      * @return A list of all statistics of the given InstrumentType.
      */
-    public WebServiceResult getStatistics(final InstrumentType instrumentType) {
+    public WebServiceResult getStatistics(final InstrumentType instrumentType, final Integer sectorId,
+            final Integer industryGroupId) {
         StatisticArray statistics = new StatisticArray();
         WebServiceResult getStatisticsResult = new WebServiceResult(null);
 
         try {
-            statistics.setStatistics(this.statisticDAO.getStatisticsOfInstrumentType(instrumentType));
+            statistics.setStatistics(this.statisticDAO.getStatistics(instrumentType, sectorId, industryGroupId));
             getStatisticsResult.setData(statistics);
         } catch (Exception e) {
             getStatisticsResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
