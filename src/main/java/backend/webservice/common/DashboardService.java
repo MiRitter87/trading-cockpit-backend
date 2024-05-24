@@ -23,6 +23,7 @@ import backend.model.instrument.MovingAverageData;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
 import backend.model.statistic.Statistic;
+import backend.model.statistic.StatisticArray;
 import backend.model.webservice.WebServiceMessage;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
@@ -501,20 +502,43 @@ public class DashboardService {
      * @throws Exception Error during data retrieval.
      */
     private float getSma10OfPercentAboveSma50(final Instrument instrument) throws Exception {
-        List<Statistic> statistics;
+        StatisticArray statistics = new StatisticArray();
         Statistic statistic;
+        List<Quotation> quotationsSortedByDate;
+        Quotation quotation;
+        Integer sectorId = null;
+        Integer industryGroupId = null;
         float percentAboveSma50 = 0;
         final int tenDays = 10;
 
-        statistics = this.getStatistics(instrument);
+        statistics.setStatistics(this.getStatistics(instrument));
 
-        if (statistics.size() < tenDays) {
+        // At least 10 statistics have to exist in order to calculate the SMA(10).
+        if (statistics.getStatistics().size() < tenDays) {
             return -1;
         }
 
+        quotationsSortedByDate = instrument.getQuotationsSortedByDate();
+
+        if (instrument.getSector() != null) {
+            sectorId = instrument.getSector().getId();
+        }
+
+        if (instrument.getIndustryGroup() != null) {
+            industryGroupId = instrument.getIndustryGroup().getId();
+        }
+
         // calculate SMA(10) of the latest 'instruments above SMA(50)' metric.
+        // The statistics of the last 10 trading days of the sector or industry group are used.
         for (int i = 0; i < tenDays; i++) {
-            statistic = statistics.get(i);
+            quotation = quotationsSortedByDate.get(i);
+            statistic = statistics.getStatistic(quotation.getDate(), sectorId, industryGroupId);
+
+            // If any statistic of the last 10 trading days is not available, the SMA(10) can't be calculated.
+            if (statistic == null) {
+                return -1;
+            }
+
             percentAboveSma50 = percentAboveSma50 + statistic.getPercentAboveSma50();
         }
 
