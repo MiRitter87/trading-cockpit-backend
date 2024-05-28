@@ -520,12 +520,12 @@ public class DashboardService {
 
         quotationsSortedByDate = instrument.getQuotationsSortedByDate();
 
-        if (instrument.getSector() != null) {
-            sectorId = instrument.getSector().getId();
+        if (instrument.getType() == InstrumentType.SECTOR) {
+            sectorId = instrument.getId();
         }
 
-        if (instrument.getIndustryGroup() != null) {
-            industryGroupId = instrument.getIndustryGroup().getId();
+        if (instrument.getType() == InstrumentType.IND_GROUP) {
+            industryGroupId = instrument.getId();
         }
 
         // calculate SMA(10) of the latest 'instruments above SMA(50)' metric.
@@ -557,11 +557,10 @@ public class DashboardService {
     private List<Statistic> getStatistics(final Instrument instrument) throws Exception {
         List<Statistic> statistics = new ArrayList<>();
 
-        if (instrument.getSector() != null && instrument.getIndustryGroup() == null) {
-            statistics = this.statisticDAO.getStatistics(InstrumentType.STOCK, instrument.getSector().getId(), null);
-        } else if (instrument.getSector() == null && instrument.getIndustryGroup() != null) {
-            statistics = this.statisticDAO.getStatistics(InstrumentType.STOCK, null,
-                    instrument.getIndustryGroup().getId());
+        if (instrument.getType() == InstrumentType.SECTOR) {
+            statistics = this.statisticDAO.getStatistics(InstrumentType.STOCK, instrument.getId(), null);
+        } else if (instrument.getType() == InstrumentType.IND_GROUP) {
+            statistics = this.statisticDAO.getStatistics(InstrumentType.STOCK, null, instrument.getId());
         }
 
         return statistics;
