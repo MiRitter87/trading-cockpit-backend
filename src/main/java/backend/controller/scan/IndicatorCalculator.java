@@ -191,7 +191,7 @@ public class IndicatorCalculator {
                 .setRsPercentSum(this.performanceCalculator.getRSPercentSum(quotation, sortedQuotations));
         indicator.setDistanceTo52WeekHigh(this.getDistanceTo52WeekHigh(quotation, sortedQuotations));
         indicator.setDistanceTo52WeekLow(this.getDistanceTo52WeekLow(quotation, sortedQuotations));
-        indicator.setBollingerBandWidth(
+        indicator.setBollingerBandWidth10Days(
                 this.bollingerCalculator.getBollingerBandWidth(DAYS_BBW10, 2, quotation, sortedQuotations));
         indicator.setVolumeDifferential5Days(this.getVolumeDifferential(DAYS_LONG_PERIOD_VOLUME_DIFFERENTIAL,
                 DAYS_VOLUME_DIFFERENTIAL_5, quotation, sortedQuotations));

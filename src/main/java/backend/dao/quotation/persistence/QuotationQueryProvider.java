@@ -53,7 +53,7 @@ public class QuotationQueryProvider {
         return this.entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i "
                 + "LEFT JOIN FETCH i.sector LEFT JOIN FETCH i.industryGroup "
                 + "JOIN q.indicator r WHERE q.id IN :quotationIds AND q.indicator IS NOT NULL "
-                + "AND r.volumeDifferential10Days < 0 AND r.bollingerBandWidth < 10 "
+                + "AND r.volumeDifferential10Days < 0 AND r.bollingerBandWidth10Days < 10 "
                 + "AND r.baseLengthWeeks >= 3 AND r.distanceTo52WeekHigh >= -10");
     }
 
@@ -66,7 +66,7 @@ public class QuotationQueryProvider {
         return this.entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i "
                 + "LEFT JOIN FETCH i.sector LEFT JOIN FETCH i.industryGroup "
                 + "JOIN q.indicator r WHERE q.id IN :quotationIds AND q.indicator IS NOT NULL "
-                + "AND r.volumeDifferential10Days < 0" + "AND r.bollingerBandWidth < 10");
+                + "AND r.volumeDifferential10Days < 0" + "AND r.bollingerBandWidth10Days < 10");
     }
 
     /**

@@ -404,7 +404,7 @@ public class QuotationServiceFixture {
         indicator.setPerformance5Days((float) 12.44);
         indicator.setDistanceTo52WeekHigh((float) -4.4);
         indicator.setDistanceTo52WeekLow((float) 78.81);
-        indicator.setBollingerBandWidth((float) 8.71);
+        indicator.setBollingerBandWidth10Days((float) 8.71);
         indicator.setVolumeDifferential5Days((float) 47.18);
         indicator.setVolumeDifferential10Days((float) 19.34);
         indicator.setBaseLengthWeeks(32);
@@ -426,7 +426,7 @@ public class QuotationServiceFixture {
         indicator.setPerformance5Days((float) -10.21);
         indicator.setDistanceTo52WeekHigh((float) -9.41);
         indicator.setDistanceTo52WeekLow((float) 48.81);
-        indicator.setBollingerBandWidth((float) 4.11);
+        indicator.setBollingerBandWidth10Days((float) 4.11);
         indicator.setVolumeDifferential5Days((float) 25.55);
         indicator.setVolumeDifferential10Days((float) -9.67);
         indicator.setBaseLengthWeeks(3);
@@ -448,7 +448,7 @@ public class QuotationServiceFixture {
         indicator.setPerformance5Days((float) 3.17);
         indicator.setDistanceTo52WeekHigh((float) -21.4);
         indicator.setDistanceTo52WeekLow((float) 78.81);
-        indicator.setBollingerBandWidth((float) 8.71);
+        indicator.setBollingerBandWidth10Days((float) 8.71);
         indicator.setVolumeDifferential5Days((float) 12.12);
         indicator.setVolumeDifferential10Days((float) 19.34);
         indicator.setBaseLengthWeeks(32);
@@ -468,7 +468,7 @@ public class QuotationServiceFixture {
         indicator.setPerformance5Days((float) -6.70);
         indicator.setDistanceTo52WeekHigh((float) -9.41);
         indicator.setDistanceTo52WeekLow((float) 0.81);
-        indicator.setBollingerBandWidth((float) 4.11);
+        indicator.setBollingerBandWidth10Days((float) 4.11);
         indicator.setVolumeDifferential5Days((float) 21.89);
         indicator.setVolumeDifferential10Days((float) -9.67);
         indicator.setBaseLengthWeeks(3);
