@@ -196,7 +196,7 @@ public class QuotationArrayTest {
         quotation2.setLow(new BigDecimal("1.24"));
         quotation2.setClose(new BigDecimal("1.36"));
 
-        weeklyQuotations = this.quotationArray.getWeeklyQuotations();
+        weeklyQuotations = this.quotationArray.getWeeklyQuotations(null);
 
         // Assure that there is one Quotation for each week of the year.
         // The last two days are part of week 53.
@@ -234,7 +234,7 @@ public class QuotationArrayTest {
         expectedQuotation.setLow(new BigDecimal("1.35"));
         expectedQuotation.setClose(new BigDecimal("1.36"));
 
-        weeklyQuotations = twoDaysQuotationArray.getWeeklyQuotations();
+        weeklyQuotations = twoDaysQuotationArray.getWeeklyQuotations(null);
 
         // Assure that there is one Quotation.
         assertEquals(1, weeklyQuotations.size());
@@ -242,5 +242,37 @@ public class QuotationArrayTest {
         // Verify the weekly Quotation.
         currentQuotation = weeklyQuotations.get(0);
         assertEquals(expectedQuotation, currentQuotation);
+    }
+
+    @Test
+    /**
+     * Tests the determination of weekly quotations. The newest daily Quotation is not taken into account.
+     */
+    public void testGetWeeklyQuotationsSkipNewestDay() {
+        Quotation actualQuotation;
+        Quotation expectedQuotation;
+        List<Quotation> weeklyQuotations;
+
+        this.quotationArray.sortQuotationsByDate();
+
+        // Define the expected weekly Quotation.
+        expectedQuotation = new Quotation();
+        expectedQuotation.setDate(this.quotationArray.getQuotations().get(4).getDate());
+        expectedQuotation.setCurrency(Currency.CAD);
+        expectedQuotation.setVolume(6353400);
+        expectedQuotation.setOpen(new BigDecimal("1.38"));
+        expectedQuotation.setHigh(new BigDecimal("1.54"));
+        expectedQuotation.setLow(new BigDecimal("1.38"));
+        expectedQuotation.setClose(new BigDecimal("1.46"));
+
+        weeklyQuotations = this.quotationArray.getWeeklyQuotations(this.quotationArray.getQuotations().get(1));
+
+        // Assure that there is one Quotation for each week of the year.
+        // The last two days are part of week 53.
+        assertEquals(53, weeklyQuotations.size());
+
+        // Check the newest weekly quotation.
+        actualQuotation = weeklyQuotations.get(0);
+        assertEquals(expectedQuotation, actualQuotation);
     }
 }

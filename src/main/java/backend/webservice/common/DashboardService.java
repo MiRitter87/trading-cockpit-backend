@@ -481,7 +481,7 @@ public class DashboardService {
      */
     private float getSlowStochasticWeekly(final Instrument instrument) {
         QuotationArray quotations = instrument.getQuotationArray();
-        QuotationArray weeklyQuotations = new QuotationArray(quotations.getWeeklyQuotations());
+        QuotationArray weeklyQuotations = new QuotationArray(quotations.getWeeklyQuotations(null));
         StochasticCalculator stochasticCalculator = new StochasticCalculator();
         final int slowStochasticPeriodWeeks = 14;
         final int smoothingPeriodWeeks = 3;

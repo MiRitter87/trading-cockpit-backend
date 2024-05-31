@@ -221,19 +221,32 @@ public class QuotationArray {
     }
 
     /**
-     * Determines a List of weekly quotations based on the quotations stored in the QuotationArray.
+     * Determines a List of weekly quotations based on the quotations stored in the QuotationArray. Quotations up until
+     * newestQuotation are taken into account for calculation.
      *
+     * @param newestQuotation A Quotation defining the newest Quotation used for weekly Quotation calculation. All
+     *                        quotations newer then the newestQuotation are not taken into account. If newestQuotation
+     *                        is null, all quotations of the QuotationArray are used to calculate the weekly quotations.
      * @return A List of weekly quotations.
      */
     @JsonIgnore
-    public List<Quotation> getWeeklyQuotations() {
+    public List<Quotation> getWeeklyQuotations(final Quotation newestQuotation) {
+        List<Quotation> dailyQuotations = new ArrayList<>();
         List<Quotation> weeklyQuotations = new ArrayList<>();
         Quotation weeklyQuotation = new Quotation();
         Quotation previousQuotation = null;
+        int startIndex;
 
         this.sortQuotationsByDate();
 
-        for (Quotation dailyQuotation : this.quotations) {
+        if (newestQuotation != null) {
+            startIndex = this.quotations.indexOf(newestQuotation);
+            dailyQuotations = this.quotations.subList(startIndex, this.quotations.size());
+        } else {
+            dailyQuotations = this.quotations;
+        }
+
+        for (Quotation dailyQuotation : dailyQuotations) {
             if (this.isNewWeek(dailyQuotation, previousQuotation)) {
                 if (previousQuotation != null) {
                     weeklyQuotation.setDate(previousQuotation.getDate());
@@ -258,7 +271,7 @@ public class QuotationArray {
                 }
 
                 // No more quotations following.
-                if (this.quotations.indexOf(dailyQuotation) == this.quotations.size() - 1) {
+                if (dailyQuotations.indexOf(dailyQuotation) == dailyQuotations.size() - 1) {
                     weeklyQuotation.setDate(dailyQuotation.getDate());
                     weeklyQuotation.setOpen(dailyQuotation.getOpen());
                     weeklyQuotations.add(weeklyQuotation);

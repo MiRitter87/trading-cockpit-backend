@@ -49,7 +49,7 @@ public class TemplateThreeWeeksTightProcessor {
             currentQuotation = quotationIterator.next();
             quotationArray = new QuotationArray(
                     this.quotationHibernateDAO.getQuotationsOfInstrument(currentQuotation.getInstrument().getId()));
-            weeklyQuotations = quotationArray.getWeeklyQuotations();
+            weeklyQuotations = quotationArray.getWeeklyQuotations(null);
 
             if (!this.isThreeWeeksTight(weeklyQuotations)) {
                 quotationIterator.remove();
