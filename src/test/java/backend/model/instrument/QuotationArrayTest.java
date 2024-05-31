@@ -174,7 +174,10 @@ public class QuotationArrayTest {
      * Tests the determination of weekly quotations.
      */
     public void testGetWeeklyQuotations() {
-        Quotation quotation1, quotation2, currentQuotation;
+        Quotation quotation1;
+        Quotation quotation2;
+        Quotation quotation53;
+        Quotation currentQuotation;
         List<Quotation> weeklyQuotations;
 
         // Define the most recent two of the expected weekly quotations.
@@ -196,6 +199,16 @@ public class QuotationArrayTest {
         quotation2.setLow(new BigDecimal("1.24"));
         quotation2.setClose(new BigDecimal("1.36"));
 
+        // Define the last expected weekly Quotation.
+        quotation53 = new Quotation();
+        quotation53.setDate(this.quotationArray.getQuotations().get(251).getDate());
+        quotation53.setCurrency(Currency.CAD);
+        quotation53.setVolume(1886800);
+        quotation53.setOpen(new BigDecimal("1.35"));
+        quotation53.setHigh(new BigDecimal("1.35"));
+        quotation53.setLow(new BigDecimal("1.27"));
+        quotation53.setClose(new BigDecimal("1.29"));
+
         weeklyQuotations = this.quotationArray.getWeeklyQuotations(null);
 
         // Assure that there is one Quotation for each week of the year.
@@ -208,6 +221,10 @@ public class QuotationArrayTest {
 
         currentQuotation = weeklyQuotations.get(1);
         assertEquals(quotation2, currentQuotation);
+
+        // Check the oldest weekly Quotation.
+        currentQuotation = weeklyQuotations.get(52);
+        assertEquals(quotation53, currentQuotation);
     }
 
     @Test
