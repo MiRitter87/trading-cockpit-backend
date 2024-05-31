@@ -18,15 +18,15 @@ public class MovingAverageCalculator {
     private static final int NUMBER_DECIMALS_PRICE = 3;
 
     /**
-     * Returns the Simple Moving Average.
+     * Returns the Simple Moving Average for the given period.
      *
-     * @param days             The number of days on which the Simple Moving Average is based.
+     * @param period           The number of quotations on which the Simple Moving Average is based.
      * @param quotation        The Quotation for which the Simple Moving Average is calculated.
      * @param sortedQuotations A list of quotations sorted by date that build the trading history used for Simple Moving
      *                         Average calculation.
      * @return The Simple Moving Average.
      */
-    public float getSimpleMovingAverage(final int days, final Quotation quotation,
+    public float getSimpleMovingAverage(final int period, final Quotation quotation,
             final QuotationArray sortedQuotations) {
         int indexOfQuotation = 0;
         BigDecimal sum = new BigDecimal(0);
@@ -36,17 +36,17 @@ public class MovingAverageCalculator {
         indexOfQuotation = sortedQuotations.getQuotations().indexOf(quotation);
 
         // Check if enough quotations exist for average calculation.
-        if ((sortedQuotations.getQuotations().size() - days - indexOfQuotation) < 0) {
+        if ((sortedQuotations.getQuotations().size() - period - indexOfQuotation) < 0) {
             return 0;
         }
 
-        // Calculate the sum of the prices of the last x days.
-        for (int i = indexOfQuotation; i < (days + indexOfQuotation); i++) {
+        // Calculate the sum of the prices for the given number of quotations.
+        for (int i = indexOfQuotation; i < (period + indexOfQuotation); i++) {
             sum = sum.add(sortedQuotations.getQuotations().get(i).getClose());
         }
 
         // Build the average.
-        average = sum.divide(BigDecimal.valueOf(days), NUMBER_DECIMALS_PRICE, RoundingMode.HALF_UP);
+        average = sum.divide(BigDecimal.valueOf(period), NUMBER_DECIMALS_PRICE, RoundingMode.HALF_UP);
 
         return average.floatValue();
     }

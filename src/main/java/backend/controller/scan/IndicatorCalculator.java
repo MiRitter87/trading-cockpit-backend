@@ -69,6 +69,11 @@ public class IndicatorCalculator {
     private static final int DAYS_BBW10 = 10;
 
     /**
+     * Number of weeks used to calculate the Bollinger BandWidth(10,2).
+     */
+    private static final int WEEKS_BBW10 = 10;
+
+    /**
      * Number of days used for the long period of the volume differential.
      */
     private static final int DAYS_LONG_PERIOD_VOLUME_DIFFERENTIAL = 30;
@@ -187,12 +192,17 @@ public class IndicatorCalculator {
     private void calculateMostRecentIndicators(final Indicator indicator, final Quotation quotation,
             final QuotationArray sortedQuotations) {
 
+        QuotationArray weeklyQuotations = new QuotationArray(sortedQuotations.getWeeklyQuotations(quotation));
+        weeklyQuotations.sortQuotationsByDate();
+
         quotation.getRelativeStrengthData()
                 .setRsPercentSum(this.performanceCalculator.getRSPercentSum(quotation, sortedQuotations));
         indicator.setDistanceTo52WeekHigh(this.getDistanceTo52WeekHigh(quotation, sortedQuotations));
         indicator.setDistanceTo52WeekLow(this.getDistanceTo52WeekLow(quotation, sortedQuotations));
         indicator.setBollingerBandWidth10Days(
                 this.bollingerCalculator.getBollingerBandWidth(DAYS_BBW10, 2, quotation, sortedQuotations));
+        indicator.setBollingerBandWidth10Weeks(this.bollingerCalculator.getBollingerBandWidth(WEEKS_BBW10, 2,
+                weeklyQuotations.getQuotations().get(0), weeklyQuotations));
         indicator.setVolumeDifferential5Days(this.getVolumeDifferential(DAYS_LONG_PERIOD_VOLUME_DIFFERENTIAL,
                 DAYS_VOLUME_DIFFERENTIAL_5, quotation, sortedQuotations));
         indicator.setVolumeDifferential10Days(this.getVolumeDifferential(DAYS_LONG_PERIOD_VOLUME_DIFFERENTIAL,

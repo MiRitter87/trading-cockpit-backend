@@ -27,18 +27,18 @@ public class BollingerCalculator {
     /**
      * Calculates the Bollinger BandWidth.
      *
-     * @param days               The number of days on which the calculation is based.
+     * @param period             The number of quotations on which the calculation is based.
      * @param standardDeviations The standard deviation used for calculation of the upper and lower Bollinger Band.
      * @param quotation          The Quotation for which the Bollinger BandWidth is calculated.
      * @param sortedQuotations   A list of quotations sorted by date that build the trading history used for Bollinger
      *                           BandWidth calculation.
      * @return The Bollinger BandWidth.
      */
-    public float getBollingerBandWidth(final int days, final float standardDeviations, final Quotation quotation,
+    public float getBollingerBandWidth(final int period, final float standardDeviations, final Quotation quotation,
             final QuotationArray sortedQuotations) {
 
-        float standardDeviation = this.getStandardDeviation(this.getPricesAsArray(days, quotation, sortedQuotations));
-        float simpleMovingAverage = this.movingAverageCalculator.getSimpleMovingAverage(days, quotation,
+        float standardDeviation = this.getStandardDeviation(this.getPricesAsArray(period, quotation, sortedQuotations));
+        float simpleMovingAverage = this.movingAverageCalculator.getSimpleMovingAverage(period, quotation,
                 sortedQuotations);
         float middleBand;
         float upperBand;
@@ -119,15 +119,16 @@ public class BollingerCalculator {
     }
 
     /**
-     * Provides an array of prices for the given days.
+     * Provides an array of prices for the given number of quotations.
      *
-     * @param days             The number of days for which prices are provided.
+     * @param period           The number of quotations for which prices are provided.
      * @param quotation        The Quotation as starting point for prices.
      * @param sortedQuotations A list of quotations sorted by date that build the trading history.
      * @return An array of prices.
      */
-    private float[] getPricesAsArray(final int days, final Quotation quotation, final QuotationArray sortedQuotations) {
-        float[] prices = new float[days];
+    private float[] getPricesAsArray(final int period, final Quotation quotation,
+            final QuotationArray sortedQuotations) {
+        float[] prices = new float[period];
         int indexOfQuotation = 0;
         int j = 0;
 
@@ -135,12 +136,12 @@ public class BollingerCalculator {
         indexOfQuotation = sortedQuotations.getQuotations().indexOf(quotation);
 
         // Check if enough quotations exist for average calculation.
-        if ((sortedQuotations.getQuotations().size() - days - indexOfQuotation) < 0) {
+        if ((sortedQuotations.getQuotations().size() - period - indexOfQuotation) < 0) {
             return prices;
         }
 
-        // Get the prices of the last x days.
-        for (int i = indexOfQuotation; i < (days + indexOfQuotation); i++) {
+        // Get the prices of the last x days or weeks.
+        for (int i = indexOfQuotation; i < (period + indexOfQuotation); i++) {
             prices[j] = sortedQuotations.getQuotations().get(i).getClose().floatValue();
             j++;
         }
