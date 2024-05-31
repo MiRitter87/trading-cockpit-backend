@@ -47,6 +47,12 @@ public class Indicator {
     private float bollingerBandWidth10Days;
 
     /**
+     * The weekly Bollinger Band Width (10,2).
+     */
+    @Column(name = "BBW_10_WEEKS")
+    private float bollingerBandWidth10Weeks;
+
+    /**
      * The difference in percent between the average volume of the last 5 days compared to the SMA(30) of the volume.
      */
     @Column(name = "VOLUME_DIFFERENTIAL_5_DAYS")
@@ -166,6 +172,20 @@ public class Indicator {
     }
 
     /**
+     * @return the bollingerBandWidth10Weeks
+     */
+    public float getBollingerBandWidth10Weeks() {
+        return bollingerBandWidth10Weeks;
+    }
+
+    /**
+     * @param bollingerBandWidth10Weeks the bollingerBandWidth10Weeks to set
+     */
+    public void setBollingerBandWidth10Weeks(final float bollingerBandWidth10Weeks) {
+        this.bollingerBandWidth10Weeks = bollingerBandWidth10Weeks;
+    }
+
+    /**
      * @return the volumeDifferential5days
      */
     public float getVolumeDifferential5Days() {
@@ -268,9 +288,9 @@ public class Indicator {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(bollingerBandWidth10Days, distanceTo52WeekHigh, distanceTo52WeekLow, id, stage,
-                volumeDifferential5Days, volumeDifferential10Days, baseLengthWeeks, upDownVolumeRatio, performance5Days,
-                liquidity20Days, averageTrueRangePercent20);
+        return Objects.hash(bollingerBandWidth10Days, bollingerBandWidth10Weeks, distanceTo52WeekHigh,
+                distanceTo52WeekLow, id, stage, volumeDifferential5Days, volumeDifferential10Days, baseLengthWeeks,
+                upDownVolumeRatio, performance5Days, liquidity20Days, averageTrueRangePercent20);
     }
 
     /**
@@ -289,6 +309,8 @@ public class Indicator {
         }
         Indicator other = (Indicator) obj;
         return Float.floatToIntBits(bollingerBandWidth10Days) == Float.floatToIntBits(other.bollingerBandWidth10Days)
+                && Float.floatToIntBits(bollingerBandWidth10Weeks) == Float
+                        .floatToIntBits(other.bollingerBandWidth10Weeks)
                 && Float.floatToIntBits(distanceTo52WeekHigh) == Float.floatToIntBits(other.distanceTo52WeekHigh)
                 && Float.floatToIntBits(distanceTo52WeekLow) == Float.floatToIntBits(other.distanceTo52WeekLow)
                 && Objects.equals(id, other.id)
