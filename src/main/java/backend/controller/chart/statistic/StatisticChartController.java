@@ -50,7 +50,7 @@ public class StatisticChartController extends ChartController {
             instruments.addAll(list.getInstruments());
             statistics = statisticCalculationController.calculateStatistics(instruments);
         } else {
-            statistics = statisticDAO.getStatisticsOfInstrumentType(instrumentType);
+            statistics = statisticDAO.getStatistics(instrumentType, null, null);
         }
 
         if (statistics.size() > maxNumber) {
