@@ -377,6 +377,9 @@ public class QuotationHibernateDAO implements QuotationDAO {
         case BREAKOUT_CANDIDATES:
             query = quotationQueryProvider.getQueryForBreakoutCandidatesTemplate();
             break;
+        case CONSOLIDATION_10_WEEKS:
+            query = quotationQueryProvider.getQueryForConsolidation10WeeksTemplate();
+            break;
         case VOLATILITY_CONTRACTION_10_DAYS:
             query = quotationQueryProvider.getQueryForVolatilityContractionTemplate();
             break;

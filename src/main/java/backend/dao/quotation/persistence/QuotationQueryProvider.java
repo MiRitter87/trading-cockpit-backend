@@ -58,6 +58,19 @@ public class QuotationQueryProvider {
     }
 
     /**
+     * Provides the Query for the "Consolidation - 10 Weeks" Template.
+     *
+     * @return The Query.
+     */
+    public Query getQueryForConsolidation10WeeksTemplate() {
+        return this.entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i "
+                + "LEFT JOIN FETCH i.sector LEFT JOIN FETCH i.industryGroup "
+                + "JOIN q.indicator r WHERE q.id IN :quotationIds AND q.indicator IS NOT NULL "
+                + "AND r.bollingerBandWidth10Weeks < 20 AND r.bollingerBandWidth10Days < 10 "
+                + "AND r.volumeDifferential5Days < 0");
+    }
+
+    /**
      * Provides the Query for the "Volatility Contraction" Template.
      *
      * @return The Query.
@@ -136,8 +149,7 @@ public class QuotationQueryProvider {
      */
     public Query getQueryForSwingTradingEnvironmentTemplate() {
         return this.entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i "
-                + "LEFT JOIN FETCH i.sector LEFT JOIN FETCH i.industryGroup "
-                + "JOIN q.movingAverageData m "
+                + "LEFT JOIN FETCH i.sector LEFT JOIN FETCH i.industryGroup JOIN q.movingAverageData m "
                 + "WHERE q.id IN :quotationIds AND q.movingAverageData IS NOT NULL "
                 + "AND q.close > m.sma20 AND m.sma10 > m.sma20 ");
     }

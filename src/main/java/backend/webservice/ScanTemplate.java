@@ -17,6 +17,11 @@ public enum ScanTemplate {
     MINERVINI_TREND_TEMPLATE,
 
     /**
+     * A contraction in price and volume in the last a 10-weeks as well as the last 10 trading days.
+     */
+    CONSOLIDATION_10_WEEKS,
+
+    /**
      * A contraction in price and volume within the last 10 trading days.
      */
     VOLATILITY_CONTRACTION_10_DAYS,

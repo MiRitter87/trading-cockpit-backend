@@ -449,7 +449,8 @@ public class QuotationServiceFixture {
         indicator.setDistanceTo52WeekHigh((float) -21.4);
         indicator.setDistanceTo52WeekLow((float) 78.81);
         indicator.setBollingerBandWidth10Days((float) 8.71);
-        indicator.setVolumeDifferential5Days((float) 12.12);
+        indicator.setBollingerBandWidth10Weeks((float) 17.89);
+        indicator.setVolumeDifferential5Days((float) -12.12);
         indicator.setVolumeDifferential10Days((float) 19.34);
         indicator.setBaseLengthWeeks(32);
 
