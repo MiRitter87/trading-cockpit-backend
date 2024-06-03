@@ -380,8 +380,8 @@ public class QuotationHibernateDAO implements QuotationDAO {
         case CONSOLIDATION_10_WEEKS:
             query = quotationQueryProvider.getQueryForConsolidation10WeeksTemplate();
             break;
-        case VOLATILITY_CONTRACTION_10_DAYS:
-            query = quotationQueryProvider.getQueryForVolatilityContractionTemplate();
+        case CONSOLIDATION_10_DAYS:
+            query = quotationQueryProvider.getQueryForConsolidation10DaysTemplate();
             break;
         case UP_ON_VOLUME:
             query = quotationQueryProvider.getQueryForUpOnVolumeTemplate();

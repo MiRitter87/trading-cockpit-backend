@@ -71,15 +71,15 @@ public class QuotationQueryProvider {
     }
 
     /**
-     * Provides the Query for the "Volatility Contraction" Template.
+     * Provides the Query for the "Consolidation - 10 Days" Template.
      *
      * @return The Query.
      */
-    public Query getQueryForVolatilityContractionTemplate() {
+    public Query getQueryForConsolidation10DaysTemplate() {
         return this.entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i "
                 + "LEFT JOIN FETCH i.sector LEFT JOIN FETCH i.industryGroup "
                 + "JOIN q.indicator r WHERE q.id IN :quotationIds AND q.indicator IS NOT NULL "
-                + "AND r.volumeDifferential10Days < 0" + "AND r.bollingerBandWidth10Days < 10");
+                + "AND r.volumeDifferential5Days < 0" + "AND r.bollingerBandWidth10Days < 10");
     }
 
     /**

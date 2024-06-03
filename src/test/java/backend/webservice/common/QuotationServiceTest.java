@@ -477,19 +477,19 @@ public class QuotationServiceTest {
 
     @Test
     /**
-     * Tests the retrieval of the most recent quotations that match the "Volatility Contraction 10 Days" template. Only
-     * those quotations should be returned that have an Indicator associated with them. Only instruments of
-     * InstrumentType stock are requested.
+     * Tests the retrieval of the most recent quotations that match the "Consolidation - 10 Days" template. Only those
+     * quotations should be returned that have an Indicator associated with them. Only instruments of InstrumentType ETF
+     * are requested.
      */
-    public void testGetQuotationsVolatiltyContraction10DaysStock() {
+    public void testGetQuotationsConsolidation10DaysStETF() {
         QuotationArray quotations;
         WebServiceResult getQuotationsResult;
         Quotation quotation;
 
         // Get the quotations.
         QuotationService service = new QuotationService();
-        getQuotationsResult = service.getQuotations(ScanTemplate.VOLATILITY_CONTRACTION_10_DAYS, InstrumentType.STOCK,
-                null, null, null);
+        getQuotationsResult = service.getQuotations(ScanTemplate.CONSOLIDATION_10_DAYS, InstrumentType.ETF, null, null,
+                null);
         quotations = (QuotationArray) getQuotationsResult.getData();
 
         // Assure no error message exists
@@ -500,7 +500,7 @@ public class QuotationServiceTest {
 
         // Check if the correct Quotation is returned.
         quotation = quotations.getQuotations().get(0);
-        assertEquals(this.fordQuotation1, quotation);
+        assertEquals(this.xleQuotation2, quotation);
     }
 
     @Test

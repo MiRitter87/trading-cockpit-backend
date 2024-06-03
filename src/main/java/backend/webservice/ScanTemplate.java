@@ -24,7 +24,7 @@ public enum ScanTemplate {
     /**
      * A contraction in price and volume within the last 10 trading days.
      */
-    VOLATILITY_CONTRACTION_10_DAYS,
+    CONSOLIDATION_10_DAYS,
 
     /**
      * Instruments consolidating in Buyable Bases near the 52 week high.
