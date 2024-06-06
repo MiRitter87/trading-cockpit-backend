@@ -84,11 +84,6 @@ public class IndicatorCalculator {
     private static final int DAYS_VOLUME_DIFFERENTIAL_5 = 5;
 
     /**
-     * Number of days used for 10-day period of the volume differential.
-     */
-    private static final int DAYS_VOLUME_DIFFERENTIAL_10 = 10;
-
-    /**
      * Number of days used to calculate the Up/Down Volume Ratio.
      */
     private static final int DAYS_UP_DOWN_VOLUME_RATIO = 50;
@@ -205,8 +200,6 @@ public class IndicatorCalculator {
                 weeklyQuotations.getQuotations().get(0), weeklyQuotations));
         indicator.setVolumeDifferential5Days(this.getVolumeDifferential(DAYS_LONG_PERIOD_VOLUME_DIFFERENTIAL,
                 DAYS_VOLUME_DIFFERENTIAL_5, quotation, sortedQuotations));
-        indicator.setVolumeDifferential10Days(this.getVolumeDifferential(DAYS_LONG_PERIOD_VOLUME_DIFFERENTIAL,
-                DAYS_VOLUME_DIFFERENTIAL_10, quotation, sortedQuotations));
         indicator.setBaseLengthWeeks(this.getBaseLengthWeeks(quotation, sortedQuotations));
         indicator.setUpDownVolumeRatio(
                 this.getUpDownVolumeRatio(DAYS_UP_DOWN_VOLUME_RATIO, quotation, sortedQuotations));

@@ -59,12 +59,6 @@ public class Indicator {
     private float volumeDifferential5Days;
 
     /**
-     * The difference in percent between the average volume of the last 10 days compared to the SMA(30) of the volume.
-     */
-    @Column(name = "VOLUME_DIFFERENTIAL_10_DAYS")
-    private float volumeDifferential10Days;
-
-    /**
      * The length of the most recent consolidation in weeks, beginning at the most recent 52-week high.
      */
     @Column(name = "BASE_LENGTH_WEEKS")
@@ -200,20 +194,6 @@ public class Indicator {
     }
 
     /**
-     * @return the volumeDifferential10days
-     */
-    public float getVolumeDifferential10Days() {
-        return volumeDifferential10Days;
-    }
-
-    /**
-     * @param volumeDifferential10Days the volumeDifferential10days to set
-     */
-    public void setVolumeDifferential10Days(final float volumeDifferential10Days) {
-        this.volumeDifferential10Days = volumeDifferential10Days;
-    }
-
-    /**
      * @return the baseLengthWeeks
      */
     public int getBaseLengthWeeks() {
@@ -289,8 +269,8 @@ public class Indicator {
     @Override
     public int hashCode() {
         return Objects.hash(bollingerBandWidth10Days, bollingerBandWidth10Weeks, distanceTo52WeekHigh,
-                distanceTo52WeekLow, id, stage, volumeDifferential5Days, volumeDifferential10Days, baseLengthWeeks,
-                upDownVolumeRatio, performance5Days, liquidity20Days, averageTrueRangePercent20);
+                distanceTo52WeekLow, id, stage, volumeDifferential5Days, baseLengthWeeks, upDownVolumeRatio,
+                performance5Days, liquidity20Days, averageTrueRangePercent20);
     }
 
     /**
@@ -315,8 +295,6 @@ public class Indicator {
                 && Float.floatToIntBits(distanceTo52WeekLow) == Float.floatToIntBits(other.distanceTo52WeekLow)
                 && Objects.equals(id, other.id)
                 && Float.floatToIntBits(volumeDifferential5Days) == Float.floatToIntBits(other.volumeDifferential5Days)
-                && Float.floatToIntBits(volumeDifferential10Days) == Float
-                        .floatToIntBits(other.volumeDifferential10Days)
                 && stage == other.stage && baseLengthWeeks == other.baseLengthWeeks
                 && upDownVolumeRatio == other.upDownVolumeRatio && performance5Days == other.performance5Days
                 && liquidity20Days == other.liquidity20Days
