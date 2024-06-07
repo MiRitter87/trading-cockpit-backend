@@ -1,20 +1,14 @@
 package backend.controller;
 
-import static org.junit.jupiter.api.Assertions.fail;
-
-import java.io.IOException;
 import java.util.List;
 
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 
-import backend.dao.DAOManager;
-import backend.dao.instrument.InstrumentDAO;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
+import backend.model.statistic.Statistic;
 import backend.webservice.common.QuotationServiceFixture;
 
 /**
@@ -28,6 +22,11 @@ public class AggregateIndicatorCalculatorTest {
      */
     private Instrument uraIndustryGroup;
 
+    /**
+     * Statistics of the Uranium industry group.
+     */
+    private List<Statistic> statistics;
+
     @BeforeEach
     /**
      * Tasks to be performed before each test is run.
@@ -35,6 +34,7 @@ public class AggregateIndicatorCalculatorTest {
     private void setUp() {
         this.createUraInstrument();
         this.createUraQuotations();
+        this.createStatistics();
     }
 
     @AfterEach
@@ -42,7 +42,8 @@ public class AggregateIndicatorCalculatorTest {
      * Tasks to be performed after each test has been run.
      */
     private void tearDown() {
-        this.deleteUraInstrument();
+        this.uraIndustryGroup = null;
+        this.statistics = null;
     }
 
     /**
@@ -50,17 +51,11 @@ public class AggregateIndicatorCalculatorTest {
      */
     private void createUraInstrument() {
         this.uraIndustryGroup = new Instrument();
+        this.uraIndustryGroup.setId(1);
         this.uraIndustryGroup.setSymbol("URA");
         this.uraIndustryGroup.setName("Uranium Industry Group");
         this.uraIndustryGroup.setType(InstrumentType.IND_GROUP);
 
-    }
-
-    /**
-     * Deletes the Instrument of the Uranium Industry Group.
-     */
-    private void deleteUraInstrument() {
-        this.uraIndustryGroup = null;
     }
 
     /**
@@ -73,5 +68,27 @@ public class AggregateIndicatorCalculatorTest {
 
         this.uraIndustryGroup.setQuotations(quotationServiceFixture
                 .getDenisonMinesQuotationsWithIndicators(this.uraIndustryGroup, quotationsWithoutIndicators));
+    }
+
+    /**
+     * Creates statistics.
+     */
+    private void createStatistics() {
+        List<Quotation> quotationsSortedByDate = this.uraIndustryGroup.getQuotationsSortedByDate();
+        Statistic newStatistic;
+        Quotation currentQuotation;
+
+        // Create 11 statistics based on the 11 newest quotations of the industry group.
+        for (int i = 0; i <= 10; i++) {
+            currentQuotation = quotationsSortedByDate.get(i);
+
+            newStatistic = new Statistic();
+            newStatistic.setDate(currentQuotation.getDate());
+            newStatistic.setIndustryGroupId(this.uraIndustryGroup.getId());
+            newStatistic.setNumberOfInstruments(20);
+            newStatistic.setNumberAboveSma50(i);
+
+            this.statistics.add(newStatistic);
+        }
     }
 }
