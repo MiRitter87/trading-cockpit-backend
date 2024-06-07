@@ -3,6 +3,7 @@ package backend.controller;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -13,6 +14,8 @@ import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
+import backend.model.instrument.Quotation;
+import backend.webservice.common.QuotationServiceFixture;
 
 /**
  * Tests the AggregateIndicatorCalculator.
@@ -21,34 +24,9 @@ import backend.model.instrument.InstrumentType;
  */
 public class AggregateIndicatorCalculatorTest {
     /**
-     * DAO to access instrument data.
-     */
-    private static InstrumentDAO instrumentDAO;
-
-    /**
      * The stock of the Uranium Industry Group.
      */
     private Instrument uraIndustryGroup;
-
-    @BeforeAll
-    /**
-     * Tasks to be performed once at startup of test class.
-     */
-    public static void setUpClass() {
-        instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
-    }
-
-    @AfterAll
-    /**
-     * Tasks to be performed once at end of test class.
-     */
-    public static void tearDownClass() {
-        try {
-            DAOManager.getInstance().close();
-        } catch (IOException e) {
-            fail(e.getMessage());
-        }
-    }
 
     @BeforeEach
     /**
@@ -56,6 +34,7 @@ public class AggregateIndicatorCalculatorTest {
      */
     private void setUp() {
         this.createUraInstrument();
+        this.createUraQuotations();
     }
 
     @AfterEach
@@ -75,21 +54,24 @@ public class AggregateIndicatorCalculatorTest {
         this.uraIndustryGroup.setName("Uranium Industry Group");
         this.uraIndustryGroup.setType(InstrumentType.IND_GROUP);
 
-        try {
-            instrumentDAO.insertInstrument(this.uraIndustryGroup);
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
     }
 
     /**
      * Deletes the Instrument of the Uranium Industry Group.
      */
     private void deleteUraInstrument() {
-        try {
-            instrumentDAO.deleteInstrument(this.uraIndustryGroup);
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
+        this.uraIndustryGroup = null;
+    }
+
+    /**
+     * Creates quotations and adds them to the URA Instrument.
+     */
+    private void createUraQuotations() {
+        QuotationServiceFixture quotationServiceFixture = new QuotationServiceFixture();
+        List<Quotation> quotationsWithoutIndicators = quotationServiceFixture
+                .getDenisonMinesQuotationsWithoutIndicators(this.uraIndustryGroup);
+
+        this.uraIndustryGroup.setQuotations(quotationServiceFixture
+                .getDenisonMinesQuotationsWithIndicators(this.uraIndustryGroup, quotationsWithoutIndicators));
     }
 }
