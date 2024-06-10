@@ -1,9 +1,13 @@
 package backend.controller;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
@@ -78,6 +82,8 @@ public class AggregateIndicatorCalculatorTest {
         Statistic newStatistic;
         Quotation currentQuotation;
 
+        this.statistics = new ArrayList<>();
+
         // Create 11 statistics based on the 11 newest quotations of the industry group.
         for (int i = 0; i <= 10; i++) {
             currentQuotation = quotationsSortedByDate.get(i);
@@ -90,5 +96,21 @@ public class AggregateIndicatorCalculatorTest {
 
             this.statistics.add(newStatistic);
         }
+    }
+
+    // @Test
+    /**
+     * Tests the calculation of the Aggregate Indicator.
+     */
+    public void testGetAggregateIndicator() {
+        AggregateIndicatorCalculator calculator = new AggregateIndicatorCalculator();
+        final int expectedAggregateIndicator = 32;
+        int actualAggregateIndicator;
+        List<Quotation> quotations = this.uraIndustryGroup.getQuotationsSortedByDate();
+        Quotation currentQuotation;
+
+        currentQuotation = quotations.get(0);
+        actualAggregateIndicator = calculator.getAggregateIndicator(quotations, this.statistics, currentQuotation);
+        assertEquals(expectedAggregateIndicator, actualAggregateIndicator);
     }
 }
