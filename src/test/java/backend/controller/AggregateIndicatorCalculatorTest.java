@@ -110,7 +110,7 @@ public class AggregateIndicatorCalculatorTest {
         Quotation currentQuotation;
 
         currentQuotation = quotations.get(0);
-        actualAggregateIndicator = calculator.getAggregateIndicator(quotations, this.statistics, currentQuotation);
+        actualAggregateIndicator = calculator.getAggregateIndicator(quotations, this.statistics, currentQuotation, this.uraIndustryGroup);
         assertEquals(expectedAggregateIndicator, actualAggregateIndicator);
     }
 }
