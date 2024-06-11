@@ -93,24 +93,33 @@ public class AggregateIndicatorCalculatorTest {
             newStatistic.setIndustryGroupId(this.uraIndustryGroup.getId());
             newStatistic.setNumberOfInstruments(20);
             newStatistic.setNumberAboveSma50(i);
+            newStatistic.setNumberAtOrBelowSma50(20 - i);
 
             this.statistics.add(newStatistic);
         }
     }
 
-    // @Test
+    @Test
     /**
      * Tests the calculation of the Aggregate Indicator.
      */
     public void testGetAggregateIndicator() {
         AggregateIndicatorCalculator calculator = new AggregateIndicatorCalculator();
-        final int expectedAggregateIndicator = 32;
+        int expectedAggregateIndicator;
         int actualAggregateIndicator;
         List<Quotation> quotations = this.uraIndustryGroup.getQuotationsSortedByDate();
         Quotation currentQuotation;
 
-        currentQuotation = quotations.get(0);
-        actualAggregateIndicator = calculator.getAggregateIndicator(quotations, this.statistics, currentQuotation, this.uraIndustryGroup);
+        currentQuotation = quotations.get(0); // 22.07.22
+        expectedAggregateIndicator = 37;
+        actualAggregateIndicator = calculator.getAggregateIndicator(quotations, this.statistics, currentQuotation,
+                this.uraIndustryGroup);
+        assertEquals(expectedAggregateIndicator, actualAggregateIndicator);
+
+        currentQuotation = quotations.get(1); // 21.07.22
+        expectedAggregateIndicator = 45;
+        actualAggregateIndicator = calculator.getAggregateIndicator(quotations, this.statistics, currentQuotation,
+                this.uraIndustryGroup);
         assertEquals(expectedAggregateIndicator, actualAggregateIndicator);
     }
 }
