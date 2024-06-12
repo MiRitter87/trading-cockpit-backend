@@ -32,7 +32,7 @@ public class AboveSma50ChartController extends StatisticChartController {
      */
     public JFreeChart getInstrumentsAboveSma50Chart(final InstrumentType instrumentType, final Integer listId)
             throws Exception {
-        List<Statistic> statistics = this.getStatistics(instrumentType, listId, TRADING_DAYS_PER_YEAR);
+        List<Statistic> statistics = this.getStatisticsForList(instrumentType, listId, TRADING_DAYS_PER_YEAR);
         XYDataset dataset = this.getInstrumentsAboveSma50Dataset(statistics);
 
         JFreeChart chart = ChartFactory.createTimeSeriesChart(

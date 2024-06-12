@@ -33,7 +33,7 @@ public class RitterMarketTrendChartController extends StatisticChartController {
      */
     public JFreeChart getRitterMarketTrendChart(final InstrumentType instrumentType, final Integer listId)
             throws Exception {
-        List<Statistic> statistics = this.getStatistics(instrumentType, listId, TRADING_DAYS_PER_YEAR);
+        List<Statistic> statistics = this.getStatisticsForList(instrumentType, listId, TRADING_DAYS_PER_YEAR);
         XYDataset dataset = this.getRitterMarketTrendDataset(statistics);
 
         JFreeChart chart = ChartFactory.createTimeSeriesChart(
