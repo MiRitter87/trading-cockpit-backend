@@ -1,7 +1,6 @@
 package backend.webservice.common;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -13,7 +12,6 @@ import backend.controller.chart.priceVolume.DistributionDaysChartController;
 import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
 import backend.dao.quotation.persistence.QuotationDAO;
-import backend.dao.statistic.StatisticDAO;
 import backend.model.LocalizedException;
 import backend.model.dashboard.MarketHealthStatus;
 import backend.model.dashboard.SwingTradingEnvironmentStatus;
@@ -44,11 +42,6 @@ public class DashboardService {
     private QuotationDAO quotationDAO;
 
     /**
-     * DAO for Statistic access.
-     */
-    private StatisticDAO statisticDAO;
-
-    /**
      * Access to localized application resources.
      */
     private ResourceBundle resources = ResourceBundle.getBundle("backend");
@@ -64,7 +57,6 @@ public class DashboardService {
     public DashboardService() {
         this.instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
         this.quotationDAO = DAOManager.getInstance().getQuotationDAO();
-        this.statisticDAO = DAOManager.getInstance().getStatisticDAO();
     }
 
     /**
@@ -433,34 +425,15 @@ public class DashboardService {
      * @throws Exception Error during data retrieval.
      */
     private int getAggregateIndicator(final Instrument instrument) throws Exception {
+        AggregateIndicatorCalculator calculator = new AggregateIndicatorCalculator();
+        List<Statistic> statistics = calculator.getStatistics(instrument);
         List<Quotation> quotationsSortedByDate = instrument.getQuotationsSortedByDate();
         Quotation newestQuotation = quotationsSortedByDate.get(0);
-        List<Statistic> statistics = this.getStatistics(instrument);
-        AggregateIndicatorCalculator calculator = new AggregateIndicatorCalculator();
         int aggregateIndicator;
 
         aggregateIndicator = calculator.getAggregateIndicator(quotationsSortedByDate, statistics, newestQuotation,
                 instrument);
 
         return aggregateIndicator;
-    }
-
-    /**
-     * Determines the statistics for the given Instrument.
-     *
-     * @param instrument The Instrument that constitutes a sector or industry group.
-     * @return The statistics.
-     * @throws Exception Determination of statistics failed.
-     */
-    private List<Statistic> getStatistics(final Instrument instrument) throws Exception {
-        List<Statistic> statistics = new ArrayList<>();
-
-        if (instrument.getType() == InstrumentType.SECTOR) {
-            statistics = this.statisticDAO.getStatistics(InstrumentType.STOCK, instrument.getId(), null);
-        } else if (instrument.getType() == InstrumentType.IND_GROUP) {
-            statistics = this.statisticDAO.getStatistics(InstrumentType.STOCK, null, instrument.getId());
-        }
-
-        return statistics;
     }
 }
