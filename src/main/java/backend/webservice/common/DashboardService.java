@@ -8,8 +8,8 @@ import java.util.ResourceBundle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import backend.controller.AggregateIndicatorCalculator;
 import backend.controller.chart.priceVolume.DistributionDaysChartController;
-import backend.controller.scan.StochasticCalculator;
 import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
 import backend.dao.quotation.persistence.QuotationDAO;
@@ -21,9 +21,7 @@ import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.MovingAverageData;
 import backend.model.instrument.Quotation;
-import backend.model.instrument.QuotationArray;
 import backend.model.statistic.Statistic;
-import backend.model.statistic.StatisticArray;
 import backend.model.webservice.WebServiceMessage;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
@@ -428,123 +426,23 @@ public class DashboardService {
     }
 
     /**
-     * Determines the aggregate indicator.
+     * Determines the Aggregate Indicator.
      *
      * @param instrument The Instrument that constitutes a sector or industry group.
-     * @return The value of the aggregate indicator.
+     * @return The value of the Aggregate Indicator.
      * @throws Exception Error during data retrieval.
      */
     private int getAggregateIndicator(final Instrument instrument) throws Exception {
-        float slowStochasticDaily = this.getSlowStochasticDaily(instrument);
-        float slowStochasticWeekly = this.getSlowStochasticWeekly(instrument);
-        float percentAboveSma50 = this.getSma10OfPercentAboveSma50(instrument);
-        float aggregateIndicator;
-        final int threeComponents = 3;
+        List<Quotation> quotationsSortedByDate = instrument.getQuotationsSortedByDate();
+        Quotation newestQuotation = quotationsSortedByDate.get(0);
+        List<Statistic> statistics = this.getStatistics(instrument);
+        AggregateIndicatorCalculator calculator = new AggregateIndicatorCalculator();
+        int aggregateIndicator;
 
-        // If any component of the aggregate indicator is missing, the value can't be calculated.
-        // -1 informs the frontend about an incomplete calculation.
-        if (slowStochasticDaily == 0 || slowStochasticWeekly == 0 || percentAboveSma50 == -1) {
-            return -1;
-        }
+        aggregateIndicator = calculator.getAggregateIndicator(quotationsSortedByDate, statistics, newestQuotation,
+                instrument);
 
-        aggregateIndicator = slowStochasticDaily + slowStochasticWeekly + percentAboveSma50;
-        aggregateIndicator = aggregateIndicator / threeComponents;
-
-        return Math.round(aggregateIndicator);
-    }
-
-    /**
-     * Determines the daily Slow Stochastic.
-     *
-     * @param instrument The Instrument that constitutes a sector or industry group.
-     * @return The daily Slow Stochastic.
-     */
-    private float getSlowStochasticDaily(final Instrument instrument) {
-        QuotationArray quotations = instrument.getQuotationArray();
-        StochasticCalculator stochasticCalculator = new StochasticCalculator();
-        final int slowStochasticPeriodDays = 14;
-        final int smoothingPeriodDays = 3;
-        float slowStochasticDaily;
-
-        quotations.sortQuotationsByDate();
-        slowStochasticDaily = stochasticCalculator.getSlowStochastic(slowStochasticPeriodDays, smoothingPeriodDays,
-                quotations.getQuotations().get(0), quotations);
-
-        return slowStochasticDaily;
-    }
-
-    /**
-     * Determines the weekly Slow Stochastic.
-     *
-     * @param instrument The Instrument that constitutes a sector or industry group.
-     * @return The weekly Slow Stochastic.
-     */
-    private float getSlowStochasticWeekly(final Instrument instrument) {
-        QuotationArray quotations = instrument.getQuotationArray();
-        QuotationArray weeklyQuotations = new QuotationArray(quotations.getWeeklyQuotations(null));
-        StochasticCalculator stochasticCalculator = new StochasticCalculator();
-        final int slowStochasticPeriodWeeks = 14;
-        final int smoothingPeriodWeeks = 3;
-        float slowStochasticWeekly;
-
-        weeklyQuotations.sortQuotationsByDate();
-        slowStochasticWeekly = stochasticCalculator.getSlowStochastic(slowStochasticPeriodWeeks, smoothingPeriodWeeks,
-                weeklyQuotations.getQuotations().get(0), weeklyQuotations);
-
-        return slowStochasticWeekly;
-    }
-
-    /**
-     * Determines the SMA(10) of percentage of instruments above SMA(50).
-     *
-     * @param instrument The Instrument that constitutes a sector or industry group.
-     * @return The SMA(10) of percentage of instruments above SMA(50).
-     * @throws Exception Error during data retrieval.
-     */
-    private float getSma10OfPercentAboveSma50(final Instrument instrument) throws Exception {
-        StatisticArray statistics = new StatisticArray();
-        Statistic statistic;
-        List<Quotation> quotationsSortedByDate;
-        Quotation quotation;
-        Integer sectorId = null;
-        Integer industryGroupId = null;
-        float percentAboveSma50 = 0;
-        final int tenDays = 10;
-
-        statistics.setStatistics(this.getStatistics(instrument));
-
-        // At least 10 statistics have to exist in order to calculate the SMA(10).
-        if (statistics.getStatistics().size() < tenDays) {
-            return -1;
-        }
-
-        quotationsSortedByDate = instrument.getQuotationsSortedByDate();
-
-        if (instrument.getType() == InstrumentType.SECTOR) {
-            sectorId = instrument.getId();
-        }
-
-        if (instrument.getType() == InstrumentType.IND_GROUP) {
-            industryGroupId = instrument.getId();
-        }
-
-        // calculate SMA(10) of the latest 'instruments above SMA(50)' metric.
-        // The statistics of the last 10 trading days of the sector or industry group are used.
-        for (int i = 0; i < tenDays; i++) {
-            quotation = quotationsSortedByDate.get(i);
-            statistic = statistics.getStatistic(quotation.getDate(), sectorId, industryGroupId);
-
-            // If any statistic of the last 10 trading days is not available, the SMA(10) can't be calculated.
-            if (statistic == null) {
-                return -1;
-            }
-
-            percentAboveSma50 = percentAboveSma50 + statistic.getPercentAboveSma50();
-        }
-
-        percentAboveSma50 = percentAboveSma50 / tenDays;
-
-        return percentAboveSma50;
+        return aggregateIndicator;
     }
 
     /**
