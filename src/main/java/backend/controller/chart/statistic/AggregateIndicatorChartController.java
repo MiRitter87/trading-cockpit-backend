@@ -1,8 +1,16 @@
 package backend.controller.chart.statistic;
 
 import java.util.List;
+import java.util.TimeZone;
 
+import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.AxisLocation;
+import org.jfree.data.time.Day;
+import org.jfree.data.time.TimePeriodAnchor;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesCollection;
+import org.jfree.data.xy.XYDataset;
 
 import backend.controller.AggregateIndicatorCalculator;
 import backend.dao.DAOManager;
@@ -10,6 +18,7 @@ import backend.dao.instrument.InstrumentDAO;
 import backend.dao.quotation.persistence.QuotationDAO;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
+import backend.model.instrument.Quotation;
 import backend.model.statistic.Statistic;
 
 /**
@@ -52,12 +61,22 @@ public class AggregateIndicatorChartController extends StatisticChartController 
     public JFreeChart getAggregateIndicatorChart(final Integer instrumentId) throws Exception {
         Instrument instrument = this.instrumentDAO.getInstrument(instrumentId);
         List<Statistic> statistics;
+        XYDataset dataset;
+        JFreeChart chart;
 
         this.validateInstrumentType(instrument);
+
         statistics = this.calculator.getStatistics(instrument);
         instrument.setQuotations(this.quotationDAO.getQuotationsOfInstrument(instrumentId));
+        dataset = this.getAggregateIndicatorDataset(instrument, statistics);
 
-        return null;
+        chart = ChartFactory.createTimeSeriesChart(this.getResources().getString("chart.aggregateIndicator.titleName"),
+                null, null, dataset, true, true, false);
+
+        this.applyBackgroundTheme(chart);
+        chart.getXYPlot().setRangeAxisLocation(AxisLocation.TOP_OR_RIGHT);
+
+        return chart;
     }
 
     /**
@@ -71,5 +90,44 @@ public class AggregateIndicatorChartController extends StatisticChartController 
         if (instrument.getType() != InstrumentType.SECTOR && instrument.getType() != InstrumentType.IND_GROUP) {
             throw new Exception();
         }
+    }
+
+    /**
+     * Constructs a XYDataset for the Aggregate Indicator chart.
+     *
+     * @param instrument The Instrument with quotations.
+     * @param statistics The statistics used for calculation.
+     * @return The XYDataset.
+     * @throws Exception XYDataset creation failed.
+     */
+    private XYDataset getAggregateIndicatorDataset(final Instrument instrument, final List<Statistic> statistics)
+            throws Exception {
+
+        TimeSeries timeSeries = new TimeSeries(
+                this.getResources().getString("chart.aggregateIndicator.timeSeriesName"));
+        TimeZone timeZone = TimeZone.getDefault();
+        TimeSeriesCollection timeSeriesColleciton = new TimeSeriesCollection(timeZone);
+        List<Quotation> quotations = instrument.getQuotationsSortedByDate();
+        Quotation currentQuotation;
+        int aggregateIndicator;
+        final int minQuotations = 70;
+
+        // At least 70 quotations are needed for calculation of Slow Stochastic weekly.
+        if (quotations.size() < minQuotations) {
+            throw new Exception();
+        }
+
+        // Iterate quotations backwards because XYDatasets are constructed from oldest to newest value.
+        for (int i = quotations.size() - minQuotations - 1; i >= 0; i--) {
+            currentQuotation = quotations.get(i);
+            aggregateIndicator = this.calculator.getAggregateIndicator(quotations, statistics, currentQuotation,
+                    instrument);
+            timeSeries.add(new Day(currentQuotation.getDate()), aggregateIndicator);
+        }
+
+        timeSeriesColleciton.addSeries(timeSeries);
+        timeSeriesColleciton.setXPosition(TimePeriodAnchor.MIDDLE);
+
+        return timeSeriesColleciton;
     }
 }
