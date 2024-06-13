@@ -25,6 +25,7 @@ import backend.controller.chart.priceVolume.PriceVolumeChartController;
 import backend.controller.chart.statistic.AboveSma200ChartController;
 import backend.controller.chart.statistic.AboveSma50ChartController;
 import backend.controller.chart.statistic.AdvanceDeclineNumberChartController;
+import backend.controller.chart.statistic.AggregateIndicatorChartController;
 import backend.controller.chart.statistic.RitterMarketTrendChartController;
 import backend.controller.chart.statistic.RitterPatternIndicatorChartController;
 import backend.controller.instrumentCheck.HealthCheckProfile;
@@ -411,6 +412,34 @@ public class ChartService {
                     this.resources.getString("chart.healthCheck.noQuotationsError")).build();
         } catch (Exception exception) {
             LOGGER.error(this.resources.getString("chart.healthCheck.getError"), exception);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+        }
+
+        return Response.ok(streamingOutput).build();
+    }
+
+    /**
+     * Provides a chart of the Aggregate Indicator of an Instrument.
+     *
+     * @param instrumentId The ID of the Instrument used for chart creation.
+     * @return A Response containing the generated chart.
+     */
+    public Response getAggregateIndicatorChart(final Integer instrumentId) {
+        AggregateIndicatorChartController aggregateIndicatorChartController = new AggregateIndicatorChartController();
+        JFreeChart chart;
+        StreamingOutput streamingOutput = null;
+
+        try {
+            chart = aggregateIndicatorChartController.getAggregateIndicatorChart(instrumentId);
+
+            streamingOutput = new StreamingOutput() {
+                @Override
+                public void write(final OutputStream output) throws IOException, WebApplicationException {
+                    ChartUtils.writeChartAsPNG(output, chart, CHART_WIDTH, CHART_HEIGHT);
+                }
+            };
+        } catch (Exception exception) {
+            LOGGER.error(this.resources.getString("chart.aggregateIndicator.getError"), exception);
             return Response.status(Status.INTERNAL_SERVER_ERROR).build();
         }
 

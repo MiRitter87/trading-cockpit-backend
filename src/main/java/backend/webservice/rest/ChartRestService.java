@@ -159,7 +159,7 @@ public class ChartRestService {
     }
 
     /**
-     * Provides miniature price/volume chart of an Instrument.
+     * Provides a miniature price/volume chart of an Instrument.
      *
      * @param instrumentId The ID of the Instrument used for chart creation.
      * @return The chart.
@@ -189,5 +189,19 @@ public class ChartRestService {
 
         ChartService chartService = new ChartService();
         return chartService.getHealthCheckChart(instrumentId, profile, lookbackPeriod);
+    }
+
+    /**
+     * Provides a Aggregate Indicator chart of an Instrument.
+     *
+     * @param instrumentId The ID of the Instrument used for chart creation.
+     * @return The chart.
+     */
+    @GET
+    @Path("/aggregateIndicator/{instrumentId}")
+    @Produces("image/png")
+    public Response getAggregateIndicatorChart(@PathParam("instrumentId") final Integer instrumentId) {
+        ChartService chartService = new ChartService();
+        return chartService.getAggregateIndicatorChart(instrumentId);
     }
 }
