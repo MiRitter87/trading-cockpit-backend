@@ -73,8 +73,7 @@ public class AggregateIndicatorChartController extends StatisticChartController 
         instrument.setQuotations(this.quotationDAO.getQuotationsOfInstrument(instrumentId));
         dataset = this.getAggregateIndicatorDataset(instrument, statistics);
 
-        chart = ChartFactory.createTimeSeriesChart(this.getResources().getString("chart.aggregateIndicator.titleName"),
-                null, null, dataset, true, true, false);
+        chart = ChartFactory.createTimeSeriesChart(instrument.getName(), null, null, dataset, true, true, false);
 
         this.applyBackgroundTheme(chart);
         chart.getXYPlot().setRangeAxisLocation(AxisLocation.TOP_OR_RIGHT);
