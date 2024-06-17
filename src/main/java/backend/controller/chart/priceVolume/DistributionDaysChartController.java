@@ -33,7 +33,7 @@ public class DistributionDaysChartController extends PriceVolumeChartController 
      *
      * @param instrumentId The ID of the Instrument used for Statistic chart creation.
      * @return The chart.
-     * @throws NoQuotationsExistException No quotations exist for the Quotation with the given ID.
+     * @throws NoQuotationsExistException No quotations exist for the Instrument with the given ID.
      * @throws Exception                  Chart generation failed.
      */
     public JFreeChart getDistributionDaysChart(final Integer instrumentId)

@@ -13,6 +13,7 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 
 import backend.controller.AggregateIndicatorCalculator;
+import backend.controller.NoQuotationsExistException;
 import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
 import backend.dao.quotation.persistence.QuotationDAO;
@@ -56,9 +57,11 @@ public class AggregateIndicatorChartController extends StatisticChartController 
      *
      * @param instrumentId The ID of the sector or industry group.
      * @return The chart.
-     * @throws Exception Chart generation failed.
+     * @throws NoQuotationsExistException No quotations or statistics exist for the Instrument with the given ID.
+     * @throws Exception                  Chart generation failed.
      */
-    public JFreeChart getAggregateIndicatorChart(final Integer instrumentId) throws Exception {
+    public JFreeChart getAggregateIndicatorChart(final Integer instrumentId)
+            throws NoQuotationsExistException, Exception {
         Instrument instrument = this.instrumentDAO.getInstrument(instrumentId);
         List<Statistic> statistics;
         XYDataset dataset;
@@ -98,10 +101,11 @@ public class AggregateIndicatorChartController extends StatisticChartController 
      * @param instrument The Instrument with quotations.
      * @param statistics The statistics used for calculation.
      * @return The XYDataset.
-     * @throws Exception XYDataset creation failed.
+     * @throws NoQuotationsExistException No quotations or statistics exist for the Instrument with the given ID.
+     * @throws Exception                  XYDataset creation failed.
      */
     private XYDataset getAggregateIndicatorDataset(final Instrument instrument, final List<Statistic> statistics)
-            throws Exception {
+            throws NoQuotationsExistException, Exception {
 
         TimeSeries timeSeries = new TimeSeries(
                 this.getResources().getString("chart.aggregateIndicator.timeSeriesName"));
@@ -112,9 +116,14 @@ public class AggregateIndicatorChartController extends StatisticChartController 
         int aggregateIndicator;
         final int minQuotations = 70;
 
+        // Statistics are needed for calculation.
+        if (statistics == null || statistics.size() == 0) {
+            throw new NoQuotationsExistException();
+        }
+
         // At least 70 quotations are needed for calculation of Slow Stochastic weekly.
         if (quotations.size() < minQuotations) {
-            throw new Exception();
+            throw new NoQuotationsExistException();
         }
 
         // Iterate quotations backwards because XYDatasets are constructed from oldest to newest value.

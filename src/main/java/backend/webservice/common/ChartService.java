@@ -438,6 +438,9 @@ public class ChartService {
                     ChartUtils.writeChartAsPNG(output, chart, CHART_WIDTH, CHART_HEIGHT);
                 }
             };
+        } catch (NoQuotationsExistException noQuotationsExistException) {
+            return Response.status(Status.NOT_FOUND.getStatusCode(),
+                    this.resources.getString("chart.aggregateIndicator.noQuotationsError")).build();
         } catch (Exception exception) {
             LOGGER.error(this.resources.getString("chart.aggregateIndicator.getError"), exception);
             return Response.status(Status.INTERNAL_SERVER_ERROR).build();
