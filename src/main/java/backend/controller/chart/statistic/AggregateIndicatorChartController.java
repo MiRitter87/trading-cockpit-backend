@@ -1,5 +1,6 @@
 package backend.controller.chart.statistic;
 
+import java.awt.Color;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -66,6 +67,8 @@ public class AggregateIndicatorChartController extends StatisticChartController 
         List<Statistic> statistics;
         XYDataset dataset;
         JFreeChart chart;
+        final int thresholdBottom = 15;
+        final int thresholdTop = 85;
 
         this.validateInstrumentType(instrument);
 
@@ -75,6 +78,8 @@ public class AggregateIndicatorChartController extends StatisticChartController 
 
         chart = ChartFactory.createTimeSeriesChart(instrument.getName(), null, null, dataset, true, true, false);
 
+        this.addHorizontalLine(chart.getXYPlot(), thresholdBottom, Color.GREEN);
+        this.addHorizontalLine(chart.getXYPlot(), thresholdTop, Color.RED);
         this.applyBackgroundTheme(chart);
         chart.getXYPlot().setRangeAxisLocation(AxisLocation.TOP_OR_RIGHT);
 

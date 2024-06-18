@@ -86,10 +86,10 @@ public abstract class ChartController {
      *
      * @param plot                   The XYPlot to which the horizontal line is added.
      * @param horizontalLinePosition The value on the y-axis at which the horizontal line is being drawn.
+     * @param color                  The Color of the line.
      */
-    protected void addHorizontalLine(final XYPlot plot, final double horizontalLinePosition) {
-        ValueMarker valueMarker = new ValueMarker(horizontalLinePosition, Color.BLACK, new BasicStroke(2), null, null,
-                1.0f);
+    protected void addHorizontalLine(final XYPlot plot, final double horizontalLinePosition, final Color color) {
+        ValueMarker valueMarker = new ValueMarker(horizontalLinePosition, color, new BasicStroke(2), null, null, 1.0f);
         plot.addRangeMarker(valueMarker);
     }
 

@@ -1,5 +1,6 @@
 package backend.controller.chart.statistic;
 
+import java.awt.Color;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -61,7 +62,7 @@ public class RitterPatternIndicatorChartController extends ChartController {
                 this.getResources().getString("chart.ritterPatternIndicator.titleName"), null, null, dataset, true,
                 true, false);
 
-        this.addHorizontalLine(chart.getXYPlot(), 0);
+        this.addHorizontalLine(chart.getXYPlot(), 0, Color.BLACK);
         this.applyBackgroundTheme(chart);
         chart.getXYPlot().setRangeAxisLocation(AxisLocation.TOP_OR_RIGHT);
 

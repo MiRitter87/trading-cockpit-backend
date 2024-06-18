@@ -497,7 +497,7 @@ public class PriceVolumeChartController extends ChartController {
         List<HorizontalLine> horizontalLines = this.chartObjectDAO.getHorizontalLines(instrument.getId());
 
         for (HorizontalLine horizontalLine : horizontalLines) {
-            this.addHorizontalLine(candleStickSubplot, horizontalLine.getPrice().doubleValue());
+            this.addHorizontalLine(candleStickSubplot, horizontalLine.getPrice().doubleValue(), Color.BLACK);
         }
     }
 
