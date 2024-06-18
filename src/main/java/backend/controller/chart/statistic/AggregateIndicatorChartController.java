@@ -130,7 +130,10 @@ public class AggregateIndicatorChartController extends StatisticChartController 
             currentQuotation = quotations.get(i);
             aggregateIndicator = this.calculator.getAggregateIndicator(quotations, statistics, currentQuotation,
                     instrument);
-            timeSeries.add(new Day(currentQuotation.getDate()), aggregateIndicator);
+
+            if (aggregateIndicator > -1) {
+                timeSeries.add(new Day(currentQuotation.getDate()), aggregateIndicator);
+            }
         }
 
         timeSeriesColleciton.addSeries(timeSeries);

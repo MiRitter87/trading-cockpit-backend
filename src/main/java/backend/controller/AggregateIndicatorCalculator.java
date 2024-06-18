@@ -57,7 +57,7 @@ public class AggregateIndicatorCalculator {
      * @param statistics             A List of statistics.
      * @param quotation              The Quotation for which the Aggregate Indicator is calculated.
      * @param instrument             The Instrument for which the Aggregate Indicator is calculated.
-     * @return The value of the aggregate indicator.
+     * @return The value of the aggregate indicator or -1, if calculation failed.
      */
     public int getAggregateIndicator(final List<Quotation> quotationsSortedByDate, final List<Statistic> statistics,
             final Quotation quotation, final Instrument instrument) {
