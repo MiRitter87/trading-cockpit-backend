@@ -40,6 +40,11 @@ public class InstrumentTest {
     private Instrument instrument;
 
     /**
+     * Instrument that has a List as data source defined.
+     */
+    private Instrument InstrumentWithDataSource;
+
+    /**
      * The first Quotation under test.
      */
     private Quotation quotation1;
@@ -94,6 +99,7 @@ public class InstrumentTest {
         this.sector = null;
         this.microsoftStock = null;
         this.instrument = null;
+        this.InstrumentWithDataSource = null;
 
         this.quotation3 = null;
         this.quotation2 = null;
@@ -124,6 +130,7 @@ public class InstrumentTest {
         this.sector = this.fixtureHelper.getSector();
         this.industryGroup = this.fixtureHelper.getIndustryGroup();
         this.sectorIgRatio = this.fixtureHelper.getSectorIgRatio(this.sector, this.industryGroup);
+        this.InstrumentWithDataSource = this.fixtureHelper.getInstrumentWithDataSource();
     }
 
     @Test
@@ -639,12 +646,11 @@ public class InstrumentTest {
      */
     public void testValidateDataSourceList() {
         String expectedErrorMessage = this.resources.getString("instrument.dataSourceList.wrongType");
-        backend.model.list.List dummyList = new backend.model.list.List();
 
         // Validation should fail because dataSourceList is not allowed if type is STOCK.
         try {
-            this.instrument.setDataSourceList(dummyList);
-            this.instrument.validate();
+            this.InstrumentWithDataSource.setType(InstrumentType.STOCK);
+            this.InstrumentWithDataSource.validate();
             fail("Validation should have failed because Instrument is of type 'STOCK'.");
         } catch (LocalizedException expected) {
             assertEquals(expectedErrorMessage, expected.getLocalizedMessage());
@@ -654,24 +660,43 @@ public class InstrumentTest {
 
         // Validation should not fail because dataSourceList is allowed if type is ETF.
         try {
-            this.instrument.setType(InstrumentType.ETF);
-            this.instrument.validate();
+            this.InstrumentWithDataSource.setType(InstrumentType.ETF);
+            this.InstrumentWithDataSource.validate();
         } catch (Exception e) {
             fail(e.getMessage());
         }
 
         // Validation should not fail because dataSourceList is allowed if type is sector.
         try {
-            this.instrument.setType(InstrumentType.SECTOR);
-            this.instrument.validate();
+            this.InstrumentWithDataSource.setType(InstrumentType.SECTOR);
+            this.InstrumentWithDataSource.validate();
         } catch (Exception e) {
             fail(e.getMessage());
         }
 
         // Validation should not fail because dataSourceList is allowed if type is industry group.
         try {
-            this.instrument.setType(InstrumentType.IND_GROUP);
-            this.instrument.validate();
+            this.InstrumentWithDataSource.setType(InstrumentType.IND_GROUP);
+            this.InstrumentWithDataSource.validate();
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    /**
+     * Tests validation of the dataSourceList attribute while the symbol is defined.
+     */
+    public void testValidateSymbolOnDataSourceList() {
+        String expectedErrorMessage = this.resources.getString("instrument.symbol.dataSourceListDefined");
+
+        // Validation should fail because no symbol can be defined if dataSourceList is set.
+        try {
+            this.InstrumentWithDataSource.setSymbol("test");
+            this.InstrumentWithDataSource.validate();
+            fail("Validation should have failed because Instrument has a symbol defined.");
+        } catch (LocalizedException expected) {
+            assertEquals(expectedErrorMessage, expected.getLocalizedMessage());
         } catch (Exception e) {
             fail(e.getMessage());
         }

@@ -5,6 +5,7 @@ import java.util.Calendar;
 
 import backend.model.Currency;
 import backend.model.StockExchange;
+import backend.model.list.List;
 
 /**
  * Helper class of the Instrumenttest, that provides methods for fixture initialization.
@@ -95,6 +96,23 @@ public class InstrumentFixture {
         instrument.setName("Sector/Industry Group");
         instrument.setDividend(dividend);
         instrument.setDivisor(divisor);
+
+        return instrument;
+    }
+
+    /**
+     * Initializes and provides a Instrument that has a List defined as data source.
+     *
+     * @return The Instrument with data source.
+     */
+    public Instrument getInstrumentWithDataSource() {
+        Instrument instrument = new Instrument();
+
+        instrument.setId(Integer.valueOf(6));
+        instrument.setType(InstrumentType.ETF);
+        instrument.setName("Instrument with data source");
+        instrument.setStockExchange(StockExchange.NYSE);
+        instrument.setDataSourceList(new List());
 
         return instrument;
     }

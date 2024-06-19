@@ -620,6 +620,14 @@ public class Instrument {
      * @throws LocalizedException If validation failed.
      */
     private void validateSymbol() throws LocalizedException {
+        if (this.dataSourceList != null) {
+            if (this.symbol != null && this.symbol.length() > 0) {
+                throw new LocalizedException("instrument.symbol.dataSourceListDefined");
+            } else {
+                return; // No symbol required, therefore no additional validation needed.
+            }
+        }
+
         if (this.type == InstrumentType.RATIO && this.symbol != null && this.symbol.length() > 0) {
             throw new LocalizedException("instrument.symbolDefinedOnTypeRatio");
         }
