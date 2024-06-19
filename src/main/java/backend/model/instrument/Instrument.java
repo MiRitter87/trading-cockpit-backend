@@ -145,6 +145,14 @@ public class Instrument {
     private Instrument divisor;
 
     /**
+     * The List that serves as a data source for the calculation of quotations. If a List is referenced, the quotations
+     * are being calculated using the quotations of all instruments of the referenced List.
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "DATA_SOURCE_LIST_ID")
+    private backend.model.list.List dataSourceList;
+
+    /**
      * The quotations.
      */
     @Transient
@@ -322,6 +330,20 @@ public class Instrument {
      */
     public void setDivisor(final Instrument divisor) {
         this.divisor = divisor;
+    }
+
+    /**
+     * @return the dataSourceList
+     */
+    public backend.model.list.List getDataSourceList() {
+        return dataSourceList;
+    }
+
+    /**
+     * @param dataSourceList the dataSourceList to set
+     */
+    public void setDataSourceList(final backend.model.list.List dataSourceList) {
+        this.dataSourceList = dataSourceList;
     }
 
     /**
