@@ -632,4 +632,48 @@ public class InstrumentTest {
             fail(e.getMessage());
         }
     }
+
+    @Test
+    /**
+     * Tests validation of the dataSourceList attribute.
+     */
+    public void testValidateDataSourceList() {
+        String expectedErrorMessage = this.resources.getString("instrument.dataSourceList.wrongType");
+        backend.model.list.List dummyList = new backend.model.list.List();
+
+        // Validation should fail because dataSourceList is not allowed if type is STOCK.
+        try {
+            this.instrument.setDataSourceList(dummyList);
+            this.instrument.validate();
+            fail("Validation should have failed because Instrument is of type 'STOCK'.");
+        } catch (LocalizedException expected) {
+            assertEquals(expectedErrorMessage, expected.getLocalizedMessage());
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+
+        // Validation should not fail because dataSourceList is allowed if type is ETF.
+        try {
+            this.instrument.setType(InstrumentType.ETF);
+            this.instrument.validate();
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+
+        // Validation should not fail because dataSourceList is allowed if type is sector.
+        try {
+            this.instrument.setType(InstrumentType.SECTOR);
+            this.instrument.validate();
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+
+        // Validation should not fail because dataSourceList is allowed if type is industry group.
+        try {
+            this.instrument.setType(InstrumentType.IND_GROUP);
+            this.instrument.validate();
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
 }

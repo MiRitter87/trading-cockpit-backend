@@ -558,6 +558,7 @@ public class Instrument {
         this.validateSymbol();
         this.validateDividend();
         this.validateDivisor();
+        this.validateDataSourceList();
     }
 
     /**
@@ -669,6 +670,18 @@ public class Instrument {
 
         if (this.type != InstrumentType.RATIO && this.divisor != null) {
             throw new LocalizedException("instrument.divisorDefinedOnTypeNotRatio");
+        }
+    }
+
+    /**
+     * Validates the dataSourceList attribute.
+     *
+     * @throws LocalizedException If validation failed.
+     */
+    private void validateDataSourceList() throws LocalizedException {
+        if (this.dataSourceList != null && this.type != InstrumentType.ETF && this.type != InstrumentType.SECTOR
+                && this.type != InstrumentType.IND_GROUP) {
+            throw new LocalizedException("instrument.dataSourceList.wrongType");
         }
     }
 }
