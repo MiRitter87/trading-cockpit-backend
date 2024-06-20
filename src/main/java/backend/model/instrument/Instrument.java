@@ -605,6 +605,14 @@ public class Instrument {
      * @throws LocalizedException If validation failed.
      */
     private void validateStockExchange() throws LocalizedException {
+        if (this.dataSourceList != null) {
+            if (this.stockExchange != null) {
+                throw new LocalizedException("instrument.stockExchange.dataSourceListDefined");
+            } else {
+                return; // No stock exchange required, therefore no additional validation needed.
+            }
+        }
+
         if (this.type == InstrumentType.RATIO && this.stockExchange != null) {
             throw new LocalizedException("instrument.exchangeDefinedOnTypeRatio");
         }

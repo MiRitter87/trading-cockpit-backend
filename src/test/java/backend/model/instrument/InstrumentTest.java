@@ -701,4 +701,23 @@ public class InstrumentTest {
             fail(e.getMessage());
         }
     }
+
+    @Test
+    /**
+     * Tests validation of the dataSourceList attribute while the stock exchange is defined.
+     */
+    public void testValidateExchangeOnDataSourceList() {
+        String expectedErrorMessage = this.resources.getString("instrument.stockExchange.dataSourceListDefined");
+
+        // Validation should fail because no stock exchange can be defined if dataSourceList is set.
+        try {
+            this.InstrumentWithDataSource.setStockExchange(StockExchange.NYSE);
+            this.InstrumentWithDataSource.validate();
+            fail("Validation should have failed because Instrument has a stock exchange defined.");
+        } catch (LocalizedException expected) {
+            assertEquals(expectedErrorMessage, expected.getLocalizedMessage());
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
 }

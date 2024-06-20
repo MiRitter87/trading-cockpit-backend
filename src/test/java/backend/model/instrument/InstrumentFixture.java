@@ -111,7 +111,6 @@ public class InstrumentFixture {
         instrument.setId(Integer.valueOf(6));
         instrument.setType(InstrumentType.ETF);
         instrument.setName("Instrument with data source");
-        instrument.setStockExchange(StockExchange.NYSE);
         instrument.setDataSourceList(new List());
 
         return instrument;
