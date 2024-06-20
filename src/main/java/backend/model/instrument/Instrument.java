@@ -707,6 +707,14 @@ public class Instrument {
      * @throws LocalizedException If validation failed.
      */
     private void validateCompanyPathInvestingCom() throws LocalizedException {
+        if (this.dataSourceList != null) {
+            if (this.companyPathInvestingCom != null && this.companyPathInvestingCom.length() > 0) {
+                throw new LocalizedException("instrument.companyPathInvestingCom.dataSourceListDefined");
+            } else {
+                return; // No companyPathInvestingCom required, therefore no additional validation needed.
+            }
+        }
+
         if (this.companyPathInvestingCom != null
                 && this.companyPathInvestingCom.length() > MAX_COMP_PATH_INVESTING_LENGTH) {
             throw new LocalizedException("instrument.companyPathInvestingCom.size.message",

@@ -721,4 +721,24 @@ public class InstrumentTest {
             fail(e.getMessage());
         }
     }
+
+    @Test
+    /**
+     * Tests validation of the dataSourceList attribute while the companyPathInvestingCom is defined.
+     */
+    public void testValidateCompanyPathInvestingOnDataSourceList() {
+        String expectedErrorMessage = this.resources
+                .getString("instrument.companyPathInvestingCom.dataSourceListDefined");
+
+        // Validation should fail because no companyPathInvestingCom can be defined if dataSourceList is set.
+        try {
+            this.InstrumentWithDataSource.setCompanyPathInvestingCom("testCompanyPath");
+            this.InstrumentWithDataSource.validate();
+            fail("Validation should have failed because Instrument has a company path defined.");
+        } catch (LocalizedException expected) {
+            assertEquals(expectedErrorMessage, expected.getLocalizedMessage());
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
 }
