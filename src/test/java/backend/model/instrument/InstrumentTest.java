@@ -298,18 +298,19 @@ public class InstrumentTest {
      * Tests validation of an Instrument whose companyPathInvestingCom is too long.
      */
     public void testCompanyPathInvestingComTooLong() {
-        ValidationMessageProvider messageProvider = new ValidationMessageProvider();
-        this.instrument.setCompanyPathInvestingCom("denison-mines-corp?cid=24520kjndfkvnfkjgndffjkkfn11");
-
-        String expectedErrorMessage = messageProvider.getSizeValidationMessage("instrument", "companyPathInvestingCom",
-                String.valueOf(this.instrument.getCompanyPathInvestingCom().length()), "0", "50");
+        String expectedErrorMessage;
         String errorMessage = "";
+
+        this.instrument.setCompanyPathInvestingCom("denison-mines-corp?cid=24520kjndfkvnfkjgndffjkkfn11");
+        expectedErrorMessage = MessageFormat.format(
+                this.resources.getString("instrument.companyPathInvestingCom.size.message"),
+                String.valueOf(this.instrument.getCompanyPathInvestingCom().length()), "0", "50");
 
         try {
             this.instrument.validate();
             fail("Validation should have failed because companyPathInvestingCom is too long.");
         } catch (Exception expected) {
-            errorMessage = expected.getMessage();
+            errorMessage = expected.getLocalizedMessage();
         }
 
         assertEquals(expectedErrorMessage, errorMessage);

@@ -127,7 +127,6 @@ public class Instrument {
      * "apple-computer-inc".
      */
     @Column(name = "COMPANY_PATH_INVESTING_COM", length = MAX_COMP_PATH_INVESTING_LENGTH)
-    @Size(min = 0, max = MAX_COMP_PATH_INVESTING_LENGTH, message = "{instrument.companyPathInvestingCom.size.message}")
     private String companyPathInvestingCom;
 
     /**
@@ -559,6 +558,7 @@ public class Instrument {
         this.validateDividend();
         this.validateDivisor();
         this.validateDataSourceList();
+        this.validateCompanyPathInvestingCom();
     }
 
     /**
@@ -698,6 +698,19 @@ public class Instrument {
         if (this.dataSourceList != null && this.type != InstrumentType.ETF && this.type != InstrumentType.SECTOR
                 && this.type != InstrumentType.IND_GROUP) {
             throw new LocalizedException("instrument.dataSourceList.wrongType");
+        }
+    }
+
+    /**
+     * Validates the companyPathInvestingCom attribute.
+     *
+     * @throws LocalizedException If validation failed.
+     */
+    private void validateCompanyPathInvestingCom() throws LocalizedException {
+        if (this.companyPathInvestingCom != null
+                && this.companyPathInvestingCom.length() > MAX_COMP_PATH_INVESTING_LENGTH) {
+            throw new LocalizedException("instrument.companyPathInvestingCom.size.message",
+                    this.companyPathInvestingCom.length(), "0", MAX_COMP_PATH_INVESTING_LENGTH);
         }
     }
 }
