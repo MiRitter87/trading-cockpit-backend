@@ -387,7 +387,7 @@ public class InstrumentTest {
      * Tests referencing the sector of an Instrument with another Instrument of type stock.
      */
     public void testReferenceSectorWithStock() {
-        String expectedErrorMessage = this.resources.getString("instrument.wrongSectorReference");
+        String expectedErrorMessage = this.resources.getString("instrument.sector.wrongReference");
 
         this.instrument.setSector(this.microsoftStock);
 
@@ -406,7 +406,7 @@ public class InstrumentTest {
      * Tests referencing the industry group of an Instrument with another Instrument of type stock.
      */
     public void testReferenceIndustryGroupWithStock() {
-        String expectedErrorMessage = this.resources.getString("instrument.wrongIndustryGroupReference");
+        String expectedErrorMessage = this.resources.getString("instrument.ig.wrongReference");
 
         this.instrument.setIndustryGroup(this.microsoftStock);
 
@@ -425,7 +425,7 @@ public class InstrumentTest {
      * Tests referencing an Instrument of type sector with another sector.
      */
     public void testReferenceSectorWithSector() {
-        String expectedErrorMessage = this.resources.getString("instrument.sectorSectorReference");
+        String expectedErrorMessage = this.resources.getString("instrument.sector.sectorReference");
 
         this.instrument.setType(InstrumentType.SECTOR);
         this.instrument.setSector(this.sector);
@@ -445,7 +445,7 @@ public class InstrumentTest {
      * Tests referencing an Instrument of type industry group with another industry group.
      */
     public void testReferenceIgWithIg() {
-        String expectedErrorMessage = this.resources.getString("instrument.igIgReference");
+        String expectedErrorMessage = this.resources.getString("instrument.ig.igReference");
 
         this.instrument.setType(InstrumentType.IND_GROUP);
         this.instrument.setIndustryGroup(this.industryGroup);
@@ -465,7 +465,7 @@ public class InstrumentTest {
      * Tests if the stock exchange is null, if the instrument type is set to 'RATIO'.
      */
     public void testExchangeNullOnTypeRatio() {
-        String expectedErrorMessage = this.resources.getString("instrument.exchangeDefinedOnTypeRatio");
+        String expectedErrorMessage = this.resources.getString("instrument.stockExchange.definedOnTypeRatio");
         ;
 
         this.sectorIgRatio.setStockExchange(StockExchange.NYSE);
@@ -485,7 +485,7 @@ public class InstrumentTest {
      * Tests if the symbol is null, if the instrument type is set to 'RATIO'.
      */
     public void testSymbolNullOnTypeRatio() {
-        String expectedErrorMessage = this.resources.getString("instrument.symbolDefinedOnTypeRatio");
+        String expectedErrorMessage = this.resources.getString("instrument.symbol.definedOnTypeRatio");
 
         this.sectorIgRatio.setSymbol("ABC");
 
@@ -539,7 +539,7 @@ public class InstrumentTest {
      * Tests if the dividend is not null, if the instrument type is set to any other than 'RATIO'.
      */
     public void testDividendNotNullOnTypeNotRatio() {
-        String expectedErrorMessage = this.resources.getString("instrument.dividendDefinedOnTypeNotRatio");
+        String expectedErrorMessage = this.resources.getString("instrument.dividend.definedOnTypeNotRatio");
 
         this.instrument.setDividend(this.sector);
 
@@ -577,7 +577,7 @@ public class InstrumentTest {
      * Tests if the divisor is not null, if the instrument type is set to any other than 'RATIO'.
      */
     public void testDivisorNotNullOnTypeNotRatio() {
-        String expectedErrorMessage = this.resources.getString("instrument.divisorDefinedOnTypeNotRatio");
+        String expectedErrorMessage = this.resources.getString("instrument.divisor.definedOnTypeNotRatio");
 
         this.instrument.setDivisor(this.industryGroup);
 
@@ -596,7 +596,7 @@ public class InstrumentTest {
      * Tests validation if the dividend of a ratio is of type RATIO.
      */
     public void testValidateDividendTypeRatio() {
-        String expectedErrorMessage = this.resources.getString("instrument.dividendTypeRatio");
+        String expectedErrorMessage = this.resources.getString("instrument.dividend.typeRatio");
         Instrument testRatio = new Instrument();
 
         testRatio.setName("IG/Sector");
@@ -621,7 +621,7 @@ public class InstrumentTest {
      * Tests validation if the divisor of a ratio is of type RATIO.
      */
     public void testValidateDivisorTypeRatio() {
-        String expectedErrorMessage = this.resources.getString("instrument.divisorTypeRatio");
+        String expectedErrorMessage = this.resources.getString("instrument.divisor.typeRatio");
         Instrument testRatio = new Instrument();
 
         testRatio.setName("IG/Sector");

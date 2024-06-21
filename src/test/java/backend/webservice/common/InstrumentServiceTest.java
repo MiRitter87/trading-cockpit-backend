@@ -803,7 +803,7 @@ public class InstrumentServiceTest {
         assertTrue(updateInstrumentResult.getMessages().get(0).getType() == WebServiceMessageType.E);
 
         // A proper message should be provided.
-        expectedErrorMessage = this.resources.getString("instrument.wrongSectorReference");
+        expectedErrorMessage = this.resources.getString("instrument.sector.wrongReference");
         actualErrorMessage = updateInstrumentResult.getMessages().get(0).getText();
         assertEquals(expectedErrorMessage, actualErrorMessage);
 
@@ -839,7 +839,7 @@ public class InstrumentServiceTest {
         assertTrue(updateInstrumentResult.getMessages().get(0).getType() == WebServiceMessageType.E);
 
         // A proper message should be provided.
-        expectedErrorMessage = this.resources.getString("instrument.wrongIndustryGroupReference");
+        expectedErrorMessage = this.resources.getString("instrument.ig.wrongReference");
         actualErrorMessage = updateInstrumentResult.getMessages().get(0).getText();
         assertEquals(expectedErrorMessage, actualErrorMessage);
 

@@ -572,11 +572,11 @@ public class Instrument {
         }
 
         if (this.type == InstrumentType.SECTOR) {
-            throw new LocalizedException("instrument.sectorSectorReference");
+            throw new LocalizedException("instrument.sector.sectorReference");
         }
 
         if (this.sector.getType() != InstrumentType.SECTOR) {
-            throw new LocalizedException("instrument.wrongSectorReference");
+            throw new LocalizedException("instrument.sector.wrongReference");
         }
     }
 
@@ -591,11 +591,11 @@ public class Instrument {
         }
 
         if (this.type == InstrumentType.IND_GROUP) {
-            throw new LocalizedException("instrument.igIgReference");
+            throw new LocalizedException("instrument.ig.igReference");
         }
 
         if (this.industryGroup.getType() != InstrumentType.IND_GROUP) {
-            throw new LocalizedException("instrument.wrongIndustryGroupReference");
+            throw new LocalizedException("instrument.ig.wrongReference");
         }
     }
 
@@ -614,7 +614,7 @@ public class Instrument {
         }
 
         if (this.type == InstrumentType.RATIO && this.stockExchange != null) {
-            throw new LocalizedException("instrument.exchangeDefinedOnTypeRatio");
+            throw new LocalizedException("instrument.stockExchange.definedOnTypeRatio");
         }
 
         if (this.type != InstrumentType.RATIO && this.stockExchange == null) {
@@ -637,7 +637,7 @@ public class Instrument {
         }
 
         if (this.type == InstrumentType.RATIO && this.symbol != null && this.symbol.length() > 0) {
-            throw new LocalizedException("instrument.symbolDefinedOnTypeRatio");
+            throw new LocalizedException("instrument.symbol.definedOnTypeRatio");
         }
 
         if (this.type != InstrumentType.RATIO && this.symbol == null) {
@@ -662,11 +662,11 @@ public class Instrument {
         }
 
         if (this.type == InstrumentType.RATIO && this.dividend != null && this.dividend.type == InstrumentType.RATIO) {
-            throw new LocalizedException("instrument.dividendTypeRatio");
+            throw new LocalizedException("instrument.dividend.typeRatio");
         }
 
         if (this.type != InstrumentType.RATIO && this.dividend != null) {
-            throw new LocalizedException("instrument.dividendDefinedOnTypeNotRatio");
+            throw new LocalizedException("instrument.dividend.definedOnTypeNotRatio");
         }
     }
 
@@ -681,11 +681,11 @@ public class Instrument {
         }
 
         if (this.type == InstrumentType.RATIO && this.divisor != null && this.divisor.type == InstrumentType.RATIO) {
-            throw new LocalizedException("instrument.divisorTypeRatio");
+            throw new LocalizedException("instrument.divisor.typeRatio");
         }
 
         if (this.type != InstrumentType.RATIO && this.divisor != null) {
-            throw new LocalizedException("instrument.divisorDefinedOnTypeNotRatio");
+            throw new LocalizedException("instrument.divisor.definedOnTypeNotRatio");
         }
     }
 
