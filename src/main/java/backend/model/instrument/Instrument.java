@@ -715,6 +715,11 @@ public class Instrument {
             }
         }
 
+        if (this.type == InstrumentType.RATIO && this.companyPathInvestingCom != null
+                && this.companyPathInvestingCom.length() > 0) {
+            throw new LocalizedException("instrument.companyPathInvestingCom.typeRatio");
+        }
+
         if (this.companyPathInvestingCom != null
                 && this.companyPathInvestingCom.length() > MAX_COMP_PATH_INVESTING_LENGTH) {
             throw new LocalizedException("instrument.companyPathInvestingCom.size.message",

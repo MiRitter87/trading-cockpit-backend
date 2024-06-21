@@ -643,6 +643,25 @@ public class InstrumentTest {
 
     @Test
     /**
+     * Tests validation of the companyPathInvestingCom if Instrument is of type RATIO.
+     */
+    public void testValidateCompanyPathInvestingOnRatio() {
+        String expectedErrorMessage = this.resources.getString("instrument.companyPathInvestingCom.typeRatio");
+
+        this.sectorIgRatio.setCompanyPathInvestingCom("testPath");
+
+        try {
+            this.sectorIgRatio.validate();
+            fail("Validation should have failed because companyPathInvestingCom of a RATIO is defined.");
+        } catch (LocalizedException expected) {
+            assertEquals(expectedErrorMessage, expected.getLocalizedMessage());
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    /**
      * Tests validation of the dataSourceList attribute.
      */
     public void testValidateDataSourceList() {
