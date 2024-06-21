@@ -5,10 +5,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-
-import org.hibernate.validator.HibernateValidator;
-import org.hibernate.validator.messageinterpolation.ExpressionLanguageFeatureLevel;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -27,10 +23,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
-import jakarta.validation.ValidatorFactory;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -47,7 +39,7 @@ public class Instrument {
     /**
      * The maximum symbol field length allowed.
      */
-    private static final int MAX_SYMBOL_LENGTH = 6;
+    protected static final int MAX_SYMBOL_LENGTH = 6;
 
     /**
      * The maximum InstrumentType field length allowed.
@@ -67,7 +59,7 @@ public class Instrument {
     /**
      * The maximum 'Company Path Investing.com' field length allowed.
      */
-    private static final int MAX_COMP_PATH_INVESTING_LENGTH = 50;
+    protected static final int MAX_COMP_PATH_INVESTING_LENGTH = 50;
 
     /**
      * The ID.
@@ -523,207 +515,7 @@ public class Instrument {
      * @throws Exception          In case a general validation error occurred.
      */
     public void validate() throws LocalizedException, Exception {
-        this.validateAnnotations();
-        this.validateAdditionalCharacteristics();
-    }
-
-    /**
-     * Validates the instrument according to the annotations of the validation framework.
-     *
-     * @exception Exception In case the validation failed.
-     */
-    private void validateAnnotations() throws Exception {
-        ValidatorFactory validatorFactory = Validation.byProvider(HibernateValidator.class).configure()
-                .constraintExpressionLanguageFeatureLevel(ExpressionLanguageFeatureLevel.BEAN_METHODS)
-                .buildValidatorFactory();
-
-        Validator validator = validatorFactory.getValidator();
-        Set<ConstraintViolation<Instrument>> violations = validator.validate(this);
-
-        for (ConstraintViolation<Instrument> violation : violations) {
-            throw new Exception(violation.getMessage());
-        }
-    }
-
-    /**
-     * Validates additional characteristics of the Instrument besides annotations.
-     *
-     * @throws LocalizedException A general exception containing a localized message.
-     */
-    private void validateAdditionalCharacteristics() throws LocalizedException {
-        this.validateSectorReference();
-        this.validateIndustryGroupReference();
-        this.validateStockExchange();
-        this.validateSymbol();
-        this.validateDividend();
-        this.validateDivisor();
-        this.validateDataSourceList();
-        this.validateCompanyPathInvestingCom();
-    }
-
-    /**
-     * Validates the sector reference.
-     *
-     * @throws LocalizedException In case the sector is associated with an Instrument of the wrong type.
-     */
-    private void validateSectorReference() throws LocalizedException {
-        if (this.sector == null) {
-            return;
-        }
-
-        if (this.type == InstrumentType.SECTOR) {
-            throw new LocalizedException("instrument.sector.sectorReference");
-        }
-
-        if (this.sector.getType() != InstrumentType.SECTOR) {
-            throw new LocalizedException("instrument.sector.wrongReference");
-        }
-    }
-
-    /**
-     * Validates the industry group reference.
-     *
-     * @throws LocalizedException In case the industry group is associated with an Instrument of the wrong type.
-     */
-    private void validateIndustryGroupReference() throws LocalizedException {
-        if (this.industryGroup == null) {
-            return;
-        }
-
-        if (this.type == InstrumentType.IND_GROUP) {
-            throw new LocalizedException("instrument.ig.igReference");
-        }
-
-        if (this.industryGroup.getType() != InstrumentType.IND_GROUP) {
-            throw new LocalizedException("instrument.ig.wrongReference");
-        }
-    }
-
-    /**
-     * Validates the stock exchange attribute.
-     *
-     * @throws LocalizedException If validation failed.
-     */
-    private void validateStockExchange() throws LocalizedException {
-        if (this.dataSourceList != null) {
-            if (this.stockExchange != null) {
-                throw new LocalizedException("instrument.stockExchange.dataSourceListDefined");
-            } else {
-                return; // No stock exchange required, therefore no additional validation needed.
-            }
-        }
-
-        if (this.type == InstrumentType.RATIO && this.stockExchange != null) {
-            throw new LocalizedException("instrument.stockExchange.definedOnTypeRatio");
-        }
-
-        if (this.type != InstrumentType.RATIO && this.stockExchange == null) {
-            throw new LocalizedException("instrument.stockExchange.notNull.message");
-        }
-    }
-
-    /**
-     * Validates the symbol attribute.
-     *
-     * @throws LocalizedException If validation failed.
-     */
-    private void validateSymbol() throws LocalizedException {
-        if (this.dataSourceList != null) {
-            if (this.symbol != null && this.symbol.length() > 0) {
-                throw new LocalizedException("instrument.symbol.dataSourceListDefined");
-            } else {
-                return; // No symbol required, therefore no additional validation needed.
-            }
-        }
-
-        if (this.type == InstrumentType.RATIO && this.symbol != null && this.symbol.length() > 0) {
-            throw new LocalizedException("instrument.symbol.definedOnTypeRatio");
-        }
-
-        if (this.type != InstrumentType.RATIO && this.symbol == null) {
-            throw new LocalizedException("instrument.symbol.notNull.message");
-        }
-
-        if (this.type != InstrumentType.RATIO && this.symbol != null
-                && (this.symbol.length() < 1 || this.symbol.length() > MAX_SYMBOL_LENGTH)) {
-            throw new LocalizedException("instrument.symbol.size.message", this.symbol.length(), "1",
-                    MAX_SYMBOL_LENGTH);
-        }
-    }
-
-    /**
-     * Validates the dividend attribute.
-     *
-     * @throws LocalizedException If validation failed.
-     */
-    private void validateDividend() throws LocalizedException {
-        if (this.type == InstrumentType.RATIO && this.dividend == null) {
-            throw new LocalizedException("instrument.dividend.notNull.message");
-        }
-
-        if (this.type == InstrumentType.RATIO && this.dividend != null && this.dividend.type == InstrumentType.RATIO) {
-            throw new LocalizedException("instrument.dividend.typeRatio");
-        }
-
-        if (this.type != InstrumentType.RATIO && this.dividend != null) {
-            throw new LocalizedException("instrument.dividend.definedOnTypeNotRatio");
-        }
-    }
-
-    /**
-     * Validates the divisor attribute.
-     *
-     * @throws LocalizedException If validation failed.
-     */
-    private void validateDivisor() throws LocalizedException {
-        if (this.type == InstrumentType.RATIO && this.divisor == null) {
-            throw new LocalizedException("instrument.divisor.notNull.message");
-        }
-
-        if (this.type == InstrumentType.RATIO && this.divisor != null && this.divisor.type == InstrumentType.RATIO) {
-            throw new LocalizedException("instrument.divisor.typeRatio");
-        }
-
-        if (this.type != InstrumentType.RATIO && this.divisor != null) {
-            throw new LocalizedException("instrument.divisor.definedOnTypeNotRatio");
-        }
-    }
-
-    /**
-     * Validates the dataSourceList attribute.
-     *
-     * @throws LocalizedException If validation failed.
-     */
-    private void validateDataSourceList() throws LocalizedException {
-        if (this.dataSourceList != null && this.type != InstrumentType.ETF && this.type != InstrumentType.SECTOR
-                && this.type != InstrumentType.IND_GROUP) {
-            throw new LocalizedException("instrument.dataSourceList.wrongType");
-        }
-    }
-
-    /**
-     * Validates the companyPathInvestingCom attribute.
-     *
-     * @throws LocalizedException If validation failed.
-     */
-    private void validateCompanyPathInvestingCom() throws LocalizedException {
-        if (this.dataSourceList != null) {
-            if (this.companyPathInvestingCom != null && this.companyPathInvestingCom.length() > 0) {
-                throw new LocalizedException("instrument.companyPathInvestingCom.dataSourceListDefined");
-            } else {
-                return; // No companyPathInvestingCom required, therefore no additional validation needed.
-            }
-        }
-
-        if (this.type == InstrumentType.RATIO && this.companyPathInvestingCom != null
-                && this.companyPathInvestingCom.length() > 0) {
-            throw new LocalizedException("instrument.companyPathInvestingCom.typeRatio");
-        }
-
-        if (this.companyPathInvestingCom != null
-                && this.companyPathInvestingCom.length() > MAX_COMP_PATH_INVESTING_LENGTH) {
-            throw new LocalizedException("instrument.companyPathInvestingCom.size.message",
-                    this.companyPathInvestingCom.length(), "0", MAX_COMP_PATH_INVESTING_LENGTH);
-        }
+        InstrumentValidator validator = new InstrumentValidator(this);
+        validator.validate();
     }
 }
