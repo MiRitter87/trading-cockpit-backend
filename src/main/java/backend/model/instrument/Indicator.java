@@ -23,12 +23,6 @@ public class Indicator {
     private Integer id;
 
     /**
-     * The stage of an instrument.
-     */
-    @Column(name = "STAGE")
-    private int stage;
-
-    /**
      * The distance in percent to the 52 week high of an instruments trading history.
      */
     @Column(name = "DISTANCE_TO_52_WEEK_HIGH")
@@ -107,20 +101,6 @@ public class Indicator {
      */
     public void setId(final Integer id) {
         this.id = id;
-    }
-
-    /**
-     * @return the stage
-     */
-    public int getStage() {
-        return stage;
-    }
-
-    /**
-     * @param stage the stage to set
-     */
-    public void setStage(final int stage) {
-        this.stage = stage;
     }
 
     /**
@@ -269,8 +249,8 @@ public class Indicator {
     @Override
     public int hashCode() {
         return Objects.hash(bollingerBandWidth10Days, bollingerBandWidth10Weeks, distanceTo52WeekHigh,
-                distanceTo52WeekLow, id, stage, volumeDifferential5Days, baseLengthWeeks, upDownVolumeRatio,
-                performance5Days, liquidity20Days, averageTrueRangePercent20);
+                distanceTo52WeekLow, id, volumeDifferential5Days, baseLengthWeeks, upDownVolumeRatio, performance5Days,
+                liquidity20Days, averageTrueRangePercent20);
     }
 
     /**
@@ -295,9 +275,8 @@ public class Indicator {
                 && Float.floatToIntBits(distanceTo52WeekLow) == Float.floatToIntBits(other.distanceTo52WeekLow)
                 && Objects.equals(id, other.id)
                 && Float.floatToIntBits(volumeDifferential5Days) == Float.floatToIntBits(other.volumeDifferential5Days)
-                && stage == other.stage && baseLengthWeeks == other.baseLengthWeeks
-                && upDownVolumeRatio == other.upDownVolumeRatio && performance5Days == other.performance5Days
-                && liquidity20Days == other.liquidity20Days
+                && baseLengthWeeks == other.baseLengthWeeks && upDownVolumeRatio == other.upDownVolumeRatio
+                && performance5Days == other.performance5Days && liquidity20Days == other.liquidity20Days
                 && averageTrueRangePercent20 == other.averageTrueRangePercent20;
     }
 }

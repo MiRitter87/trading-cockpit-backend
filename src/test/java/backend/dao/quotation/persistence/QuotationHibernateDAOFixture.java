@@ -231,7 +231,7 @@ public class QuotationHibernateDAOFixture {
     public Indicator getAppleQuotation2Indicator() {
         Indicator indicator = new Indicator();
 
-        indicator.setStage(3);
+        indicator.setBaseLengthWeeks(3);
 
         return indicator;
     }
@@ -244,7 +244,7 @@ public class QuotationHibernateDAOFixture {
     public Indicator getXleQuotation1Indicator() {
         Indicator indicator = new Indicator();
 
-        indicator.setStage(2);
+        indicator.setBaseLengthWeeks(2);
 
         return indicator;
     }
@@ -257,7 +257,7 @@ public class QuotationHibernateDAOFixture {
     public Indicator getXliSectorQuotation1Indicator() {
         Indicator indicator = new Indicator();
 
-        indicator.setStage(1);
+        indicator.setBaseLengthWeeks(1);
 
         return indicator;
     }
@@ -270,7 +270,7 @@ public class QuotationHibernateDAOFixture {
     public Indicator getCopperIndustryGroupQuotation1Indicator() {
         Indicator indicator = new Indicator();
 
-        indicator.setStage(4);
+        indicator.setBaseLengthWeeks(4);
 
         return indicator;
     }
