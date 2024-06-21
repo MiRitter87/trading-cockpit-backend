@@ -400,7 +400,7 @@ public class QuotationServiceFixture {
     public Indicator getAppleQuotation2Indicator() {
         Indicator indicator = new Indicator();
 
-        indicator.setStage(2);
+        indicator.setBaseLengthWeeks(2);
         indicator.setPerformance5Days((float) 12.44);
         indicator.setDistanceTo52WeekHigh((float) -4.4);
         indicator.setDistanceTo52WeekLow((float) 78.81);
@@ -421,7 +421,7 @@ public class QuotationServiceFixture {
     public Indicator getFordQuotation1Indicator() {
         Indicator indicator = new Indicator();
 
-        indicator.setStage(3);
+        indicator.setBaseLengthWeeks(3);
         indicator.setPerformance5Days((float) -10.21);
         indicator.setDistanceTo52WeekHigh((float) -9.41);
         indicator.setDistanceTo52WeekLow((float) 48.81);
@@ -442,7 +442,7 @@ public class QuotationServiceFixture {
     public Indicator getXleQuotation2Indicator() {
         Indicator indicator = new Indicator();
 
-        indicator.setStage(2);
+        indicator.setBaseLengthWeeks(2);
         indicator.setPerformance5Days((float) 3.17);
         indicator.setDistanceTo52WeekHigh((float) -9.4);
         indicator.setDistanceTo52WeekLow((float) 78.81);
@@ -462,7 +462,7 @@ public class QuotationServiceFixture {
     public Indicator getXlbQuotation1Indicator() {
         Indicator indicator = new Indicator();
 
-        indicator.setStage(4);
+        indicator.setBaseLengthWeeks(4);
         indicator.setPerformance5Days((float) -6.70);
         indicator.setDistanceTo52WeekHigh((float) -9.41);
         indicator.setDistanceTo52WeekLow((float) 0.81);

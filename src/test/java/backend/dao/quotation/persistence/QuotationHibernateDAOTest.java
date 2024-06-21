@@ -411,7 +411,8 @@ public class QuotationHibernateDAOTest {
             assertEquals(databaseQuotation.getInstrument().getId(), this.appleQuotation2.getInstrument().getId());
 
             assertNotNull(databaseQuotation.getIndicator());
-            assertEquals(this.appleQuotation2Indicator.getStage(), databaseQuotation.getIndicator().getStage());
+            assertEquals(this.appleQuotation2Indicator.getBaseLengthWeeks(),
+                    databaseQuotation.getIndicator().getBaseLengthWeeks());
         } catch (Exception e) {
             fail(e.getMessage());
         }
@@ -449,10 +450,10 @@ public class QuotationHibernateDAOTest {
         List<Quotation> updateQuotations = new ArrayList<>();
         Quotation databaseQuotation;
         Indicator newIndicator = new Indicator();
-        final int indicatorStage = 3;
+        final int indicatorBaseLength = 3;
 
         // Define the new Indicator and add relation to existing Quotation.
-        newIndicator.setStage(indicatorStage);
+        newIndicator.setBaseLengthWeeks(indicatorBaseLength);
         this.appleQuotation2.setIndicator(newIndicator);
 
         try {
@@ -464,7 +465,7 @@ public class QuotationHibernateDAOTest {
             databaseQuotation = quotationDAO.getQuotation(this.appleQuotation2.getId());
             assertNotNull(databaseQuotation);
             assertNotNull(databaseQuotation.getIndicator());
-            assertEquals(indicatorStage, databaseQuotation.getIndicator().getStage());
+            assertEquals(indicatorBaseLength, databaseQuotation.getIndicator().getBaseLengthWeeks());
         } catch (Exception e) {
             fail(e.getMessage());
         } finally {
