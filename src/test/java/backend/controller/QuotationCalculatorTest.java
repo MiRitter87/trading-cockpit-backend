@@ -1,7 +1,9 @@
 package backend.controller;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -129,5 +131,40 @@ public class QuotationCalculatorTest {
         quotation.setClose(new BigDecimal("679.03"));
         quotation.setVolume(2572490);
         this.netflixStock.addQuotation(quotation);
+    }
+
+    /**
+     * Gets the expected quotations sorted by date.
+     */
+    private List<Quotation> getExpectedQuotations() {
+        List<Quotation> expectedQuotations = new ArrayList<>();
+        List<Quotation> appleQuotations = this.appleStock.getQuotationsSortedByDate();
+        Quotation quotation;
+
+        quotation = new Quotation();
+        quotation.setDate(appleQuotations.get(0).getDate());
+        quotation.setOpen(new BigDecimal("446.825"));
+        quotation.setHigh(new BigDecimal("449.395"));
+        quotation.setLow(new BigDecimal("442.605"));
+        quotation.setClose(new BigDecimal("442.605"));
+        quotation.setVolume(169361455);
+
+        quotation = new Quotation();
+        quotation.setDate(appleQuotations.get(1).getDate());
+        quotation.setOpen(new BigDecimal("447.865"));
+        quotation.setHigh(new BigDecimal("452.06"));
+        quotation.setLow(new BigDecimal("441.285"));
+        quotation.setClose(new BigDecimal("444.355"));
+        quotation.setVolume(86960394);
+
+        quotation = new Quotation();
+        quotation.setDate(appleQuotations.get(2).getDate());
+        quotation.setOpen(new BigDecimal("217.59"));
+        quotation.setHigh(new BigDecimal("218.63"));
+        quotation.setLow(new BigDecimal("213.00"));
+        quotation.setClose(new BigDecimal("214.29"));
+        quotation.setVolume(79666048);
+
+        return expectedQuotations;
     }
 }
