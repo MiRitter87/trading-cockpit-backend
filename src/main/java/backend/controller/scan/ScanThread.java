@@ -181,7 +181,11 @@ public class ScanThread extends DataRetrievalThread {
         if (instrument.getType() == InstrumentType.RATIO) {
             this.updateQuotationsRatio(instrument);
         } else {
-            this.updateQuotationsNonRatio(instrument);
+            if (instrument.getDataSourceList() == null) {
+                this.updateQuotationsNonRatio(instrument);
+            } else {
+                this.updateQuotationsFromList(instrument);
+            }
         }
     }
 
@@ -280,6 +284,23 @@ public class ScanThread extends DataRetrievalThread {
             this.scan.addIncompleteInstrument(instrument);
             LOGGER.error("Failed to update quotations of instrument with ID " + instrument.getId(), exception);
         }
+    }
+
+    /**
+     * Uses the quotations of all instruments referenced in the 'dataSourceList' attribute to calculate quotations. No
+     * Third-Party WebService is queried.
+     *
+     * @param instrument The Instrument to be updated.
+     */
+    private void updateQuotationsFromList(final Instrument instrument) {
+        // Get all instruments of the referenced dataSourceList
+
+        // Initialize the instruments with quotations loaded from the database.
+
+        // Iterate through all instruments and calculate quotations.
+        // In: A list of instruments with quotations.
+        // Out: A list of calculated quotations.
+
     }
 
     /**
