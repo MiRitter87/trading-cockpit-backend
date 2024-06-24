@@ -383,6 +383,7 @@ public class Instrument {
         result = prime * result + ((industryGroup == null) ? 0 : industryGroup.hashCode());
         result = prime * result + ((dividend == null) ? 0 : dividend.hashCode());
         result = prime * result + ((divisor == null) ? 0 : divisor.hashCode());
+        result = prime * result + ((dataSourceList == null) ? 0 : dataSourceList.hashCode());
         result = prime * result + ((companyPathInvestingCom == null) ? 0 : companyPathInvestingCom.hashCode());
         return result;
     }
@@ -455,6 +456,13 @@ public class Instrument {
                 return false;
             }
         } else if (!divisor.equals(other.divisor)) {
+            return false;
+        }
+        if (dataSourceList == null) {
+            if (other.dataSourceList != null) {
+                return false;
+            }
+        } else if (!dataSourceList.equals(other.dataSourceList)) {
             return false;
         }
         if (companyPathInvestingCom == null) {
