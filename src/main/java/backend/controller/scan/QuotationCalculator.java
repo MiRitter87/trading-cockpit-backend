@@ -1,5 +1,7 @@
 package backend.controller.scan;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -27,6 +29,8 @@ public class QuotationCalculator {
      * @return A List of calculated quotations.
      */
     public List<Quotation> getCalculatedQuotations(final List<Instrument> instruments) {
+        List<Date> instrumentDates = this.getSortedDatesOfInstruments(instruments);
+
         return null;
     }
 
@@ -52,5 +56,25 @@ public class QuotationCalculator {
         }
 
         return dates;
+    }
+
+    /**
+     * Provides a sorted List of all Quotation dates. All quotations of every Instrument are taken into account. Each
+     * date is only contained once. Intraday attributes of the dates are set to 0.
+     *
+     * @param instruments A List of instruments with their quotations.
+     * @return A sorted List of all dates. The newest date has index 0.
+     */
+    private List<Date> getSortedDatesOfInstruments(final List<Instrument> instruments) {
+        HashSet<Date> dates = this.getQuotationDates(instruments);
+        List<Date> sortedDates = new ArrayList<>(dates);
+
+        // Oldest date first.
+        Collections.sort(sortedDates);
+
+        // Newest date first.
+        Collections.reverse(sortedDates);
+
+        return sortedDates;
     }
 }
