@@ -1,10 +1,13 @@
 package backend.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
@@ -16,6 +19,7 @@ import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
+import backend.tools.DateTools;
 
 /**
  * Tests the QuotationCalculator.
@@ -171,6 +175,24 @@ public class QuotationCalculatorTest {
         return expectedQuotations;
     }
 
+    /**
+     * Gets the expected dates without intraday-attributes.
+     *
+     * @return A List of dates.
+     */
+    private List<Date> getExpectedDates() {
+        List<Date> dates = new ArrayList<>();
+        List<Quotation> quotations = this.getExpectedQuotations();
+        Date date;
+
+        for (Quotation quotation : quotations) {
+            date = DateTools.getDateWithoutIntradayAttributes(quotation.getDate());
+            dates.add(date);
+        }
+
+        return dates;
+    }
+
     // @Test
     /**
      * Tests the determination of calculated quotations.
@@ -186,5 +208,27 @@ public class QuotationCalculatorTest {
         calculatedQuotations = this.quotationCalculator.getCalculatedQuotations(instruments);
 
         assertEquals(expectedQutoations, calculatedQuotations.size());
+    }
+
+    @Test
+    /**
+     * Tests the determination of all Quotation dates of the given List of instruments with their quotations.
+     */
+    public void testGetQuotationDates() {
+        List<Instrument> instruments = new ArrayList<>();
+        List<Date> expectedDates = this.getExpectedDates();
+        HashSet<Date> actualDates;
+        final int expectedNumberOfDates = 3;
+
+        instruments.add(this.appleStock);
+        instruments.add(this.netflixStock);
+
+        actualDates = this.quotationCalculator.getQuotationDates(instruments);
+
+        assertEquals(expectedNumberOfDates, actualDates.size());
+
+        for (Date expectedDate : expectedDates) {
+            assertTrue(actualDates.contains(expectedDate));
+        }
     }
 }
