@@ -1,5 +1,7 @@
 package backend.controller;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -7,6 +9,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import backend.controller.scan.QuotationCalculator;
 import backend.model.StockExchange;
@@ -166,5 +169,22 @@ public class QuotationCalculatorTest {
         quotation.setVolume(79666048);
 
         return expectedQuotations;
+    }
+
+    // @Test
+    /**
+     * Tests the determination of calculated quotations.
+     */
+    public void testGetCalculatedQuotations() {
+        List<Instrument> instruments = new ArrayList<>();
+        List<Quotation> calculatedQuotations;
+        final int expectedQutoations = 3;
+
+        instruments.add(this.appleStock);
+        instruments.add(this.netflixStock);
+
+        calculatedQuotations = this.quotationCalculator.getCalculatedQuotations(instruments);
+
+        assertEquals(expectedQutoations, calculatedQuotations.size());
     }
 }
