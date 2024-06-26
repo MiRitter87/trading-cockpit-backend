@@ -149,28 +149,31 @@ public class QuotationCalculatorTest {
         Quotation quotation;
 
         quotation = new Quotation();
-        quotation.setDate(appleQuotations.get(0).getDate());
+        quotation.setDate(DateTools.getDateWithoutIntradayAttributes(appleQuotations.get(0).getDate()));
         quotation.setOpen(new BigDecimal("446.825"));
         quotation.setHigh(new BigDecimal("449.395"));
         quotation.setLow(new BigDecimal("442.605"));
-        quotation.setClose(new BigDecimal("442.605"));
+        quotation.setClose(new BigDecimal("446.805"));
         quotation.setVolume(169361455);
+        expectedQuotations.add(quotation);
 
         quotation = new Quotation();
-        quotation.setDate(appleQuotations.get(1).getDate());
+        quotation.setDate(DateTools.getDateWithoutIntradayAttributes(appleQuotations.get(1).getDate()));
         quotation.setOpen(new BigDecimal("447.865"));
-        quotation.setHigh(new BigDecimal("452.06"));
+        quotation.setHigh(new BigDecimal("452.060"));
         quotation.setLow(new BigDecimal("441.285"));
         quotation.setClose(new BigDecimal("444.355"));
-        quotation.setVolume(86960394);
+        quotation.setVolume(43480197);
+        expectedQuotations.add(quotation);
 
         quotation = new Quotation();
-        quotation.setDate(appleQuotations.get(2).getDate());
-        quotation.setOpen(new BigDecimal("217.59"));
-        quotation.setHigh(new BigDecimal("218.63"));
-        quotation.setLow(new BigDecimal("213.00"));
-        quotation.setClose(new BigDecimal("214.29"));
+        quotation.setDate(DateTools.getDateWithoutIntradayAttributes(appleQuotations.get(2).getDate()));
+        quotation.setOpen(new BigDecimal("217.590"));
+        quotation.setHigh(new BigDecimal("218.630"));
+        quotation.setLow(new BigDecimal("213.000"));
+        quotation.setClose(new BigDecimal("214.290"));
         quotation.setVolume(79666048);
+        expectedQuotations.add(quotation);
 
         return expectedQuotations;
     }
@@ -193,13 +196,14 @@ public class QuotationCalculatorTest {
         return dates;
     }
 
-    // @Test
+    @Test
     /**
      * Tests the determination of calculated quotations.
      */
     public void testGetCalculatedQuotations() {
         List<Instrument> instruments = new ArrayList<>();
         List<Quotation> calculatedQuotations;
+        List<Quotation> expectedQuotations = this.getExpectedQuotations();
         final int expectedQutoations = 3;
 
         instruments.add(this.appleStock);
@@ -208,6 +212,10 @@ public class QuotationCalculatorTest {
         calculatedQuotations = this.quotationCalculator.getCalculatedQuotations(instruments);
 
         assertEquals(expectedQutoations, calculatedQuotations.size());
+
+        assertEquals(expectedQuotations.get(0), calculatedQuotations.get(0));
+        assertEquals(expectedQuotations.get(1), calculatedQuotations.get(1));
+        assertEquals(expectedQuotations.get(2), calculatedQuotations.get(2));
     }
 
     @Test

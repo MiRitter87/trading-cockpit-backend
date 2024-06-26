@@ -1,5 +1,7 @@
 package backend.controller.scan;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -8,6 +10,7 @@ import java.util.List;
 
 import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
+import backend.model.instrument.QuotationDateComparator;
 import backend.tools.DateTools;
 
 /**
@@ -30,8 +33,17 @@ public class QuotationCalculator {
      */
     public List<Quotation> getCalculatedQuotations(final List<Instrument> instruments) {
         List<Date> instrumentDates = this.getSortedDatesOfInstruments(instruments);
+        List<Quotation> calculatedQuotations = new ArrayList<>();
+        Quotation calculatedQuotation;
 
-        return null;
+        for (Date date : instrumentDates) {
+            calculatedQuotation = this.getQuotationOfDate(date, instruments);
+            calculatedQuotations.add(calculatedQuotation);
+        }
+
+        Collections.sort(calculatedQuotations, new QuotationDateComparator());
+
+        return calculatedQuotations;
     }
 
     /**
@@ -76,5 +88,57 @@ public class QuotationCalculator {
         Collections.reverse(sortedDates);
 
         return sortedDates;
+    }
+
+    /**
+     * Calculates the Quotation for the given date based on the given instruments.
+     *
+     * @param date        The date of the calculated Quotation.
+     * @param instruments A List of instruments with their quotations.
+     * @return The calculated Quotation.
+     */
+    private Quotation getQuotationOfDate(final Date date, final List<Instrument> instruments) {
+        Quotation quotation;
+        Quotation calculatedQuotation = new Quotation();
+        int numberQuotations = 0;
+        BigDecimal calculatedOpen = new BigDecimal(0);
+        BigDecimal calculatedHigh = new BigDecimal(0);
+        BigDecimal calculatedLow = new BigDecimal(0);
+        BigDecimal calculatedClose = new BigDecimal(0);
+        BigDecimal calculatedVolume = new BigDecimal(0);
+        final int scale = 3;
+
+        for (Instrument instrument : instruments) {
+            quotation = instrument.getNewestQuotation(date);
+
+            if (quotation == null) {
+                continue;
+            }
+
+            calculatedOpen = calculatedOpen.add(quotation.getOpen());
+            calculatedHigh = calculatedHigh.add(quotation.getHigh());
+            calculatedLow = calculatedLow.add(quotation.getLow());
+            calculatedClose = calculatedClose.add(quotation.getClose());
+            calculatedVolume = calculatedVolume.add(new BigDecimal(quotation.getVolume()));
+            numberQuotations++;
+        }
+
+        calculatedQuotation
+                .setOpen(calculatedOpen.divide(new BigDecimal(numberQuotations), scale, RoundingMode.HALF_UP));
+
+        calculatedQuotation
+                .setHigh(calculatedHigh.divide(new BigDecimal(numberQuotations), scale, RoundingMode.HALF_UP));
+
+        calculatedQuotation.setLow(calculatedLow.divide(new BigDecimal(numberQuotations), scale, RoundingMode.HALF_UP));
+
+        calculatedQuotation
+                .setClose(calculatedClose.divide(new BigDecimal(numberQuotations), scale, RoundingMode.HALF_UP));
+
+        calculatedQuotation.setVolume(
+                calculatedVolume.divide(new BigDecimal(numberQuotations), 0, RoundingMode.HALF_UP).longValue());
+
+        calculatedQuotation.setDate(date);
+
+        return calculatedQuotation;
     }
 }
