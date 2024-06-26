@@ -760,4 +760,32 @@ public class InstrumentTest {
             fail(e.getMessage());
         }
     }
+
+    @Test
+    /**
+     * Tests the determination of the newest Quotation. That is either the newest Quotation of the given day or the next
+     * older one.
+     */
+    public void testGetNewestQuotation() {
+        Quotation actualQuotation;
+        Calendar calendar = Calendar.getInstance();
+
+        // Get newest Quotation starting at 27.08.2022
+        calendar.clear();
+        calendar.set(2022, 07, 27, 0, 0, 0);
+        actualQuotation = this.instrument.getNewestQuotation(calendar.getTime());
+        assertEquals(this.quotation2, actualQuotation);
+
+        // Get newest Quotation starting at 28.08.2022 (Should get previous days Quotation)
+        calendar.clear();
+        calendar.set(2022, 07, 28, 0, 0, 0);
+        actualQuotation = this.instrument.getNewestQuotation(calendar.getTime());
+        assertEquals(this.quotation2, actualQuotation);
+
+        // Get newest Quotation starting at 25.08.2022 (None should be found)
+        calendar.clear();
+        calendar.set(2022, 07, 25, 0, 0, 0);
+        actualQuotation = this.instrument.getNewestQuotation(calendar.getTime());
+        assertNull(actualQuotation);
+    }
 }

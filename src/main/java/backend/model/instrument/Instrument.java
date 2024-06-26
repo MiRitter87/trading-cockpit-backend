@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import backend.model.LocalizedException;
 import backend.model.StockExchange;
+import backend.tools.DateTools;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -360,6 +361,32 @@ public class Instrument {
             quotation = quotationIterator.next();
 
             if (quotation.getDate().getTime() == date.getTime()) {
+                return quotation;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Determines the newest Quotation of the given date. If no Quotation is found, provide the next older one.
+     *
+     * @param date The date of the requested Quotation.
+     * @return The newest Quotation of the given date or the next older one. Null, if no Quotation of the given date or
+     *         older exists.
+     */
+    public Quotation getNewestQuotation(final Date date) {
+        Collections.sort(this.quotations, new QuotationDateComparator());
+        Date quotationDate;
+
+        for (Quotation quotation : this.quotations) {
+            quotationDate = DateTools.getDateWithoutIntradayAttributes(quotation.getDate());
+
+            if (date.getTime() == quotationDate.getTime()) {
+                return quotation;
+            }
+
+            if (quotationDate.getTime() < date.getTime()) {
                 return quotation;
             }
         }
