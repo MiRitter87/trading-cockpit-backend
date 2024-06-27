@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -196,8 +197,8 @@ public class ScanThread extends DataRetrievalThread {
      */
     private void updateQuotationsNonRatio(final Instrument instrument) {
         Quotation databaseQuotation;
-        java.util.List<Quotation> databaseQuotations = new ArrayList<>();
-        java.util.List<Quotation> newQuotations = new ArrayList<>();
+        List<Quotation> databaseQuotations = new ArrayList<>();
+        List<Quotation> newQuotations = new ArrayList<>();
         Set<Quotation> obsoleteQuotations = new HashSet<>();
         QuotationProviderDAO quotationProviderDAO;
         final int thresholdDaysLogQuotationAge = 5;
@@ -206,7 +207,7 @@ public class ScanThread extends DataRetrievalThread {
             quotationProviderDAO = this.getQuotationProviderDAO(instrument.getStockExchange());
             databaseQuotations.addAll(this.quotationDAO.getQuotationsOfInstrument(instrument.getId()));
             instrument.setQuotations(databaseQuotations);
-            java.util.List<Quotation> wsQuotations = quotationProviderDAO.getQuotationHistory(instrument.getSymbol(),
+            List<Quotation> wsQuotations = quotationProviderDAO.getQuotationHistory(instrument.getSymbol(),
                     instrument.getStockExchange(), instrument.getType(), 1);
 
             for (Quotation wsQuotation : wsQuotations) {
@@ -244,8 +245,8 @@ public class ScanThread extends DataRetrievalThread {
      */
     private void updateQuotationsRatio(final Instrument instrument) {
         Quotation existingQuotation;
-        java.util.List<Quotation> newQuotations = new ArrayList<>();
-        java.util.List<Quotation> ratioQuotations = new ArrayList<>();
+        List<Quotation> newQuotations = new ArrayList<>();
+        List<Quotation> ratioQuotations = new ArrayList<>();
         RatioCalculationController ratioCalculationController = new RatioCalculationController();
 
         // 1. Calculate ratio quotations based on dividend and divisor quotations.
@@ -293,14 +294,49 @@ public class ScanThread extends DataRetrievalThread {
      * @param instrument The Instrument to be updated.
      */
     private void updateQuotationsFromList(final Instrument instrument) {
-        // Get all instruments of the referenced dataSourceList
+        QuotationCalculator calculator = new QuotationCalculator();
+        List<Instrument> instruments = new ArrayList<>(instrument.getDataSourceList().getInstruments());
+        List<Quotation> calculatedQuotations = new ArrayList<>();
+        List<Quotation> newQuotations = new ArrayList<>();
+        Quotation existingQuotation;
 
-        // Initialize the instruments with quotations loaded from the database.
+        // 1. Initialize the instruments with quotations loaded from the database.
+        try {
+            for (Instrument tempInstrument : instruments) {
+                tempInstrument.setQuotations(this.quotationDAO.getQuotationsOfInstrument(tempInstrument.getId()));
+            }
+        } catch (Exception exception) {
+            this.scan.addIncompleteInstrument(instrument);
+            LOGGER.error("Could not load quotations of instrument with ID " + instrument.getId(),
+                    exception.getMessage());
+            return;
+        }
 
-        // Iterate through all instruments and calculate quotations.
-        // In: A list of instruments with quotations.
-        // Out: A list of calculated quotations.
+        // 2. Calculate the quotations of the instrument.
+        calculatedQuotations = calculator.getCalculatedQuotations(instruments);
 
+        // 3. Update calculated quotations of Instrument.
+        try {
+            instrument.setQuotations(this.quotationDAO.getQuotationsOfInstrument(instrument.getId()));
+
+            for (Quotation calculatedQuotation : calculatedQuotations) {
+                existingQuotation = instrument.getQuotationByDate(calculatedQuotation.getDate());
+
+                if (existingQuotation == null) {
+                    calculatedQuotation.setInstrument(instrument);
+                    newQuotations.add(calculatedQuotation);
+                }
+            }
+
+            if (newQuotations.size() > 0) {
+                this.quotationDAO.insertQuotations(newQuotations);
+            }
+
+            this.scan.getIncompleteInstruments().remove(instrument);
+        } catch (Exception exception) {
+            this.scan.addIncompleteInstrument(instrument);
+            LOGGER.error("Failed to update quotations of instrument with ID " + instrument.getId(), exception);
+        }
     }
 
     /**
@@ -309,9 +345,9 @@ public class ScanThread extends DataRetrievalThread {
      * @param instrument The Instrument to be updated.
      */
     private void updateIndicatorsOfInstrument(final Instrument instrument) {
-        java.util.List<Quotation> sortedQuotations;
-        java.util.List<Quotation> modifiedQuotations = new ArrayList<>();
-        java.util.List<Quotation> databaseQuotations = new ArrayList<>();
+        List<Quotation> sortedQuotations;
+        List<Quotation> modifiedQuotations = new ArrayList<>();
+        List<Quotation> databaseQuotations = new ArrayList<>();
         Quotation quotation;
 
         try {
@@ -350,14 +386,13 @@ public class ScanThread extends DataRetrievalThread {
      */
     private void updateRSNumbers() {
         try {
-            java.util.List<Quotation> allQuotations = new ArrayList<>();
-            java.util.List<Quotation> quotationsTypeStock = this.quotationDAO.getRecentQuotations(InstrumentType.STOCK);
-            java.util.List<Quotation> quotationsTypeETF = this.quotationDAO.getRecentQuotations(InstrumentType.ETF);
-            java.util.List<Quotation> quotationsTypeSector = this.quotationDAO
-                    .getRecentQuotations(InstrumentType.SECTOR);
-            java.util.List<Quotation> quotationsTypeIndustryGroup = this.quotationDAO
+            List<Quotation> allQuotations = new ArrayList<>();
+            List<Quotation> quotationsTypeStock = this.quotationDAO.getRecentQuotations(InstrumentType.STOCK);
+            List<Quotation> quotationsTypeETF = this.quotationDAO.getRecentQuotations(InstrumentType.ETF);
+            List<Quotation> quotationsTypeSector = this.quotationDAO.getRecentQuotations(InstrumentType.SECTOR);
+            List<Quotation> quotationsTypeIndustryGroup = this.quotationDAO
                     .getRecentQuotations(InstrumentType.IND_GROUP);
-            java.util.List<Quotation> quotationsTypeRatio = this.quotationDAO.getRecentQuotations(InstrumentType.RATIO);
+            List<Quotation> quotationsTypeRatio = this.quotationDAO.getRecentQuotations(InstrumentType.RATIO);
 
             this.indicatorCalculator.calculateRsNumbers(quotationsTypeStock);
             this.indicatorCalculator.calculateRsNumbers(quotationsTypeETF);
@@ -450,7 +485,7 @@ public class ScanThread extends DataRetrievalThread {
      * @param quotations   The quotations whose dates are checked.
      * @param dayThreshold The threshold in days used to log.
      */
-    private void checkAgeOfNewestQuotation(final String symbol, final java.util.List<Quotation> quotations,
+    private void checkAgeOfNewestQuotation(final String symbol, final List<Quotation> quotations,
             final int dayThreshold) {
         QuotationArray quotationArray = new QuotationArray(quotations);
         long quotationAgeDays;
