@@ -103,7 +103,7 @@ public class QuotationCalculatorTest {
         quotation.setVolume(84387904);
         this.appleStock.addQuotation(quotation);
 
-        calendar.add(Calendar.DATE, -3);
+        calendar.add(Calendar.DATE, -2);
         quotation = new Quotation();
         quotation.setDate(calendar.getTime());
         quotation.setOpen(new BigDecimal("217.59"));
@@ -138,6 +138,16 @@ public class QuotationCalculatorTest {
         quotation.setClose(new BigDecimal("679.03"));
         quotation.setVolume(2572490);
         this.netflixStock.addQuotation(quotation);
+
+        calendar.add(Calendar.DATE, -1);
+        quotation = new Quotation();
+        quotation.setDate(calendar.getTime());
+        quotation.setOpen(new BigDecimal("675.63"));
+        quotation.setHigh(new BigDecimal("687.06"));
+        quotation.setLow(new BigDecimal("674.64"));
+        quotation.setClose(new BigDecimal("685.67"));
+        quotation.setVolume(2857420);
+        this.netflixStock.addQuotation(quotation);
     }
 
     /**
@@ -146,8 +156,10 @@ public class QuotationCalculatorTest {
     private List<Quotation> getExpectedQuotations() {
         List<Quotation> expectedQuotations = new ArrayList<>();
         List<Quotation> appleQuotations = this.appleStock.getQuotationsSortedByDate();
+        List<Quotation> netflixQuotations = this.netflixStock.getQuotationsSortedByDate();
         Quotation quotation;
 
+        // (appleQuotation0 + netflixQuotation0) / 2
         quotation = new Quotation();
         quotation.setDate(DateTools.getDateWithoutIntradayAttributes(appleQuotations.get(0).getDate()));
         quotation.setOpen(new BigDecimal("446.825"));
@@ -157,6 +169,7 @@ public class QuotationCalculatorTest {
         quotation.setVolume(169361455);
         expectedQuotations.add(quotation);
 
+        // (appleQuotation1 + netflixQuotation1) / 2
         quotation = new Quotation();
         quotation.setDate(DateTools.getDateWithoutIntradayAttributes(appleQuotations.get(1).getDate()));
         quotation.setOpen(new BigDecimal("447.865"));
@@ -166,6 +179,17 @@ public class QuotationCalculatorTest {
         quotation.setVolume(43480197);
         expectedQuotations.add(quotation);
 
+        // (appleQuotation2 + netflixQuotation2) / 2
+        quotation = new Quotation();
+        quotation.setDate(DateTools.getDateWithoutIntradayAttributes(netflixQuotations.get(2).getDate()));
+        quotation.setOpen(new BigDecimal("446.610"));
+        quotation.setHigh(new BigDecimal("452.845"));
+        quotation.setLow(new BigDecimal("443.820"));
+        quotation.setClose(new BigDecimal("449.980"));
+        quotation.setVolume(41261734);
+        expectedQuotations.add(quotation);
+
+        // appleQuotation2
         quotation = new Quotation();
         quotation.setDate(DateTools.getDateWithoutIntradayAttributes(appleQuotations.get(2).getDate()));
         quotation.setOpen(new BigDecimal("217.590"));
@@ -204,7 +228,7 @@ public class QuotationCalculatorTest {
         List<Instrument> instruments = new ArrayList<>();
         List<Quotation> calculatedQuotations;
         List<Quotation> expectedQuotations = this.getExpectedQuotations();
-        final int expectedQutoations = 3;
+        final int expectedQutoations = 4;
 
         instruments.add(this.appleStock);
         instruments.add(this.netflixStock);
@@ -216,6 +240,7 @@ public class QuotationCalculatorTest {
         assertEquals(expectedQuotations.get(0), calculatedQuotations.get(0));
         assertEquals(expectedQuotations.get(1), calculatedQuotations.get(1));
         assertEquals(expectedQuotations.get(2), calculatedQuotations.get(2));
+        assertEquals(expectedQuotations.get(3), calculatedQuotations.get(3));
     }
 
     @Test
@@ -226,7 +251,7 @@ public class QuotationCalculatorTest {
         List<Instrument> instruments = new ArrayList<>();
         List<Date> expectedDates = this.getExpectedDates();
         HashSet<Date> actualDates;
-        final int expectedNumberOfDates = 3;
+        final int expectedNumberOfDates = 4;
 
         instruments.add(this.appleStock);
         instruments.add(this.netflixStock);
