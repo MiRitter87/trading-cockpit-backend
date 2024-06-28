@@ -55,6 +55,12 @@ public class InstrumentWS {
     private Integer divisorId;
 
     /**
+     * The List that serves as a data source for the calculation of quotations. If a List is referenced, the quotations
+     * are being calculated using the quotations of all instruments of the referenced List.
+     */
+    private Integer dataSourceListId;
+
+    /**
      * The path of the URL that specifies the company at investing.com.
      *
      * Example: In the URL "https://www.investing.com/equities/apple-computer-inc" the company path would be
@@ -207,5 +213,19 @@ public class InstrumentWS {
      */
     public void setDivisorId(final Integer divisorId) {
         this.divisorId = divisorId;
+    }
+
+    /**
+     * @return the dataSourceListId
+     */
+    public Integer getDataSourceListId() {
+        return dataSourceListId;
+    }
+
+    /**
+     * @param dataSourceListId the dataSourceListId to set
+     */
+    public void setDataSourceListId(final Integer dataSourceListId) {
+        this.dataSourceListId = dataSourceListId;
     }
 }

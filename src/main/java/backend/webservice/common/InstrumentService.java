@@ -17,6 +17,7 @@ import backend.dao.ObjectUnchangedException;
 import backend.dao.chart.ChartObjectDAO;
 import backend.dao.instrument.DuplicateInstrumentException;
 import backend.dao.instrument.InstrumentDAO;
+import backend.dao.list.ListDAO;
 import backend.dao.quotation.persistence.QuotationDAO;
 import backend.model.LocalizedException;
 import backend.model.chart.HorizontalLine;
@@ -55,6 +56,11 @@ public class InstrumentService {
     private ChartObjectDAO chartObjectDAO;
 
     /**
+     * DAO for List access.
+     */
+    private ListDAO listDAO;
+
+    /**
      * Access to localized application resources.
      */
     private ResourceBundle resources = ResourceBundle.getBundle("backend");
@@ -71,6 +77,7 @@ public class InstrumentService {
         this.instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
         this.quotationDAO = DAOManager.getInstance().getQuotationDAO();
         this.chartObjectDAO = DAOManager.getInstance().getChartObjectDAO();
+        this.listDAO = DAOManager.getInstance().getListDAO();
     }
 
     /**
@@ -359,6 +366,10 @@ public class InstrumentService {
 
         if (instrumentWS.getDivisorId() != null) {
             instrument.setDivisor(this.instrumentDAO.getInstrument(instrumentWS.getDivisorId()));
+        }
+
+        if (instrumentWS.getDataSourceListId() != null) {
+            instrument.setDataSourceList(this.listDAO.getList(instrumentWS.getDataSourceListId()));
         }
 
         return instrument;
