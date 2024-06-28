@@ -304,6 +304,10 @@ public class ScanThread extends DataRetrievalThread {
         try {
             for (Instrument tempInstrument : instruments) {
                 tempInstrument.setQuotations(this.quotationDAO.getQuotationsOfInstrument(tempInstrument.getId()));
+
+                if (tempInstrument.getQuotations().size() == 0) {
+                    LOGGER.warn("No quotations exist for Instrument with ID " + instrument.getId());
+                }
             }
         } catch (Exception exception) {
             this.scan.addIncompleteInstrument(instrument);
