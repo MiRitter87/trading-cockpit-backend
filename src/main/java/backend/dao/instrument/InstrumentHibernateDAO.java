@@ -464,6 +464,8 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
         graph.addAttributeNodes("dataSourceList");
         graph.addSubgraph("dividend").addAttributeNodes("sector", "industryGroup");
         graph.addSubgraph("divisor").addAttributeNodes("sector", "industryGroup");
+        graph.addSubgraph("industryGroup").addAttributeNodes("dataSourceList");
+        graph.addSubgraph("sector").addAttributeNodes("dataSourceList");
         graph.addSubgraph("dataSourceList").addAttributeNodes("instruments");
     }
 }
