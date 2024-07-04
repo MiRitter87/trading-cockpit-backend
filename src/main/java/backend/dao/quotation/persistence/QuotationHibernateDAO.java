@@ -340,6 +340,7 @@ public class QuotationHibernateDAO implements QuotationDAO {
             entityManager.close();
         }
 
+        this.scanTemplateProcessor.setDataSourceListNull(quotations);
         this.scanTemplateProcessor.applyFilters(minLiquidity, minAtrp, quotations);
         this.scanTemplateProcessor.templateBasedPostProcessing(scanTemplate, startDate, quotations);
         this.scanTemplateProcessor.fillTransientAttributes(instrumentType, quotations);

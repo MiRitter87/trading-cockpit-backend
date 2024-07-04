@@ -240,6 +240,18 @@ public class ScanTemplateProcessor {
     }
 
     /**
+     * Sets the dataSourceList attribute of the quotations instruments to null. Those are loaded lazily and not required
+     * by the frontend.
+     *
+     * @param quotations The quotations on which the post processing is performed.
+     */
+    protected void setDataSourceListNull(final List<Quotation> quotations) {
+        for (Quotation quotation : quotations) {
+            quotation.getInstrument().setDataSourceList(null);
+        }
+    }
+
+    /**
      * Applies the given filters to the given quotations. If a Quotation does not fulfill the given filters, it is
      * removed from the List.
      *
