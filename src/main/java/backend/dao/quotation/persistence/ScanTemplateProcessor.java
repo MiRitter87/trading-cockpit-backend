@@ -248,6 +248,14 @@ public class ScanTemplateProcessor {
     protected void setDataSourceListNull(final List<Quotation> quotations) {
         for (Quotation quotation : quotations) {
             quotation.getInstrument().setDataSourceList(null);
+
+            if (quotation.getInstrument().getSector() != null) {
+                quotation.getInstrument().getSector().setDataSourceList(null);
+            }
+
+            if (quotation.getInstrument().getIndustryGroup() != null) {
+                quotation.getInstrument().getIndustryGroup().setDataSourceList(null);
+            }
         }
     }
 
