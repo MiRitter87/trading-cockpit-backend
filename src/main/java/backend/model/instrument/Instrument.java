@@ -406,11 +406,11 @@ public class Instrument {
         result = prime * result + ((stockExchange == null) ? 0 : stockExchange.hashCode());
         result = prime * result + ((symbol == null) ? 0 : symbol.hashCode());
         result = prime * result + ((type == null) ? 0 : type.hashCode());
-        result = prime * result + ((sector == null) ? 0 : sector.hashCode());
-        result = prime * result + ((industryGroup == null) ? 0 : industryGroup.hashCode());
-        result = prime * result + ((dividend == null) ? 0 : dividend.hashCode());
-        result = prime * result + ((divisor == null) ? 0 : divisor.hashCode());
-        result = prime * result + ((dataSourceList == null) ? 0 : dataSourceList.hashCode());
+        result = prime * result + ((sector == null) ? 0 : sector.getId().hashCode());
+        result = prime * result + ((industryGroup == null) ? 0 : industryGroup.getId().hashCode());
+        result = prime * result + ((dividend == null) ? 0 : dividend.getId().hashCode());
+        result = prime * result + ((divisor == null) ? 0 : divisor.getId().hashCode());
+        result = prime * result + ((dataSourceList == null) ? 0 : dataSourceList.getId().hashCode());
         result = prime * result + ((companyPathInvestingCom == null) ? 0 : companyPathInvestingCom.hashCode());
         return result;
     }
