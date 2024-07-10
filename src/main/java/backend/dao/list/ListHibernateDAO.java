@@ -223,7 +223,7 @@ public class ListHibernateDAO implements ListDAO {
      * Sets references of the given lists that are not needed to null. Those references can potentially be circular and
      * cause problems during serialization by Jackson.
      *
-     * @param lists
+     * @param lists The lists whose potential circular references are deleted.
      */
     private void setDataSourceListNull(final java.util.List<List> lists) {
         for (List list : lists) {
