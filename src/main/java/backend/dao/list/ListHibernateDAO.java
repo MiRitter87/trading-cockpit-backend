@@ -1,8 +1,14 @@
 package backend.dao.list;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import backend.dao.ObjectUnchangedException;
+import backend.model.ObjectInUseException;
+import backend.model.instrument.Instrument;
+import backend.model.list.List;
+import backend.model.scan.Scan;
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -11,11 +17,6 @@ import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
-
-import backend.dao.ObjectUnchangedException;
-import backend.model.ObjectInUseException;
-import backend.model.list.List;
-import backend.model.scan.Scan;
 
 /**
  * Provides access to list database persistence using Hibernate.
@@ -123,6 +124,8 @@ public class ListHibernateDAO implements ListDAO {
             entityManager.close();
         }
 
+        this.setDataSourceListNull(lists);
+
         return lists;
     }
 
@@ -132,6 +135,7 @@ public class ListHibernateDAO implements ListDAO {
     @Override
     public List getList(final Integer id) throws Exception {
         EntityManager entityManager = this.sessionFactory.createEntityManager();
+        ArrayList<List> lists = new ArrayList<>();
 
         // Use entity graphs to load data of referenced instrument instances.
         EntityGraph<List> graph = entityManager.createEntityGraph(List.class);
@@ -143,6 +147,11 @@ public class ListHibernateDAO implements ListDAO {
         List list = entityManager.find(List.class, id, hints);
         entityManager.getTransaction().commit();
         entityManager.close();
+
+        if (list != null) {
+            lists.add(list);
+            this.setDataSourceListNull(lists);
+        }
 
         return list;
     }
@@ -182,7 +191,7 @@ public class ListHibernateDAO implements ListDAO {
     /**
      * Checks if the List is referenced by another business object.
      *
-     * @param list The List which is checked.
+     * @param list          The List which is checked.
      * @param entityManager The active EntityManager used for data access.
      * @throws ObjectInUseException In case the List is in use.
      */
@@ -193,7 +202,7 @@ public class ListHibernateDAO implements ListDAO {
     /**
      * Checks if the List is referenced by any Scan.
      *
-     * @param list The List which is checked.
+     * @param list          The List which is checked.
      * @param entityManager The EntityManager used to execute queries.
      * @throws ObjectInUseException In case the List is in use.
      */
@@ -207,6 +216,26 @@ public class ListHibernateDAO implements ListDAO {
 
         if (scans.size() > 0) {
             throw new ObjectInUseException(list.getId(), scans.get(0).getId(), scans.get(0));
+        }
+    }
+
+    /**
+     * Sets references of the given lists that are not needed to null. Those references can potentially be circular and
+     * cause problems during serialization by Jackson.
+     *
+     * @param lists
+     */
+    private void setDataSourceListNull(final java.util.List<List> lists) {
+        for (List list : lists) {
+            for (Instrument instrument : list.getInstruments()) {
+                if (instrument.getSector() != null) {
+                    instrument.getSector().setDataSourceList(null);
+                }
+
+                if (instrument.getIndustryGroup() != null) {
+                    instrument.getIndustryGroup().setDataSourceList(null);
+                }
+            }
         }
     }
 }
