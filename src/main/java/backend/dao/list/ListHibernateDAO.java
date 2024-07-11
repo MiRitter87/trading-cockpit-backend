@@ -96,10 +96,9 @@ public class ListHibernateDAO implements ListDAO {
     public java.util.List<List> getLists() throws Exception {
         java.util.List<List> lists = null;
         EntityManager entityManager = this.sessionFactory.createEntityManager();
-
-        // Use entity graphs to load data of referenced Instrument instances.
         EntityGraph<List> graph = entityManager.createEntityGraph(List.class);
-        graph.addAttributeNodes("instruments");
+
+        this.addRequestedNodesToGraph(graph);
 
         entityManager.getTransaction().begin();
 
@@ -136,11 +135,10 @@ public class ListHibernateDAO implements ListDAO {
     public List getList(final Integer id) throws Exception {
         EntityManager entityManager = this.sessionFactory.createEntityManager();
         ArrayList<List> lists = new ArrayList<>();
-
-        // Use entity graphs to load data of referenced instrument instances.
         EntityGraph<List> graph = entityManager.createEntityGraph(List.class);
-        graph.addAttributeNodes("instruments");
         Map<String, Object> hints = new HashMap<String, Object>();
+
+        this.addRequestedNodesToGraph(graph);
         hints.put("jakarta.persistence.loadgraph", graph);
 
         entityManager.getTransaction().begin();
@@ -217,6 +215,17 @@ public class ListHibernateDAO implements ListDAO {
         if (scans.size() > 0) {
             throw new ObjectInUseException(list.getId(), scans.get(0).getId(), scans.get(0));
         }
+    }
+
+    /**
+     * Adds nodes and subgraphs with nodes to the given EntityGraph. These represent object associations that are
+     * eagerly loaded.
+     *
+     * @param graph The root EntityGraph of the requested instruments.
+     */
+    private void addRequestedNodesToGraph(final EntityGraph<List> graph) {
+        graph.addAttributeNodes("instruments");
+        graph.addSubgraph("instruments").addAttributeNodes("sector", "industryGroup");
     }
 
     /**
