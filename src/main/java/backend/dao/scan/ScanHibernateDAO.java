@@ -97,11 +97,9 @@ public class ScanHibernateDAO implements ScanDAO {
     public List<Scan> getScans() throws Exception {
         List<Scan> scans = null;
         EntityManager entityManager = this.sessionFactory.createEntityManager();
-
-        // Use entity graphs to load data of referenced list instances.
         EntityGraph<Scan> graph = entityManager.createEntityGraph(Scan.class);
-        graph.addAttributeNodes("lists");
-        graph.addAttributeNodes("incompleteInstruments");
+
+        this.addRequestedNodesToGraph(graph);
 
         entityManager.getTransaction().begin();
 
@@ -138,12 +136,10 @@ public class ScanHibernateDAO implements ScanDAO {
     public Scan getScan(final Integer id) throws Exception {
         ArrayList<Scan> scans = new ArrayList<>();
         EntityManager entityManager = this.sessionFactory.createEntityManager();
-
-        // Use entity graphs to load data of referenced list instances.
         EntityGraph<Scan> graph = entityManager.createEntityGraph(Scan.class);
-        graph.addAttributeNodes("lists");
-        graph.addAttributeNodes("incompleteInstruments");
         Map<String, Object> hints = new HashMap<String, Object>();
+
+        this.addRequestedNodesToGraph(graph);
         hints.put("jakarta.persistence.loadgraph", graph);
 
         entityManager.getTransaction().begin();
@@ -251,6 +247,21 @@ public class ScanHibernateDAO implements ScanDAO {
                 instrumentIterator.remove();
             }
         }
+    }
+
+    /**
+     * Adds nodes and subgraphs with nodes to the given EntityGraph. These represent object associations that are
+     * eagerly loaded.
+     *
+     * @param graph The root EntityGraph of the requested instruments.
+     */
+    private void addRequestedNodesToGraph(final EntityGraph<Scan> graph) {
+        graph.addAttributeNodes("lists");
+        graph.addSubgraph("lists").addAttributeNodes("instruments");
+        graph.addSubgraph("lists").addSubgraph("instruments").addAttributeNodes("sector", "industryGroup");
+
+        graph.addAttributeNodes("incompleteInstruments");
+        graph.addSubgraph("incompleteInstruments").addAttributeNodes("sector", "industryGroup");
     }
 
     /**
