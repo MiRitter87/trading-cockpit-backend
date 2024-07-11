@@ -1,5 +1,6 @@
 package backend.dao.scan;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -125,6 +126,8 @@ public class ScanHibernateDAO implements ScanDAO {
             entityManager.close();
         }
 
+        this.setDataSourceListNull(scans);
+
         return scans;
     }
 
@@ -133,6 +136,7 @@ public class ScanHibernateDAO implements ScanDAO {
      */
     @Override
     public Scan getScan(final Integer id) throws Exception {
+        ArrayList<Scan> scans = new ArrayList<>();
         EntityManager entityManager = this.sessionFactory.createEntityManager();
 
         // Use entity graphs to load data of referenced list instances.
@@ -146,6 +150,11 @@ public class ScanHibernateDAO implements ScanDAO {
         Scan scan = entityManager.find(Scan.class, id, hints);
         entityManager.getTransaction().commit();
         entityManager.close();
+
+        if (scan != null) {
+            scans.add(scan);
+            this.setDataSourceListNull(scans);
+        }
 
         return scan;
     }
@@ -240,6 +249,28 @@ public class ScanHibernateDAO implements ScanDAO {
 
             if (instrumentOfList == null) {
                 instrumentIterator.remove();
+            }
+        }
+    }
+
+    /**
+     * Sets references of the given scans that are not needed to null. Those references can potentially be circular and
+     * cause problems during serialization by Jackson.
+     *
+     * @param scans The scans whose potential circular references are deleted.
+     */
+    private void setDataSourceListNull(final List<Scan> scans) {
+        for (Scan scan : scans) {
+            for (backend.model.list.List list : scan.getLists()) {
+                for (Instrument instrument : list.getInstruments()) {
+                    if (instrument.getSector() != null) {
+                        instrument.getSector().setDataSourceList(null);
+                    }
+
+                    if (instrument.getIndustryGroup() != null) {
+                        instrument.getIndustryGroup().setDataSourceList(null);
+                    }
+                }
             }
         }
     }
