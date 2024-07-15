@@ -141,8 +141,6 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
             entityManager.close();
         }
 
-        this.setCircularReferencesNull(instruments);
-
         return instruments;
     }
 
@@ -151,7 +149,6 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
      */
     @Override
     public Instrument getInstrument(final Integer id) throws Exception {
-        ArrayList<Instrument> instruments = new ArrayList<>();
         EntityManager entityManager = this.sessionFactory.createEntityManager();
         EntityGraph<Instrument> graph = entityManager.createEntityGraph(Instrument.class);
 
@@ -164,11 +161,6 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
         Instrument instrument = entityManager.find(Instrument.class, id, hints);
         entityManager.getTransaction().commit();
         entityManager.close();
-
-        if (instrument != null) {
-            instruments.add(instrument);
-            this.setCircularReferencesNull(instruments);
-        }
 
         return instrument;
     }
@@ -475,23 +467,5 @@ public class InstrumentHibernateDAO implements InstrumentDAO {
         graph.addSubgraph("dataSourceList").addAttributeNodes("instruments");
         graph.addSubgraph("sector").addAttributeNodes("dataSourceList");
         graph.addSubgraph("industryGroup").addAttributeNodes("dataSourceList");
-    }
-
-    /**
-     * Sets references of the given instruments that are not needed to null. Those references can potentially be
-     * circular and cause problems during serialization by Jackson.
-     *
-     * @param instruments The instruments whose potential circular references are deleted.
-     */
-    private void setCircularReferencesNull(final List<Instrument> instruments) {
-        for (Instrument instrument : instruments) {
-            if (instrument.getSector() != null && instrument.getSector().getDataSourceList() != null) {
-                instrument.getSector().getDataSourceList().setInstruments(null);
-            }
-
-            if (instrument.getIndustryGroup() != null && instrument.getIndustryGroup().getDataSourceList() != null) {
-                instrument.getIndustryGroup().getDataSourceList().setInstruments(null);
-            }
-        }
     }
 }

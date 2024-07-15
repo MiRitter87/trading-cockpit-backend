@@ -6,7 +6,9 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import backend.model.LocalizedException;
 import backend.model.StockExchange;
@@ -140,6 +142,7 @@ public class Instrument {
      * The List that serves as a data source for the calculation of quotations. If a List is referenced, the quotations
      * are being calculated using the quotations of all instruments of the referenced List.
      */
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "DATA_SOURCE_LIST_ID")
     private backend.model.list.List dataSourceList;

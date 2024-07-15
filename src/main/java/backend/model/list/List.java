@@ -3,6 +3,11 @@ package backend.model.list;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.hibernate.validator.HibernateValidator;
+import org.hibernate.validator.messageinterpolation.ExpressionLanguageFeatureLevel;
+
+import backend.model.NoItemsException;
+import backend.model.instrument.Instrument;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -20,12 +25,6 @@ import jakarta.validation.ValidatorFactory;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-
-import org.hibernate.validator.HibernateValidator;
-import org.hibernate.validator.messageinterpolation.ExpressionLanguageFeatureLevel;
-
-import backend.model.NoItemsException;
-import backend.model.instrument.Instrument;
 
 /**
  * A list of instruments.
