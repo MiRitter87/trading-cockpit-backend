@@ -460,46 +460,48 @@ public class Instrument {
         if (type != other.type) {
             return false;
         }
-        if (sector == null) {
-            if (other.sector != null) {
-                return false;
-            }
-        } else if (!sector.equals(other.sector)) {
-            return false;
-        }
-        if (industryGroup == null) {
-            if (other.industryGroup != null) {
-                return false;
-            }
-        } else if (!industryGroup.equals(other.industryGroup)) {
-            return false;
-        }
-        if (dividend == null) {
-            if (other.dividend != null) {
-                return false;
-            }
-        } else if (!dividend.equals(other.dividend)) {
-            return false;
-        }
-        if (divisor == null) {
-            if (other.divisor != null) {
-                return false;
-            }
-        } else if (!divisor.equals(other.divisor)) {
-            return false;
-        }
-        if (dataSourceList == null) {
-            if (other.dataSourceList != null) {
-                return false;
-            }
-        } else if (!dataSourceList.equals(other.dataSourceList)) {
-            return false;
-        }
         if (companyPathInvestingCom == null) {
             if (other.companyPathInvestingCom != null) {
                 return false;
             }
         } else if (!companyPathInvestingCom.equals(other.companyPathInvestingCom)) {
+            return false;
+        }
+        if (sector == null && other.sector != null) {
+            return false;
+        } else if (sector != null && other.sector == null) {
+            return false;
+        } else if (sector != null && other.sector != null && !sector.getId().equals(other.sector.getId())) {
+            return false;
+        }
+        if (industryGroup == null && other.industryGroup != null) {
+            return false;
+        } else if (industryGroup != null && other.industryGroup == null) {
+            return false;
+        } else if (industryGroup != null && other.industryGroup != null
+                && !industryGroup.getId().equals(other.industryGroup.getId())) {
+            return false;
+        }
+        if (dividend == null && other.dividend != null) {
+            return false;
+        } else if (dividend != null && other.dividend == null) {
+            return false;
+        } else if (dividend != null && other.dividend != null && !dividend.getId().equals(other.dividend.getId())) {
+            return false;
+        }
+        if (divisor == null && other.divisor != null) {
+            return false;
+        } else if (divisor != null && other.divisor == null) {
+            return false;
+        } else if (divisor != null && other.divisor != null && !divisor.getId().equals(other.divisor.getId())) {
+            return false;
+        }
+        if (dataSourceList == null && other.dataSourceList != null) {
+            return false;
+        } else if (dataSourceList != null && other.dataSourceList == null) {
+            return false;
+        } else if (dataSourceList != null && other.dataSourceList != null
+                && !dataSourceList.getId().equals(other.dataSourceList.getId())) {
             return false;
         }
 
