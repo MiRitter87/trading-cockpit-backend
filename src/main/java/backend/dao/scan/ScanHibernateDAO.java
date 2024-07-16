@@ -1,11 +1,15 @@
 package backend.dao.scan;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import backend.dao.ObjectUnchangedException;
+import backend.model.instrument.Instrument;
+import backend.model.instrument.InstrumentArray;
+import backend.model.scan.Scan;
+import backend.model.scan.ScanExecutionStatus;
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -14,12 +18,6 @@ import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
-
-import backend.dao.ObjectUnchangedException;
-import backend.model.instrument.Instrument;
-import backend.model.instrument.InstrumentArray;
-import backend.model.scan.Scan;
-import backend.model.scan.ScanExecutionStatus;
 
 /**
  * Provides access to scan database persistence using Hibernate.
@@ -124,8 +122,6 @@ public class ScanHibernateDAO implements ScanDAO {
             entityManager.close();
         }
 
-        this.setDataSourceListNull(scans);
-
         return scans;
     }
 
@@ -134,7 +130,6 @@ public class ScanHibernateDAO implements ScanDAO {
      */
     @Override
     public Scan getScan(final Integer id) throws Exception {
-        ArrayList<Scan> scans = new ArrayList<>();
         EntityManager entityManager = this.sessionFactory.createEntityManager();
         EntityGraph<Scan> graph = entityManager.createEntityGraph(Scan.class);
         Map<String, Object> hints = new HashMap<String, Object>();
@@ -146,11 +141,6 @@ public class ScanHibernateDAO implements ScanDAO {
         Scan scan = entityManager.find(Scan.class, id, hints);
         entityManager.getTransaction().commit();
         entityManager.close();
-
-        if (scan != null) {
-            scans.add(scan);
-            this.setDataSourceListNull(scans);
-        }
 
         return scan;
     }
@@ -262,27 +252,5 @@ public class ScanHibernateDAO implements ScanDAO {
 
         graph.addAttributeNodes("incompleteInstruments");
         graph.addSubgraph("incompleteInstruments").addAttributeNodes("sector", "industryGroup");
-    }
-
-    /**
-     * Sets references of the given scans that are not needed to null. Those references can potentially be circular and
-     * cause problems during serialization by Jackson.
-     *
-     * @param scans The scans whose potential circular references are deleted.
-     */
-    private void setDataSourceListNull(final List<Scan> scans) {
-        for (Scan scan : scans) {
-            for (backend.model.list.List list : scan.getLists()) {
-                for (Instrument instrument : list.getInstruments()) {
-                    if (instrument.getSector() != null) {
-                        instrument.getSector().setDataSourceList(null);
-                    }
-
-                    if (instrument.getIndustryGroup() != null) {
-                        instrument.getIndustryGroup().setDataSourceList(null);
-                    }
-                }
-            }
-        }
     }
 }
