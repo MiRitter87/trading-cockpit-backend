@@ -299,5 +299,11 @@ public class PriceAlertHibernateDAO implements PriceAlertDAO {
     private void addRequestedNodesToGraph(final EntityGraph<PriceAlert> graph) {
         graph.addAttributeNodes("instrument");
         graph.addSubgraph("instrument").addAttributeNodes("sector", "industryGroup");
+
+        // Prevent serialization errors when querying price alerts by WebService.
+        graph.addSubgraph("instrument").addSubgraph("sector").addSubgraph("dataSourceList")
+                .addAttributeNodes("instruments");
+        graph.addSubgraph("instrument").addSubgraph("industryGroup").addSubgraph("dataSourceList")
+                .addAttributeNodes("instruments");
     }
 }
