@@ -216,5 +216,8 @@ public class ListHibernateDAO implements ListDAO {
     private void addRequestedNodesToGraph(final EntityGraph<List> graph) {
         graph.addAttributeNodes("instruments");
         graph.addSubgraph("instruments").addAttributeNodes("sector", "industryGroup");
+
+        // Load instruments of referenced dataSourceList for processing in ScanThread.
+        graph.addSubgraph("instruments").addSubgraph("dataSourceList").addAttributeNodes("instruments");
     }
 }
