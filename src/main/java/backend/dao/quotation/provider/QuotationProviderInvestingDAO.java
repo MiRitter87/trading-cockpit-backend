@@ -64,6 +64,7 @@ public class QuotationProviderInvestingDAO extends AbstractQuotationProviderDAO 
         webClient.getOptions().setUseInsecureSSL(true);
         webClient.getOptions().setCssEnabled(false);
         webClient.getOptions().setJavaScriptEnabled(false);
+        webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
 
         try {
             htmlPage = webClient.getPage(url);
