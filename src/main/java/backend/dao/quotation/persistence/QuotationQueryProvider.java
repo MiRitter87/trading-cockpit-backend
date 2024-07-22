@@ -240,4 +240,18 @@ public class QuotationQueryProvider {
 
         return query;
     }
+
+    /**
+     * Provides the Query for the "Buyable Base" Template.
+     *
+     * @return The Query.
+     */
+    public Query getQueryForBuyableBaseTemplate() {
+        return this.entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i "
+                + "LEFT JOIN FETCH i.sector LEFT JOIN FETCH i.industryGroup "
+                + "JOIN q.movingAverageData m JOIN q.indicator r WHERE q.id IN :quotationIds "
+                + "AND q.movingAverageData IS NOT NULL AND q.indicator IS NOT NULL "
+                + "AND q.close > m.ema21 AND q.close > m.sma50 AND m.ema21 > m.sma50 "
+                + "AND r.bollingerBandWidth10Days < 10 AND r.volumeDifferential5Days < 0");
+    }
 }

@@ -925,11 +925,11 @@ public class QuotationServiceTest {
         assertEquals(this.denisonMinesQuotations.get(0), actualQuotation);
     }
 
-    // @Test
+    @Test
     /**
-     * Tests the retrieval of the most recent quotations that match the "Buyable Base" template. Only those
-     * quotations should be returned that have an Indicator associated with them. Only instruments of InstrumentType
-     * 'ETF' are requested.
+     * Tests the retrieval of the most recent quotations that match the "Buyable Base" template. Only those quotations
+     * should be returned that have an Indicator associated with them. Only instruments of InstrumentType 'ETF' are
+     * requested.
      */
     public void testGetQuotationsBuyableBaseETF() {
         QuotationArray quotations;
@@ -938,8 +938,7 @@ public class QuotationServiceTest {
 
         // Get the quotations.
         QuotationService service = new QuotationService();
-        getQuotationsResult = service.getQuotations(ScanTemplate.BUYABLE_BASE, InstrumentType.ETF, null, null,
-                null);
+        getQuotationsResult = service.getQuotations(ScanTemplate.BUYABLE_BASE, InstrumentType.ETF, null, null, null);
         quotations = (QuotationArray) getQuotationsResult.getData();
 
         // Assure no error message exists

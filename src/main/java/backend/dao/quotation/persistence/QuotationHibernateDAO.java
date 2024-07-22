@@ -402,6 +402,9 @@ public class QuotationHibernateDAO implements QuotationDAO {
         case SWING_TRADING_ENVIRONMENT:
             query = quotationQueryProvider.getQueryForSwingTradingEnvironmentTemplate();
             break;
+        case BUYABLE_BASE:
+            query = quotationQueryProvider.getQueryForBuyableBaseTemplate();
+            break;
         case ALL:
         case RS_SINCE_DATE:
         case THREE_WEEKS_TIGHT:
