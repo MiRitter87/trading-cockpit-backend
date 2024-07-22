@@ -365,6 +365,7 @@ public class QuotationServiceTest {
             this.xleQuotation2.getMovingAverageData().setSma200((float) 74.02);
             this.xleQuotation2.getMovingAverageData().setSma150((float) 76.84);
             this.xleQuotation2.getMovingAverageData().setSma50((float) 78.15);
+            this.xleQuotation2.getMovingAverageData().setEma21((float) 79.55);
             quotations.add(this.xleQuotation2);
 
             this.xlbQuotation1.setMovingAverageData(new MovingAverageData());
@@ -481,7 +482,7 @@ public class QuotationServiceTest {
      * quotations should be returned that have an Indicator associated with them. Only instruments of InstrumentType ETF
      * are requested.
      */
-    public void testGetQuotationsConsolidation10DaysStETF() {
+    public void testGetQuotationsConsolidation10DaysETF() {
         QuotationArray quotations;
         WebServiceResult getQuotationsResult;
         Quotation quotation;
@@ -922,5 +923,33 @@ public class QuotationServiceTest {
         // Check if the correct quotation is returned.
         actualQuotation = quotations.getQuotations().get(0);
         assertEquals(this.denisonMinesQuotations.get(0), actualQuotation);
+    }
+
+    // @Test
+    /**
+     * Tests the retrieval of the most recent quotations that match the "Buyable Base" template. Only those
+     * quotations should be returned that have an Indicator associated with them. Only instruments of InstrumentType
+     * 'ETF' are requested.
+     */
+    public void testGetQuotationsBuyableBaseETF() {
+        QuotationArray quotations;
+        WebServiceResult getQuotationsResult;
+        Quotation quotation;
+
+        // Get the quotations.
+        QuotationService service = new QuotationService();
+        getQuotationsResult = service.getQuotations(ScanTemplate.BUYABLE_BASE, InstrumentType.ETF, null, null,
+                null);
+        quotations = (QuotationArray) getQuotationsResult.getData();
+
+        // Assure no error message exists
+        assertTrue(WebServiceTools.resultContainsErrorMessage(getQuotationsResult) == false);
+
+        // Check if one Quotation is returned.
+        assertEquals(1, quotations.getQuotations().size());
+
+        // Check if the correct Quotation is returned.
+        quotation = quotations.getQuotations().get(0);
+        assertEquals(this.xleQuotation2, quotation);
     }
 }

@@ -76,5 +76,11 @@ public enum ScanTemplate {
      * Instruments whose RS-line is trading near the 52-week high. The referenced industry group is used for ratio
      * calculation.
      */
-    RS_NEAR_HIGH_IG
+    RS_NEAR_HIGH_IG,
+
+    /**
+     * Instruments whose price and volume characteristics provide a Buyable Base. In contrast to the
+     * "BREAKOUT_CANDIDATES" template the Buyable Base does not have to be near the 52-week high.
+     */
+    BUYABLE_BASE
 }
