@@ -54,6 +54,11 @@ public class ScanTemplateProcessor {
     private TemplateRsSinceDateProcessor rsSinceDateProcessor;
 
     /**
+     * Performs manual tasks for the "BUYABLE_BASE" ScanTemplate.
+     */
+    private TemplateBuyableBaseProcessor buyableBaseProcessor;
+
+    /**
      * Constructor.
      *
      * @param quotationHibernateDAO DAO to access Quotation data.
@@ -65,6 +70,7 @@ public class ScanTemplateProcessor {
         this.highTightFlagProcessor = new TemplateHighTightFlagProcessor(quotationHibernateDAO);
         this.threeWeeksTightProcessor = new TemplateThreeWeeksTightProcessor(quotationHibernateDAO);
         this.rsSinceDateProcessor = new TemplateRsSinceDateProcessor(quotationHibernateDAO);
+        this.buyableBaseProcessor = new TemplateBuyableBaseProcessor();
     }
 
     /**
@@ -236,6 +242,8 @@ public class ScanTemplateProcessor {
             this.swingTradingProcessor.postProcessingSwingTradingEnvironment(quotations);
         } else if (scanTemplate == ScanTemplate.RS_NEAR_HIGH_IG) {
             this.rsNearHighProcessor.postProcessingRsNearHigh(scanTemplate, quotations);
+        } else if (scanTemplate == ScanTemplate.BUYABLE_BASE) {
+            this.buyableBaseProcessor.postProcessingBuyableBase(quotations);
         }
     }
 

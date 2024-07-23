@@ -952,7 +952,7 @@ public class QuotationServiceTest {
         assertEquals(this.xleQuotation2, quotation);
     }
 
-    // @Test
+    @Test
     /**
      * Tests the retrieval of the most recent quotations that match the "Buyable Base" template. Only those quotations
      * should be returned that have an Indicator associated with them. Only instruments of InstrumentType 'ETF' are
