@@ -951,4 +951,37 @@ public class QuotationServiceTest {
         quotation = quotations.getQuotations().get(0);
         assertEquals(this.xleQuotation2, quotation);
     }
+
+    // @Test
+    /**
+     * Tests the retrieval of the most recent quotations that match the "Buyable Base" template. Only those quotations
+     * should be returned that have an Indicator associated with them. Only instruments of InstrumentType 'ETF' are
+     * requested. In this unit test the price is extended above the EMA(21). No quotation should be returned.
+     */
+    public void testGetQuotationsBuyableBaseExtendedETF() {
+        QuotationArray quotations;
+        WebServiceResult getQuotationsResult;
+        List<Quotation> modifiedQuotations = new ArrayList<Quotation>();
+
+        // Update quotation to set price more than 10% above the EMA(21). That is considered extended.
+        this.xleQuotation2.setClose(BigDecimal.valueOf(89.1));
+        modifiedQuotations.add(this.xleQuotation2);
+
+        try {
+            quotationDAO.updateQuotations(modifiedQuotations);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+
+        // Get the quotations.
+        QuotationService service = new QuotationService();
+        getQuotationsResult = service.getQuotations(ScanTemplate.BUYABLE_BASE, InstrumentType.ETF, null, null, null);
+        quotations = (QuotationArray) getQuotationsResult.getData();
+
+        // Assure no error message exists
+        assertTrue(WebServiceTools.resultContainsErrorMessage(getQuotationsResult) == false);
+
+        // Verify that no Quotation is returned.
+        assertEquals(0, quotations.getQuotations().size());
+    }
 }
