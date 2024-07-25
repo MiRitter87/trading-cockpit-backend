@@ -1,6 +1,7 @@
 package backend.webservice.common;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -12,6 +13,7 @@ import backend.controller.chart.priceVolume.DistributionDaysChartController;
 import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
 import backend.dao.quotation.persistence.QuotationDAO;
+import backend.dao.statistic.StatisticDAO;
 import backend.model.LocalizedException;
 import backend.model.dashboard.MarketHealthStatus;
 import backend.model.dashboard.SwingTradingEnvironmentStatus;
@@ -42,6 +44,11 @@ public class DashboardService {
     private QuotationDAO quotationDAO;
 
     /**
+     * DAO for Statistic access.
+     */
+    private StatisticDAO statisticDAO;
+
+    /**
      * Access to localized application resources.
      */
     private ResourceBundle resources = ResourceBundle.getBundle("backend");
@@ -57,6 +64,7 @@ public class DashboardService {
     public DashboardService() {
         this.instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
         this.quotationDAO = DAOManager.getInstance().getQuotationDAO();
+        this.statisticDAO = DAOManager.getInstance().getStatisticDAO();
     }
 
     /**
@@ -348,32 +356,29 @@ public class DashboardService {
     }
 
     /**
-     * Determines the number of instruments that trade "Up on Volume". That is at least 10% up over a 5-day period with
-     * a volume that is at least 25% above the 30-day average. Only those instruments are taken into account where the
-     * given Instrument is referenced as sector or industry group.
+     * Determines the number of instruments that have traded "Up on Volume" during the last 5 trading days. That is at
+     * least 3% up on a day on above-average volume. Only those instruments are taken into account where the given
+     * Instrument is referenced as sector or industry group.
      *
      * @param instrument The Instrument that constitutes a sector or industry group.
      * @return The number of instruments trading "Up on Volume".
      */
     private int getNumberUpOnVolume(final Instrument instrument) {
-        List<Quotation> allInstrumentsUpOnVolume;
+        List<Statistic> statistics = new ArrayList<>();
+        Statistic statistic;
+        final int numberOfDays = 5;
         int numberUpOnVolume = 0;
-        Instrument sector;
-        Instrument industryGroup;
 
         try {
-            allInstrumentsUpOnVolume = this.quotationDAO.getQuotationsByTemplate(ScanTemplate.UP_ON_VOLUME,
-                    InstrumentType.STOCK, null, null, null);
+            if (instrument.getType() == InstrumentType.SECTOR) {
+                statistics = this.statisticDAO.getStatistics(InstrumentType.STOCK, instrument.getId(), null);
+            } else if (instrument.getType() == InstrumentType.IND_GROUP) {
+                statistics = this.statisticDAO.getStatistics(InstrumentType.STOCK, null, instrument.getId());
+            }
 
-            for (Quotation tempQuotation : allInstrumentsUpOnVolume) {
-                sector = tempQuotation.getInstrument().getSector();
-                industryGroup = tempQuotation.getInstrument().getIndustryGroup();
-
-                if (industryGroup != null && industryGroup.getId().equals(instrument.getId())) {
-                    numberUpOnVolume++;
-                } else if (sector != null && sector.getId().equals(instrument.getId())) {
-                    numberUpOnVolume++;
-                }
+            for (int i = 0; i < numberOfDays; i++) {
+                statistic = statistics.get(i);
+                numberUpOnVolume += statistic.getNumberUpOnVolume();
             }
         } catch (Exception e) {
             LOGGER.error("Failed to determine number of stocks trading Up on Volume.", e);
