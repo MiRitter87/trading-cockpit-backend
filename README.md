@@ -1,5 +1,6 @@
 # trading-cockpit-backend
-Backend of the Trading Cockpit application.
+Backend of the Trading Cockpit application. 
+The user interface for this application is provided by the [Trading Cockpit Frontend](https://github.com/MiRitter87/trading-cockpit-frontend).
 
 ## Features
 The backend provides WebServices to create, read, update and delete the following business objects.
@@ -9,7 +10,9 @@ The backend provides WebServices to create, read, update and delete the followin
 - Lists
 - Scans
 
-Besides master data management, the application provides additional functions which are described below.
+Besides master data management, the application retrieves quotation data using third-party data providers.
+It generates charts, crawls the database of instruments and quotations providing specific result sets and is able to interpret price and volume behavior of instruments.
+The features are described in more detail in the following sections.
 
 ### Price Alerts
 A price alert notifies the user if the price of an instrument reaches a certain threshold. 
@@ -35,7 +38,7 @@ The Dashboard aims to provide a meta overview of the current state of the market
 At the end of the scan process, statistical data of the instruments are calculated. Those statistics are exposed as tabular data.
 
 ### Charts
-The application generates a multitude of charts for its instruments and lists. Those charts fall into two categories: statistical charts and price/volume charts.
+The application generates a multitude of charts for its instruments and lists. Those charts mainly fall into two categories: statistical charts and price/volume charts.
 
 ### Health Check
 The application provides a knowledge-based system to interpret the price and volume behavior of instruments.
@@ -44,28 +47,28 @@ Those rules are grouped into three profiles: up-trend confirmations, up-trend vi
 
 ## Technology
 
-The Trading Cockpit is based on the following technologies and frameworks
+The Trading Cockpit is based on the following technologies and frameworks:
 
- - **Java Persistence API** and **Hibernate** for ORM (Object Relational Mapping)
- - **HSQLDB** as database
- - **Bean Validation API** for validation of model classes
- - **Jersey** for RESTful WebServices
- - **Log4J** for application logging
- - **JUnit** for test-driven development
- - **okhttp** to access third-party WebServices
- - **Apache POI** to generate Excel Sheets
- - **OpenCSV** to parse CSV files
- - **JFreeChart** to generate charts
- - **HtmlUnit** to extract price information from third-party Websites
- - **Apache Maven** as build system
+ - [Jakarta Persistence](https://jakarta.ee/specifications/persistence/) and [Hibernate](https://hibernate.org/) for ORM (Object Relational Mapping)
+ - [HSQLDB](https://hsqldb.org/) as database
+ - [Jakarta Bean Validation](https://beanvalidation.org/) for validation of model classes
+ - [Jakarta RESTful Web Services](https://jakarta.ee/specifications/restful-ws/3.0/) for RESTful WebServices
+ - [Apache Log4j](https://logging.apache.org/log4j/2.x/) for application logging
+ - [JUnit](https://junit.org/junit5/) for test-driven development
+ - [OkHttp](https://square.github.io/okhttp/) to access third-party WebServices
+ - [Apache POI](https://poi.apache.org/) to generate Excel Sheets
+ - [opencsv](https://opencsv.sourceforge.net/) to parse CSV files
+ - [JFreeChart](https://www.jfree.org/jfreechart/) to generate charts
+ - [HtmlUnit](https://htmlunit.sourceforge.io/) to extract price information from third-party Websites
+ - [Apache Maven](https://maven.apache.org/) as build system
 
-## Installation
+## Deployment
 The application uses Servlet Version 6 and Expression Language Version 5. The WebServer has to support those.
 [Apache Tomcat](https://tomcat.apache.org/whichversion.html) Version 10.1.x supports the specifications and can be used to run the application.
 
-1. Build the project using the Maven run configuration "trading-cockpit-backend (clean install).launch"
-2. Deploy the ".war"-file to your WebServer. The application name has to be "trading-cockpit-backend". The frontend expects the WebServices under this path.
-3. Move the configuration file "tradingCockpitBackend.properties" from the "target"-folder of your build path to the "conf"-folder of your WebServer.
+1. Build the project using the Maven run configuration *trading-cockpit-backend (clean install).launch*
+2. Deploy the generated ".war"-file to your WebServer. The application name has to be "trading-cockpit-backend". The frontend expects the WebServices under this path.
+3. Move the configuration file *tradingCockpitBackend.properties* from the *target* folder of your build path to the *conf* folder of your WebServer.
 4. Modify the configuration file according to your needs.
 
 ## Available Data Provider
@@ -79,7 +82,7 @@ The application uses Servlet Version 6 and Expression Language Version 5. The We
 | CNBC						|												| NYSE, NDQ, AMEX, OTC, LSE			| TSX, TSX/V			|
 
 ## Configuration
-The configuration file "tradingCockpitBackend.properties" has multiple properties that control the applications behavior.
+The configuration file *tradingCockpitBackend.properties* has multiple properties that control the applications behavior.
 
 | Property   					|      Description      											|  Example 		|
 |-------------------------------|:-----------------------------------------------------------------:|--------------:|
