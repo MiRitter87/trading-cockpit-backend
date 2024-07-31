@@ -219,5 +219,8 @@ public class ListHibernateDAO implements ListDAO {
 
         // Load instruments of referenced dataSourceList for processing in ScanThread.
         graph.addSubgraph("instruments").addSubgraph("dataSourceList").addAttributeNodes("instruments");
+
+        // Load dividend and divisor to calculate ratios in ScanThread.
+        graph.addSubgraph("instruments").addAttributeNodes("dividend", "divisor");
     }
 }
