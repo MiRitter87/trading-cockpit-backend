@@ -38,6 +38,7 @@ public class QuotationQueryProvider {
     public Query getQueryForMinerviniTrendTemplate() {
         return this.entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i "
                 + "LEFT JOIN FETCH i.sector LEFT JOIN FETCH i.industryGroup JOIN q.indicator r "
+                + "LEFT JOIN FETCH i.dividend LEFT JOIN FETCH i.divisor "
                 + "JOIN q.relativeStrengthData s JOIN q.movingAverageData m "
                 + "WHERE q.id IN :quotationIds AND q.indicator IS NOT NULL "
                 + "AND q.close > m.sma50 AND m.sma50 > m.sma150 AND m.sma150 > m.sma200 "
@@ -52,6 +53,7 @@ public class QuotationQueryProvider {
     public Query getQueryForBreakoutCandidatesTemplate() {
         return this.entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i "
                 + "LEFT JOIN FETCH i.sector LEFT JOIN FETCH i.industryGroup "
+                + "LEFT JOIN FETCH i.dividend LEFT JOIN FETCH i.divisor "
                 + "JOIN q.indicator r WHERE q.id IN :quotationIds AND q.indicator IS NOT NULL "
                 + "AND r.volumeDifferential5Days < 0 AND r.bollingerBandWidth10Days < 10 "
                 + "AND r.baseLengthWeeks >= 3 AND r.distanceTo52WeekHigh >= -10");
@@ -65,6 +67,7 @@ public class QuotationQueryProvider {
     public Query getQueryForConsolidation10WeeksTemplate() {
         return this.entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i "
                 + "LEFT JOIN FETCH i.sector LEFT JOIN FETCH i.industryGroup "
+                + "LEFT JOIN FETCH i.dividend LEFT JOIN FETCH i.divisor "
                 + "JOIN q.indicator r WHERE q.id IN :quotationIds AND q.indicator IS NOT NULL "
                 + "AND r.bollingerBandWidth10Weeks < 20 AND r.bollingerBandWidth10Days < 10 "
                 + "AND r.volumeDifferential5Days < 0");
@@ -78,6 +81,7 @@ public class QuotationQueryProvider {
     public Query getQueryForConsolidation10DaysTemplate() {
         return this.entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i "
                 + "LEFT JOIN FETCH i.sector LEFT JOIN FETCH i.industryGroup "
+                + "LEFT JOIN FETCH i.dividend LEFT JOIN FETCH i.divisor "
                 + "JOIN q.indicator r WHERE q.id IN :quotationIds AND q.indicator IS NOT NULL "
                 + "AND r.volumeDifferential5Days < 0" + "AND r.bollingerBandWidth10Days < 10");
     }
@@ -90,6 +94,7 @@ public class QuotationQueryProvider {
     public Query getQueryForUpOnVolumeTemplate() {
         return this.entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i "
                 + "LEFT JOIN FETCH i.sector LEFT JOIN FETCH i.industryGroup "
+                + "LEFT JOIN FETCH i.dividend LEFT JOIN FETCH i.divisor "
                 + "JOIN q.indicator r WHERE q.id IN :quotationIds AND q.indicator IS NOT NULL "
                 + "AND r.volumeDifferential5Days >= 25 AND r.performance5Days >= 10");
     }
@@ -102,6 +107,7 @@ public class QuotationQueryProvider {
     public Query getQueryForDownOnVolumeTemplate() {
         return this.entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i "
                 + "LEFT JOIN FETCH i.sector LEFT JOIN FETCH i.industryGroup "
+                + "LEFT JOIN FETCH i.dividend LEFT JOIN FETCH i.divisor "
                 + "JOIN q.indicator r WHERE q.id IN :quotationIds AND q.indicator IS NOT NULL "
                 + "AND r.volumeDifferential5Days >= 25 AND r.performance5Days <= -10");
     }
@@ -114,6 +120,7 @@ public class QuotationQueryProvider {
     public Query getQueryForNear52WeekHighTemplate() {
         return this.entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i "
                 + "LEFT JOIN FETCH i.sector LEFT JOIN FETCH i.industryGroup "
+                + "LEFT JOIN FETCH i.dividend LEFT JOIN FETCH i.divisor "
                 + "JOIN q.indicator r WHERE q.id IN :quotationIds AND q.indicator IS NOT NULL "
                 + "AND r.distanceTo52WeekHigh >= -5 ");
     }
@@ -126,6 +133,7 @@ public class QuotationQueryProvider {
     public Query getQueryForNear52WeekLowTemplate() {
         return this.entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i "
                 + "LEFT JOIN FETCH i.sector LEFT JOIN FETCH i.industryGroup "
+                + "LEFT JOIN FETCH i.dividend LEFT JOIN FETCH i.divisor "
                 + "JOIN q.indicator r WHERE q.id IN :quotationIds AND q.indicator IS NOT NULL "
                 + "AND r.distanceTo52WeekLow <= 5 ");
     }
@@ -138,6 +146,7 @@ public class QuotationQueryProvider {
     public Query getQueryForHighTightFlagTemplate() {
         return this.entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i "
                 + "LEFT JOIN FETCH i.sector LEFT JOIN FETCH i.industryGroup "
+                + "LEFT JOIN FETCH i.dividend LEFT JOIN FETCH i.divisor "
                 + "JOIN q.indicator r WHERE q.id IN :quotationIds AND q.indicator IS NOT NULL "
                 + "AND r.distanceTo52WeekHigh >= -25 ");
     }
@@ -150,8 +159,24 @@ public class QuotationQueryProvider {
     public Query getQueryForSwingTradingEnvironmentTemplate() {
         return this.entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i "
                 + "LEFT JOIN FETCH i.sector LEFT JOIN FETCH i.industryGroup JOIN q.movingAverageData m "
+                + "LEFT JOIN FETCH i.dividend LEFT JOIN FETCH i.divisor "
                 + "WHERE q.id IN :quotationIds AND q.movingAverageData IS NOT NULL "
                 + "AND q.close > m.sma20 AND m.sma10 > m.sma20 ");
+    }
+
+    /**
+     * Provides the Query for the "Buyable Base" Template.
+     *
+     * @return The Query.
+     */
+    public Query getQueryForBuyableBaseTemplate() {
+        return this.entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i "
+                + "LEFT JOIN FETCH i.sector LEFT JOIN FETCH i.industryGroup "
+                + "LEFT JOIN FETCH i.dividend LEFT JOIN FETCH i.divisor "
+                + "JOIN q.movingAverageData m JOIN q.indicator r WHERE q.id IN :quotationIds "
+                + "AND q.movingAverageData IS NOT NULL AND q.indicator IS NOT NULL "
+                + "AND q.close > m.ema21 AND q.close > m.sma50 AND m.ema21 > m.sma50 "
+                + "AND r.bollingerBandWidth10Days < 10 AND r.volumeDifferential5Days < 0");
     }
 
     /**
@@ -168,6 +193,7 @@ public class QuotationQueryProvider {
         if (withIndicatorNotNull) {
             query = this.entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i "
                     + "LEFT JOIN FETCH i.sector LEFT JOIN FETCH i.industryGroup "
+                    + "LEFT JOIN FETCH i.dividend LEFT JOIN FETCH i.divisor "
                     + "WHERE q.id IN :quotationIds AND q.indicator IS NOT NULL");
         } else {
             query = this.entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i "
@@ -239,19 +265,5 @@ public class QuotationQueryProvider {
         query.setParameter("instrumentIds", instrumentIds);
 
         return query;
-    }
-
-    /**
-     * Provides the Query for the "Buyable Base" Template.
-     *
-     * @return The Query.
-     */
-    public Query getQueryForBuyableBaseTemplate() {
-        return this.entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i "
-                + "LEFT JOIN FETCH i.sector LEFT JOIN FETCH i.industryGroup "
-                + "JOIN q.movingAverageData m JOIN q.indicator r WHERE q.id IN :quotationIds "
-                + "AND q.movingAverageData IS NOT NULL AND q.indicator IS NOT NULL "
-                + "AND q.close > m.ema21 AND q.close > m.sma50 AND m.ema21 > m.sma50 "
-                + "AND r.bollingerBandWidth10Days < 10 AND r.volumeDifferential5Days < 0");
     }
 }
