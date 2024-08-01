@@ -252,5 +252,10 @@ public class ScanHibernateDAO implements ScanDAO {
 
         graph.addAttributeNodes("incompleteInstruments");
         graph.addSubgraph("incompleteInstruments").addAttributeNodes("sector", "industryGroup");
+
+        // Needed for querying scans that contain an Instrument with a dataSourceList defined.
+        graph.addSubgraph("lists").addSubgraph("instruments").addSubgraph("dataSourceList").addSubgraph("instruments")
+                .addAttributeNodes("sector", "industryGroup");
+
     }
 }
