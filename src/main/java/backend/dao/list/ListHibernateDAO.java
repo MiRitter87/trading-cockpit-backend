@@ -1,8 +1,5 @@
 package backend.dao.list;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import backend.dao.ObjectUnchangedException;
 import backend.model.ObjectInUseException;
 import backend.model.list.List;
@@ -10,6 +7,7 @@ import backend.model.scan.Scan;
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -130,14 +128,27 @@ public class ListHibernateDAO implements ListDAO {
     @Override
     public List getList(final Integer id) throws Exception {
         EntityManager entityManager = this.sessionFactory.createEntityManager();
-        EntityGraph<List> graph = entityManager.createEntityGraph(List.class);
-        Map<String, Object> hints = new HashMap<String, Object>();
-
-        this.addRequestedNodesToGraph(graph);
-        hints.put("jakarta.persistence.loadgraph", graph);
+        TypedQuery<List> query;
+        List list;
 
         entityManager.getTransaction().begin();
-        List list = entityManager.find(List.class, id, hints);
+
+        query = entityManager.createQuery(
+                "Select l from List l LEFT JOIN FETCH l.instruments li "
+                        + "LEFT JOIN FETCH li.sector LEFT JOIN FETCH li.industryGroup "
+                        + "LEFT JOIN FETCH li.dividend LEFT JOIN FETCH li.divisor "
+                        + "LEFT JOIN FETCH li.dataSourceList lid LEFT JOIN FETCH lid.instruments lidi "
+                        + "LEFT JOIN FETCH lidi.sector LEFT JOIN FETCH lidi.industryGroup WHERE l.id = :listId",
+                List.class);
+        query.setParameter("listId", id);
+
+        try {
+            list = query.getSingleResult();
+        } catch (NoResultException noResultException) {
+            // This is a valid case and no error.
+            list = null;
+        }
+
         entityManager.getTransaction().commit();
         entityManager.close();
 
@@ -216,11 +227,5 @@ public class ListHibernateDAO implements ListDAO {
     private void addRequestedNodesToGraph(final EntityGraph<List> graph) {
         graph.addAttributeNodes("instruments");
         graph.addSubgraph("instruments").addAttributeNodes("sector", "industryGroup");
-
-        // Load instruments of referenced dataSourceList for processing in ScanThread.
-        graph.addSubgraph("instruments").addSubgraph("dataSourceList").addAttributeNodes("instruments");
-
-        // Load dividend and divisor to calculate ratios in ScanThread.
-        graph.addSubgraph("instruments").addAttributeNodes("dividend", "divisor");
     }
 }
