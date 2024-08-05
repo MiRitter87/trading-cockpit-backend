@@ -376,6 +376,10 @@ public class DashboardService {
                 statistics = this.statisticDAO.getStatistics(InstrumentType.STOCK, null, instrument.getId());
             }
 
+            if (statistics.size() == 0) {
+                return 0;
+            }
+
             for (int i = 0; i < numberOfDays; i++) {
                 statistic = statistics.get(i);
                 numberUpOnVolume += statistic.getNumberUpOnVolume();
@@ -406,6 +410,10 @@ public class DashboardService {
                 statistics = this.statisticDAO.getStatistics(InstrumentType.STOCK, instrument.getId(), null);
             } else if (instrument.getType() == InstrumentType.IND_GROUP) {
                 statistics = this.statisticDAO.getStatistics(InstrumentType.STOCK, null, instrument.getId());
+            }
+
+            if (statistics.size() == 0) {
+                return 0;
             }
 
             for (int i = 0; i < numberOfDays; i++) {
