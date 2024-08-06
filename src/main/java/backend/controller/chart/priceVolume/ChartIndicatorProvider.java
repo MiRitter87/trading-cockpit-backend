@@ -16,7 +16,7 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 
-import backend.controller.RatioCalculationController;
+import backend.controller.RatioCalculator;
 import backend.controller.scan.BollingerCalculator;
 import backend.controller.scan.StochasticCalculator;
 import backend.dao.quotation.persistence.QuotationDAO;
@@ -100,14 +100,14 @@ public class ChartIndicatorProvider {
      */
     private XYDataset getRsLineDataset(final Integer rsInstrumentId, final Instrument instrument) throws Exception {
         List<Quotation> ratioQuotations;
-        RatioCalculationController ratioCalculationController = new RatioCalculationController();
+        RatioCalculator ratioCalculator = new RatioCalculator();
         Instrument divisorInstrument = new Instrument();
         TimeSeries timeSeries = new TimeSeries(this.resources.getString("chart.priceVolume.timeSeriesRsLineName"));
         TimeZone timeZone = TimeZone.getDefault();
         TimeSeriesCollection timeSeriesCollection = new TimeSeriesCollection(timeZone);
 
         divisorInstrument.setQuotations(this.quotationDAO.getQuotationsOfInstrument(rsInstrumentId));
-        ratioQuotations = ratioCalculationController.getRatios(instrument, divisorInstrument);
+        ratioQuotations = ratioCalculator.getRatios(instrument, divisorInstrument);
 
         for (Quotation quotation : ratioQuotations) {
             timeSeries.add(new Day(quotation.getDate()), quotation.getClose());

@@ -16,7 +16,7 @@ import org.apache.logging.log4j.Logger;
 
 import backend.controller.DataProvider;
 import backend.controller.DataRetrievalThread;
-import backend.controller.RatioCalculationController;
+import backend.controller.RatioCalculator;
 import backend.dao.DAOManager;
 import backend.dao.ObjectUnchangedException;
 import backend.dao.quotation.persistence.QuotationDAO;
@@ -247,7 +247,7 @@ public class ScanThread extends DataRetrievalThread {
         Quotation existingQuotation;
         List<Quotation> newQuotations = new ArrayList<>();
         List<Quotation> ratioQuotations = new ArrayList<>();
-        RatioCalculationController ratioCalculationController = new RatioCalculationController();
+        RatioCalculator ratioCalculator = new RatioCalculator();
 
         // 1. Calculate ratio quotations based on dividend and divisor quotations.
         try {
@@ -255,7 +255,7 @@ public class ScanThread extends DataRetrievalThread {
                     .setQuotations(this.quotationDAO.getQuotationsOfInstrument(instrument.getDividend().getId()));
             instrument.getDivisor()
                     .setQuotations(this.quotationDAO.getQuotationsOfInstrument(instrument.getDivisor().getId()));
-            ratioQuotations = ratioCalculationController.getRatios(instrument.getDividend(), instrument.getDivisor());
+            ratioQuotations = ratioCalculator.getRatios(instrument.getDividend(), instrument.getDivisor());
         } catch (Exception exception) {
             this.scan.addIncompleteInstrument(instrument);
             LOGGER.warn("Could not calculate ratio for instrument with ID " + instrument.getId() + ". "

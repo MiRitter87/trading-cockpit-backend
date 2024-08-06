@@ -3,7 +3,7 @@ package backend.dao.quotation.persistence;
 import java.util.Iterator;
 import java.util.List;
 
-import backend.controller.RatioCalculationController;
+import backend.controller.RatioCalculator;
 import backend.controller.scan.IndicatorCalculator;
 import backend.model.LocalizedException;
 import backend.model.instrument.Instrument;
@@ -115,7 +115,7 @@ public class TemplateRsNearHighProcessor {
      */
     private QuotationArray getRsLineQuotations(final Instrument dividend, final Instrument divisor)
             throws LocalizedException, Exception {
-        RatioCalculationController ratioCalculator = new RatioCalculationController();
+        RatioCalculator ratioCalculator = new RatioCalculator();
         QuotationArray rsLineQuotations = new QuotationArray();
         List<Quotation> divisorQuotations;
 

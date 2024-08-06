@@ -16,11 +16,11 @@ import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
 
 /**
- * Tests the RatioCalculationController.
+ * Tests the RatioCalculator.
  *
  * @author Michael
  */
-public class RatioCalculationControllerTest {
+public class RatioCalculatorTest {
     /**
      * The dividend of the ratio.
      */
@@ -52,16 +52,16 @@ public class RatioCalculationControllerTest {
     private Quotation divisorQuotation2;
 
     /**
-     * The RatioCalculationController under test.
+     * The RatioCalculator under test.
      */
-    private RatioCalculationController ratioCalculationController;
+    private RatioCalculator ratioCalculator;
 
     @BeforeEach
     /**
      * Tasks to be performed before each test is run.
      */
     private void setUp() {
-        this.ratioCalculationController = new RatioCalculationController();
+        this.ratioCalculator = new RatioCalculator();
         this.createTestData();
     }
 
@@ -71,7 +71,7 @@ public class RatioCalculationControllerTest {
      */
     private void tearDown() {
         this.deleteTestData();
-        this.ratioCalculationController = null;
+        this.ratioCalculator = null;
     }
 
     /**
@@ -202,8 +202,7 @@ public class RatioCalculationControllerTest {
         Quotation ratioQuotation;
 
         try {
-            ratioQuotations = this.ratioCalculationController.getRatios(this.dividendInstrument,
-                    this.divisorInstrument);
+            ratioQuotations = this.ratioCalculator.getRatios(this.dividendInstrument, this.divisorInstrument);
 
             assertEquals(2, ratioQuotations.size());
 

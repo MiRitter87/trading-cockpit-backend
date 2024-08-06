@@ -10,11 +10,11 @@ import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
 
 /**
- * Controller used to calculate the price ratio between two instruments.
+ * Calculates the price ratio between two instruments.
  *
  * @author Michael
  */
-public class RatioCalculationController {
+public class RatioCalculator {
     /**
      * Calculates the List of price ratios between the given dividend and divisor instruments.
      *
