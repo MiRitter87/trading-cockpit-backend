@@ -89,6 +89,11 @@ public class IndicatorCalculator {
     private static final int DAYS_UP_DOWN_VOLUME_RATIO = 50;
 
     /**
+     * Number of days used to calculate the Up/Down Performance * Volume Ratio.
+     */
+    private static final int DAYS_UP_DOWN_PERFORMANCE_VOLUME_RATIO = 30;
+
+    /**
      * Number of days used to calculate the 5 day price performance.
      */
     private static final int DAYS_PERFORMANCE_5 = 5;
@@ -203,6 +208,8 @@ public class IndicatorCalculator {
         indicator.setBaseLengthWeeks(this.getBaseLengthWeeks(quotation, sortedQuotations));
         indicator.setUpDownVolumeRatio(
                 this.getUpDownVolumeRatio(DAYS_UP_DOWN_VOLUME_RATIO, quotation, sortedQuotations));
+        indicator.setUpDownPerformanceVolumeRatio(this
+                .getUpDownPerformanceVolumeRatio(DAYS_UP_DOWN_PERFORMANCE_VOLUME_RATIO, quotation, sortedQuotations));
         indicator.setPerformance5Days(
                 this.performanceCalculator.getPricePerformanceForDays(DAYS_PERFORMANCE_5, quotation, sortedQuotations));
         indicator.setLiquidity20Days(this.getLiquidityForDays(DAYS_LIQUIDITY_20, quotation, sortedQuotations));
