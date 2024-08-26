@@ -59,10 +59,16 @@ public class Indicator {
     private int baseLengthWeeks;
 
     /**
-     * The ratio of the volume between up-days and down-days.
+     * The ratio of the volume between up-days and down-days. The period is 50 days.
      */
     @Column(name = "UD_VOL_RATIO")
     private float upDownVolumeRatio;
+
+    /**
+     * The ratio of the performance * volume between up-days and down-days. The period is 30 days.
+     */
+    @Column(name = "UD_PERF_VOL_RATIO")
+    private float upDownPerformanceVolumeRatio;
 
     /**
      * The percentage price gain during the last 5 trading days.
@@ -202,6 +208,20 @@ public class Indicator {
     }
 
     /**
+     * @return the upDownPerformanceVolumeRatio
+     */
+    public float getUpDownPerformanceVolumeRatio() {
+        return upDownPerformanceVolumeRatio;
+    }
+
+    /**
+     * @param upDownPerformanceVolumeRatio the upDownPerformanceVolumeRatio to set
+     */
+    public void setUpDownPerformanceVolumeRatio(final float upDownPerformanceVolumeRatio) {
+        this.upDownPerformanceVolumeRatio = upDownPerformanceVolumeRatio;
+    }
+
+    /**
      * @return the performance5Days
      */
     public float getPerformance5Days() {
@@ -249,8 +269,8 @@ public class Indicator {
     @Override
     public int hashCode() {
         return Objects.hash(bollingerBandWidth10Days, bollingerBandWidth10Weeks, distanceTo52WeekHigh,
-                distanceTo52WeekLow, id, volumeDifferential5Days, baseLengthWeeks, upDownVolumeRatio, performance5Days,
-                liquidity20Days, averageTrueRangePercent20);
+                distanceTo52WeekLow, id, volumeDifferential5Days, baseLengthWeeks, upDownVolumeRatio,
+                upDownPerformanceVolumeRatio, performance5Days, liquidity20Days, averageTrueRangePercent20);
     }
 
     /**
@@ -277,6 +297,7 @@ public class Indicator {
                 && Float.floatToIntBits(volumeDifferential5Days) == Float.floatToIntBits(other.volumeDifferential5Days)
                 && baseLengthWeeks == other.baseLengthWeeks && upDownVolumeRatio == other.upDownVolumeRatio
                 && performance5Days == other.performance5Days && liquidity20Days == other.liquidity20Days
-                && averageTrueRangePercent20 == other.averageTrueRangePercent20;
+                && averageTrueRangePercent20 == other.averageTrueRangePercent20
+                && upDownPerformanceVolumeRatio == other.upDownPerformanceVolumeRatio;
     }
 }
