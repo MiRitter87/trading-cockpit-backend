@@ -461,6 +461,21 @@ public class IndicatorCalculator {
     }
 
     /**
+     * Calculates the performance * volume ratio between up-days and down-days for the given number of days.
+     *
+     * @param days             The number of the last trading days that are taken into account for calculation.
+     * @param quotation        The Quotation for which the U/D performance * volume Ratio is calculated.
+     * @param sortedQuotations A list of quotations sorted by date that build the trading history used for U/D
+     *                         performance * volume Ratio calculation.
+     * @return The U/D performance * volume Ratio.
+     */
+    public float getUpDownPerformanceVolumeRatio(final int days, final Quotation quotation,
+            final QuotationArray sortedQuotations) {
+
+        return 0;
+    }
+
+    /**
      * Provides the average trading liquidity for the given number of days.
      *
      * @param days             The number of days for liquidity calculation.

@@ -224,6 +224,21 @@ public class IndicatorCalculatorTest {
         assertEquals(expectedUdVolRatio, actualUdVolRatio);
     }
 
+    //@Test
+    /**
+     * Tests the calculation of the Up/Down performance * volume ratio.
+     */
+    public void testGetUpDownPerformanceVolumeRatio() {
+        QuotationArray sortedQuotations = new QuotationArray(this.dmlStock.getQuotationsSortedByDate());
+        float expectedUdPerfVolRatio = (float) 1.32;
+        float actualUdPerfVolRatio;
+
+        actualUdPerfVolRatio = this.indicatorCalculator.getUpDownPerformanceVolumeRatio(5,
+                sortedQuotations.getQuotations().get(0), sortedQuotations);
+
+        assertEquals(expectedUdPerfVolRatio, actualUdPerfVolRatio);
+    }
+
     @Test
     /**
      * Tests the calculation of the trading liquidity for the given daily interval.
