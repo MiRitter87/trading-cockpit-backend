@@ -438,7 +438,7 @@ public class IndicatorCalculator {
             return 0;
         }
 
-        // Calculate the sum of the prices of the last x days.
+        // Calculate the volume sums based of the quotations of the last x days.
         for (int i = indexOfQuotation; i < (days + indexOfQuotation); i++) {
             currentDayQuotation = sortedQuotations.getQuotations().get(i);
             previousDayQuotation = sortedQuotations.getQuotations().get(i + 1);
@@ -472,7 +472,52 @@ public class IndicatorCalculator {
     public float getUpDownPerformanceVolumeRatio(final int days, final Quotation quotation,
             final QuotationArray sortedQuotations) {
 
-        return 0;
+        Quotation currentDayQuotation;
+        Quotation previousDayQuotation;
+        int indexOfQuotation = 0;
+        float performance;
+        float performanceVolume;
+        BigDecimal upPerformanceVolumeSum = new BigDecimal(0);
+        BigDecimal downPerformanceVolumeSum = new BigDecimal(0);
+        BigDecimal upDownPerformanceVolumeRatio;
+
+        // Get the starting point of calculation.
+        indexOfQuotation = sortedQuotations.getQuotations().indexOf(quotation);
+
+        // Check if enough quotations exist for calculation.
+        // The -1 is needed because a up or down day can only be calculated against a previous day. Therefore an
+        // additional Quotation has to exist.
+        if ((sortedQuotations.getQuotations().size() - days - indexOfQuotation - 1) < 0) {
+            return 0;
+        }
+
+        // Calculate the performance * volume sums based of the quotations of the last x days.
+        for (int i = indexOfQuotation; i < (days + indexOfQuotation); i++) {
+            currentDayQuotation = sortedQuotations.getQuotations().get(i);
+            previousDayQuotation = sortedQuotations.getQuotations().get(i + 1);
+            performance = this.performanceCalculator.getPerformance(currentDayQuotation, previousDayQuotation);
+            performanceVolume = performance * currentDayQuotation.getVolume();
+
+            if (performance > 0) {
+                upPerformanceVolumeSum = upPerformanceVolumeSum.add(new BigDecimal(performanceVolume));
+            }
+
+            if (performance < 0) {
+                downPerformanceVolumeSum = downPerformanceVolumeSum.add(new BigDecimal(performanceVolume));
+            }
+        }
+
+        if (downPerformanceVolumeSum.floatValue() == 0) {
+            return 0; // Prevent division by zero.
+        }
+
+        // Build the ratio.
+        upDownPerformanceVolumeRatio = upPerformanceVolumeSum.divide(downPerformanceVolumeSum, 2, RoundingMode.HALF_UP);
+
+        // Multiply by -1 to get a positive ratio value.
+        upDownPerformanceVolumeRatio = upDownPerformanceVolumeRatio.multiply(new BigDecimal("-1"));
+
+        return upDownPerformanceVolumeRatio.floatValue();
     }
 
     /**

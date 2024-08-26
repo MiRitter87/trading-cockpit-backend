@@ -224,13 +224,13 @@ public class IndicatorCalculatorTest {
         assertEquals(expectedUdVolRatio, actualUdVolRatio);
     }
 
-    //@Test
+    @Test
     /**
      * Tests the calculation of the Up/Down performance * volume ratio.
      */
     public void testGetUpDownPerformanceVolumeRatio() {
         QuotationArray sortedQuotations = new QuotationArray(this.dmlStock.getQuotationsSortedByDate());
-        float expectedUdPerfVolRatio = (float) 1.32;
+        float expectedUdPerfVolRatio = (float) 1.04;
         float actualUdPerfVolRatio;
 
         actualUdPerfVolRatio = this.indicatorCalculator.getUpDownPerformanceVolumeRatio(5,
