@@ -2,6 +2,8 @@ package backend.controller.scan;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.Collections;
 
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
@@ -64,6 +66,56 @@ public class BollingerCalculator {
         roundedResult = roundedResult.setScale(2, RoundingMode.HALF_UP);
 
         return roundedResult.floatValue();
+    }
+
+    /**
+     * Calculates the threshold value based on a history of Bollinger BandWidth values. If a percentThreshold of 20 is
+     * given, 20% of the Bollinger BandWidth values are less or equal than the calculated threshold.
+     *
+     * @param period             The number of quotations on which the Bollinger BandWidth calculation is based.
+     * @param standardDeviations The standard deviation used for calculation of the upper and lower Bollinger Band.
+     * @param percentThreshold   The percent value for threshold calculation.
+     * @param quotation          The Quotation for which the Bollinger BandWidth is calculated.
+     * @param sortedQuotations   A list of quotations sorted by date that build the trading history used for Bollinger
+     *                           BandWidth calculation.
+     * @return The threshold value of Bollinger BandWidth values.
+     */
+    public float getBollingerBandWidthThreshold(final int period, final float standardDeviations,
+            final int percentThreshold, final Quotation quotation, final QuotationArray sortedQuotations) {
+
+        int indexOfQuotation = 0;
+        int thresholdIndex;
+        float bollingerBandWidth;
+        Quotation tempQuotation;
+        ArrayList<Float> bbwValues = new ArrayList<>();
+        final int hundredPercent = 100;
+
+        // Get the starting point of calculation.
+        indexOfQuotation = sortedQuotations.getQuotations().indexOf(quotation);
+
+        // Check if enough quotations exist for calculation.
+        if ((sortedQuotations.getQuotations().size() - period - indexOfQuotation) < 0) {
+            return 0;
+        }
+
+        // Calculate all Bollinger BandWidth values and store results.
+        for (int i = indexOfQuotation; i < (sortedQuotations.getQuotations().size() - period); i++) {
+            tempQuotation = sortedQuotations.getQuotations().get(i);
+            bollingerBandWidth = this.getBollingerBandWidth(period, 2, tempQuotation, sortedQuotations);
+
+            if (bollingerBandWidth > 0) {
+                bbwValues.add(bollingerBandWidth);
+            }
+        }
+
+        // Sort values descending.
+        Collections.sort(bbwValues);
+        Collections.reverse(bbwValues);
+
+        // Get the index of the threshold value.
+        thresholdIndex = bbwValues.size() - (bbwValues.size() * percentThreshold / hundredPercent) - 1;
+
+        return bbwValues.get(thresholdIndex);
     }
 
     /**
