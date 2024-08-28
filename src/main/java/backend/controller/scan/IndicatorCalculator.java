@@ -74,6 +74,11 @@ public class IndicatorCalculator {
     private static final int WEEKS_BBW10 = 10;
 
     /**
+     * The percent threshold for Bollinger BandWidth(10,2) values.
+     */
+    private static final int BBW_THRESHOLD_25_PERCENT = 25;
+
+    /**
      * Number of days used for the long period of the volume differential.
      */
     private static final int DAYS_LONG_PERIOD_VOLUME_DIFFERENTIAL = 30;
@@ -203,6 +208,8 @@ public class IndicatorCalculator {
                 this.bollingerCalculator.getBollingerBandWidth(DAYS_BBW10, 2, quotation, sortedQuotations));
         indicator.setBollingerBandWidth10Weeks(this.bollingerCalculator.getBollingerBandWidth(WEEKS_BBW10, 2,
                 weeklyQuotations.getQuotations().get(0), weeklyQuotations));
+        indicator.setBbw10Threshold25Percent(this.bollingerCalculator.getBollingerBandWidthThreshold(DAYS_BBW10, 2,
+                BBW_THRESHOLD_25_PERCENT, quotation, sortedQuotations));
         indicator.setVolumeDifferential5Days(this.getVolumeDifferential(DAYS_LONG_PERIOD_VOLUME_DIFFERENTIAL,
                 DAYS_VOLUME_DIFFERENTIAL_5, quotation, sortedQuotations));
         indicator.setBaseLengthWeeks(this.getBaseLengthWeeks(quotation, sortedQuotations));
