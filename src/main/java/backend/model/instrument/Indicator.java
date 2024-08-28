@@ -47,6 +47,13 @@ public class Indicator {
     private float bollingerBandWidth10Weeks;
 
     /**
+     * The Bollinger Band Width (10,2) threshold for which 25% of all daily values are less or equal within the trading
+     * history.
+     */
+    @Column(name = "BBW_10_THRESHOLD_25_PERCENT")
+    private float bbw10Threshold25Percent;
+
+    /**
      * The difference in percent between the average volume of the last 5 days compared to the SMA(30) of the volume.
      */
     @Column(name = "VOLUME_DIFFERENTIAL_5_DAYS")
@@ -166,6 +173,20 @@ public class Indicator {
     }
 
     /**
+     * @return the bbw10Threshold25Percent
+     */
+    public float getBbw10Threshold25Percent() {
+        return bbw10Threshold25Percent;
+    }
+
+    /**
+     * @param bbw10Threshold25Percent the bbw10Threshold25Percent to set
+     */
+    public void setBbw10Threshold25Percent(final float bbw10Threshold25Percent) {
+        this.bbw10Threshold25Percent = bbw10Threshold25Percent;
+    }
+
+    /**
      * @return the volumeDifferential5days
      */
     public float getVolumeDifferential5Days() {
@@ -270,7 +291,8 @@ public class Indicator {
     public int hashCode() {
         return Objects.hash(bollingerBandWidth10Days, bollingerBandWidth10Weeks, distanceTo52WeekHigh,
                 distanceTo52WeekLow, id, volumeDifferential5Days, baseLengthWeeks, upDownVolumeRatio,
-                upDownPerformanceVolumeRatio, performance5Days, liquidity20Days, averageTrueRangePercent20);
+                upDownPerformanceVolumeRatio, performance5Days, liquidity20Days, averageTrueRangePercent20,
+                bbw10Threshold25Percent);
     }
 
     /**
@@ -298,6 +320,7 @@ public class Indicator {
                 && baseLengthWeeks == other.baseLengthWeeks && upDownVolumeRatio == other.upDownVolumeRatio
                 && performance5Days == other.performance5Days && liquidity20Days == other.liquidity20Days
                 && averageTrueRangePercent20 == other.averageTrueRangePercent20
-                && upDownPerformanceVolumeRatio == other.upDownPerformanceVolumeRatio;
+                && upDownPerformanceVolumeRatio == other.upDownPerformanceVolumeRatio
+                && bbw10Threshold25Percent == other.bbw10Threshold25Percent;
     }
 }
