@@ -4,11 +4,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.Query;
-
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 
 /**
  * Provides Quotation queries.
@@ -55,8 +54,8 @@ public class QuotationQueryProvider {
                 + "LEFT JOIN FETCH i.sector LEFT JOIN FETCH i.industryGroup "
                 + "LEFT JOIN FETCH i.dividend LEFT JOIN FETCH i.divisor "
                 + "JOIN q.indicator r WHERE q.id IN :quotationIds AND q.indicator IS NOT NULL "
-                + "AND r.volumeDifferential5Days < 0 AND r.bollingerBandWidth10Days < 10 "
-                + "AND r.baseLengthWeeks >= 3 AND r.distanceTo52WeekHigh >= -10");
+                + "AND r.volumeDifferential5Days < 0 AND r.distanceTo52WeekHigh >= -10 "
+                + "AND r.bollingerBandWidth10Days <= r.bbw10Threshold25Percent AND r.baseLengthWeeks >= 3");
     }
 
     /**
@@ -176,7 +175,7 @@ public class QuotationQueryProvider {
                 + "JOIN q.movingAverageData m JOIN q.indicator r WHERE q.id IN :quotationIds "
                 + "AND q.movingAverageData IS NOT NULL AND q.indicator IS NOT NULL "
                 + "AND q.close > m.ema21 AND q.close > m.sma50 AND m.ema21 > m.sma50 "
-                + "AND r.bollingerBandWidth10Days < 10 AND r.volumeDifferential5Days < 0");
+                + "AND r.bollingerBandWidth10Days <= r.bbw10Threshold25Percent AND r.volumeDifferential5Days < 0");
     }
 
     /**
