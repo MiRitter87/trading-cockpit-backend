@@ -167,7 +167,10 @@ public class ChartIndicatorProvider {
         for (Quotation quotation : quotationArray.getQuotations()) {
             bollingerBandWidth = this.bollingerCalculator.getBollingerBandWidth(bbwPeriodDays, 2, quotation,
                     quotationArray);
-            timeSeries.add(new Day(quotation.getDate()), bollingerBandWidth);
+
+            if (bollingerBandWidth > 0) {
+                timeSeries.add(new Day(quotation.getDate()), bollingerBandWidth);
+            }
         }
 
         timeSeriesCollection.addSeries(timeSeries);

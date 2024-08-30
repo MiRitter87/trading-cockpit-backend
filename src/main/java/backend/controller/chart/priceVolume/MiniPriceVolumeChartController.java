@@ -22,6 +22,11 @@ public class MiniPriceVolumeChartController extends PriceVolumeChartController {
     public static final Integer TRADING_DAYS_3_MONTHS = 63;
 
     /**
+     * The number of additional days needed for calculation of Bollinger BandWidth.
+     */
+    public static final Integer ADDITIONAL_DAYS_BBW = 9;
+
+    /**
      * Gets a miniature price/volume chart of an Instrument.
      *
      * @param instrumentId The ID of the Instrument used for chart creation.
@@ -36,15 +41,18 @@ public class MiniPriceVolumeChartController extends PriceVolumeChartController {
         final int candleStickPlotWeight = 4;
         CombinedDomainXYPlot combinedPlot = new CombinedDomainXYPlot();
 
-        XYPlot indicatorSubplot = this.getChartIndicatorProvider().getBollingerBandWidthPlot(instrument, dateAxis);
-        XYPlot candleStickSubplot = this.getCandlestickPlot(instrument, dateAxis);
         XYPlot volumeSubplot = this.getVolumePlot(instrument, dateAxis);
+        XYPlot candleStickSubplot = this.getCandlestickPlot(instrument, dateAxis);
 
         this.getChartOverlayProvider().addEma21(instrument, candleStickSubplot);
         this.getChartOverlayProvider().addSma50(instrument, candleStickSubplot);
 
         this.getChartOverlayProvider().addMovingAverageVolume(instrument, true, volumeSubplot);
         this.clipVolumeAt2TimesAverage(volumeSubplot, instrument);
+
+        // 9 Additional days of quotation data are needed to create the Bollinger BandWidth.
+        instrument = this.getInstrumentWithQuotations(instrumentId, TRADING_DAYS_3_MONTHS + ADDITIONAL_DAYS_BBW);
+        XYPlot indicatorSubplot = this.getChartIndicatorProvider().getBollingerBandWidthPlot(instrument, dateAxis);
 
         // Build combined plot based on subplots.
         combinedPlot.setDomainAxis(dateAxis);
