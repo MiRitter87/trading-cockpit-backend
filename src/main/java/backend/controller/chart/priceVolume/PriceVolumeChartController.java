@@ -476,7 +476,7 @@ public class PriceVolumeChartController extends ChartController {
         case RS_LINE:
             return this.chartIndicatorProvider.getRsLinePlot(rsInstrumentId, instrument, timeAxis);
         case BBW:
-            return this.chartIndicatorProvider.getBollingerBandWidthPlot(instrument, timeAxis);
+            return this.chartIndicatorProvider.getBollingerBandWidthPlot(instrument, timeAxis, TRADING_DAYS_PER_YEAR);
         case SLOW_STOCHASTIC:
             return this.chartIndicatorProvider.getSlowStochasticPlot(instrument, timeAxis);
         case NONE:

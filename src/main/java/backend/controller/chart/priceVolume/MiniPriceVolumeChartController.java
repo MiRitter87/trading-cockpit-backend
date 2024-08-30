@@ -50,9 +50,10 @@ public class MiniPriceVolumeChartController extends PriceVolumeChartController {
         this.getChartOverlayProvider().addMovingAverageVolume(instrument, true, volumeSubplot);
         this.clipVolumeAt2TimesAverage(volumeSubplot, instrument);
 
-        // 9 Additional days of quotation data are needed to create the Bollinger BandWidth.
-        instrument = this.getInstrumentWithQuotations(instrumentId, TRADING_DAYS_3_MONTHS + ADDITIONAL_DAYS_BBW);
-        XYPlot indicatorSubplot = this.getChartIndicatorProvider().getBollingerBandWidthPlot(instrument, dateAxis);
+        // The whole years trading history is needed to calculate the threshold of the Bollinger BandWidth.
+        instrument = this.getInstrumentWithQuotations(instrumentId, TRADING_DAYS_PER_YEAR);
+        XYPlot indicatorSubplot = this.getChartIndicatorProvider().getBollingerBandWidthPlot(instrument, dateAxis,
+                TRADING_DAYS_3_MONTHS);
 
         // Build combined plot based on subplots.
         combinedPlot.setDomainAxis(dateAxis);

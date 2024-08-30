@@ -31,6 +31,11 @@ import backend.model.instrument.QuotationArray;
  */
 public class ChartIndicatorProvider {
     /**
+     * The Bollinger BandWidth period in days.
+     */
+    private static final int BOLLINGER_BAND_WIDTH_PERIOD = 10;
+
+    /**
      * Bollinger calculator.
      */
     private BollingerCalculator bollingerCalculator;
@@ -122,18 +127,23 @@ public class ChartIndicatorProvider {
     /**
      * Builds a plot to display the Bollinger BandWidth of an Instrument.
      *
-     * @param instrument The Instrument for which the Bollinger BandWidth is being calculated.
-     * @param timeAxis   The x-Axis (time).
+     * @param instrument      The Instrument for which the Bollinger BandWidth is being calculated.
+     * @param timeAxis        The x-Axis (time).
+     * @param requestedValues The number of requested Bollinger BandWidth values.
      * @return A XYPlot depicting the Bollinger BandWidth.
      * @throws Exception Failed to create Bollinger BandWidth plot.
      */
-    public XYPlot getBollingerBandWidthPlot(final Instrument instrument, final ValueAxis timeAxis) throws Exception {
+    public XYPlot getBollingerBandWidthPlot(final Instrument instrument, final ValueAxis timeAxis,
+            final int requestedValues) throws Exception {
         XYDataset dataset;
         XYPlot bbwPlot;
         NumberAxis valueAxis = new NumberAxis("");
         XYLineAndShapeRenderer bbwRenderer = new XYLineAndShapeRenderer(true, false);
+        QuotationArray quotations = new QuotationArray(instrument.getQuotationsSortedByDate());
+        final int percentBbwThreshold = 25;
+        float threshold;
 
-        dataset = this.getBollingerBandWidthDataset(instrument);
+        dataset = this.getBollingerBandWidthDataset(instrument, requestedValues);
 
         // Do not begin y-Axis at zero. Use lowest value of provided dataset instead.
         valueAxis.setAutoRangeIncludesZero(false);
@@ -142,7 +152,9 @@ public class ChartIndicatorProvider {
         bbwPlot.setRenderer(bbwRenderer);
         bbwPlot.setRangeAxisLocation(AxisLocation.TOP_OR_RIGHT);
 
-        this.addBollingerBandWidthTriggerLine(bbwPlot);
+        threshold = this.bollingerCalculator.getBollingerBandWidthThreshold(BOLLINGER_BAND_WIDTH_PERIOD, 2,
+                percentBbwThreshold, instrument.getQuotationsSortedByDate().get(0), quotations);
+        this.addBollingerBandWidthTriggerLine(bbwPlot, threshold);
 
         return bbwPlot;
     }
@@ -150,26 +162,33 @@ public class ChartIndicatorProvider {
     /**
      * Constructs a XYDataset for the Bollinger BandWidth.
      *
-     * @param instrument The Instrument for which the Price Volume chart is displayed.
+     * @param instrument      The Instrument for which the Price Volume chart is displayed.
+     * @param requestedValues The number of requested Bollinger BandWidth values.
      * @return A dataset building the values of the Bollinger BandWidth.
      * @throws Exception Failed to construct dataset of Bollinger BandWidth.
      */
-    private XYDataset getBollingerBandWidthDataset(final Instrument instrument) throws Exception {
+    private XYDataset getBollingerBandWidthDataset(final Instrument instrument, final int requestedValues)
+            throws Exception {
         TimeSeries timeSeries = new TimeSeries(this.resources.getString("chart.priceVolume.timeSeriesBbwName"));
         TimeZone timeZone = TimeZone.getDefault();
         TimeSeriesCollection timeSeriesCollection = new TimeSeriesCollection(timeZone);
         QuotationArray quotationArray = instrument.getQuotationArray();
         float bollingerBandWidth;
-        final int bbwPeriodDays = 10;
+        int addedValues = 0;
 
         quotationArray.sortQuotationsByDate();
 
         for (Quotation quotation : quotationArray.getQuotations()) {
-            bollingerBandWidth = this.bollingerCalculator.getBollingerBandWidth(bbwPeriodDays, 2, quotation,
-                    quotationArray);
+            bollingerBandWidth = this.bollingerCalculator.getBollingerBandWidth(BOLLINGER_BAND_WIDTH_PERIOD, 2,
+                    quotation, quotationArray);
 
             if (bollingerBandWidth > 0) {
                 timeSeries.add(new Day(quotation.getDate()), bollingerBandWidth);
+                addedValues++;
+            }
+
+            if (addedValues == requestedValues) {
+                break;
             }
         }
 
@@ -264,13 +283,13 @@ public class ChartIndicatorProvider {
      * Adds a horizontal trigger line to the Bollinger BandWidth plot.
      *
      * @param bollingerBandWidthPlot The Bollinger BandWidth plot.
+     * @param triggerLineValue       The value at which a horizontal trigger line is being drawn.
      */
-    private void addBollingerBandWidthTriggerLine(final XYPlot bollingerBandWidthPlot) {
+    private void addBollingerBandWidthTriggerLine(final XYPlot bollingerBandWidthPlot, final double triggerLineValue) {
         ValueMarker valueMarker;
-        final double triggerLine = 10;
 
-        // Add value marker at 10.
-        valueMarker = new ValueMarker(triggerLine);
+        // Add value marker depicting a trigger line.
+        valueMarker = new ValueMarker(triggerLineValue);
         bollingerBandWidthPlot.addRangeMarker(valueMarker);
     }
 }
