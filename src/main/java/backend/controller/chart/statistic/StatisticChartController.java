@@ -49,6 +49,11 @@ public class StatisticChartController extends ChartController {
 
         if (listId != null) {
             list = this.getListDAO().getList(listId);
+
+            if (list == null) {
+                return statistics;
+            }
+
             instruments.addAll(list.getInstruments());
             statistics = statisticCalculationController.calculateStatistics(instruments);
         } else {
