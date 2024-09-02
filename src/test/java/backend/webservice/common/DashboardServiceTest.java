@@ -262,7 +262,7 @@ public class DashboardServiceTest {
         WebServiceResult getMarketHealthStatusResult;
         DashboardService dashboardService = new DashboardService();
 
-        getMarketHealthStatusResult = dashboardService.getMarketHealthStatus(this.copperIndustryGroup.getId());
+        getMarketHealthStatusResult = dashboardService.getMarketHealthStatus(this.copperIndustryGroup.getId(), null);
 
         // Assure no error message exists
         assertTrue(WebServiceTools.resultContainsErrorMessage(getMarketHealthStatusResult) == false);
@@ -298,7 +298,7 @@ public class DashboardServiceTest {
             fail(e.getMessage());
         }
 
-        getMarketHealthStatusResult = dashboardService.getMarketHealthStatus(this.copperIndustryGroup.getId());
+        getMarketHealthStatusResult = dashboardService.getMarketHealthStatus(this.copperIndustryGroup.getId(), null);
 
         // Assure an error message exists
         assertTrue(WebServiceTools.resultContainsErrorMessage(getMarketHealthStatusResult) == true);

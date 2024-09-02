@@ -3,6 +3,7 @@ package backend.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import backend.controller.chart.statistic.StatisticChartController;
 import backend.controller.scan.StochasticCalculator;
 import backend.dao.DAOManager;
 import backend.dao.statistic.StatisticDAO;
@@ -35,16 +36,34 @@ public class AggregateIndicatorCalculator {
      * Determines the statistics for the given Instrument.
      *
      * @param instrument The Instrument that constitutes a sector or industry group.
+     * @param listId     The ID of the list defining the instruments used to calculate % of stocks above SMA(50)
+     *                   (optional).
      * @return The statistics.
      * @throws Exception Determination of statistics failed.
      */
-    public List<Statistic> getStatistics(final Instrument instrument) throws Exception {
+    public List<Statistic> getStatistics(final Instrument instrument, final Integer listId) throws Exception {
         List<Statistic> statistics = new ArrayList<>();
+        StatisticChartController statisticChartController = new StatisticChartController();
 
-        if (instrument.getType() == InstrumentType.SECTOR) {
-            statistics = this.statisticDAO.getStatistics(InstrumentType.STOCK, instrument.getId(), null);
-        } else if (instrument.getType() == InstrumentType.IND_GROUP) {
-            statistics = this.statisticDAO.getStatistics(InstrumentType.STOCK, null, instrument.getId());
+        if (listId == null) {
+            if (instrument.getType() == InstrumentType.SECTOR) {
+                statistics = this.statisticDAO.getStatistics(InstrumentType.STOCK, instrument.getId(), null);
+            } else if (instrument.getType() == InstrumentType.IND_GROUP) {
+                statistics = this.statisticDAO.getStatistics(InstrumentType.STOCK, null, instrument.getId());
+            }
+        } else {
+            statistics = statisticChartController.getStatisticsForList(null, listId,
+                    StatisticChartController.TRADING_DAYS_PER_YEAR);
+
+            for (Statistic statistic : statistics) {
+                if (instrument.getType() == InstrumentType.SECTOR) {
+                    statistic.setSectorId(instrument.getId());
+                }
+
+                if (instrument.getType() == InstrumentType.IND_GROUP) {
+                    statistic.setIndustryGroupId(instrument.getId());
+                }
+            }
         }
 
         return statistics;

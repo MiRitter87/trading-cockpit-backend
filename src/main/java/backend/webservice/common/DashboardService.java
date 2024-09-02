@@ -71,9 +71,11 @@ public class DashboardService {
      * Determines the health status of the given market (sector or industry group).
      *
      * @param instrumentId The ID of the sector or industry group.
+     * @param listId       The ID of the list defining the instruments used to calculate % of stocks above SMA(50)
+     *                     (optional).
      * @return The health status.
      */
-    public WebServiceResult getMarketHealthStatus(final Integer instrumentId) {
+    public WebServiceResult getMarketHealthStatus(final Integer instrumentId, final Integer listId) {
         WebServiceResult getStatusResult = new WebServiceResult(null);
         MarketHealthStatus marketHealthStatus = new MarketHealthStatus();
         Instrument instrument;
@@ -96,7 +98,7 @@ public class DashboardService {
             marketHealthStatus.setNumberNear52wLow(this.getNumberNear52wLow(instrument));
             marketHealthStatus.setNumberUpOnVolume(this.getNumberUpOnVolume(instrument));
             marketHealthStatus.setNumberDownOnVolume(this.getNumberDownOnVolume(instrument));
-            marketHealthStatus.setAggregateIndicator(this.getAggregateIndicator(instrument));
+            marketHealthStatus.setAggregateIndicator(this.getAggregateIndicator(instrument, listId));
             getStatusResult.setData(marketHealthStatus);
         } catch (LocalizedException localizedException) {
             getStatusResult.addMessage(
@@ -431,12 +433,14 @@ public class DashboardService {
      * Determines the Aggregate Indicator.
      *
      * @param instrument The Instrument that constitutes a sector or industry group.
+     * @param listId     The ID of the list defining the instruments used to calculate % of stocks above SMA(50)
+     *                   (optional).
      * @return The value of the Aggregate Indicator.
      * @throws Exception Error during data retrieval.
      */
-    private int getAggregateIndicator(final Instrument instrument) throws Exception {
+    private int getAggregateIndicator(final Instrument instrument, final Integer listId) throws Exception {
         AggregateIndicatorCalculator calculator = new AggregateIndicatorCalculator();
-        List<Statistic> statistics = calculator.getStatistics(instrument);
+        List<Statistic> statistics = calculator.getStatistics(instrument, listId);
         List<Quotation> quotationsSortedByDate = instrument.getQuotationsSortedByDate();
         Quotation newestQuotation = quotationsSortedByDate.get(0);
         int aggregateIndicator;

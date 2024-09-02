@@ -39,7 +39,7 @@ public class StatisticChartController extends ChartController {
      * @return Statistics for the given parameters.
      * @throws Exception Determination of statistics failed.
      */
-    protected List<Statistic> getStatisticsForList(final InstrumentType instrumentType, final Integer listId,
+    public List<Statistic> getStatisticsForList(final InstrumentType instrumentType, final Integer listId,
             final Integer maxNumber) throws Exception {
 
         backend.model.list.List list;
