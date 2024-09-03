@@ -422,15 +422,17 @@ public class ChartService {
      * Provides a chart of the Aggregate Indicator of an Instrument.
      *
      * @param instrumentId The ID of the Instrument used for chart creation.
+     * @param listId       The ID of the list defining the instruments used to calculate % of stocks above SMA(50)
+     *                     (optional).
      * @return A Response containing the generated chart.
      */
-    public Response getAggregateIndicatorChart(final Integer instrumentId) {
+    public Response getAggregateIndicatorChart(final Integer instrumentId, final Integer listId) {
         AggregateIndicatorChartController aggregateIndicatorChartController = new AggregateIndicatorChartController();
         JFreeChart chart;
         StreamingOutput streamingOutput = null;
 
         try {
-            chart = aggregateIndicatorChartController.getAggregateIndicatorChart(instrumentId);
+            chart = aggregateIndicatorChartController.getAggregateIndicatorChart(instrumentId, listId);
 
             streamingOutput = new StreamingOutput() {
                 @Override

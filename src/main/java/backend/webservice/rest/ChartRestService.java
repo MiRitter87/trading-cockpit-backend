@@ -195,13 +195,17 @@ public class ChartRestService {
      * Provides a Aggregate Indicator chart of an Instrument.
      *
      * @param instrumentId The ID of the Instrument used for chart creation.
+     * @param listId       The ID of the list defining the instruments used to calculate % of stocks above SMA(50)
+     *                     (optional).
      * @return The chart.
      */
     @GET
     @Path("/aggregateIndicator/{instrumentId}")
     @Produces("image/png")
-    public Response getAggregateIndicatorChart(@PathParam("instrumentId") final Integer instrumentId) {
+    public Response getAggregateIndicatorChart(@PathParam("instrumentId") final Integer instrumentId,
+            @QueryParam("listId") final Integer listId) {
+
         ChartService chartService = new ChartService();
-        return chartService.getAggregateIndicatorChart(instrumentId);
+        return chartService.getAggregateIndicatorChart(instrumentId, listId);
     }
 }

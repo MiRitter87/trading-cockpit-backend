@@ -57,11 +57,13 @@ public class AggregateIndicatorChartController extends StatisticChartController 
      * Gets a chart of the Aggregate Indicator of a sector or industry group.
      *
      * @param instrumentId The ID of the sector or industry group.
+     * @param listId       The ID of the list defining the instruments used to calculate % of stocks above SMA(50)
+     *                     (optional).
      * @return The chart.
      * @throws NoQuotationsExistException No quotations or statistics exist for the Instrument with the given ID.
      * @throws Exception                  Chart generation failed.
      */
-    public JFreeChart getAggregateIndicatorChart(final Integer instrumentId)
+    public JFreeChart getAggregateIndicatorChart(final Integer instrumentId, final Integer listId)
             throws NoQuotationsExistException, Exception {
         Instrument instrument = this.instrumentDAO.getInstrument(instrumentId);
         List<Statistic> statistics;
@@ -72,7 +74,7 @@ public class AggregateIndicatorChartController extends StatisticChartController 
 
         this.validateInstrumentType(instrument);
 
-        statistics = this.calculator.getStatistics(instrument, null);
+        statistics = this.calculator.getStatistics(instrument, listId);
         instrument.setQuotations(this.quotationDAO.getQuotationsOfInstrument(instrumentId));
         dataset = this.getAggregateIndicatorDataset(instrument, statistics);
 
