@@ -12,38 +12,6 @@ The backend provides WebServices to create, read, update and delete the followin
 
 Besides master data management, the application retrieves quotation data using third-party data providers.
 It generates charts, crawls the database of instruments and quotations providing specific result sets and is able to interpret price and volume behavior of instruments.
-The features are described in more detail in the following sections.
-
-### Price Alerts
-A price alert notifies the user if the price of an instrument reaches a certain threshold. 
-There are two types of alerts. One alert informs you if a price is equal or higher than your defined price. The other type informs you if the price is equal of lower your defined price. 
-The backend queries stock quotes cyclically to check if the defined threshold has been triggered.
-If requested, an E-Mail is sent to a recipient when an alert has been triggered.
-
-### Instruments
-Instruments are tradable assets that come in different forms like stocks or ETFs. Currently instruments of type 'stock', 'etf', 'sector','industry group' and 'ratio' can be managed.
-
-### Lists
-Lists allow you to organize sets of instruments. The list feature allows you for example to reproduce ETFs or stock indexes. Lists are used by the scan functionality to scan and screen all instruments of multiple lists.
-Lists are also used in the context of statistical charts.
-
-### Scans
-A Scan consists of multiple lists that have instruments defined in them. The scan process queries historical price and volume data of the instruments using third-party data providers.
-Indicators are then calculated and the instruments are ranked according to their performance of the past year.
-The backend offers multiple templates to filter the scan results by different characteristics. For example stocks can be filtered that have advanced on above-average volume.
-Ratio data are not queried from a third-party data provider. Instead they are calculated locally within the application based on existing instrument data.
-
-### Dashboard
-The Dashboard aims to provide a meta overview of the current state of the market.
-At the end of the scan process, statistical data of the instruments are calculated. Those statistics are exposed as tabular data.
-
-### Charts
-The application generates a multitude of charts for its instruments and lists. Those charts mainly fall into two categories: statistical charts and price/volume charts.
-
-### Health Check
-The application provides a knowledge-based system to interpret the price and volume behavior of instruments.
-Instruments can be analyzed according to roughly 20 time-tested rules to gauge their health.
-Those rules are grouped into three profiles: up-trend confirmations, up-trend violations and selling into strength.
 
 ## Technology
 
@@ -115,4 +83,4 @@ The configuration file *tradingCockpitBackend.properties* has multiple propertie
 
 ## License
 
-Copyright © 2024, [MiRitter87](https://github.com/MiRitter87). No License.
+Copyright © 2022-2024, [MiRitter87](https://github.com/MiRitter87). No License.
