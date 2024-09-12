@@ -35,11 +35,6 @@ import backend.webservice.ScanTemplate;
  */
 public class DashboardService {
     /**
-     * DAO to access Instrument data.
-     */
-    private InstrumentDAO instrumentDAO;
-
-    /**
      * DAO for Quotation access.
      */
     private QuotationDAO quotationDAO;
@@ -60,6 +55,11 @@ public class DashboardService {
     private ResourceBundle resources = ResourceBundle.getBundle("backend");
 
     /**
+     * The Instrument for which the health status is determined. This can either be a sector or an industry group.
+     */
+    private Instrument instrument;
+
+    /**
      * Application logging.
      */
     public static final Logger LOGGER = LogManager.getLogger(DashboardService.class);
@@ -68,7 +68,6 @@ public class DashboardService {
      * Initializes the DashboardService.
      */
     public DashboardService() {
-        this.instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
         this.quotationDAO = DAOManager.getInstance().getQuotationDAO();
         this.statisticDAO = DAOManager.getInstance().getStatisticDAO();
         this.listDAO = DAOManager.getInstance().getListDAO();
@@ -85,18 +84,17 @@ public class DashboardService {
     public WebServiceResult getMarketHealthStatus(final Integer instrumentId, final Integer listId) {
         WebServiceResult getStatusResult = new WebServiceResult(null);
         MarketHealthStatus marketHealthStatus = new MarketHealthStatus();
-        Instrument instrument;
         backend.model.list.List list = null;
 
         try {
-            instrument = this.instrumentDAO.getInstrument(instrumentId);
+            this.initializeInstrument(instrumentId);
+            this.validateInstrumentType();
+        } catch (LocalizedException exception) {
+            getStatusResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, exception.getLocalizedMessage()));
+            return getStatusResult;
+        }
 
-            if (instrument == null) {
-                getStatusResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
-                        MessageFormat.format(this.resources.getString("instrument.notFound"), instrumentId)));
-                return getStatusResult;
-            }
-
+        try {
             if (listId != null) {
                 list = this.listDAO.getList(listId);
 
@@ -107,16 +105,14 @@ public class DashboardService {
                 }
             }
 
-            this.validateInstrumentType(instrument);
-            instrument.setQuotations(this.quotationDAO.getQuotationsOfInstrument(instrumentId));
-            this.fillBasicData(instrument, marketHealthStatus);
-            marketHealthStatus.setSwingTradingEnvironmentStatus(this.getSwingTradingEnvironmentStatus(instrument));
-            marketHealthStatus.setDistributionDaysSum(this.getDistributionDaysSum(instrument));
-            marketHealthStatus.setNumberNear52wHigh(this.getNumberNear52wHigh(instrument, list));
-            marketHealthStatus.setNumberNear52wLow(this.getNumberNear52wLow(instrument, list));
-            marketHealthStatus.setNumberUpOnVolume(this.getNumberUpOnVolume(instrument));
-            marketHealthStatus.setNumberDownOnVolume(this.getNumberDownOnVolume(instrument));
-            marketHealthStatus.setAggregateIndicator(this.getAggregateIndicator(instrument, listId));
+            this.fillBasicData(marketHealthStatus);
+            marketHealthStatus.setSwingTradingEnvironmentStatus(this.getSwingTradingEnvironmentStatus(this.instrument));
+            marketHealthStatus.setDistributionDaysSum(this.getDistributionDaysSum());
+            marketHealthStatus.setNumberNear52wHigh(this.getNumberNear52wHigh(list));
+            marketHealthStatus.setNumberNear52wLow(this.getNumberNear52wLow(list));
+            marketHealthStatus.setNumberUpOnVolume(this.getNumberUpOnVolume());
+            marketHealthStatus.setNumberDownOnVolume(this.getNumberDownOnVolume());
+            marketHealthStatus.setAggregateIndicator(this.getAggregateIndicator(listId));
             getStatusResult.setData(marketHealthStatus);
         } catch (LocalizedException localizedException) {
             getStatusResult.addMessage(
@@ -131,17 +127,33 @@ public class DashboardService {
     }
 
     /**
+     * Initializes the Instrument for which the health status is determined.
+     *
+     * @param instrumentId The id of the Instrument.
+     * @throws LocalizedException Initialization failed.
+     */
+    private void initializeInstrument(final Integer instrumentId) throws LocalizedException {
+        InstrumentDAO instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
+
+        try {
+            this.instrument = instrumentDAO.getInstrument(instrumentId);
+            this.instrument.setQuotations(this.quotationDAO.getQuotationsOfInstrument(instrumentId));
+        } catch (Exception e) {
+            throw new LocalizedException("instrument.notFound", instrumentId);
+        }
+    }
+
+    /**
      * Fills the basic data of the MarketHealthStatus. These are data than are directly copied from an Instrument or its
      * referenced Quotation and Indicator.
      *
-     * @param instrument         The Instrument with the Quotation history.
      * @param marketHealthStatus The MarketHealthStatus whose data are filled.
      */
-    private void fillBasicData(final Instrument instrument, final MarketHealthStatus marketHealthStatus) {
-        List<Quotation> quotationsSortedByDate = instrument.getQuotationsSortedByDate();
+    private void fillBasicData(final MarketHealthStatus marketHealthStatus) {
+        List<Quotation> quotationsSortedByDate = this.instrument.getQuotationsSortedByDate();
 
-        marketHealthStatus.setSymbol(instrument.getSymbol());
-        marketHealthStatus.setName(instrument.getName());
+        marketHealthStatus.setSymbol(this.instrument.getSymbol());
+        marketHealthStatus.setName(this.instrument.getName());
 
         if (quotationsSortedByDate.size() > 0) {
             marketHealthStatus.setDate(quotationsSortedByDate.get(0).getDate());
@@ -152,14 +164,14 @@ public class DashboardService {
     }
 
     /**
-     * Validates the InstrumentType of the given Instrument. The market health status can only be determined for
-     * instruments of type sector or industry group.
+     * Validates the InstrumentType of the Instrument. The market health status can only be determined for instruments
+     * of type sector or industry group.
      *
-     * @param instrument The Instrument.
      * @throws LocalizedException In case the InstrumentType is not allowed.
      */
-    private void validateInstrumentType(final Instrument instrument) throws LocalizedException {
-        if (instrument.getType() != InstrumentType.SECTOR && instrument.getType() != InstrumentType.IND_GROUP) {
+    private void validateInstrumentType() throws LocalizedException {
+        if (this.instrument.getType() != InstrumentType.SECTOR
+                && this.instrument.getType() != InstrumentType.IND_GROUP) {
             throw new LocalizedException("dashboard.wrongInstrumentType");
         }
     }
@@ -167,15 +179,15 @@ public class DashboardService {
     /**
      * Determine the traffic-light status of the Swingtrading Environment.
      *
-     * @param instrument The Instrument with the Quotation history.
+     * @param instrumentWithQuotations The Instrument with the Quotation history.
      * @return The SwingTradingEnvironmentStatus.
      */
-    public SwingTradingEnvironmentStatus getSwingTradingEnvironmentStatus(final Instrument instrument) {
-        if (this.isStatusGreen(instrument)) {
+    public SwingTradingEnvironmentStatus getSwingTradingEnvironmentStatus(final Instrument instrumentWithQuotations) {
+        if (this.isStatusGreen(instrumentWithQuotations)) {
             return SwingTradingEnvironmentStatus.GREEN;
-        } else if (this.isStatusYellow(instrument)) {
+        } else if (this.isStatusYellow(instrumentWithQuotations)) {
             return SwingTradingEnvironmentStatus.YELLOW;
-        } else if (this.isStatusRed(instrument)) {
+        } else if (this.isStatusRed(instrumentWithQuotations)) {
             return SwingTradingEnvironmentStatus.RED;
         }
 
@@ -185,21 +197,22 @@ public class DashboardService {
     /**
      * Checks if the SwingTradingEnvironmentStatus of the given Instrument is 'GREEN'.
      *
-     * @param instrument The Instrument with the Quotation history.
+     * @param instrumentWithQuotations The Instrument with the Quotation history.
      * @return true, if status is 'GREEN'; false, if not.
      */
-    private boolean isStatusGreen(final Instrument instrument) {
+    private boolean isStatusGreen(final Instrument instrumentWithQuotations) {
         List<Quotation> quotations;
         Quotation actualQuotation;
         Quotation previousQuotation;
         MovingAverageData actualMa;
         MovingAverageData previousMa;
 
-        if (instrument == null || instrument.getQuotations() == null || instrument.getQuotations().size() < 2) {
+        if (instrumentWithQuotations == null || instrumentWithQuotations.getQuotations() == null
+                || instrumentWithQuotations.getQuotations().size() < 2) {
             return false;
         }
 
-        quotations = instrument.getQuotationsSortedByDate();
+        quotations = instrumentWithQuotations.getQuotationsSortedByDate();
         actualQuotation = quotations.get(0);
         previousQuotation = quotations.get(1);
         actualMa = actualQuotation.getMovingAverageData();
@@ -231,19 +244,20 @@ public class DashboardService {
     /**
      * Checks if the SwingTradingEnvironmentStatus of the given Instrument is 'YELLOW'.
      *
-     * @param instrument The Instrument with the Quotation history.
+     * @param instrumentWithQuotations The Instrument with the Quotation history.
      * @return true, if status is 'YELLOW'; false, if not.
      */
-    private boolean isStatusYellow(final Instrument instrument) {
+    private boolean isStatusYellow(final Instrument instrumentWithQuotations) {
         List<Quotation> quotations;
         Quotation actualQuotation;
         MovingAverageData actualMa;
 
-        if (instrument == null || instrument.getQuotations() == null || instrument.getQuotations().size() < 2) {
+        if (instrumentWithQuotations == null || instrumentWithQuotations.getQuotations() == null
+                || instrumentWithQuotations.getQuotations().size() < 2) {
             return false;
         }
 
-        quotations = instrument.getQuotationsSortedByDate();
+        quotations = instrumentWithQuotations.getQuotationsSortedByDate();
         actualQuotation = quotations.get(0);
         actualMa = actualQuotation.getMovingAverageData();
 
@@ -265,19 +279,20 @@ public class DashboardService {
     /**
      * Checks if the SwingTradingEnvironmentStatus of the given Instrument is 'RED'.
      *
-     * @param instrument The Instrument with the Quotation history.
+     * @param instrumentWithQuotations The Instrument with the Quotation history.
      * @return true, if status is 'RED'; false, if not.
      */
-    private boolean isStatusRed(final Instrument instrument) {
+    private boolean isStatusRed(final Instrument instrumentWithQuotations) {
         List<Quotation> quotations;
         Quotation actualQuotation;
         MovingAverageData actualMa;
 
-        if (instrument == null || instrument.getQuotations() == null || instrument.getQuotations().size() < 2) {
+        if (instrumentWithQuotations == null || instrumentWithQuotations.getQuotations() == null
+                || instrumentWithQuotations.getQuotations().size() < 2) {
             return false;
         }
 
-        quotations = instrument.getQuotationsSortedByDate();
+        quotations = instrumentWithQuotations.getQuotationsSortedByDate();
         actualQuotation = quotations.get(0);
         actualMa = actualQuotation.getMovingAverageData();
 
@@ -296,12 +311,11 @@ public class DashboardService {
     /**
      * Determines the sum of Distribution Days within the last 25 trading days.
      *
-     * @param instrument The Instrument.
      * @return The sum of Distribution Days.
      */
-    private int getDistributionDaysSum(final Instrument instrument) {
+    private int getDistributionDaysSum() {
         DistributionDaysChartController distributionDaysChartController = new DistributionDaysChartController();
-        List<Quotation> quotationsSortedByDate = instrument.getQuotationsSortedByDate();
+        List<Quotation> quotationsSortedByDate = this.instrument.getQuotationsSortedByDate();
 
         return distributionDaysChartController.getDistributionDaysSum(quotationsSortedByDate.get(0),
                 quotationsSortedByDate);
@@ -311,11 +325,10 @@ public class DashboardService {
      * Determines the number of instruments that trade near the 52-week high. Only those instruments are taken into
      * account where the given Instrument is referenced as sector or industry group.
      *
-     * @param instrument The Instrument that constitutes a sector or industry group.
-     * @param list       The List used to specify the instruments used for number determination.
+     * @param list The List used to specify the instruments used for number determination.
      * @return The number of instruments near the 52-week high.
      */
-    private int getNumberNear52wHigh(final Instrument instrument, final backend.model.list.List list) {
+    private int getNumberNear52wHigh(final backend.model.list.List list) {
         List<Quotation> allInstrumentsNear52wHigh;
         int numberNear52wHigh = 0;
         Instrument sector;
@@ -329,10 +342,10 @@ public class DashboardService {
                 sector = tempQuotation.getInstrument().getSector();
                 industryGroup = tempQuotation.getInstrument().getIndustryGroup();
 
-                if (industryGroup != null && industryGroup.getId().equals(instrument.getId())
+                if (industryGroup != null && industryGroup.getId().equals(this.instrument.getId())
                         && this.isInstrumentPartOfList(tempQuotation.getInstrument(), list)) {
                     numberNear52wHigh++;
-                } else if (sector != null && sector.getId().equals(instrument.getId())
+                } else if (sector != null && sector.getId().equals(this.instrument.getId())
                         && this.isInstrumentPartOfList(tempQuotation.getInstrument(), list)) {
                     numberNear52wHigh++;
                 }
@@ -348,11 +361,10 @@ public class DashboardService {
      * Determines the number of instruments that trade near the 52-week low. Only those instruments are taken into
      * account where the given Instrument is referenced as sector or industry group.
      *
-     * @param instrument The Instrument that constitutes a sector or industry group.
-     * @param list       The List used to specify the instruments used for number determination.
+     * @param list The List used to specify the instruments used for number determination.
      * @return The number of instruments near the 52-week low.
      */
-    private int getNumberNear52wLow(final Instrument instrument, final backend.model.list.List list) {
+    private int getNumberNear52wLow(final backend.model.list.List list) {
         List<Quotation> allInstrumentsNear52wLow;
         int numberNear52wLow = 0;
         Instrument sector;
@@ -366,10 +378,10 @@ public class DashboardService {
                 sector = tempQuotation.getInstrument().getSector();
                 industryGroup = tempQuotation.getInstrument().getIndustryGroup();
 
-                if (industryGroup != null && industryGroup.getId().equals(instrument.getId())
+                if (industryGroup != null && industryGroup.getId().equals(this.instrument.getId())
                         && this.isInstrumentPartOfList(tempQuotation.getInstrument(), list)) {
                     numberNear52wLow++;
-                } else if (sector != null && sector.getId().equals(instrument.getId())
+                } else if (sector != null && sector.getId().equals(this.instrument.getId())
                         && this.isInstrumentPartOfList(tempQuotation.getInstrument(), list)) {
                     numberNear52wLow++;
                 }
@@ -386,20 +398,19 @@ public class DashboardService {
      * least 3% up on a day on above-average volume. Only those instruments are taken into account where the given
      * Instrument is referenced as sector or industry group.
      *
-     * @param instrument The Instrument that constitutes a sector or industry group.
      * @return The number of instruments trading "Up on Volume".
      */
-    private int getNumberUpOnVolume(final Instrument instrument) {
+    private int getNumberUpOnVolume() {
         List<Statistic> statistics = new ArrayList<>();
         Statistic statistic;
         final int numberOfDays = 5;
         int numberUpOnVolume = 0;
 
         try {
-            if (instrument.getType() == InstrumentType.SECTOR) {
-                statistics = this.statisticDAO.getStatistics(InstrumentType.STOCK, instrument.getId(), null);
-            } else if (instrument.getType() == InstrumentType.IND_GROUP) {
-                statistics = this.statisticDAO.getStatistics(InstrumentType.STOCK, null, instrument.getId());
+            if (this.instrument.getType() == InstrumentType.SECTOR) {
+                statistics = this.statisticDAO.getStatistics(InstrumentType.STOCK, this.instrument.getId(), null);
+            } else if (this.instrument.getType() == InstrumentType.IND_GROUP) {
+                statistics = this.statisticDAO.getStatistics(InstrumentType.STOCK, null, this.instrument.getId());
             }
 
             if (statistics.size() == 0) {
@@ -422,20 +433,19 @@ public class DashboardService {
      * least 3% down on a day on above-average volume. Only those instruments are taken into account where the given
      * Instrument is referenced as sector or industry group.
      *
-     * @param instrument The Instrument that constitutes a sector or industry group.
      * @return The number of instruments trading "Down on Volume".
      */
-    private int getNumberDownOnVolume(final Instrument instrument) {
+    private int getNumberDownOnVolume() {
         List<Statistic> statistics = new ArrayList<>();
         Statistic statistic;
         final int numberOfDays = 5;
         int numberDownOnVolume = 0;
 
         try {
-            if (instrument.getType() == InstrumentType.SECTOR) {
-                statistics = this.statisticDAO.getStatistics(InstrumentType.STOCK, instrument.getId(), null);
-            } else if (instrument.getType() == InstrumentType.IND_GROUP) {
-                statistics = this.statisticDAO.getStatistics(InstrumentType.STOCK, null, instrument.getId());
+            if (this.instrument.getType() == InstrumentType.SECTOR) {
+                statistics = this.statisticDAO.getStatistics(InstrumentType.STOCK, this.instrument.getId(), null);
+            } else if (this.instrument.getType() == InstrumentType.IND_GROUP) {
+                statistics = this.statisticDAO.getStatistics(InstrumentType.STOCK, null, this.instrument.getId());
             }
 
             if (statistics.size() == 0) {
@@ -456,21 +466,19 @@ public class DashboardService {
     /**
      * Determines the Aggregate Indicator.
      *
-     * @param instrument The Instrument that constitutes a sector or industry group.
-     * @param listId     The ID of the list defining the instruments used to calculate % of stocks above SMA(50)
-     *                   (optional).
+     * @param listId The ID of the list defining the instruments used to calculate % of stocks above SMA(50) (optional).
      * @return The value of the Aggregate Indicator.
      * @throws Exception Error during data retrieval.
      */
-    private int getAggregateIndicator(final Instrument instrument, final Integer listId) throws Exception {
+    private int getAggregateIndicator(final Integer listId) throws Exception {
         AggregateIndicatorCalculator calculator = new AggregateIndicatorCalculator();
-        List<Statistic> statistics = calculator.getStatistics(instrument, listId);
-        List<Quotation> quotationsSortedByDate = instrument.getQuotationsSortedByDate();
+        List<Statistic> statistics = calculator.getStatistics(this.instrument, listId);
+        List<Quotation> quotationsSortedByDate = this.instrument.getQuotationsSortedByDate();
         Quotation newestQuotation = quotationsSortedByDate.get(0);
         int aggregateIndicator;
 
         aggregateIndicator = calculator.getAggregateIndicator(quotationsSortedByDate, statistics, newestQuotation,
-                instrument);
+                this.instrument);
 
         return aggregateIndicator;
     }
@@ -478,18 +486,18 @@ public class DashboardService {
     /**
      * Checks if the given Instrument is part of the given List.
      *
-     * @param instrument The Instrument to be checked.
-     * @param list       The List used for check.
+     * @param instrumentToCheck The Instrument to be checked.
+     * @param list              The List used for check.
      * @return true if instrument is part of list or if no list is given.
      */
-    private boolean isInstrumentPartOfList(final Instrument instrument, final backend.model.list.List list) {
+    private boolean isInstrumentPartOfList(final Instrument instrumentToCheck, final backend.model.list.List list) {
         Instrument containedInstrument = null;
 
         if (list == null) {
             return true;
         }
 
-        containedInstrument = list.getInstrumentWithId(instrument.getId());
+        containedInstrument = list.getInstrumentWithId(instrumentToCheck.getId());
 
         if (containedInstrument != null) {
             return true;
