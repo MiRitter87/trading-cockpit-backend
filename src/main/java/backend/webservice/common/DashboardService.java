@@ -12,6 +12,7 @@ import backend.controller.AggregateIndicatorCalculator;
 import backend.controller.chart.priceVolume.DistributionDaysChartController;
 import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
+import backend.dao.list.ListDAO;
 import backend.dao.quotation.persistence.QuotationDAO;
 import backend.dao.statistic.StatisticDAO;
 import backend.model.LocalizedException;
@@ -49,6 +50,11 @@ public class DashboardService {
     private StatisticDAO statisticDAO;
 
     /**
+     * DAO for List access.
+     */
+    private ListDAO listDAO;
+
+    /**
      * Access to localized application resources.
      */
     private ResourceBundle resources = ResourceBundle.getBundle("backend");
@@ -65,6 +71,7 @@ public class DashboardService {
         this.instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
         this.quotationDAO = DAOManager.getInstance().getQuotationDAO();
         this.statisticDAO = DAOManager.getInstance().getStatisticDAO();
+        this.listDAO = DAOManager.getInstance().getListDAO();
     }
 
     /**
@@ -79,6 +86,7 @@ public class DashboardService {
         WebServiceResult getStatusResult = new WebServiceResult(null);
         MarketHealthStatus marketHealthStatus = new MarketHealthStatus();
         Instrument instrument;
+        backend.model.list.List list = null;
 
         try {
             instrument = this.instrumentDAO.getInstrument(instrumentId);
@@ -89,13 +97,23 @@ public class DashboardService {
                 return getStatusResult;
             }
 
+            if (listId != null) {
+                list = this.listDAO.getList(listId);
+
+                if (list == null) {
+                    getStatusResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
+                            MessageFormat.format(this.resources.getString("list.notFound"), listId)));
+                    return getStatusResult;
+                }
+            }
+
             this.validateInstrumentType(instrument);
             instrument.setQuotations(this.quotationDAO.getQuotationsOfInstrument(instrumentId));
             this.fillBasicData(instrument, marketHealthStatus);
             marketHealthStatus.setSwingTradingEnvironmentStatus(this.getSwingTradingEnvironmentStatus(instrument));
             marketHealthStatus.setDistributionDaysSum(this.getDistributionDaysSum(instrument));
-            marketHealthStatus.setNumberNear52wHigh(this.getNumberNear52wHigh(instrument));
-            marketHealthStatus.setNumberNear52wLow(this.getNumberNear52wLow(instrument));
+            marketHealthStatus.setNumberNear52wHigh(this.getNumberNear52wHigh(instrument, list));
+            marketHealthStatus.setNumberNear52wLow(this.getNumberNear52wLow(instrument, list));
             marketHealthStatus.setNumberUpOnVolume(this.getNumberUpOnVolume(instrument));
             marketHealthStatus.setNumberDownOnVolume(this.getNumberDownOnVolume(instrument));
             marketHealthStatus.setAggregateIndicator(this.getAggregateIndicator(instrument, listId));
@@ -294,9 +312,10 @@ public class DashboardService {
      * account where the given Instrument is referenced as sector or industry group.
      *
      * @param instrument The Instrument that constitutes a sector or industry group.
+     * @param list       The List used to specify the instruments used for number determination.
      * @return The number of instruments near the 52-week high.
      */
-    private int getNumberNear52wHigh(final Instrument instrument) {
+    private int getNumberNear52wHigh(final Instrument instrument, final backend.model.list.List list) {
         List<Quotation> allInstrumentsNear52wHigh;
         int numberNear52wHigh = 0;
         Instrument sector;
@@ -310,9 +329,11 @@ public class DashboardService {
                 sector = tempQuotation.getInstrument().getSector();
                 industryGroup = tempQuotation.getInstrument().getIndustryGroup();
 
-                if (industryGroup != null && industryGroup.getId().equals(instrument.getId())) {
+                if (industryGroup != null && industryGroup.getId().equals(instrument.getId())
+                        && this.isInstrumentPartOfList(tempQuotation.getInstrument(), list)) {
                     numberNear52wHigh++;
-                } else if (sector != null && sector.getId().equals(instrument.getId())) {
+                } else if (sector != null && sector.getId().equals(instrument.getId())
+                        && this.isInstrumentPartOfList(tempQuotation.getInstrument(), list)) {
                     numberNear52wHigh++;
                 }
             }
@@ -328,9 +349,10 @@ public class DashboardService {
      * account where the given Instrument is referenced as sector or industry group.
      *
      * @param instrument The Instrument that constitutes a sector or industry group.
+     * @param list       The List used to specify the instruments used for number determination.
      * @return The number of instruments near the 52-week low.
      */
-    private int getNumberNear52wLow(final Instrument instrument) {
+    private int getNumberNear52wLow(final Instrument instrument, final backend.model.list.List list) {
         List<Quotation> allInstrumentsNear52wLow;
         int numberNear52wLow = 0;
         Instrument sector;
@@ -344,9 +366,11 @@ public class DashboardService {
                 sector = tempQuotation.getInstrument().getSector();
                 industryGroup = tempQuotation.getInstrument().getIndustryGroup();
 
-                if (industryGroup != null && industryGroup.getId().equals(instrument.getId())) {
+                if (industryGroup != null && industryGroup.getId().equals(instrument.getId())
+                        && this.isInstrumentPartOfList(tempQuotation.getInstrument(), list)) {
                     numberNear52wLow++;
-                } else if (sector != null && sector.getId().equals(instrument.getId())) {
+                } else if (sector != null && sector.getId().equals(instrument.getId())
+                        && this.isInstrumentPartOfList(tempQuotation.getInstrument(), list)) {
                     numberNear52wLow++;
                 }
             }
@@ -449,5 +473,28 @@ public class DashboardService {
                 instrument);
 
         return aggregateIndicator;
+    }
+
+    /**
+     * Checks if the given Instrument is part of the given List.
+     *
+     * @param instrument The Instrument to be checked.
+     * @param list       The List used for check.
+     * @return true if instrument is part of list or if no list is given.
+     */
+    private boolean isInstrumentPartOfList(final Instrument instrument, final backend.model.list.List list) {
+        Instrument containedInstrument = null;
+
+        if (list == null) {
+            return true;
+        }
+
+        containedInstrument = list.getInstrumentWithId(instrument.getId());
+
+        if (containedInstrument != null) {
+            return true;
+        }
+
+        return false;
     }
 }
