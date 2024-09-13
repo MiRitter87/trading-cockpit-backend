@@ -1,5 +1,6 @@
 package backend.webservice.common;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -8,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 
 import backend.controller.AggregateIndicatorCalculator;
 import backend.controller.chart.priceVolume.DistributionDaysChartController;
+import backend.controller.scan.StatisticCalculationController;
 import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
 import backend.dao.list.ListDAO;
@@ -157,14 +159,35 @@ public class DashboardService {
      * @throws Exception No Instrument initialized.
      */
     private void initializeStatistics() throws Exception {
+        StatisticCalculationController statisticCalculationController = new StatisticCalculationController();
+        List<Instrument> instruments = new ArrayList<>();
+
         if (this.instrument == null) {
             throw new Exception("No instrument initialized for statistic retrieval.");
         }
 
-        if (this.instrument.getType() == InstrumentType.SECTOR) {
-            this.statistics = this.statisticDAO.getStatistics(InstrumentType.STOCK, this.instrument.getId(), null);
-        } else if (this.instrument.getType() == InstrumentType.IND_GROUP) {
-            this.statistics = this.statisticDAO.getStatistics(InstrumentType.STOCK, null, this.instrument.getId());
+        if (this.list == null) {
+            if (this.instrument.getType() == InstrumentType.SECTOR) {
+                this.statistics = this.statisticDAO.getStatistics(InstrumentType.STOCK, this.instrument.getId(), null);
+            } else if (this.instrument.getType() == InstrumentType.IND_GROUP) {
+                this.statistics = this.statisticDAO.getStatistics(InstrumentType.STOCK, null, this.instrument.getId());
+            }
+        } else {
+            // Calculate statistics for all instruments of the list that are referenced to the instrument that is the
+            // sector or industry group under investigation.
+            for (Instrument tempInstrument : this.list.getInstruments()) {
+                if (tempInstrument.getSector() != null
+                        && tempInstrument.getSector().getId().equals(this.instrument.getId())) {
+                    instruments.add(tempInstrument);
+                }
+
+                if (tempInstrument.getIndustryGroup() != null
+                        && tempInstrument.getIndustryGroup().getId().equals(this.instrument.getId())) {
+                    instruments.add(tempInstrument);
+                }
+            }
+
+            this.statistics = statisticCalculationController.calculateStatistics(instruments);
         }
     }
 
@@ -474,16 +497,9 @@ public class DashboardService {
         AggregateIndicatorCalculator calculator = new AggregateIndicatorCalculator();
         List<Quotation> quotationsSortedByDate = this.instrument.getQuotationsSortedByDate();
         Quotation newestQuotation = quotationsSortedByDate.get(0);
-        List<Statistic> statistics;
         int aggregateIndicator;
-        Integer listId = null;
 
-        if (this.list != null) {
-            listId = this.list.getId();
-        }
-
-        statistics = calculator.getStatistics(this.instrument, listId);
-        aggregateIndicator = calculator.getAggregateIndicator(quotationsSortedByDate, statistics, newestQuotation,
+        aggregateIndicator = calculator.getAggregateIndicator(quotationsSortedByDate, this.statistics, newestQuotation,
                 this.instrument);
 
         return aggregateIndicator;
