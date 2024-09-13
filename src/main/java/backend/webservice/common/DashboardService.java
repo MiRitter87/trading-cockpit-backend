@@ -1,6 +1,5 @@
 package backend.webservice.common;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -59,6 +58,11 @@ public class DashboardService {
     private backend.model.list.List list;
 
     /**
+     * A List of statistical data based on the given instrument and optionally specified by a given List.
+     */
+    private List<Statistic> statistics;
+
+    /**
      * Application logging.
      */
     public static final Logger LOGGER = LogManager.getLogger(DashboardService.class);
@@ -87,6 +91,7 @@ public class DashboardService {
             this.initializeInstrument(instrumentId);
             this.validateInstrumentType();
             this.initializeList(listId);
+            this.initializeStatistics();
 
             this.fillBasicData(marketHealthStatus);
             marketHealthStatus.setSwingTradingEnvironmentStatus(this.getSwingTradingEnvironmentStatus(this.instrument));
@@ -143,6 +148,23 @@ public class DashboardService {
             this.list = listDAO.getList(listId);
         } catch (Exception e) {
             throw new LocalizedException("list.notFound", listId);
+        }
+    }
+
+    /**
+     * Initializes statistics based on an instrument and optionally a List.
+     *
+     * @throws Exception No Instrument initialized.
+     */
+    private void initializeStatistics() throws Exception {
+        if (this.instrument == null) {
+            throw new Exception("No instrument initialized for statistic retrieval.");
+        }
+
+        if (this.instrument.getType() == InstrumentType.SECTOR) {
+            this.statistics = this.statisticDAO.getStatistics(InstrumentType.STOCK, this.instrument.getId(), null);
+        } else if (this.instrument.getType() == InstrumentType.IND_GROUP) {
+            this.statistics = this.statisticDAO.getStatistics(InstrumentType.STOCK, null, this.instrument.getId());
         }
     }
 
@@ -402,28 +424,17 @@ public class DashboardService {
      * @return The number of instruments trading "Up on Volume".
      */
     private int getNumberUpOnVolume() {
-        List<Statistic> statistics = new ArrayList<>();
         Statistic statistic;
         final int numberOfDays = 5;
         int numberUpOnVolume = 0;
 
-        try {
-            if (this.instrument.getType() == InstrumentType.SECTOR) {
-                statistics = this.statisticDAO.getStatistics(InstrumentType.STOCK, this.instrument.getId(), null);
-            } else if (this.instrument.getType() == InstrumentType.IND_GROUP) {
-                statistics = this.statisticDAO.getStatistics(InstrumentType.STOCK, null, this.instrument.getId());
-            }
+        if (this.statistics.size() == 0) {
+            return 0;
+        }
 
-            if (statistics.size() == 0) {
-                return 0;
-            }
-
-            for (int i = 0; i < numberOfDays; i++) {
-                statistic = statistics.get(i);
-                numberUpOnVolume += statistic.getNumberUpOnVolume();
-            }
-        } catch (Exception e) {
-            LOGGER.error("Failed to determine number of stocks trading Up on Volume.", e);
+        for (int i = 0; i < numberOfDays; i++) {
+            statistic = this.statistics.get(i);
+            numberUpOnVolume += statistic.getNumberUpOnVolume();
         }
 
         return numberUpOnVolume;
@@ -437,28 +448,17 @@ public class DashboardService {
      * @return The number of instruments trading "Down on Volume".
      */
     private int getNumberDownOnVolume() {
-        List<Statistic> statistics = new ArrayList<>();
         Statistic statistic;
         final int numberOfDays = 5;
         int numberDownOnVolume = 0;
 
-        try {
-            if (this.instrument.getType() == InstrumentType.SECTOR) {
-                statistics = this.statisticDAO.getStatistics(InstrumentType.STOCK, this.instrument.getId(), null);
-            } else if (this.instrument.getType() == InstrumentType.IND_GROUP) {
-                statistics = this.statisticDAO.getStatistics(InstrumentType.STOCK, null, this.instrument.getId());
-            }
+        if (this.statistics.size() == 0) {
+            return 0;
+        }
 
-            if (statistics.size() == 0) {
-                return 0;
-            }
-
-            for (int i = 0; i < numberOfDays; i++) {
-                statistic = statistics.get(i);
-                numberDownOnVolume += statistic.getNumberDownOnVolume();
-            }
-        } catch (Exception e) {
-            LOGGER.error("Failed to determine number of stocks trading Down on Volume.", e);
+        for (int i = 0; i < numberOfDays; i++) {
+            statistic = this.statistics.get(i);
+            numberDownOnVolume += statistic.getNumberDownOnVolume();
         }
 
         return numberDownOnVolume;
