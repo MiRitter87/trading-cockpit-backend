@@ -152,8 +152,10 @@ public class DashboardService {
      */
     private void initializeStatistics() throws Exception {
         StatisticCalculationController statisticCalculationController = new StatisticCalculationController();
+        final int requestedStatistics = 10; // 10 are needed for Aggregate Indicator calculation.
 
-        this.statistics = statisticCalculationController.getStatisticsForSectorOrIg(this.instrument, this.list);
+        this.statistics = statisticCalculationController.getStatisticsForSectorOrIg(this.instrument, this.list,
+                requestedStatistics);
     }
 
     /**

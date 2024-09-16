@@ -84,7 +84,7 @@ public class AggregateIndicatorChartController extends StatisticChartController 
 
         this.validateInstrumentType(instrument);
 
-        statistics = statisticCalculationController.getStatisticsForSectorOrIg(instrument, list);
+        statistics = statisticCalculationController.getStatisticsForSectorOrIg(instrument, list, null);
         instrument.setQuotations(this.quotationDAO.getQuotationsOfInstrument(instrumentId));
         dataset = this.getAggregateIndicatorDataset(instrument, statistics);
 

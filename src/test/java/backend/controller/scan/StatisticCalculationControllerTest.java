@@ -333,7 +333,7 @@ public class StatisticCalculationControllerTest {
 
     @Test
     /**
-     * Tests the calculation of statistics.
+     * Tests the calculation of all statistics.
      */
     public void testCalculateStatistics() {
         StatisticArray calculatedStatistics = new StatisticArray();
@@ -343,7 +343,7 @@ public class StatisticCalculationControllerTest {
 
         try {
             instruments = instrumentDAO.getInstruments(InstrumentType.STOCK);
-            calculatedStatistics.setStatistics(statisticController.calculateStatistics(instruments));
+            calculatedStatistics.setStatistics(statisticController.calculateStatistics(instruments, null));
 
             // Two statistics should exist.
             assertEquals(2, calculatedStatistics.getStatistics().size());
@@ -387,6 +387,49 @@ public class StatisticCalculationControllerTest {
             assertEquals(0, statistic.getNumberBearishReversal());
             assertEquals(0, statistic.getNumberBullishReversal());
             assertEquals(1, statistic.getNumberChurning());
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    /**
+     * Tests the calculation of a single statistic.
+     */
+    public void testCalculateOneStatistic() {
+        StatisticArray calculatedStatistics = new StatisticArray();
+        StatisticCalculationController statisticController = new StatisticCalculationController();
+        List<Instrument> instruments;
+        Statistic statistic;
+        final int requestedStatistics = 1;
+
+        try {
+            instruments = instrumentDAO.getInstruments(InstrumentType.STOCK);
+            calculatedStatistics
+                    .setStatistics(statisticController.calculateStatistics(instruments, requestedStatistics));
+
+            // One statistics should exist.
+            assertEquals(1, calculatedStatistics.getStatistics().size());
+
+            // Check correct statistic of first day.
+            statistic = calculatedStatistics.getStatistics().get(0);
+            assertEquals(DateTools.getDateWithoutIntradayAttributes(this.appleQuotation1.getDate()).getTime(),
+                    statistic.getDate().getTime());
+            assertEquals(1, statistic.getNumberAdvance());
+            assertEquals(1, statistic.getNumberDecline());
+            assertEquals(0, statistic.getAdvanceDeclineNumber());
+            assertEquals(1, statistic.getNumberAboveSma50());
+            assertEquals(1, statistic.getNumberAtOrBelowSma50());
+            assertEquals(50, statistic.getPercentAboveSma50());
+            assertEquals(1, statistic.getNumberAboveSma200());
+            assertEquals(1, statistic.getNumberAtOrBelowSma200());
+            assertEquals(50, statistic.getPercentAboveSma200());
+            assertEquals(0, statistic.getNumberRitterMarketTrend());
+            assertEquals(1, statistic.getNumberUpOnVolume());
+            assertEquals(1, statistic.getNumberDownOnVolume());
+            assertEquals(1, statistic.getNumberBearishReversal());
+            assertEquals(1, statistic.getNumberBullishReversal());
+            assertEquals(0, statistic.getNumberChurning());
         } catch (Exception e) {
             fail(e.getMessage());
         }

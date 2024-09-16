@@ -70,19 +70,23 @@ public class StatisticCalculationController {
      * Calculates the statistics based on the given instruments. For each day only one Statistic is being created. The
      * referenced sector or industry group of an Instrument is not taken into account.
      *
-     * @param instruments The instruments for which the statistics are to be calculated.
+     * @param instruments         The instruments for which the statistics are to be calculated.
+     * @param requestedStatistics The number of statistics requested. If set to null, all are calculated.
      * @return The statistics.
      * @throws Exception Statistic calculation failed.
      */
-    public List<Statistic> calculateStatistics(final List<Instrument> instruments) throws Exception {
+    public List<Statistic> calculateStatistics(final List<Instrument> instruments, final Integer requestedStatistics)
+            throws Exception {
         StatisticArray statistics = new StatisticArray();
         List<Quotation> quotationsSortedByDate;
         Quotation previousQuotation;
         int currentQuotationIndex;
+        int numberCalculated;
 
         for (Instrument instrument : instruments) {
             instrument.setQuotations(quotationDAO.getQuotationsOfInstrument(instrument.getId()));
             quotationsSortedByDate = instrument.getQuotationsSortedByDate();
+            numberCalculated = 0;
 
             for (Quotation currentQuotation : quotationsSortedByDate) {
                 currentQuotationIndex = quotationsSortedByDate.indexOf(currentQuotation);
@@ -92,8 +96,14 @@ public class StatisticCalculationController {
                     break;
                 }
 
+                // Stop Statistic calculation for the current Instrument if the requested number has been reached.
+                if (requestedStatistics != null && numberCalculated >= requestedStatistics) {
+                    break;
+                }
+
                 previousQuotation = quotationsSortedByDate.get(currentQuotationIndex + 1);
                 this.calculateGeneralStatistic(statistics, currentQuotation, previousQuotation, instrument);
+                numberCalculated++;
             }
         }
 
@@ -105,13 +115,14 @@ public class StatisticCalculationController {
      * list is given, the statistics are being calculated using all instruments of the given List that are referenced to
      * the given Instrument as sector or industry group.
      *
-     * @param instrument The instrument that is a sector or industry group.
-     * @param list       A list to narrow down the instruments used for calculation (optional).
+     * @param instrument          The instrument that is a sector or industry group.
+     * @param list                A list to narrow down the instruments used for calculation (optional).
+     * @param requestedStatistics The number of statistics requested. If set to null, all are calculated.
      * @return A List of statistics.
      * @throws Exception Statistic determination failed.
      */
-    public List<Statistic> getStatisticsForSectorOrIg(final Instrument instrument, final backend.model.list.List list)
-            throws Exception {
+    public List<Statistic> getStatisticsForSectorOrIg(final Instrument instrument, final backend.model.list.List list,
+            final Integer requestedStatistics) throws Exception {
         List<Instrument> instruments = new ArrayList<>();
         List<Statistic> statistics = null;
 
@@ -140,7 +151,7 @@ public class StatisticCalculationController {
                 }
             }
 
-            statistics = this.calculateStatistics(instruments);
+            statistics = this.calculateStatistics(instruments, requestedStatistics);
         }
 
         return statistics;
