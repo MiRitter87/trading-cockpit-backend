@@ -15,8 +15,10 @@ import org.jfree.data.xy.XYDataset;
 
 import backend.controller.AggregateIndicatorCalculator;
 import backend.controller.NoQuotationsExistException;
+import backend.controller.scan.StatisticCalculationController;
 import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
+import backend.dao.list.ListDAO;
 import backend.dao.quotation.persistence.QuotationDAO;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
@@ -40,6 +42,11 @@ public class AggregateIndicatorChartController extends StatisticChartController 
     private InstrumentDAO instrumentDAO;
 
     /**
+     * DAO to access List data.
+     */
+    private ListDAO listDAO;
+
+    /**
      * DAO for Quotation access.
      */
     private QuotationDAO quotationDAO;
@@ -50,6 +57,7 @@ public class AggregateIndicatorChartController extends StatisticChartController 
     public AggregateIndicatorChartController() {
         this.calculator = new AggregateIndicatorCalculator();
         this.instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
+        this.listDAO = DAOManager.getInstance().getListDAO();
         this.quotationDAO = DAOManager.getInstance().getQuotationDAO();
     }
 
@@ -66,6 +74,8 @@ public class AggregateIndicatorChartController extends StatisticChartController 
     public JFreeChart getAggregateIndicatorChart(final Integer instrumentId, final Integer listId)
             throws NoQuotationsExistException, Exception {
         Instrument instrument = this.instrumentDAO.getInstrument(instrumentId);
+        backend.model.list.List list = this.listDAO.getList(listId);
+        StatisticCalculationController statisticCalculationController = new StatisticCalculationController();
         List<Statistic> statistics;
         XYDataset dataset;
         JFreeChart chart;
@@ -74,7 +84,7 @@ public class AggregateIndicatorChartController extends StatisticChartController 
 
         this.validateInstrumentType(instrument);
 
-        statistics = this.calculator.getStatistics(instrument, listId);
+        statistics = statisticCalculationController.getStatisticsForSectorOrIg(instrument, list);
         instrument.setQuotations(this.quotationDAO.getQuotationsOfInstrument(instrumentId));
         dataset = this.getAggregateIndicatorDataset(instrument, statistics);
 
