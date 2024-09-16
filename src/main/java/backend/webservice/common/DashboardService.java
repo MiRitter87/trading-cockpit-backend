@@ -1,6 +1,5 @@
 package backend.webservice.common;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -14,7 +13,6 @@ import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
 import backend.dao.list.ListDAO;
 import backend.dao.quotation.persistence.QuotationDAO;
-import backend.dao.statistic.StatisticDAO;
 import backend.model.LocalizedException;
 import backend.model.dashboard.MarketHealthStatus;
 import backend.model.dashboard.SwingTradingEnvironmentStatus;
@@ -38,11 +36,6 @@ public class DashboardService {
      * DAO for Quotation access.
      */
     private QuotationDAO quotationDAO;
-
-    /**
-     * DAO for Statistic access.
-     */
-    private StatisticDAO statisticDAO;
 
     /**
      * Access to localized application resources.
@@ -74,7 +67,6 @@ public class DashboardService {
      */
     public DashboardService() {
         this.quotationDAO = DAOManager.getInstance().getQuotationDAO();
-        this.statisticDAO = DAOManager.getInstance().getStatisticDAO();
     }
 
     /**
@@ -160,35 +152,8 @@ public class DashboardService {
      */
     private void initializeStatistics() throws Exception {
         StatisticCalculationController statisticCalculationController = new StatisticCalculationController();
-        List<Instrument> instruments = new ArrayList<>();
 
-        if (this.instrument == null) {
-            throw new Exception("No instrument initialized for statistic retrieval.");
-        }
-
-        if (this.list == null) {
-            if (this.instrument.getType() == InstrumentType.SECTOR) {
-                this.statistics = this.statisticDAO.getStatistics(InstrumentType.STOCK, this.instrument.getId(), null);
-            } else if (this.instrument.getType() == InstrumentType.IND_GROUP) {
-                this.statistics = this.statisticDAO.getStatistics(InstrumentType.STOCK, null, this.instrument.getId());
-            }
-        } else {
-            // Calculate statistics for all instruments of the list that are referenced to the instrument that is the
-            // sector or industry group under investigation.
-            for (Instrument tempInstrument : this.list.getInstruments()) {
-                if (tempInstrument.getSector() != null
-                        && tempInstrument.getSector().getId().equals(this.instrument.getId())) {
-                    instruments.add(tempInstrument);
-                }
-
-                if (tempInstrument.getIndustryGroup() != null
-                        && tempInstrument.getIndustryGroup().getId().equals(this.instrument.getId())) {
-                    instruments.add(tempInstrument);
-                }
-            }
-
-            this.statistics = statisticCalculationController.calculateStatistics(instruments);
-        }
+        this.statistics = statisticCalculationController.getStatisticsForSectorOrIg(this.instrument, this.list);
     }
 
     /**

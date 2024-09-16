@@ -104,4 +104,27 @@ public class StatisticArray {
 
         return null;
     }
+
+    /**
+     * Determines the statistic with the given date. Only day, month and year are taken into account for date lookup.
+     *
+     * @param date The date for which the Statistic is requested.
+     * @return The Statistic of the given date.
+     */
+    public Statistic getStatistic(final Date date) {
+        Date requestDate;
+        Date statisticDate;
+
+        requestDate = DateTools.getDateWithoutIntradayAttributes(date);
+
+        for (Statistic statistic : this.statistics) {
+            statisticDate = DateTools.getDateWithoutIntradayAttributes(statistic.getDate());
+
+            if (statisticDate.getTime() == requestDate.getTime()) {
+                return statistic;
+            }
+        }
+
+        return null;
+    }
 }

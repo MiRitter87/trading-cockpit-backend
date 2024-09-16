@@ -156,8 +156,6 @@ public class AggregateIndicatorCalculator {
         StatisticArray statisticArray = new StatisticArray(statistics);
         Statistic statistic;
         Quotation currentQuotation;
-        Integer sectorId = null;
-        Integer industryGroupId = null;
         float percentAboveSma50 = 0;
         final int tenDays = 10;
         int startIndex = quotationsSortedByDate.indexOf(quotation);
@@ -168,19 +166,11 @@ public class AggregateIndicatorCalculator {
             return -1;
         }
 
-        if (instrument.getType() == InstrumentType.SECTOR) {
-            sectorId = instrument.getId();
-        }
-
-        if (instrument.getType() == InstrumentType.IND_GROUP) {
-            industryGroupId = instrument.getId();
-        }
-
         // calculate SMA(10) of the latest 'instruments above SMA(50)' metric.
         // The statistics of the last 10 trading days of the sector or industry group are used.
         for (int i = startIndex; i < endIndex; i++) {
             currentQuotation = quotationsSortedByDate.get(i);
-            statistic = statisticArray.getStatistic(currentQuotation.getDate(), sectorId, industryGroupId);
+            statistic = statisticArray.getStatistic(currentQuotation.getDate());
 
             // If any statistic of the last 10 trading days is not available, the SMA(10) can't be calculated.
             if (statistic == null) {

@@ -101,6 +101,52 @@ public class StatisticCalculationController {
     }
 
     /**
+     * This method determines statistics for the given Instrument that is either a sector or an industry group. If a
+     * list is given, the statistics are being calculated using all instruments of the given List that are referenced to
+     * the given Instrument as sector or industry group.
+     *
+     * @param instrument The instrument that is a sector or industry group.
+     * @param list       A list to narrow down the instruments used for calculation (optional).
+     * @return A List of statistics.
+     * @throws Exception Statistic determination failed.
+     */
+    public List<Statistic> getStatisticsForSectorOrIg(final Instrument instrument, final backend.model.list.List list)
+            throws Exception {
+        List<Instrument> instruments = new ArrayList<>();
+        List<Statistic> statistics = null;
+
+        if (instrument == null) {
+            throw new Exception("No instrument initialized for statistic retrieval.");
+        }
+
+        if (list == null) {
+            if (instrument.getType() == InstrumentType.SECTOR) {
+                statistics = this.statisticDAO.getStatistics(InstrumentType.STOCK, instrument.getId(), null);
+            } else if (instrument.getType() == InstrumentType.IND_GROUP) {
+                statistics = this.statisticDAO.getStatistics(InstrumentType.STOCK, null, instrument.getId());
+            }
+        } else {
+            // Calculate statistics for all instruments of the list that are referenced to the instrument that is the
+            // sector or industry group under investigation.
+            for (Instrument tempInstrument : list.getInstruments()) {
+                if (tempInstrument.getSector() != null
+                        && tempInstrument.getSector().getId().equals(instrument.getId())) {
+                    instruments.add(tempInstrument);
+                }
+
+                if (tempInstrument.getIndustryGroup() != null
+                        && tempInstrument.getIndustryGroup().getId().equals(instrument.getId())) {
+                    instruments.add(tempInstrument);
+                }
+            }
+
+            statistics = this.calculateStatistics(instruments);
+        }
+
+        return statistics;
+    }
+
+    /**
      * Calculates the statistics based on the given instruments. If an Instrument has its industry group or sector
      * defined an additional Statistic is created for sector and / or industry group. Therefore one Instrument can
      * belong to three different kind of statistics per day: An overall Statistic with all instruments irrespective of
