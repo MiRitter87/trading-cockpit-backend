@@ -25,16 +25,24 @@ import backend.model.statistic.Statistic;
  */
 public class RitterMarketTrendChartController extends StatisticChartController {
     /**
+     * Initializes the RitterMarketTrendChartController.
+     *
+     * @param listId The ID of the list defining the instruments used for Statistic chart creation.
+     * @throws Exception Failed to initialize data.
+     */
+    public RitterMarketTrendChartController(final Integer listId) throws Exception {
+        super(listId);
+    }
+
+    /**
      * Gets a chart of the Ritter Market Trend.
      *
      * @param instrumentType The InstrumentType for which the chart is created.
-     * @param listId         The ID of the list defining the instruments used for chart creation.
      * @return The chart.
      * @throws Exception Chart generation failed.
      */
-    public JFreeChart getRitterMarketTrendChart(final InstrumentType instrumentType, final Integer listId)
-            throws Exception {
-        List<Statistic> statistics = this.getStatisticsForList(instrumentType, listId, TRADING_DAYS_PER_YEAR);
+    public JFreeChart getRitterMarketTrendChart(final InstrumentType instrumentType) throws Exception {
+        List<Statistic> statistics = this.getStatisticsForList(instrumentType, TRADING_DAYS_PER_YEAR);
         XYDataset dataset = this.getRitterMarketTrendDataset(statistics);
 
         JFreeChart chart = ChartFactory.createTimeSeriesChart(

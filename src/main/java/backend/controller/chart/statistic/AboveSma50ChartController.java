@@ -23,16 +23,24 @@ import backend.model.statistic.Statistic;
  */
 public class AboveSma50ChartController extends StatisticChartController {
     /**
+     * Initializes the AboveSma50ChartController.
+     *
+     * @param listId The ID of the list defining the instruments used for Statistic chart creation.
+     * @throws Exception Failed to initialize data.
+     */
+    public AboveSma50ChartController(final Integer listId) throws Exception {
+        super(listId);
+    }
+
+    /**
      * Gets a chart with the percentage of instruments trading above their SMA(50).
      *
      * @param instrumentType The InstrumentType for which the chart is created.
-     * @param listId         The ID of the list defining the instruments used for Statistic chart creation.
      * @return The chart.
      * @throws Exception Chart generation failed.
      */
-    public JFreeChart getInstrumentsAboveSma50Chart(final InstrumentType instrumentType, final Integer listId)
-            throws Exception {
-        List<Statistic> statistics = this.getStatisticsForList(instrumentType, listId, TRADING_DAYS_PER_YEAR);
+    public JFreeChart getInstrumentsAboveSma50Chart(final InstrumentType instrumentType) throws Exception {
+        List<Statistic> statistics = this.getStatisticsForList(instrumentType, TRADING_DAYS_PER_YEAR);
         XYDataset dataset = this.getInstrumentsAboveSma50Dataset(statistics);
 
         JFreeChart chart = ChartFactory.createTimeSeriesChart(

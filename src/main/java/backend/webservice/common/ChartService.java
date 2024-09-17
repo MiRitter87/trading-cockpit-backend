@@ -76,12 +76,13 @@ public class ChartService {
      * @return A Response containing the generated chart.
      */
     public Response getAdvanceDeclineNumberChart(final Integer listId) {
-        AdvanceDeclineNumberChartController adChartController = new AdvanceDeclineNumberChartController();
+        AdvanceDeclineNumberChartController adChartController;
         JFreeChart chart;
         StreamingOutput streamingOutput = null;
 
         try {
-            chart = adChartController.getAdvanceDeclineNumberChart(InstrumentType.STOCK, listId);
+            adChartController = new AdvanceDeclineNumberChartController(listId);
+            chart = adChartController.getAdvanceDeclineNumberChart(InstrumentType.STOCK);
 
             streamingOutput = new StreamingOutput() {
                 @Override
@@ -104,12 +105,13 @@ public class ChartService {
      * @return A Response containing the generated chart.
      */
     public Response getInstrumentsAboveSma50Chart(final Integer listId) {
-        AboveSma50ChartController aboveSma50ChartController = new AboveSma50ChartController();
+        AboveSma50ChartController aboveSma50ChartController;
         JFreeChart chart;
         StreamingOutput streamingOutput = null;
 
         try {
-            chart = aboveSma50ChartController.getInstrumentsAboveSma50Chart(InstrumentType.STOCK, listId);
+            aboveSma50ChartController = new AboveSma50ChartController(listId);
+            chart = aboveSma50ChartController.getInstrumentsAboveSma50Chart(InstrumentType.STOCK);
 
             streamingOutput = new StreamingOutput() {
                 @Override
@@ -132,12 +134,13 @@ public class ChartService {
      * @return A Response containing the generated chart.
      */
     public Response getInstrumentsAboveSma200Chart(final Integer listId) {
-        AboveSma200ChartController aboveSma200ChartController = new AboveSma200ChartController();
+        AboveSma200ChartController aboveSma200ChartController;
         JFreeChart chart;
         StreamingOutput streamingOutput = null;
 
         try {
-            chart = aboveSma200ChartController.getInstrumentsAboveSma200Chart(InstrumentType.STOCK, listId);
+            aboveSma200ChartController = new AboveSma200ChartController(listId);
+            chart = aboveSma200ChartController.getInstrumentsAboveSma200Chart(InstrumentType.STOCK);
 
             streamingOutput = new StreamingOutput() {
                 @Override
@@ -230,12 +233,13 @@ public class ChartService {
      * @return A Response containing the generated chart.
      */
     public Response getRitterMarketTrendChart(final Integer listId) {
-        RitterMarketTrendChartController rmtChartController = new RitterMarketTrendChartController();
+        RitterMarketTrendChartController rmtChartController;
         JFreeChart chart;
         StreamingOutput streamingOutput = null;
 
         try {
-            chart = rmtChartController.getRitterMarketTrendChart(InstrumentType.STOCK, listId);
+            rmtChartController = new RitterMarketTrendChartController(listId);
+            chart = rmtChartController.getRitterMarketTrendChart(InstrumentType.STOCK);
 
             streamingOutput = new StreamingOutput() {
                 @Override
@@ -427,12 +431,13 @@ public class ChartService {
      * @return A Response containing the generated chart.
      */
     public Response getAggregateIndicatorChart(final Integer instrumentId, final Integer listId) {
-        AggregateIndicatorChartController aggregateIndicatorChartController = new AggregateIndicatorChartController();
+        AggregateIndicatorChartController aggregateIndicatorChartController;
         JFreeChart chart;
         StreamingOutput streamingOutput = null;
 
         try {
-            chart = aggregateIndicatorChartController.getAggregateIndicatorChart(instrumentId, listId);
+            aggregateIndicatorChartController = new AggregateIndicatorChartController(listId);
+            chart = aggregateIndicatorChartController.getAggregateIndicatorChart(instrumentId);
 
             streamingOutput = new StreamingOutput() {
                 @Override

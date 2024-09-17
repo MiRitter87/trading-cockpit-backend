@@ -38,16 +38,24 @@ public class AdvanceDeclineNumberChartController extends StatisticChartControlle
     private ResourceBundle resources = ResourceBundle.getBundle("backend");
 
     /**
+     * Initializes the AdvanceDeclineNumberChartController.
+     *
+     * @param listId The ID of the list defining the instruments used for Statistic chart creation.
+     * @throws Exception Failed to initialize data.
+     */
+    public AdvanceDeclineNumberChartController(final Integer listId) throws Exception {
+        super(listId);
+    }
+
+    /**
      * Gets a chart of the cumulative Advance/Decline Number.
      *
      * @param instrumentType The InstrumentType for which the chart is created.
-     * @param listId         The ID of the list defining the instruments used for Statistic chart creation.
      * @return The chart.
      * @throws Exception Chart generation failed.
      */
-    public JFreeChart getAdvanceDeclineNumberChart(final InstrumentType instrumentType, final Integer listId)
-            throws Exception {
-        List<Statistic> statistics = this.getStatisticsForList(instrumentType, listId, TRADING_DAYS_PER_YEAR);
+    public JFreeChart getAdvanceDeclineNumberChart(final InstrumentType instrumentType) throws Exception {
+        List<Statistic> statistics = this.getStatisticsForList(instrumentType, TRADING_DAYS_PER_YEAR);
         XYDataset dataset = this.getAdvanceDeclineNumberDataset(statistics);
 
         JFreeChart chart = ChartFactory.createTimeSeriesChart(this.getResources().getString("chart.adNumber.titleName"),

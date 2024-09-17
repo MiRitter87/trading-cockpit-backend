@@ -23,10 +23,36 @@ public class StatisticChartController extends ChartController {
     private StatisticDAO statisticDAO;
 
     /**
-     * Initializes the StatisticChartController.
+     * The list used as basis for the statistical chart.
      */
-    public StatisticChartController() {
+    private backend.model.list.List list;
+
+    /**
+     * Initializes the StatisticChartController.
+     *
+     * @param listId The ID of the list defining the instruments used for Statistic chart creation.
+     * @throws Exception Failed to initialize data.
+     */
+    public StatisticChartController(final Integer listId) throws Exception {
         this.statisticDAO = DAOManager.getInstance().getStatisticDAO();
+
+        if (listId != null) {
+            this.list = this.getListDAO().getList(listId);
+        }
+    }
+
+    /**
+     * @return the list
+     */
+    public backend.model.list.List getList() {
+        return this.list;
+    }
+
+    /**
+     * @param list the list to set
+     */
+    public void setList(final backend.model.list.List list) {
+        this.list = list;
     }
 
     /**
@@ -34,27 +60,19 @@ public class StatisticChartController extends ChartController {
      * loaded.
      *
      * @param instrumentType The InstrumentType.
-     * @param listId         The ID of the list.
      * @param maxNumber      The maximum number of statistics returned.
      * @return Statistics for the given parameters.
      * @throws Exception Determination of statistics failed.
      */
-    public List<Statistic> getStatisticsForList(final InstrumentType instrumentType, final Integer listId,
-            final Integer maxNumber) throws Exception {
+    public List<Statistic> getStatisticsForList(final InstrumentType instrumentType, final Integer maxNumber)
+            throws Exception {
 
-        backend.model.list.List list;
         List<Instrument> instruments = new ArrayList<>();
         List<Statistic> statistics = new ArrayList<>();
         StatisticCalculationController statisticCalculationController = new StatisticCalculationController();
 
-        if (listId != null) {
-            list = this.getListDAO().getList(listId);
-
-            if (list == null) {
-                return statistics;
-            }
-
-            instruments.addAll(list.getInstruments());
+        if (this.list != null) {
+            instruments.addAll(this.list.getInstruments());
             statistics = statisticCalculationController.calculateStatistics(instruments, TRADING_DAYS_PER_YEAR);
         } else {
             statistics = statisticDAO.getStatistics(instrumentType, null, null);

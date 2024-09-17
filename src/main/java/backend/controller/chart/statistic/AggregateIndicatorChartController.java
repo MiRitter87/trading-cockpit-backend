@@ -16,10 +16,6 @@ import org.jfree.data.xy.XYDataset;
 import backend.controller.AggregateIndicatorCalculator;
 import backend.controller.NoQuotationsExistException;
 import backend.controller.scan.StatisticCalculationController;
-import backend.dao.DAOManager;
-import backend.dao.instrument.InstrumentDAO;
-import backend.dao.list.ListDAO;
-import backend.dao.quotation.persistence.QuotationDAO;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
@@ -37,44 +33,29 @@ public class AggregateIndicatorChartController extends StatisticChartController 
     private AggregateIndicatorCalculator calculator;
 
     /**
-     * DAO to access Instrument data.
-     */
-    private InstrumentDAO instrumentDAO;
-
-    /**
-     * DAO to access List data.
-     */
-    private ListDAO listDAO;
-
-    /**
-     * DAO for Quotation access.
-     */
-    private QuotationDAO quotationDAO;
-
-    /**
      * Initializes the AggregateIndicatorChartController.
+     *
+     * @param listId The ID of the list defining the instruments used to calculate % of stocks above SMA(50) (optional).
+     * @throws Exception Failed to initialize data.
      */
-    public AggregateIndicatorChartController() {
+    public AggregateIndicatorChartController(final Integer listId) throws Exception {
+        super(listId);
+
         this.calculator = new AggregateIndicatorCalculator();
-        this.instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
-        this.listDAO = DAOManager.getInstance().getListDAO();
-        this.quotationDAO = DAOManager.getInstance().getQuotationDAO();
     }
 
     /**
      * Gets a chart of the Aggregate Indicator of a sector or industry group.
      *
      * @param instrumentId The ID of the sector or industry group.
-     * @param listId       The ID of the list defining the instruments used to calculate % of stocks above SMA(50)
-     *                     (optional).
      * @return The chart.
      * @throws NoQuotationsExistException No quotations or statistics exist for the Instrument with the given ID.
      * @throws Exception                  Chart generation failed.
      */
-    public JFreeChart getAggregateIndicatorChart(final Integer instrumentId, final Integer listId)
+    public JFreeChart getAggregateIndicatorChart(final Integer instrumentId)
             throws NoQuotationsExistException, Exception {
-        Instrument instrument = this.instrumentDAO.getInstrument(instrumentId);
-        backend.model.list.List list = this.listDAO.getList(listId);
+        Instrument instrument = this.getInstrumentDAO().getInstrument(instrumentId);
+        backend.model.list.List list = this.getList();
         StatisticCalculationController statisticCalculationController = new StatisticCalculationController();
         List<Statistic> statistics;
         XYDataset dataset;
@@ -85,7 +66,7 @@ public class AggregateIndicatorChartController extends StatisticChartController 
         this.validateInstrumentType(instrument);
 
         statistics = statisticCalculationController.getStatisticsForSectorOrIg(instrument, list, null);
-        instrument.setQuotations(this.quotationDAO.getQuotationsOfInstrument(instrumentId));
+        instrument.setQuotations(this.getQuotationDAO().getQuotationsOfInstrument(instrumentId));
         dataset = this.getAggregateIndicatorDataset(instrument, statistics);
 
         chart = ChartFactory.createTimeSeriesChart(instrument.getName(), null, null, dataset, true, true, false);
