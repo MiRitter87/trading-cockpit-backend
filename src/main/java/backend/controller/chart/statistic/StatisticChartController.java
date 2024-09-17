@@ -55,13 +55,9 @@ public class StatisticChartController extends ChartController {
             }
 
             instruments.addAll(list.getInstruments());
-            statistics = statisticCalculationController.calculateStatistics(instruments, null);
+            statistics = statisticCalculationController.calculateStatistics(instruments, TRADING_DAYS_PER_YEAR);
         } else {
             statistics = statisticDAO.getStatistics(instrumentType, null, null);
-        }
-
-        if (statistics.size() > maxNumber) {
-            statistics = statistics.subList(0, TRADING_DAYS_PER_YEAR);
         }
 
         return statistics;

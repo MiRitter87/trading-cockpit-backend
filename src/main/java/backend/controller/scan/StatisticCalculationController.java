@@ -81,12 +81,10 @@ public class StatisticCalculationController {
         List<Quotation> quotationsSortedByDate;
         Quotation previousQuotation;
         int currentQuotationIndex;
-        int numberCalculated;
 
         for (Instrument instrument : instruments) {
             instrument.setQuotations(quotationDAO.getQuotationsOfInstrument(instrument.getId()));
             quotationsSortedByDate = instrument.getQuotationsSortedByDate();
-            numberCalculated = 0;
 
             for (Quotation currentQuotation : quotationsSortedByDate) {
                 currentQuotationIndex = quotationsSortedByDate.indexOf(currentQuotation);
@@ -96,14 +94,9 @@ public class StatisticCalculationController {
                     break;
                 }
 
-                // Stop Statistic calculation for the current Instrument if the requested number has been reached.
-                if (requestedStatistics != null && numberCalculated >= requestedStatistics) {
-                    break;
-                }
-
                 previousQuotation = quotationsSortedByDate.get(currentQuotationIndex + 1);
-                this.calculateGeneralStatistic(statistics, currentQuotation, previousQuotation, instrument);
-                numberCalculated++;
+                this.calculateGeneralStatistic(statistics, currentQuotation, previousQuotation, instrument,
+                        requestedStatistics);
             }
         }
 
@@ -188,7 +181,7 @@ public class StatisticCalculationController {
 
                 previousQuotation = quotationsSortedByDate.get(currentQuotationIndex + 1);
 
-                this.calculateGeneralStatistic(statistics, currentQuotation, previousQuotation, instrument);
+                this.calculateGeneralStatistic(statistics, currentQuotation, previousQuotation, instrument, null);
                 this.calculateSectorStatistic(statistics, currentQuotation, previousQuotation, instrument);
                 this.calculateIndustryGroupStatistic(statistics, currentQuotation, previousQuotation, instrument);
             }
@@ -200,17 +193,24 @@ public class StatisticCalculationController {
     /**
      * Calculates the general Statistic irrespective of sector or industry group.
      *
-     * @param statistics        The StatisticArray containing all statistics that have been calculated so far.
-     * @param currentQuotation  The current Quotation for which the statistics are calculated.
-     * @param previousQuotation The previous Quotation used for statistics calculation.
-     * @param instrument        The Instrument whose statistics are calculated.
+     * @param statistics          The StatisticArray containing all statistics that have been calculated so far.
+     * @param currentQuotation    The current Quotation for which the statistics are calculated.
+     * @param previousQuotation   The previous Quotation used for statistics calculation.
+     * @param instrument          The Instrument whose statistics are calculated.
+     * @param requestedStatistics The number of statistics requested. If set to null, all are calculated.
      */
     private void calculateGeneralStatistic(final StatisticArray statistics, final Quotation currentQuotation,
-            final Quotation previousQuotation, final Instrument instrument) {
+            final Quotation previousQuotation, final Instrument instrument, final Integer requestedStatistics) {
 
         Statistic statistic;
 
         statistic = statistics.getStatistic(currentQuotation.getDate(), null, null);
+
+        // Stop Statistic calculation for the current Instrument if the requested number of statistics has been reached.
+        if (statistic == null && requestedStatistics != null
+                && statistics.getStatistics().size() >= requestedStatistics) {
+            return;
+        }
 
         if (statistic == null) {
             statistic = new Statistic();
