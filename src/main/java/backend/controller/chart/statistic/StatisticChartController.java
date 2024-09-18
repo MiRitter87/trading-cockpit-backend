@@ -80,28 +80,4 @@ public class StatisticChartController extends ChartController {
 
         return statistics;
     }
-
-    /**
-     * Get the statistics for the given parameters.
-     *
-     * @param instrumentType  The InstrumentType.
-     * @param sectorId        The ID of the sector the statistics belong to (can be null).
-     * @param industryGroupId The ID of the industry group the statistics belong to (can be null).
-     * @param maxNumber       The maximum number of statistics returned.
-     * @return Statistics for the given parameters.
-     * @throws Exception Determination of statistics failed.
-     */
-    protected List<Statistic> getStatistics(final InstrumentType instrumentType, final Integer sectorId,
-            final Integer industryGroupId, final Integer maxNumber) throws Exception {
-
-        List<Statistic> statistics = new ArrayList<>();
-
-        statistics = statisticDAO.getStatistics(instrumentType, sectorId, industryGroupId);
-
-        if (statistics.size() > maxNumber) {
-            statistics = statistics.subList(0, TRADING_DAYS_PER_YEAR);
-        }
-
-        return statistics;
-    }
 }
