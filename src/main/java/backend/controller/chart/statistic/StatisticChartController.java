@@ -33,6 +33,11 @@ public class StatisticChartController extends ChartController {
     private backend.model.list.List list;
 
     /**
+     * A List of statistics the chart is based on.
+     */
+    private List<Statistic> statistics;
+
+    /**
      * Initializes the StatisticChartController.
      *
      * @param listId The ID of the list defining the instruments used for Statistic chart creation.
@@ -44,6 +49,28 @@ public class StatisticChartController extends ChartController {
 
         if (listId != null) {
             this.list = this.getListDAO().getList(listId);
+        }
+
+        this.initializeStatistics();
+    }
+
+    /**
+     * Calculates the statistics for the list with the given id. If no listId is specified, the general statistics are
+     * loaded.
+     *
+     * @throws Exception Determination of statistics failed.
+     */
+    private void initializeStatistics() throws Exception {
+        List<Instrument> instruments = new ArrayList<>();
+        StatisticCalculationController statisticCalculationController = new StatisticCalculationController();
+
+        this.statistics = new ArrayList<>();
+
+        if (this.list != null) {
+            instruments.addAll(this.list.getInstruments());
+            this.statistics = statisticCalculationController.calculateStatistics(instruments, TRADING_DAYS_PER_YEAR);
+        } else {
+            this.statistics = this.statisticDAO.getStatistics(this.instrumentType, null, null);
         }
     }
 
@@ -62,26 +89,16 @@ public class StatisticChartController extends ChartController {
     }
 
     /**
-     * Calculates the statistics for the list with the given id. If no listId is specified, the general statistics are
-     * loaded.
-     *
-     * @param maxNumber The maximum number of statistics returned.
-     * @return Statistics for the given parameters.
-     * @throws Exception Determination of statistics failed.
+     * @return the statistics
      */
-    public List<Statistic> getStatisticsForList(final Integer maxNumber) throws Exception {
+    public List<Statistic> getStatistics() {
+        return this.statistics;
+    }
 
-        List<Instrument> instruments = new ArrayList<>();
-        List<Statistic> statistics = new ArrayList<>();
-        StatisticCalculationController statisticCalculationController = new StatisticCalculationController();
-
-        if (this.list != null) {
-            instruments.addAll(this.list.getInstruments());
-            statistics = statisticCalculationController.calculateStatistics(instruments, TRADING_DAYS_PER_YEAR);
-        } else {
-            statistics = statisticDAO.getStatistics(this.instrumentType, null, null);
-        }
-
-        return statistics;
+    /**
+     * @param statistics the statistics to set
+     */
+    public void setStatistics(final List<Statistic> statistics) {
+        this.statistics = statistics;
     }
 }

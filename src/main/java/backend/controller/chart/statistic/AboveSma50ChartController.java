@@ -1,6 +1,5 @@
 package backend.controller.chart.statistic;
 
-import java.util.List;
 import java.util.ListIterator;
 import java.util.TimeZone;
 
@@ -38,8 +37,7 @@ public class AboveSma50ChartController extends StatisticChartController {
      * @throws Exception Chart generation failed.
      */
     public JFreeChart getInstrumentsAboveSma50Chart() throws Exception {
-        List<Statistic> statistics = this.getStatisticsForList(TRADING_DAYS_PER_YEAR);
-        XYDataset dataset = this.getInstrumentsAboveSma50Dataset(statistics);
+        XYDataset dataset = this.getInstrumentsAboveSma50Dataset();
 
         JFreeChart chart = ChartFactory.createTimeSeriesChart(
                 this.getResources().getString("chart.aboveSma50.titleName"), null, null, dataset, true, true, false);
@@ -53,11 +51,10 @@ public class AboveSma50ChartController extends StatisticChartController {
     /**
      * Constructs a XYDataset for the percentage of instruments trading above their SMA(50) chart.
      *
-     * @param statistics The statistics for which the chart is calculated.
      * @return The XYDataset.
      * @throws Exception XYDataset creation failed.
      */
-    private XYDataset getInstrumentsAboveSma50Dataset(final List<Statistic> statistics) throws Exception {
+    private XYDataset getInstrumentsAboveSma50Dataset() throws Exception {
         Statistic statistic;
         TimeSeries timeSeries = new TimeSeries(this.getResources().getString("chart.aboveSma50.timeSeriesName"));
         TimeZone timeZone = TimeZone.getDefault();
@@ -65,7 +62,7 @@ public class AboveSma50ChartController extends StatisticChartController {
         ListIterator<Statistic> iterator;
 
         // Iterate statistics backwards because XYDatasets are constructed from oldest to newest value.
-        iterator = statistics.listIterator(statistics.size());
+        iterator = this.getStatistics().listIterator(this.getStatistics().size());
         while (iterator.hasPrevious()) {
             statistic = iterator.previous();
             timeSeries.add(new Day(statistic.getDate()), statistic.getPercentAboveSma50());

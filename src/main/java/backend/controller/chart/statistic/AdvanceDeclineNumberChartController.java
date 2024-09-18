@@ -2,7 +2,6 @@ package backend.controller.chart.statistic;
 
 import java.awt.Color;
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.ListIterator;
 import java.util.ResourceBundle;
 import java.util.TimeZone;
@@ -53,13 +52,12 @@ public class AdvanceDeclineNumberChartController extends StatisticChartControlle
      * @throws Exception Chart generation failed.
      */
     public JFreeChart getAdvanceDeclineNumberChart() throws Exception {
-        List<Statistic> statistics = this.getStatisticsForList(TRADING_DAYS_PER_YEAR);
-        XYDataset dataset = this.getAdvanceDeclineNumberDataset(statistics);
+        XYDataset dataset = this.getAdvanceDeclineNumberDataset();
 
         JFreeChart chart = ChartFactory.createTimeSeriesChart(this.getResources().getString("chart.adNumber.titleName"),
                 null, null, dataset, true, true, false);
 
-        this.addSma50(chart, statistics);
+        this.addSma50(chart);
         this.applyBackgroundTheme(chart);
         chart.getXYPlot().setRangeAxisLocation(AxisLocation.TOP_OR_RIGHT);
 
@@ -69,11 +67,10 @@ public class AdvanceDeclineNumberChartController extends StatisticChartControlle
     /**
      * Constructs a XYDataset for the cumulative Advance/Decline number chart.
      *
-     * @param statistics The statistics for which the chart is calculated.
      * @return The XYDataset.
      * @throws Exception XYDataset creation failed.
      */
-    private XYDataset getAdvanceDeclineNumberDataset(final List<Statistic> statistics) throws Exception {
+    private XYDataset getAdvanceDeclineNumberDataset() throws Exception {
         Statistic statistic;
         TimeSeries timeSeries = new TimeSeries(this.getResources().getString("chart.adNumber.timeSeriesName"));
         TimeZone timeZone = TimeZone.getDefault();
@@ -82,7 +79,7 @@ public class AdvanceDeclineNumberChartController extends StatisticChartControlle
         int cumulativeADNumber = 0;
 
         // Iterate statistics backwards because XYDatasets are constructed from oldest to newest value.
-        iterator = statistics.listIterator(statistics.size());
+        iterator = this.getStatistics().listIterator(this.getStatistics().size());
         while (iterator.hasPrevious()) {
             statistic = iterator.previous();
             cumulativeADNumber += statistic.getAdvanceDeclineNumber();
@@ -98,16 +95,15 @@ public class AdvanceDeclineNumberChartController extends StatisticChartControlle
     /**
      * Adds the SMA(50) to the chart.
      *
-     * @param chart      The cumulative Advance/Decline number chart.
-     * @param statistics Statistics used for cumulative A/D number calculation.
+     * @param chart The cumulative Advance/Decline number chart.
      */
-    private void addSma50(final JFreeChart chart, final List<Statistic> statistics) {
+    private void addSma50(final JFreeChart chart) {
         TimeSeriesCollection sma50TimeSeriesCollection;
         XYPlot plot = (XYPlot) chart.getPlot();
         XYItemRenderer smaRenderer = new XYLineAndShapeRenderer(true, false);
         int index = plot.getDatasetCount();
 
-        sma50TimeSeriesCollection = this.getSma50TimeSeriesCollection(statistics);
+        sma50TimeSeriesCollection = this.getSma50TimeSeriesCollection();
 
         plot.setDataset(index, sma50TimeSeriesCollection);
         plot.mapDatasetToRangeAxis(index, 0);
@@ -121,14 +117,13 @@ public class AdvanceDeclineNumberChartController extends StatisticChartControlle
     /**
      * Provides a TimeSeriesCollection with the values of the SMA(50) of the cumulative A/D number.
      *
-     * @param statistics Statistics used for cumulative A/D number calculation.
      * @return The TimeSeriesCollection with the values of the SMA(50).
      */
-    private TimeSeriesCollection getSma50TimeSeriesCollection(final List<Statistic> statistics) {
+    private TimeSeriesCollection getSma50TimeSeriesCollection() {
         MovingAverageCalculator maCalculator = new MovingAverageCalculator();
         TimeSeriesCollection timeSeriesCollection = new TimeSeriesCollection();
         TimeSeries sma50TimeSeries = new TimeSeries(this.resources.getString("chart.adNumber.timeSeriesSma50Name"));
-        QuotationArray quotationArray = this.getAdNumbersAsQuotationArray(statistics);
+        QuotationArray quotationArray = this.getAdNumbersAsQuotationArray();
         ListIterator<Quotation> iterator;
         Quotation quotation;
         float sma50;
@@ -162,17 +157,16 @@ public class AdvanceDeclineNumberChartController extends StatisticChartControlle
      * Provides a QuotationArray where the cumulative Advance/Decline number is stored in the closing price of each
      * Quotation. This way the SMA(50) can be calculated easily using existing methods.
      *
-     * @param statistics Statistics used for cumulative A/D number calculation.
      * @return A QuotationArray.
      */
-    private QuotationArray getAdNumbersAsQuotationArray(final List<Statistic> statistics) {
+    private QuotationArray getAdNumbersAsQuotationArray() {
         Quotation quotation;
         QuotationArray quotationArray = new QuotationArray();
         ListIterator<Statistic> iterator;
         int cumulativeADNumber = 0;
         Statistic statistic;
 
-        iterator = statistics.listIterator(statistics.size());
+        iterator = this.getStatistics().listIterator(this.getStatistics().size());
         while (iterator.hasPrevious()) {
             statistic = iterator.previous();
             cumulativeADNumber += statistic.getAdvanceDeclineNumber();
