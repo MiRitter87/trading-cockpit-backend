@@ -21,7 +21,6 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 
 import backend.controller.scan.MovingAverageCalculator;
-import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
 import backend.model.statistic.Statistic;
@@ -50,12 +49,11 @@ public class AdvanceDeclineNumberChartController extends StatisticChartControlle
     /**
      * Gets a chart of the cumulative Advance/Decline Number.
      *
-     * @param instrumentType The InstrumentType for which the chart is created.
      * @return The chart.
      * @throws Exception Chart generation failed.
      */
-    public JFreeChart getAdvanceDeclineNumberChart(final InstrumentType instrumentType) throws Exception {
-        List<Statistic> statistics = this.getStatisticsForList(instrumentType, TRADING_DAYS_PER_YEAR);
+    public JFreeChart getAdvanceDeclineNumberChart() throws Exception {
+        List<Statistic> statistics = this.getStatisticsForList(TRADING_DAYS_PER_YEAR);
         XYDataset dataset = this.getAdvanceDeclineNumberDataset(statistics);
 
         JFreeChart chart = ChartFactory.createTimeSeriesChart(this.getResources().getString("chart.adNumber.titleName"),

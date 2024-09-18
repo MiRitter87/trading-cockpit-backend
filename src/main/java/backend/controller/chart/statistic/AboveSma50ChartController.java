@@ -13,7 +13,6 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 
-import backend.model.instrument.InstrumentType;
 import backend.model.statistic.Statistic;
 
 /**
@@ -35,12 +34,11 @@ public class AboveSma50ChartController extends StatisticChartController {
     /**
      * Gets a chart with the percentage of instruments trading above their SMA(50).
      *
-     * @param instrumentType The InstrumentType for which the chart is created.
      * @return The chart.
      * @throws Exception Chart generation failed.
      */
-    public JFreeChart getInstrumentsAboveSma50Chart(final InstrumentType instrumentType) throws Exception {
-        List<Statistic> statistics = this.getStatisticsForList(instrumentType, TRADING_DAYS_PER_YEAR);
+    public JFreeChart getInstrumentsAboveSma50Chart() throws Exception {
+        List<Statistic> statistics = this.getStatisticsForList(TRADING_DAYS_PER_YEAR);
         XYDataset dataset = this.getInstrumentsAboveSma50Dataset(statistics);
 
         JFreeChart chart = ChartFactory.createTimeSeriesChart(

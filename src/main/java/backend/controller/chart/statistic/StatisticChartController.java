@@ -23,6 +23,11 @@ public class StatisticChartController extends ChartController {
     private StatisticDAO statisticDAO;
 
     /**
+     * The InstrumentType of the instruments depicted in the charts.
+     */
+    private InstrumentType instrumentType;
+
+    /**
      * The list used as basis for the statistical chart.
      */
     private backend.model.list.List list;
@@ -35,6 +40,7 @@ public class StatisticChartController extends ChartController {
      */
     public StatisticChartController(final Integer listId) throws Exception {
         this.statisticDAO = DAOManager.getInstance().getStatisticDAO();
+        this.instrumentType = InstrumentType.STOCK;
 
         if (listId != null) {
             this.list = this.getListDAO().getList(listId);
@@ -59,13 +65,11 @@ public class StatisticChartController extends ChartController {
      * Calculates the statistics for the list with the given id. If no listId is specified, the general statistics are
      * loaded.
      *
-     * @param instrumentType The InstrumentType.
-     * @param maxNumber      The maximum number of statistics returned.
+     * @param maxNumber The maximum number of statistics returned.
      * @return Statistics for the given parameters.
      * @throws Exception Determination of statistics failed.
      */
-    public List<Statistic> getStatisticsForList(final InstrumentType instrumentType, final Integer maxNumber)
-            throws Exception {
+    public List<Statistic> getStatisticsForList(final Integer maxNumber) throws Exception {
 
         List<Instrument> instruments = new ArrayList<>();
         List<Statistic> statistics = new ArrayList<>();
@@ -75,7 +79,7 @@ public class StatisticChartController extends ChartController {
             instruments.addAll(this.list.getInstruments());
             statistics = statisticCalculationController.calculateStatistics(instruments, TRADING_DAYS_PER_YEAR);
         } else {
-            statistics = statisticDAO.getStatistics(instrumentType, null, null);
+            statistics = statisticDAO.getStatistics(this.instrumentType, null, null);
         }
 
         return statistics;

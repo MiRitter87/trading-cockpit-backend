@@ -82,7 +82,7 @@ public class ChartService {
 
         try {
             adChartController = new AdvanceDeclineNumberChartController(listId);
-            chart = adChartController.getAdvanceDeclineNumberChart(InstrumentType.STOCK);
+            chart = adChartController.getAdvanceDeclineNumberChart();
 
             streamingOutput = new StreamingOutput() {
                 @Override
@@ -111,7 +111,7 @@ public class ChartService {
 
         try {
             aboveSma50ChartController = new AboveSma50ChartController(listId);
-            chart = aboveSma50ChartController.getInstrumentsAboveSma50Chart(InstrumentType.STOCK);
+            chart = aboveSma50ChartController.getInstrumentsAboveSma50Chart();
 
             streamingOutput = new StreamingOutput() {
                 @Override
@@ -140,7 +140,7 @@ public class ChartService {
 
         try {
             aboveSma200ChartController = new AboveSma200ChartController(listId);
-            chart = aboveSma200ChartController.getInstrumentsAboveSma200Chart(InstrumentType.STOCK);
+            chart = aboveSma200ChartController.getInstrumentsAboveSma200Chart();
 
             streamingOutput = new StreamingOutput() {
                 @Override
@@ -239,7 +239,7 @@ public class ChartService {
 
         try {
             rmtChartController = new RitterMarketTrendChartController(listId);
-            chart = rmtChartController.getRitterMarketTrendChart(InstrumentType.STOCK);
+            chart = rmtChartController.getRitterMarketTrendChart();
 
             streamingOutput = new StreamingOutput() {
                 @Override

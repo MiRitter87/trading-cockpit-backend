@@ -15,7 +15,6 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 
-import backend.model.instrument.InstrumentType;
 import backend.model.statistic.Statistic;
 
 /**
@@ -37,12 +36,11 @@ public class RitterMarketTrendChartController extends StatisticChartController {
     /**
      * Gets a chart of the Ritter Market Trend.
      *
-     * @param instrumentType The InstrumentType for which the chart is created.
      * @return The chart.
      * @throws Exception Chart generation failed.
      */
-    public JFreeChart getRitterMarketTrendChart(final InstrumentType instrumentType) throws Exception {
-        List<Statistic> statistics = this.getStatisticsForList(instrumentType, TRADING_DAYS_PER_YEAR);
+    public JFreeChart getRitterMarketTrendChart() throws Exception {
+        List<Statistic> statistics = this.getStatisticsForList(TRADING_DAYS_PER_YEAR);
         XYDataset dataset = this.getRitterMarketTrendDataset(statistics);
 
         JFreeChart chart = ChartFactory.createTimeSeriesChart(
