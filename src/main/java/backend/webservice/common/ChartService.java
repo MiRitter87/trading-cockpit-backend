@@ -5,11 +5,6 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import jakarta.ws.rs.WebApplicationException;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.Response.Status;
-import jakarta.ws.rs.core.StreamingOutput;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jfree.chart.ChartUtils;
@@ -29,8 +24,11 @@ import backend.controller.chart.statistic.AggregateIndicatorChartController;
 import backend.controller.chart.statistic.RitterMarketTrendChartController;
 import backend.controller.chart.statistic.RitterPatternIndicatorChartController;
 import backend.controller.instrumentCheck.HealthCheckProfile;
-import backend.model.instrument.InstrumentType;
 import backend.webservice.Indicator;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.StreamingOutput;
 
 /**
  * Common implementation of the Chart WebService that can be used by multiple service interfaces like SOAP or REST. This
@@ -262,12 +260,13 @@ public class ChartService {
      * @return A Response containing the generated chart.
      */
     public Response getRitterPatternIndicatorChart(final Integer listId) {
-        RitterPatternIndicatorChartController rpiChartController = new RitterPatternIndicatorChartController();
+        RitterPatternIndicatorChartController rpiChartController;
         JFreeChart chart;
         StreamingOutput streamingOutput = null;
 
         try {
-            chart = rpiChartController.getRitterPatternIndicatorChart(InstrumentType.STOCK, listId);
+            rpiChartController = new RitterPatternIndicatorChartController(listId);
+            chart = rpiChartController.getRitterPatternIndicatorChart();
 
             streamingOutput = new StreamingOutput() {
                 @Override

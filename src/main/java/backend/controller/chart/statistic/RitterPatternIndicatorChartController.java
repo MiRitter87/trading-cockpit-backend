@@ -40,22 +40,48 @@ public class RitterPatternIndicatorChartController extends ChartController {
     private TreeMap<Date, Integer> numberOfInstrumentsPerDate;
 
     /**
+     * The InstrumentType of the instruments depicted in the chart.
+     */
+    private InstrumentType instrumentType;
+
+    /**
+     * The list used as basis for the chart.
+     */
+    private backend.model.list.List list;
+
+    /**
+     * All instruments with their quotations that are used for chart creation.
+     */
+    private List<Instrument> instruments;
+
+    /**
+     * Initializes the RitterPatternIndicatorChartController.
+     *
+     * @param listId The ID of the list defining the instruments used for chart creation.
+     * @throws Exception Failed to initialize data.
+     */
+    public RitterPatternIndicatorChartController(final Integer listId) throws Exception {
+        this.instrumentType = InstrumentType.STOCK;
+
+        if (listId != null) {
+            this.list = this.getListDAO().getList(listId);
+        }
+
+        this.initializeInstrumentsWithQuotations(TRADING_DAYS_PER_YEAR);
+        this.initializeNumberOfInstrumentsPerDate();
+    }
+
+    /**
      * Gets a chart of the Ritter Pattern Indicator.
      *
-     * @param instrumentType The InstrumentType for which the chart is created.
-     * @param listId         The ID of the list defining the instruments used for chart creation.
      * @return The chart.
      * @throws Exception Chart generation failed.
      */
-    public JFreeChart getRitterPatternIndicatorChart(final InstrumentType instrumentType, final Integer listId)
-            throws Exception {
-        List<Instrument> instruments = this.getAllInstrumentsWithQuotations(instrumentType, listId,
-                TRADING_DAYS_PER_YEAR);
+    public JFreeChart getRitterPatternIndicatorChart() throws Exception {
         TreeMap<Date, Integer> patternIndicatorValues;
         XYDataset dataset;
 
-        this.numberOfInstrumentsPerDate = this.getNumberOfInstrumentsPerDate(instruments);
-        patternIndicatorValues = this.getPatternIndicatorValues(instruments);
+        patternIndicatorValues = this.getPatternIndicatorValues();
         dataset = this.getRitterPatternIndicatorDataset(patternIndicatorValues);
 
         JFreeChart chart = ChartFactory.createTimeSeriesChart(
@@ -70,30 +96,25 @@ public class RitterPatternIndicatorChartController extends ChartController {
     }
 
     /**
-     * Retrieves all instruments with their quotations based on the given instrumentType or listId.
+     * Initializes all instruments with their quotations based on the given instrumentType or listId.
      *
-     * @param instrumentType The IntrumentType.
-     * @param listId         The List id.
-     * @param maxQuotations  The maximum number of quotations returned with each Instrument.
-     * @return All instruments with their quotations.
+     * @param maxQuotations The maximum number of quotations returned with each Instrument.
      * @throws Exception Instrument or Quotation retrieval failed.
      */
-    private List<Instrument> getAllInstrumentsWithQuotations(final InstrumentType instrumentType, final Integer listId,
-            final Integer maxQuotations) throws Exception {
-        List<Instrument> instruments = new ArrayList<>();
-        backend.model.list.List list;
+    private void initializeInstrumentsWithQuotations(final Integer maxQuotations) throws Exception {
         List<Quotation> requestedNumberOfQuotations;
 
+        this.instruments = new ArrayList<>();
+
         // Initialize instruments.
-        if (listId != null) {
-            list = this.getListDAO().getList(listId);
-            instruments.addAll(list.getInstruments());
+        if (this.list != null) {
+            this.instruments.addAll(this.list.getInstruments());
         } else {
-            instruments.addAll(this.getInstrumentDAO().getInstruments(instrumentType));
+            this.instruments.addAll(this.getInstrumentDAO().getInstruments(this.instrumentType));
         }
 
         // Initialize quotations of each Instrument.
-        for (Instrument instrument : instruments) {
+        for (Instrument instrument : this.instruments) {
             instrument.setQuotations(this.getQuotationDAO().getQuotationsOfInstrument(instrument.getId()));
 
             requestedNumberOfQuotations = instrument.getQuotationsSortedByDate();
@@ -103,51 +124,45 @@ public class RitterPatternIndicatorChartController extends ChartController {
                 instrument.setQuotations(requestedNumberOfQuotations);
             }
         }
-
-        return instruments;
     }
 
     /**
-     * Determines the number of instruments for all days on which quotations exist.
+     * Initializes the number of instruments for each day on which quotations exist.
      *
-     * @param instruments The instruments with their quotations.
-     * @return The number of instruments for all days on which quotations exist.
      */
-    private TreeMap<Date, Integer> getNumberOfInstrumentsPerDate(final List<Instrument> instruments) {
-        TreeMap<Date, Integer> instrumentsPerDate = new TreeMap<>();
+    private void initializeNumberOfInstrumentsPerDate() {
         List<Quotation> quotationsSortedByDate;
         Integer numberOfInstrumentsOfDate;
         Date currentQuotationDate;
 
-        for (Instrument instrument : instruments) {
+        this.numberOfInstrumentsPerDate = new TreeMap<>();
+
+        for (Instrument instrument : this.instruments) {
             quotationsSortedByDate = instrument.getQuotationsSortedByDate();
 
             for (Quotation currentQuotation : quotationsSortedByDate) {
                 currentQuotationDate = DateTools.getDateWithoutIntradayAttributes(currentQuotation.getDate());
 
                 // Check if instrument count of current date already exists.
-                numberOfInstrumentsOfDate = instrumentsPerDate.get(currentQuotationDate);
+                numberOfInstrumentsOfDate = this.numberOfInstrumentsPerDate.get(currentQuotationDate);
 
                 if (numberOfInstrumentsOfDate == null) {
                     numberOfInstrumentsOfDate = 0;
                 }
 
                 numberOfInstrumentsOfDate++;
-                instrumentsPerDate.put(currentQuotationDate, numberOfInstrumentsOfDate);
+                this.numberOfInstrumentsPerDate.put(currentQuotationDate, numberOfInstrumentsOfDate);
             }
         }
-
-        return instrumentsPerDate;
     }
 
     /**
      * Determines the pattern indicator values for the given instruments.
      *
-     * @param instruments The instruments on which the pattern indicator values are calculated.
      * @return The pattern indicator values.
      * @throws Exception Indicator value determination failed.
      */
-    private TreeMap<Date, Integer> getPatternIndicatorValues(final List<Instrument> instruments) throws Exception {
+    private TreeMap<Date, Integer> getPatternIndicatorValues() throws Exception {
         List<Quotation> quotationsSortedByDate;
         TreeMap<Date, Integer> patternIndicatorValues = new TreeMap<>();
         Quotation previousQuotation;
@@ -155,7 +170,7 @@ public class RitterPatternIndicatorChartController extends ChartController {
         Integer patternIndicatorValue;
         Date currentQuotationDate;
 
-        for (Instrument instrument : instruments) {
+        for (Instrument instrument : this.instruments) {
             quotationsSortedByDate = instrument.getQuotationsSortedByDate();
 
             for (Quotation currentQuotation : quotationsSortedByDate) {
