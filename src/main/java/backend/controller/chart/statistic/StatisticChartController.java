@@ -55,6 +55,13 @@ public class StatisticChartController extends ChartController {
     }
 
     /**
+     * Default constructor.
+     */
+    public StatisticChartController() {
+
+    }
+
+    /**
      * Calculates the statistics for the list with the given id. If no listId is specified, the general statistics are
      * loaded.
      *

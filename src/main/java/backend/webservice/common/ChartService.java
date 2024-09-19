@@ -435,8 +435,8 @@ public class ChartService {
         StreamingOutput streamingOutput = null;
 
         try {
-            aggregateIndicatorChartController = new AggregateIndicatorChartController(listId);
-            chart = aggregateIndicatorChartController.getAggregateIndicatorChart(instrumentId);
+            aggregateIndicatorChartController = new AggregateIndicatorChartController(instrumentId, listId);
+            chart = aggregateIndicatorChartController.getAggregateIndicatorChart();
 
             streamingOutput = new StreamingOutput() {
                 @Override
