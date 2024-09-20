@@ -73,6 +73,11 @@ public class ListServiceTest {
     private Instrument amazonStock;
 
     /**
+     * The technology sector.
+     */
+    private Instrument techSector;
+
+    /**
      * A List containing a single instrument.
      */
     private List singleInstrumentList;
@@ -137,10 +142,12 @@ public class ListServiceTest {
     private void createDummyInstruments() {
         this.microsoftStock = this.fixtureHelper.getMicrosoftStock();
         this.amazonStock = this.fixtureHelper.getAmazonStock();
+        this.techSector = this.fixtureHelper.getTechSector();
 
         try {
             instrumentDAO.insertInstrument(this.microsoftStock);
             instrumentDAO.insertInstrument(this.amazonStock);
+            instrumentDAO.insertInstrument(this.techSector);
         } catch (Exception e) {
             fail(e.getMessage());
         }
@@ -151,6 +158,7 @@ public class ListServiceTest {
      */
     private void deleteDummyInstruments() {
         try {
+            instrumentDAO.deleteInstrument(this.techSector);
             instrumentDAO.deleteInstrument(this.amazonStock);
             instrumentDAO.deleteInstrument(this.microsoftStock);
         } catch (Exception e) {
@@ -388,6 +396,39 @@ public class ListServiceTest {
         // Verify the expected error message.
         expectedErrorMessage = MessageFormat.format(this.resources.getString("list.deleteUsedInScan"),
                 this.multiInstrumentList.getId(), this.scan.getId());
+        actualErrorMessage = deleteListResult.getMessages().get(0).getText();
+        assertEquals(expectedErrorMessage, actualErrorMessage);
+    }
+
+    //@Test
+    /**
+     * Tests deletion of a List that is used as data source for an Instrument.
+     */
+    public void testDeleteListUsedAsDataSource() {
+        WebServiceResult deleteListResult;
+        String expectedErrorMessage, actualErrorMessage;
+
+        try {
+            // At first add List relation to Instrument.
+            this.techSector.setSymbol(null);
+            this.techSector.setStockExchange(null);
+            this.techSector.setDataSourceList(this.multiInstrumentList);
+            instrumentDAO.updateInstrument(this.techSector);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+
+        // Delete the List.
+        ListService service = new ListService();
+        deleteListResult = service.deleteList(this.singleInstrumentList.getId());
+
+        // There should be a return message of type E.
+        assertTrue(deleteListResult.getMessages().size() == 1);
+        assertTrue(deleteListResult.getMessages().get(0).getType() == WebServiceMessageType.E);
+
+        // Verify the expected error message.
+        expectedErrorMessage = MessageFormat.format(this.resources.getString("list.deleteUsedAsDataSource"),
+                this.singleInstrumentList.getId(), this.techSector.getId());
         actualErrorMessage = deleteListResult.getMessages().get(0).getText();
         assertEquals(expectedErrorMessage, actualErrorMessage);
     }

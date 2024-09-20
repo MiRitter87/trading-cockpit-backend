@@ -50,6 +50,22 @@ public class ListServiceFixture {
     }
 
     /**
+     * Gets the Instrument representing the technology sector.
+     *
+     * @return The Instrument representing the technology sector.
+     */
+    public Instrument getTechSector() {
+        Instrument instrument = new Instrument();
+
+        instrument.setSymbol("XLK");
+        instrument.setName("Technology Select Sector SPDR Fund");
+        instrument.setStockExchange(StockExchange.NYSE);
+        instrument.setType(InstrumentType.SECTOR);
+
+        return instrument;
+    }
+
+    /**
      * Gets a list containing a single instrument.
      *
      * @param instrument The Instrument of the List.
