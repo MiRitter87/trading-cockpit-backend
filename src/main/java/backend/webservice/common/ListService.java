@@ -5,12 +5,6 @@ import java.io.OutputStream;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
-import jakarta.ws.rs.WebApplicationException;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.Response.Status;
-import jakarta.ws.rs.core.StreamingOutput;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -22,7 +16,7 @@ import backend.dao.instrument.InstrumentDAO;
 import backend.dao.list.ListDAO;
 import backend.dao.quotation.persistence.QuotationDAO;
 import backend.dao.scan.ScanDAO;
-import backend.model.ObjectInUseException;
+import backend.model.LocalizedException;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.QuotationArray;
 import backend.model.list.List;
@@ -32,6 +26,11 @@ import backend.model.scan.Scan;
 import backend.model.webservice.WebServiceMessage;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.StreamingOutput;
 
 /**
  * Common implementation of the list WebService that can be used by multiple service interfaces like SOAP or REST.
@@ -150,9 +149,9 @@ public class ListService {
                 deleteListResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
                         MessageFormat.format(this.resources.getString("list.notFound"), id)));
             }
-        } catch (ObjectInUseException objectInUseException) {
-            deleteListResult.addMessage(new WebServiceMessage(WebServiceMessageType.E, MessageFormat.format(
-                    this.resources.getString("list.deleteUsedInScan"), id, objectInUseException.getUsedById())));
+        } catch (LocalizedException localizedException) {
+            deleteListResult.addMessage(
+                    new WebServiceMessage(WebServiceMessageType.E, localizedException.getLocalizedMessage()));
         } catch (Exception e) {
             deleteListResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
                     MessageFormat.format(this.resources.getString("list.deleteError"), id)));

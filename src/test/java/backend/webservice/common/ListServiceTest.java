@@ -400,7 +400,7 @@ public class ListServiceTest {
         assertEquals(expectedErrorMessage, actualErrorMessage);
     }
 
-    //@Test
+    @Test
     /**
      * Tests deletion of a List that is used as data source for an Instrument.
      */
@@ -412,7 +412,7 @@ public class ListServiceTest {
             // At first add List relation to Instrument.
             this.techSector.setSymbol(null);
             this.techSector.setStockExchange(null);
-            this.techSector.setDataSourceList(this.multiInstrumentList);
+            this.techSector.setDataSourceList(this.singleInstrumentList);
             instrumentDAO.updateInstrument(this.techSector);
         } catch (Exception e) {
             fail(e.getMessage());
@@ -431,6 +431,14 @@ public class ListServiceTest {
                 this.singleInstrumentList.getId(), this.techSector.getId());
         actualErrorMessage = deleteListResult.getMessages().get(0).getText();
         assertEquals(expectedErrorMessage, actualErrorMessage);
+
+        try {
+            // Delete list relation to allow deletion of Instrument.
+            this.techSector.setDataSourceList(null);
+            instrumentDAO.updateInstrument(this.techSector);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
     }
 
     @Test

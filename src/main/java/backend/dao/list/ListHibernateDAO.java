@@ -1,7 +1,8 @@
 package backend.dao.list;
 
 import backend.dao.ObjectUnchangedException;
-import backend.model.ObjectInUseException;
+import backend.model.LocalizedException;
+import backend.model.instrument.Instrument;
 import backend.model.list.List;
 import backend.model.scan.Scan;
 import jakarta.persistence.EntityGraph;
@@ -61,7 +62,7 @@ public class ListHibernateDAO implements ListDAO {
      * Deletes a List.
      */
     @Override
-    public void deleteList(final List list) throws ObjectInUseException, Exception {
+    public void deleteList(final List list) throws LocalizedException, Exception {
         EntityManager entityManager = this.sessionFactory.createEntityManager();
 
         this.checkListInUse(list, entityManager);
@@ -192,21 +193,22 @@ public class ListHibernateDAO implements ListDAO {
      *
      * @param list          The List which is checked.
      * @param entityManager The active EntityManager used for data access.
-     * @throws ObjectInUseException In case the List is in use.
+     * @throws LocalizedException In case the List is in use.
      */
-    private void checkListInUse(final List list, final EntityManager entityManager) throws ObjectInUseException {
+    private void checkListInUse(final List list, final EntityManager entityManager) throws LocalizedException {
         this.checkListUsedInScan(list, entityManager);
+        this.checkListUsedInInstrument(list, entityManager);
     }
 
     /**
-     * Checks if the List is referenced by any Scan.
+     * Checks if the List is referenced by another business object.
      *
      * @param list          The List which is checked.
-     * @param entityManager The EntityManager used to execute queries.
-     * @throws ObjectInUseException In case the List is in use.
+     * @param entityManager The active EntityManager used for data access.
+     * @throws LocalizedException In case the List is in use.
      */
     @SuppressWarnings("unchecked")
-    private void checkListUsedInScan(final List list, final EntityManager entityManager) throws ObjectInUseException {
+    private void checkListUsedInScan(final List list, final EntityManager entityManager) throws LocalizedException {
         Query query = entityManager.createQuery("SELECT s FROM Scan s INNER JOIN s.lists list WHERE list.id = :listId");
         java.util.List<Scan> scans;
 
@@ -214,7 +216,28 @@ public class ListHibernateDAO implements ListDAO {
         scans = query.getResultList();
 
         if (scans.size() > 0) {
-            throw new ObjectInUseException(list.getId(), scans.get(0).getId(), scans.get(0));
+            throw new LocalizedException("list.deleteUsedInScan", list.getId(), scans.get(0).getId());
+        }
+    }
+
+    /**
+     * Checks if the List is referenced as data source in any Instrument.
+     *
+     * @param list          The List which is checked.
+     * @param entityManager The EntityManager used to execute queries.
+     * @throws LocalizedException In case the List is in use.
+     */
+    @SuppressWarnings("unchecked")
+    private void checkListUsedInInstrument(final List list, final EntityManager entityManager)
+            throws LocalizedException {
+        Query query = entityManager.createQuery("SELECT i FROM Instrument i WHERE i.dataSourceList.id = :listId");
+        java.util.List<Instrument> instruments;
+
+        query.setParameter("listId", list.getId());
+        instruments = query.getResultList();
+
+        if (instruments.size() > 0) {
+            throw new LocalizedException("list.deleteUsedAsDataSource", list.getId(), instruments.get(0).getId());
         }
     }
 

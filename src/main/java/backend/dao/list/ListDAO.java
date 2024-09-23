@@ -1,7 +1,7 @@
 package backend.dao.list;
 
 import backend.dao.ObjectUnchangedException;
-import backend.model.ObjectInUseException;
+import backend.model.LocalizedException;
 import backend.model.list.List;
 
 /**
@@ -22,10 +22,10 @@ public interface ListDAO {
      * Deletes a list.
      *
      * @param list The list to be deleted.
-     * @throws ObjectInUseException The List is still used by other objects and can't be deleted.
-     * @throws Exception            Deletion failed.
+     * @throws LocalizedException A localized Exception.
+     * @throws Exception          Deletion failed.
      */
-    void deleteList(List list) throws ObjectInUseException, Exception;
+    void deleteList(List list) throws LocalizedException, Exception;
 
     /**
      * Gets all lists.
