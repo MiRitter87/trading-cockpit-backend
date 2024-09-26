@@ -86,6 +86,9 @@ public class InstrumentCheckController {
         case CONFIRMATIONS:
             this.checkConfirmations(startDate, quotations, protocol);
             break;
+        case CONFIRMATIONS_WITHOUT_COUNTING:
+            this.checkConfirmationsWithoutCounting(startDate, quotations, protocol);
+            break;
         case SELLING_INTO_STRENGTH:
             this.checkSellingIntoStrength(startDate, quotations, protocol);
             break;
@@ -108,7 +111,7 @@ public class InstrumentCheckController {
     }
 
     /**
-     * Checks for price and volume action that confirms an up-trend.
+     * Checks for price and volume action that confirms an up-trend. All confirmation check-ups are included.
      *
      * @param startDate  The start date of the health check.
      * @param quotations The quotations that build the trading history of an Instrument.
@@ -126,6 +129,26 @@ public class InstrumentCheckController {
         confirmations.addAll(this.instrumentCheckPatternController.checkUpOnVolume(startDate, quotations));
 
         this.setProfile(confirmations, HealthCheckProfile.CONFIRMATIONS);
+        protocol.getProtocolEntries().addAll(confirmations);
+    }
+
+    /**
+     * Checks for price and volume action that confirms an up-trend. Counting check-ups are excluded.
+     *
+     * @param startDate  The start date of the health check.
+     * @param quotations The quotations that build the trading history of an Instrument.
+     * @param protocol   The Protocol to which possible events are added.
+     * @throws Exception Health check failed.
+     */
+    private void checkConfirmationsWithoutCounting(final Date startDate, final QuotationArray quotations,
+            final Protocol protocol) throws Exception {
+
+        List<ProtocolEntry> confirmations = new ArrayList<>();
+
+        confirmations.addAll(this.instrumentCheckCountingController.checkThreeHigherCloses(startDate, quotations));
+        confirmations.addAll(this.instrumentCheckPatternController.checkUpOnVolume(startDate, quotations));
+
+        this.setProfile(confirmations, HealthCheckProfile.CONFIRMATIONS_WITHOUT_COUNTING);
         protocol.getProtocolEntries().addAll(confirmations);
     }
 

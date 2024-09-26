@@ -12,9 +12,14 @@ public enum HealthCheckProfile {
     ALL,
 
     /**
-     * Price and volume action that confirms an up-trend.
+     * Price and volume action that confirms an up-trend. This profile contains all confirmation check-ups.
      */
     CONFIRMATIONS,
+
+    /**
+     * Price and volume action that confirms an up-trend. Counting check-ups are excluded.
+     */
+    CONFIRMATIONS_WITHOUT_COUNTING,
 
     /**
      * Price and volume action that indicates the imminent end of an up-trend. This profile is used to sell an
