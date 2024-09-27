@@ -190,7 +190,8 @@ public class HealthCheckChartController extends PriceVolumeChartController {
         entriesOfDate = protocol.getEntriesOfDate(quotation.getDate());
 
         for (ProtocolEntry tempEntry : entriesOfDate) {
-            if (profile == HealthCheckProfile.CONFIRMATIONS
+            if ((profile == HealthCheckProfile.CONFIRMATIONS
+                    || profile == HealthCheckProfile.CONFIRMATIONS_WITHOUT_COUNTING)
                     && tempEntry.getCategory() == ProtocolEntryCategory.CONFIRMATION) {
                 eventNumber++;
             }
@@ -237,6 +238,7 @@ public class HealthCheckChartController extends PriceVolumeChartController {
             healthEventRenderer.setSeriesPaint(0, Color.BLUE);
             break;
         case CONFIRMATIONS:
+        case CONFIRMATIONS_WITHOUT_COUNTING:
             healthEventRenderer.setSeriesPaint(0, Color.GREEN);
             break;
         case SELLING_INTO_STRENGTH:
@@ -268,6 +270,11 @@ public class HealthCheckChartController extends PriceVolumeChartController {
         case CONFIRMATIONS:
             timeSeriesName = MessageFormat.format(
                     this.getResources().getString("chart.healthCheck.timeSeriesEventName.confirmations"),
+                    lookbackPeriod);
+            break;
+        case CONFIRMATIONS_WITHOUT_COUNTING:
+            timeSeriesName = MessageFormat.format(
+                    this.getResources().getString("chart.healthCheck.timeSeriesEventName.confirmationsWithoutCounting"),
                     lookbackPeriod);
             break;
         case SELLING_INTO_STRENGTH:
