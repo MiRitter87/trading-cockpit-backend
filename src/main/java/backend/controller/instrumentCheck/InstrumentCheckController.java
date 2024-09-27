@@ -95,6 +95,9 @@ public class InstrumentCheckController {
         case SELLING_INTO_WEAKNESS:
             this.checkSellingIntoWeakness(startDate, quotations, protocol);
             break;
+        case WEAKNESS_WITHOUT_COUNTING:
+            this.checkWeaknessWithoutCounting(startDate, quotations, protocol);
+            break;
         case ALL:
             this.checkConfirmations(startDate, quotations, protocol);
             this.checkSellingIntoStrength(startDate, quotations, protocol);
@@ -181,6 +184,31 @@ public class InstrumentCheckController {
 
         this.setProfile(sellingIntoStrength, HealthCheckProfile.SELLING_INTO_STRENGTH);
         protocol.getProtocolEntries().addAll(sellingIntoStrength);
+    }
+
+    /**
+     * Checks for price and volume action that advises to sell into weakness. Counting check-ups are excluded.
+     *
+     * @param startDate  The start date of the health check.
+     * @param quotations The quotations that build the trading history of an Instrument.
+     * @param protocol   The Protocol to which possible events are added.
+     * @throws Exception Health check failed.
+     */
+    private void checkWeaknessWithoutCounting(final Date startDate, final QuotationArray quotations,
+            final Protocol protocol) throws Exception {
+
+        List<ProtocolEntry> sellingIntoWeakness = new ArrayList<>();
+
+        sellingIntoWeakness.addAll(this.instrumentCheckAverageController.checkCloseBelowSma50(startDate, quotations));
+        sellingIntoWeakness.addAll(this.instrumentCheckAverageController.checkCloseBelowEma21(startDate, quotations));
+        sellingIntoWeakness.addAll(this.instrumentCheckExtremumController.checkLargestDownDay(startDate, quotations));
+        sellingIntoWeakness.addAll(this.instrumentCheckPatternController.checkDownOnVolume(startDate, quotations));
+        sellingIntoWeakness
+                .addAll(this.instrumentCheckPatternController.checkHighVolumeReversal(startDate, quotations));
+        sellingIntoWeakness.addAll(this.instrumentCheckCountingController.checkThreeLowerCloses(startDate, quotations));
+
+        this.setProfile(sellingIntoWeakness, HealthCheckProfile.WEAKNESS_WITHOUT_COUNTING);
+        protocol.getProtocolEntries().addAll(sellingIntoWeakness);
     }
 
     /**

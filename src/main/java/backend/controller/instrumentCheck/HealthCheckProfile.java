@@ -31,5 +31,11 @@ public enum HealthCheckProfile {
      * Price and volume action that indicates weakness. This profile is used to identify a weak Instrument that should
      * be sold due to its weakness.
      */
-    SELLING_INTO_WEAKNESS
+    SELLING_INTO_WEAKNESS,
+
+    /**
+     * Price and volume action that indicates weakness. This profile is used to identify a weak Instrument that should
+     * be sold due to its weakness. Counting check-ups are excluded.
+     */
+    WEAKNESS_WITHOUT_COUNTING
 }
