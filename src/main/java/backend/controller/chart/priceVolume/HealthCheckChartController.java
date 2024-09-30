@@ -196,7 +196,8 @@ public class HealthCheckChartController extends PriceVolumeChartController {
                 eventNumber++;
             }
 
-            if (profile == HealthCheckProfile.SELLING_INTO_WEAKNESS
+            if ((profile == HealthCheckProfile.SELLING_INTO_WEAKNESS
+                    || profile == HealthCheckProfile.WEAKNESS_WITHOUT_COUNTING)
                     && tempEntry.getCategory() == ProtocolEntryCategory.VIOLATION) {
                 eventNumber++;
             }
@@ -245,6 +246,7 @@ public class HealthCheckChartController extends PriceVolumeChartController {
             healthEventRenderer.setSeriesPaint(0, Color.YELLOW);
             break;
         case SELLING_INTO_WEAKNESS:
+        case WEAKNESS_WITHOUT_COUNTING:
             healthEventRenderer.setSeriesPaint(0, Color.RED);
             break;
         default:
@@ -284,6 +286,11 @@ public class HealthCheckChartController extends PriceVolumeChartController {
         case SELLING_INTO_WEAKNESS:
             timeSeriesName = MessageFormat.format(
                     this.getResources().getString("chart.healthCheck.timeSeriesEventName.weakness"), lookbackPeriod);
+            break;
+        case WEAKNESS_WITHOUT_COUNTING:
+            timeSeriesName = MessageFormat.format(
+                    this.getResources().getString("chart.healthCheck.timeSeriesEventName.weaknessWithoutCounting"),
+                    lookbackPeriod);
             break;
         default:
             timeSeriesName = this.getResources().getString("chart.healthCheck.timeSeriesEventName");
