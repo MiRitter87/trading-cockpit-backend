@@ -17,9 +17,10 @@ public enum HealthCheckProfile {
     CONFIRMATIONS,
 
     /**
-     * Price and volume action that confirms an up-trend. Counting check-ups are excluded.
+     * Price and volume action that indicates weakness. This profile is used to identify a weak Instrument that should
+     * be sold due to its weakness.
      */
-    CONFIRMATIONS_WITHOUT_COUNTING,
+    SELLING_INTO_WEAKNESS,
 
     /**
      * Price and volume action that indicates the imminent end of an up-trend. This profile is used to sell an
@@ -28,10 +29,14 @@ public enum HealthCheckProfile {
     SELLING_INTO_STRENGTH,
 
     /**
-     * Price and volume action that indicates weakness. This profile is used to identify a weak Instrument that should
-     * be sold due to its weakness.
+     * All health checks except counting check-ups.
      */
-    SELLING_INTO_WEAKNESS,
+    ALL_WITHOUT_COUNTING,
+
+    /**
+     * Price and volume action that confirms an up-trend. Counting check-ups are excluded.
+     */
+    CONFIRMATIONS_WITHOUT_COUNTING,
 
     /**
      * Price and volume action that indicates weakness. This profile is used to identify a weak Instrument that should

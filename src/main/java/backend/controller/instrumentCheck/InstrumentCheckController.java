@@ -83,25 +83,29 @@ public class InstrumentCheckController {
         this.checkQuotationsExistAfterStartDate(startDate, quotations);
 
         switch (profile) {
+        case ALL:
+            this.checkConfirmations(startDate, quotations, protocol);
+            this.checkSellingIntoWeakness(startDate, quotations, protocol);
+            this.checkSellingIntoStrength(startDate, quotations, protocol);
+            break;
         case CONFIRMATIONS:
             this.checkConfirmations(startDate, quotations, protocol);
-            break;
-        case CONFIRMATIONS_WITHOUT_COUNTING:
-            this.checkConfirmationsWithoutCounting(startDate, quotations, protocol);
-            break;
-        case SELLING_INTO_STRENGTH:
-            this.checkSellingIntoStrength(startDate, quotations, protocol);
             break;
         case SELLING_INTO_WEAKNESS:
             this.checkSellingIntoWeakness(startDate, quotations, protocol);
             break;
+        case SELLING_INTO_STRENGTH:
+            this.checkSellingIntoStrength(startDate, quotations, protocol);
+            break;
+        case ALL_WITHOUT_COUNTING:
+            this.checkConfirmationsWithoutCounting(startDate, quotations, protocol);
+            this.checkWeaknessWithoutCounting(startDate, quotations, protocol);
+            this.checkSellingIntoStrength(startDate, quotations, protocol);
+        case CONFIRMATIONS_WITHOUT_COUNTING:
+            this.checkConfirmationsWithoutCounting(startDate, quotations, protocol);
+            break;
         case WEAKNESS_WITHOUT_COUNTING:
             this.checkWeaknessWithoutCounting(startDate, quotations, protocol);
-            break;
-        case ALL:
-            this.checkConfirmations(startDate, quotations, protocol);
-            this.checkSellingIntoStrength(startDate, quotations, protocol);
-            this.checkSellingIntoWeakness(startDate, quotations, protocol);
             break;
         default:
             break;
