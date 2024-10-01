@@ -101,6 +101,7 @@ public class InstrumentCheckController {
             this.checkConfirmationsWithoutCounting(startDate, quotations, protocol);
             this.checkWeaknessWithoutCounting(startDate, quotations, protocol);
             this.checkSellingIntoStrength(startDate, quotations, protocol);
+            break;
         case CONFIRMATIONS_WITHOUT_COUNTING:
             this.checkConfirmationsWithoutCounting(startDate, quotations, protocol);
             break;
