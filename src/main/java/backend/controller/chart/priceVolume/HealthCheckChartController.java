@@ -207,7 +207,7 @@ public class HealthCheckChartController extends PriceVolumeChartController {
                 eventNumber++;
             }
 
-            if (profile == HealthCheckProfile.ALL) {
+            if (profile == HealthCheckProfile.ALL || profile == HealthCheckProfile.ALL_WITHOUT_COUNTING) {
                 switch (tempEntry.getCategory()) {
                 case CONFIRMATION:
                     eventNumber++;
@@ -236,6 +236,7 @@ public class HealthCheckChartController extends PriceVolumeChartController {
     private void setHealthEventBarColor(final XYBarRenderer healthEventRenderer, final HealthCheckProfile profile) {
         switch (profile) {
         case ALL:
+        case ALL_WITHOUT_COUNTING:
             healthEventRenderer.setSeriesPaint(0, Color.BLUE);
             break;
         case CONFIRMATIONS:
@@ -266,6 +267,7 @@ public class HealthCheckChartController extends PriceVolumeChartController {
 
         switch (profile) {
         case ALL:
+        case ALL_WITHOUT_COUNTING:
             timeSeriesName = MessageFormat
                     .format(this.getResources().getString("chart.healthCheck.timeSeriesEventName.all"), lookbackPeriod);
             break;
