@@ -3,7 +3,6 @@ package backend.controller.chart.statistic;
 import java.awt.Color;
 import java.math.BigDecimal;
 import java.util.ListIterator;
-import java.util.ResourceBundle;
 import java.util.TimeZone;
 
 import org.jfree.chart.ChartFactory;
@@ -30,11 +29,6 @@ import backend.model.statistic.Statistic;
  * @author Michael
  */
 public class AdvanceDeclineNumberChartController extends StatisticChartController {
-    /**
-     * Access to localized application resources.
-     */
-    private ResourceBundle resources = ResourceBundle.getBundle("backend");
-
     /**
      * Initializes the AdvanceDeclineNumberChartController.
      *
@@ -122,7 +116,8 @@ public class AdvanceDeclineNumberChartController extends StatisticChartControlle
     private TimeSeriesCollection getSma50TimeSeriesCollection() {
         MovingAverageCalculator maCalculator = new MovingAverageCalculator();
         TimeSeriesCollection timeSeriesCollection = new TimeSeriesCollection();
-        TimeSeries sma50TimeSeries = new TimeSeries(this.resources.getString("chart.adNumber.timeSeriesSma50Name"));
+        TimeSeries sma50TimeSeries = new TimeSeries(
+                this.getResources().getString("chart.adNumber.timeSeriesSma50Name"));
         QuotationArray quotationArray = this.getAdNumbersAsQuotationArray();
         ListIterator<Quotation> iterator;
         Quotation quotation;
