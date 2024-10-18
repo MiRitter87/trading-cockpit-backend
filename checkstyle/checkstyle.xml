@@ -75,7 +75,9 @@
 
   <!-- Checks for Size Violations.                    -->
   <!-- See https://checkstyle.org/checks/sizes/index.html -->
-  <module name="FileLength"/>
+  <module name="FileLength">
+  	<property name="max" value="500"/>
+  </module>
   <module name="LineLength">
     <property name="fileExtensions" value="java"/>
     <property name="max" value="120"/>
@@ -135,7 +137,9 @@
 
     <!-- Checks for Size Violations.                    -->
     <!-- See https://checkstyle.org/checks/sizes/index.html -->
-    <module name="MethodLength"/>
+    <module name="MethodLength">
+    	<property name="max" value="50"/>
+    </module>
     <module name="ParameterNumber"/>
 
     <!-- Checks for whitespace                               -->
