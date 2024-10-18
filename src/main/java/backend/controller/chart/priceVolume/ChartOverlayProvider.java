@@ -1,9 +1,11 @@
 package backend.controller.chart.priceVolume;
 
 import java.awt.Color;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import org.jfree.chart.annotations.XYTextAnnotation;
 import org.jfree.chart.plot.DatasetRenderingOrder;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
@@ -15,6 +17,7 @@ import org.jfree.data.time.TimeSeriesCollection;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.MovingAverageData;
 import backend.model.instrument.Quotation;
+import backend.model.instrument.QuotationArray;
 
 /**
  * Provides overlays for plots that are used in a Price Volume chart of an Instrument.
@@ -57,6 +60,40 @@ public class ChartOverlayProvider {
 
         XYItemRenderer smaRenderer = new XYLineAndShapeRenderer(true, false);
         smaRenderer.setSeriesPaint(0, Color.ORANGE);
+        candleStickSubplot.setRenderer(index, smaRenderer);
+        candleStickSubplot.setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
+    }
+
+    /**
+     * Adds the SMA(10) to the chart.
+     *
+     * @param instrument         The Instrument with quotations.
+     * @param candleStickSubplot The Plot to which the SMA(10) is added.
+     */
+    public void addSma10(final Instrument instrument, final XYPlot candleStickSubplot) {
+        List<Quotation> quotationsSortedByDate = instrument.getQuotationsSortedByDate();
+        TimeSeriesCollection timeSeriesCollection = new TimeSeriesCollection();
+        TimeSeries sma10TimeSeries = new TimeSeries(this.resources.getString("chart.pocketPivots.timeSeriesSma10Name"));
+        int index = candleStickSubplot.getDatasetCount();
+        MovingAverageData maData;
+
+        for (Quotation tempQuotation : quotationsSortedByDate) {
+            maData = tempQuotation.getMovingAverageData();
+
+            if (maData == null || maData.getSma10() == 0) {
+                continue;
+            }
+
+            sma10TimeSeries.add(new Day(tempQuotation.getDate()), maData.getSma10());
+        }
+
+        timeSeriesCollection.addSeries(sma10TimeSeries);
+
+        candleStickSubplot.setDataset(index, timeSeriesCollection);
+        candleStickSubplot.mapDatasetToRangeAxis(index, 0);
+
+        XYItemRenderer smaRenderer = new XYLineAndShapeRenderer(true, false);
+        smaRenderer.setSeriesPaint(0, Color.BLACK);
         candleStickSubplot.setRenderer(index, smaRenderer);
         candleStickSubplot.setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
     }
@@ -207,36 +244,32 @@ public class ChartOverlayProvider {
     }
 
     /**
-     * Adds the SMA(10) to the chart.
+     * Adds the date of the most recent Quotation of the Instrument to the given plot.
      *
-     * @param instrument         The Instrument with quotations.
-     * @param candleStickSubplot The Plot to which the SMA(10) is added.
+     * @param plot       The XYPlot to which the date is added.
+     * @param instrument The instrument containing the quotations.
      */
-    public void addSma10(final Instrument instrument, final XYPlot candleStickSubplot) {
-        List<Quotation> quotationsSortedByDate = instrument.getQuotationsSortedByDate();
-        TimeSeriesCollection timeSeriesCollection = new TimeSeriesCollection();
-        TimeSeries sma10TimeSeries = new TimeSeries(this.resources.getString("chart.pocketPivots.timeSeriesSma10Name"));
-        int index = candleStickSubplot.getDatasetCount();
-        MovingAverageData maData;
+    public void addMostRecentDate(final XYPlot plot, final Instrument instrument) {
+        QuotationArray quotationArray = new QuotationArray(instrument.getQuotationsSortedByDate());
+        String datePattern = "dd.MM.yyyy";
+        String formattedDate = "";
+        SimpleDateFormat dateFormat = new SimpleDateFormat(datePattern);
+        Quotation oldestQuotation;
+        Quotation newestQuotation;
+        double priceHigh;
+        XYTextAnnotation dateAnnotation;
 
-        for (Quotation tempQuotation : quotationsSortedByDate) {
-            maData = tempQuotation.getMovingAverageData();
-
-            if (maData == null || maData.getSma10() == 0) {
-                continue;
-            }
-
-            sma10TimeSeries.add(new Day(tempQuotation.getDate()), maData.getSma10());
+        if (instrument.getQuotations().size() == 0) {
+            return;
         }
 
-        timeSeriesCollection.addSeries(sma10TimeSeries);
+        newestQuotation = quotationArray.getQuotations().get(0);
+        formattedDate = dateFormat.format(newestQuotation.getDate());
 
-        candleStickSubplot.setDataset(index, timeSeriesCollection);
-        candleStickSubplot.mapDatasetToRangeAxis(index, 0);
+        oldestQuotation = quotationArray.getQuotations().get(quotationArray.getQuotations().size() - 1);
+        priceHigh = quotationArray.getPriceHigh().doubleValue();
 
-        XYItemRenderer smaRenderer = new XYLineAndShapeRenderer(true, false);
-        smaRenderer.setSeriesPaint(0, Color.BLACK);
-        candleStickSubplot.setRenderer(index, smaRenderer);
-        candleStickSubplot.setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
+        dateAnnotation = new XYTextAnnotation(formattedDate, oldestQuotation.getDate().getTime(), priceHigh);
+        plot.addAnnotation(dateAnnotation);
     }
 }

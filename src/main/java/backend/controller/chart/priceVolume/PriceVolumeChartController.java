@@ -2,7 +2,6 @@ package backend.controller.chart.priceVolume;
 
 import java.awt.Color;
 import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -11,7 +10,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.annotations.XYTextAnnotation;
 import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.LogAxis;
@@ -53,11 +51,6 @@ public class PriceVolumeChartController extends ChartController {
     private static final float DD_THRESHOLD_FACTOR = (float) 0.274;
 
     /**
-     * DAO to access chart object data.
-     */
-    private ChartObjectDAO chartObjectDAO;
-
-    /**
      * Provider of indicator plots.
      */
     private ChartIndicatorProvider chartIndicatorProvider;
@@ -76,8 +69,6 @@ public class PriceVolumeChartController extends ChartController {
      * Initializes the PriceVolumeChartController.
      */
     public PriceVolumeChartController() {
-        this.chartObjectDAO = DAOManager.getInstance().getChartObjectDAO();
-
         this.chartIndicatorProvider = new ChartIndicatorProvider(this.getQuotationDAO());
         this.chartOverlayProvider = new ChartOverlayProvider();
         this.performanceCalculator = new PerformanceCalculator();
@@ -270,7 +261,7 @@ public class PriceVolumeChartController extends ChartController {
         candleStickSubplot.setRenderer(candlestickRenderer);
         candleStickSubplot.setRangeAxisLocation(AxisLocation.TOP_OR_RIGHT);
 
-        this.addMostRecentDate(candleStickSubplot, instrument);
+        this.chartOverlayProvider.addMostRecentDate(candleStickSubplot, instrument);
 
         return candleStickSubplot;
     }
@@ -308,36 +299,6 @@ public class PriceVolumeChartController extends ChartController {
 
         return new DefaultHighLowDataset(this.getResources().getString("chart.general.timeSeriesPriceName"), date, high,
                 low, open, close, volume);
-    }
-
-    /**
-     * Adds the date of the most recent Quotation of the Instrument to the given plot.
-     *
-     * @param plot       The XYPlot to which the date is added.
-     * @param instrument The instrument containing the quotations.
-     */
-    private void addMostRecentDate(final XYPlot plot, final Instrument instrument) {
-        QuotationArray quotationArray = new QuotationArray(instrument.getQuotationsSortedByDate());
-        String datePattern = "dd.MM.yyyy";
-        String formattedDate = "";
-        SimpleDateFormat dateFormat = new SimpleDateFormat(datePattern);
-        Quotation oldestQuotation;
-        Quotation newestQuotation;
-        double priceHigh;
-        XYTextAnnotation dateAnnotation;
-
-        if (instrument.getQuotations().size() == 0) {
-            return;
-        }
-
-        newestQuotation = quotationArray.getQuotations().get(0);
-        formattedDate = dateFormat.format(newestQuotation.getDate());
-
-        oldestQuotation = quotationArray.getQuotations().get(quotationArray.getQuotations().size() - 1);
-        priceHigh = quotationArray.getPriceHigh().doubleValue();
-
-        dateAnnotation = new XYTextAnnotation(formattedDate, oldestQuotation.getDate().getTime(), priceHigh);
-        plot.addAnnotation(dateAnnotation);
     }
 
     /**
@@ -493,8 +454,9 @@ public class PriceVolumeChartController extends ChartController {
      * @param candleStickSubplot The candlestick plot of the Instrument.
      * @throws Exception Failed to add horizontal lines.
      */
-    private void addHorizontalLines(final Instrument instrument, final XYPlot candleStickSubplot) throws Exception {
-        List<HorizontalLine> horizontalLines = this.chartObjectDAO.getHorizontalLines(instrument.getId());
+    public void addHorizontalLines(final Instrument instrument, final XYPlot candleStickSubplot) throws Exception {
+        ChartObjectDAO chartObjectDAO = DAOManager.getInstance().getChartObjectDAO();
+        List<HorizontalLine> horizontalLines = chartObjectDAO.getHorizontalLines(instrument.getId());
 
         for (HorizontalLine horizontalLine : horizontalLines) {
             this.addHorizontalLine(candleStickSubplot, horizontalLine.getPrice().doubleValue(), Color.BLACK);
