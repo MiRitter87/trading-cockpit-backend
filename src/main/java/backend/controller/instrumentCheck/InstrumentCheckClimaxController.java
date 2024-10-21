@@ -41,16 +41,10 @@ public class InstrumentCheckClimaxController {
     private PerformanceCalculator performanceCalculator;
 
     /**
-     * Controller used for counting-related Instrument health checks.
-     */
-    private InstrumentCheckCountingController instrumentCheckCountingController;
-
-    /**
      * Initializes the controller.
      */
     public InstrumentCheckClimaxController() {
         this.performanceCalculator = new PerformanceCalculator();
-        this.instrumentCheckCountingController = new InstrumentCheckCountingController();
     }
 
     /**
@@ -156,6 +150,7 @@ public class InstrumentCheckClimaxController {
         Map<String, Integer> upDownDaySums;
         final int thresholdNumberOfUpDays = 7;
         final int numberOfDaysCheckedForClimax = 10;
+        CountingControllerHelper countingControllerHelper = new CountingControllerHelper();
 
         startIndex = sortedQuotations.getIndexOfQuotationWithDate(startDate);
 
@@ -171,10 +166,10 @@ public class InstrumentCheckClimaxController {
 
             currentQuotation = sortedQuotations.getQuotations().get(i);
 
-            upDownDaySums = this.instrumentCheckCountingController.getNumberOfUpAndDownDays(
+            upDownDaySums = countingControllerHelper.getNumberOfUpAndDownDays(
                     sortedQuotations.getQuotations().get(i + numberOfDaysCheckedForClimax - 1), currentQuotation,
                     sortedQuotations);
-            numberOfUpDays = upDownDaySums.get(InstrumentCheckCountingController.MAP_ENTRY_UP_DAYS);
+            numberOfUpDays = upDownDaySums.get(CountingControllerHelper.MAP_ENTRY_UP_DAYS);
 
             if (numberOfUpDays >= thresholdNumberOfUpDays) {
                 protocolEntry = new ProtocolEntry();

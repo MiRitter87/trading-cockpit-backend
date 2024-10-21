@@ -1,13 +1,11 @@
 package backend.controller.instrumentCheck;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.text.MessageFormat;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Map;
 import java.util.ResourceBundle;
 
 import org.junit.jupiter.api.AfterAll;
@@ -119,40 +117,12 @@ public class InstrumentCheckCountingControllerTest {
             quotation = sortedQuotations.get(i);
 
             // Calculate all Indicators only for most recent Quotation like in the ScanThread.
-            if (i == 0)
+            if (i == 0) {
                 quotation = indicatorCalculator.calculateIndicators(instrument, quotation, true);
-            else
+            } else {
                 quotation = indicatorCalculator.calculateIndicators(instrument, quotation, false);
+            }
         }
-    }
-
-    @Test
-    /**
-     * Tests getting the number of good and bad closes in a range of the trading history.
-     */
-    public void testGetNumberOfGoodAndBadCloses() {
-        int expectedNumberOfGoodCloses, actualNumberOfGoodCloses, expectedNumberOfBadCloses, actualNumberOfBadCloses;
-        int expectedDaysTotal, actualDaysTotal;
-        Map<String, Integer> resultMap;
-
-        this.dmlQuotations.sortQuotationsByDate();
-
-        expectedNumberOfGoodCloses = 3;
-        expectedNumberOfBadCloses = 3;
-        expectedDaysTotal = 6;
-
-        resultMap = this.instrumentCheckCountingController.getNumberOfGoodAndBadCloses(
-                this.dmlQuotations.getQuotations().get(5), this.dmlQuotations.getQuotations().get(0),
-                this.dmlQuotations);
-        assertNotNull(resultMap);
-
-        actualNumberOfGoodCloses = resultMap.get(InstrumentCheckCountingController.MAP_ENTRY_GOOD_CLOSES);
-        actualNumberOfBadCloses = resultMap.get(InstrumentCheckCountingController.MAP_ENTRY_BAD_CLOSES);
-        actualDaysTotal = resultMap.get(InstrumentCheckCountingController.MAP_ENTRY_DAYS_TOTAL);
-
-        assertEquals(expectedNumberOfGoodCloses, actualNumberOfGoodCloses);
-        assertEquals(expectedNumberOfBadCloses, actualNumberOfBadCloses);
-        assertEquals(expectedDaysTotal, actualDaysTotal);
     }
 
     @Test
@@ -187,35 +157,6 @@ public class InstrumentCheckCountingControllerTest {
         } catch (Exception e) {
             fail(e.getMessage());
         }
-    }
-
-    @Test
-    /**
-     * Tests getting the number of up- and down-days in a range of the trading history.
-     */
-    public void testGetNumberOfUpAndDownDays() {
-        int expectedNumberOfUpDays, actualNumberOfUpDays, expectedNumberOfDownDays, actualNumberOfDownDays,
-                expectedDaysTotal, actualDaysTotal;
-        Map<String, Integer> resultMap;
-
-        this.dmlQuotations.sortQuotationsByDate();
-
-        expectedNumberOfUpDays = 1;
-        expectedNumberOfDownDays = 2;
-        expectedDaysTotal = 3;
-
-        resultMap = this.instrumentCheckCountingController.getNumberOfUpAndDownDays(
-                this.dmlQuotations.getQuotations().get(2), this.dmlQuotations.getQuotations().get(0),
-                this.dmlQuotations);
-        assertNotNull(resultMap);
-
-        actualNumberOfUpDays = resultMap.get(InstrumentCheckCountingController.MAP_ENTRY_UP_DAYS);
-        actualNumberOfDownDays = resultMap.get(InstrumentCheckCountingController.MAP_ENTRY_DOWN_DAYS);
-        actualDaysTotal = resultMap.get(InstrumentCheckCountingController.MAP_ENTRY_DAYS_TOTAL);
-
-        assertEquals(expectedNumberOfUpDays, actualNumberOfUpDays);
-        assertEquals(expectedNumberOfDownDays, actualNumberOfDownDays);
-        assertEquals(expectedDaysTotal, actualDaysTotal);
     }
 
     @Test

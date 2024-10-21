@@ -1,16 +1,12 @@
 package backend.controller.instrumentCheck;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import backend.controller.scan.PerformanceCalculator;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
 import backend.model.protocol.ProtocolEntry;
@@ -23,31 +19,6 @@ import backend.tools.DateTools;
  * @author Michael
  */
 public class InstrumentCheckCountingController {
-    /**
-     * Key of the Map entry containing the number of up-days.
-     */
-    public static final String MAP_ENTRY_UP_DAYS = "NUMBER_UP_DAYS";
-
-    /**
-     * Key of the Map entry containing the number of down-days.
-     */
-    public static final String MAP_ENTRY_DOWN_DAYS = "NUMBER_DOWN_DAYS";
-
-    /**
-     * Key of the Map entry containing the total number of days.
-     */
-    public static final String MAP_ENTRY_DAYS_TOTAL = "DAYS_TOTAL";
-
-    /**
-     * Key of the Map entry containing the number of good closes.
-     */
-    public static final String MAP_ENTRY_GOOD_CLOSES = "NUMBER_GOOD_CLOSES";
-
-    /**
-     * Key of the Map entry containing the number of bad closes.
-     */
-    public static final String MAP_ENTRY_BAD_CLOSES = "NUMBER_BAD_CLOSES";
-
     /**
      * Access to localized application resources.
      */
@@ -103,10 +74,11 @@ public class InstrumentCheckCountingController {
 
             currentQuotation = sortedQuotations.getQuotations().get(i);
 
-            goodBadCloseSums = this.getNumberOfGoodAndBadCloses(startQuotation, currentQuotation, sortedQuotations);
-            numberOfGoodCloses = goodBadCloseSums.get(MAP_ENTRY_GOOD_CLOSES);
-            numberOfBadCloses = goodBadCloseSums.get(MAP_ENTRY_BAD_CLOSES);
-            numberOfDaysTotal = goodBadCloseSums.get(MAP_ENTRY_DAYS_TOTAL);
+            goodBadCloseSums = this.countingControllerHelper.getNumberOfGoodAndBadCloses(startQuotation,
+                    currentQuotation, sortedQuotations);
+            numberOfGoodCloses = goodBadCloseSums.get(CountingControllerHelper.MAP_ENTRY_GOOD_CLOSES);
+            numberOfBadCloses = goodBadCloseSums.get(CountingControllerHelper.MAP_ENTRY_BAD_CLOSES);
+            numberOfDaysTotal = goodBadCloseSums.get(CountingControllerHelper.MAP_ENTRY_DAYS_TOTAL);
 
             if (numberOfBadCloses > numberOfGoodCloses) {
                 protocolEntry = new ProtocolEntry();
@@ -159,10 +131,11 @@ public class InstrumentCheckCountingController {
 
             currentQuotation = sortedQuotations.getQuotations().get(i);
 
-            goodBadCloseSums = this.getNumberOfGoodAndBadCloses(startQuotation, currentQuotation, sortedQuotations);
-            numberOfGoodCloses = goodBadCloseSums.get(MAP_ENTRY_GOOD_CLOSES);
-            numberOfBadCloses = goodBadCloseSums.get(MAP_ENTRY_BAD_CLOSES);
-            numberOfDaysTotal = goodBadCloseSums.get(MAP_ENTRY_DAYS_TOTAL);
+            goodBadCloseSums = this.countingControllerHelper.getNumberOfGoodAndBadCloses(startQuotation,
+                    currentQuotation, sortedQuotations);
+            numberOfGoodCloses = goodBadCloseSums.get(CountingControllerHelper.MAP_ENTRY_GOOD_CLOSES);
+            numberOfBadCloses = goodBadCloseSums.get(CountingControllerHelper.MAP_ENTRY_BAD_CLOSES);
+            numberOfDaysTotal = goodBadCloseSums.get(CountingControllerHelper.MAP_ENTRY_DAYS_TOTAL);
 
             if (numberOfGoodCloses > numberOfBadCloses) {
                 protocolEntry = new ProtocolEntry();
@@ -215,10 +188,11 @@ public class InstrumentCheckCountingController {
 
             currentQuotation = sortedQuotations.getQuotations().get(i);
 
-            upDownDaySums = this.getNumberOfUpAndDownDays(startQuotation, currentQuotation, sortedQuotations);
-            numberOfUpDays = upDownDaySums.get(MAP_ENTRY_UP_DAYS);
-            numberOfDownDays = upDownDaySums.get(MAP_ENTRY_DOWN_DAYS);
-            numberOfDaysTotal = upDownDaySums.get(MAP_ENTRY_DAYS_TOTAL);
+            upDownDaySums = this.countingControllerHelper.getNumberOfUpAndDownDays(startQuotation, currentQuotation,
+                    sortedQuotations);
+            numberOfUpDays = upDownDaySums.get(CountingControllerHelper.MAP_ENTRY_UP_DAYS);
+            numberOfDownDays = upDownDaySums.get(CountingControllerHelper.MAP_ENTRY_DOWN_DAYS);
+            numberOfDaysTotal = upDownDaySums.get(CountingControllerHelper.MAP_ENTRY_DAYS_TOTAL);
 
             if (numberOfDownDays > numberOfUpDays) {
                 protocolEntry = new ProtocolEntry();
@@ -271,10 +245,11 @@ public class InstrumentCheckCountingController {
 
             currentQuotation = sortedQuotations.getQuotations().get(i);
 
-            upDownDaySums = this.getNumberOfUpAndDownDays(startQuotation, currentQuotation, sortedQuotations);
-            numberOfUpDays = upDownDaySums.get(MAP_ENTRY_UP_DAYS);
-            numberOfDownDays = upDownDaySums.get(MAP_ENTRY_DOWN_DAYS);
-            numberOfDaysTotal = upDownDaySums.get(MAP_ENTRY_DAYS_TOTAL);
+            upDownDaySums = this.countingControllerHelper.getNumberOfUpAndDownDays(startQuotation, currentQuotation,
+                    sortedQuotations);
+            numberOfUpDays = upDownDaySums.get(CountingControllerHelper.MAP_ENTRY_UP_DAYS);
+            numberOfDownDays = upDownDaySums.get(CountingControllerHelper.MAP_ENTRY_DOWN_DAYS);
+            numberOfDaysTotal = upDownDaySums.get(CountingControllerHelper.MAP_ENTRY_DAYS_TOTAL);
 
             if (numberOfUpDays > numberOfDownDays) {
                 protocolEntry = new ProtocolEntry();
@@ -375,122 +350,5 @@ public class InstrumentCheckCountingController {
         }
 
         return protocolEntries;
-    }
-
-    /**
-     * Counts the number of good and bad closes from startQuotation to endQuotation.
-     *
-     * @param startQuotation   The first Quotation used for counting.
-     * @param endQuotation     The last Quotation used for counting.
-     * @param sortedQuotations The quotations sorted by date that build the trading history.
-     * @return A Map containing the number of good and bad closes.
-     */
-    public Map<String, Integer> getNumberOfGoodAndBadCloses(final Quotation startQuotation,
-            final Quotation endQuotation, final QuotationArray sortedQuotations) {
-
-        int indexOfStartQuotation;
-        int indexOfEndQuotation;
-        int numberOfGoodCloses = 0;
-        int numberOfBadCloses = 0;
-        int numberOfDaysTotal = 0;
-        Quotation currentQuotation;
-        final int requiredMapSize = 3;
-        Map<String, Integer> resultMap = new HashMap<>(requiredMapSize);
-        boolean isGoodClose;
-
-        indexOfStartQuotation = sortedQuotations.getQuotations().indexOf(startQuotation);
-        indexOfEndQuotation = sortedQuotations.getQuotations().indexOf(endQuotation);
-
-        for (int i = indexOfStartQuotation; i >= indexOfEndQuotation; i--) {
-            currentQuotation = sortedQuotations.getQuotations().get(i);
-            isGoodClose = this.isGoodClose(currentQuotation);
-
-            if (isGoodClose) {
-                numberOfGoodCloses++;
-            } else {
-                numberOfBadCloses++;
-            }
-
-            numberOfDaysTotal++;
-        }
-
-        resultMap.put(MAP_ENTRY_GOOD_CLOSES, numberOfGoodCloses);
-        resultMap.put(MAP_ENTRY_BAD_CLOSES, numberOfBadCloses);
-        resultMap.put(MAP_ENTRY_DAYS_TOTAL, numberOfDaysTotal);
-
-        return resultMap;
-    }
-
-    /**
-     * Counts the number of up- and down-days from startQuotation to endQuotation.
-     *
-     * @param startQuotation   The first Quotation used for counting.
-     * @param endQuotation     The last Quotation used for counting.
-     * @param sortedQuotations The quotations sorted by date that build the trading history.
-     * @return A Map containing the number of up- and down-days.
-     */
-    public Map<String, Integer> getNumberOfUpAndDownDays(final Quotation startQuotation, final Quotation endQuotation,
-            final QuotationArray sortedQuotations) {
-
-        int indexOfStartQuotation;
-        int indexOfEndQuotation;
-        int numberOfUpDays = 0;
-        int numberOfDownDays = 0;
-        int numberOfDaysTotal = 0;
-        Quotation currentQuotation;
-        Quotation previousQuotation;
-        float performance;
-        final int requiredMapSize = 3;
-        Map<String, Integer> resultMap = new HashMap<>(requiredMapSize);
-        PerformanceCalculator performanceCalculator = new PerformanceCalculator();
-
-        indexOfStartQuotation = sortedQuotations.getQuotations().indexOf(startQuotation);
-        indexOfEndQuotation = sortedQuotations.getQuotations().indexOf(endQuotation);
-
-        for (int i = indexOfStartQuotation; i >= indexOfEndQuotation; i--) {
-            // Can't calculate performance for oldest Quotation because no previous Quotation exists for this one.
-            if (sortedQuotations.getQuotations().size() <= (i + 1)) {
-                continue;
-            }
-
-            previousQuotation = sortedQuotations.getQuotations().get(i + 1);
-            currentQuotation = sortedQuotations.getQuotations().get(i);
-            performance = performanceCalculator.getPerformance(currentQuotation, previousQuotation);
-
-            if (performance > 0) {
-                numberOfUpDays++;
-            } else if (performance < 0) {
-                numberOfDownDays++;
-            }
-
-            numberOfDaysTotal++;
-        }
-
-        resultMap.put(MAP_ENTRY_UP_DAYS, numberOfUpDays);
-        resultMap.put(MAP_ENTRY_DOWN_DAYS, numberOfDownDays);
-        resultMap.put(MAP_ENTRY_DAYS_TOTAL, numberOfDaysTotal);
-
-        return resultMap;
-    }
-
-    /**
-     * Checks if the current Quotation constitutes a good close (close in the upper half of the daily trading range).
-     *
-     * @param currentQuotation The current Quotation.
-     * @return true, if currentQuotation constitutes a good close; false, if not.
-     */
-    public boolean isGoodClose(final Quotation currentQuotation) {
-        BigDecimal medianPrice;
-        final int scale = 3;
-
-        medianPrice = currentQuotation.getLow().add(currentQuotation.getHigh()).divide(new BigDecimal(2), scale,
-                RoundingMode.HALF_UP);
-
-        // A close exactly in the middle of the range is considered a bad close.
-        if (currentQuotation.getClose().compareTo(medianPrice) == 1) {
-            return true;
-        }
-
-        return false;
     }
 }
