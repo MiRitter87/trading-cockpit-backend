@@ -343,16 +343,11 @@ public class InstrumentCheckCountingController {
      */
     public List<ProtocolEntry> checkThreeHigherCloses(final Date startDate, final QuotationArray sortedQuotations)
             throws Exception {
-
         int startIndex;
-        int numberOfUpDays;
         List<ProtocolEntry> protocolEntries = new ArrayList<>();
         ProtocolEntry protocolEntry;
-        float performance;
-        MovingAverageData maData;
         final int thresholdDaysWithHigherCloses = 3;
-        long upVolumeSum;
-        long averageVolumeSum;
+        boolean isThreeHigherCloses;
 
         startIndex = sortedQuotations.getIndexOfQuotationWithDate(startDate);
 
@@ -366,29 +361,9 @@ public class InstrumentCheckCountingController {
                 continue;
             }
 
-            numberOfUpDays = 0;
-            upVolumeSum = 0;
-            averageVolumeSum = 0;
+            isThreeHigherCloses = this.isThreeHigherCloses(thresholdDaysWithHigherCloses, sortedQuotations, i);
 
-            // Count the number of higher closes within the last three trading days.
-            for (int j = 0; j < thresholdDaysWithHigherCloses; j++) {
-                maData = sortedQuotations.getQuotations().get(i + j).getMovingAverageData();
-
-                if (maData == null || maData.getSma30Volume() == 0) {
-                    continue;
-                }
-
-                performance = this.performanceCalculator.getPerformance(sortedQuotations.getQuotations().get(i + j),
-                        sortedQuotations.getQuotations().get(i + j + 1));
-
-                if (performance > 0) {
-                    numberOfUpDays++;
-                    upVolumeSum = upVolumeSum + sortedQuotations.getQuotations().get(i + j).getVolume();
-                    averageVolumeSum = averageVolumeSum + maData.getSma30Volume();
-                }
-            }
-
-            if (numberOfUpDays == thresholdDaysWithHigherCloses && upVolumeSum > averageVolumeSum) {
+            if (isThreeHigherCloses) {
                 protocolEntry = new ProtocolEntry();
                 protocolEntry.setCategory(ProtocolEntryCategory.CONFIRMATION);
                 protocolEntry.setDate(
@@ -553,6 +528,48 @@ public class InstrumentCheckCountingController {
         }
 
         if (numberOfDownDays == thresholdDaysWithLowerLows && downVolumeSum > averageVolumeSum) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Checks if three higher closes on above-average volume are given.
+     *
+     * @param thresholdDaysWithHigherCloses Number of days to check for successive higher closes.
+     * @param sortedQuotations              The quotations sorted by date that build the trading history.
+     * @param startIndex                    The index where to start the check for higher closes.
+     * @return true, if three higher closes on above-average volume; false, if not.
+     */
+    private boolean isThreeHigherCloses(final int thresholdDaysWithHigherCloses, final QuotationArray sortedQuotations,
+            final int startIndex) {
+        MovingAverageData maData;
+        int numberOfUpDays = 0;
+        long upVolumeSum = 0;
+        long averageVolumeSum = 0;
+        float performance;
+
+        // Count the number of higher closes within the last three trading days.
+        for (int j = 0; j < thresholdDaysWithHigherCloses; j++) {
+            maData = sortedQuotations.getQuotations().get(startIndex + j).getMovingAverageData();
+
+            if (maData == null || maData.getSma30Volume() == 0) {
+                continue;
+            }
+
+            performance = this.performanceCalculator.getPerformance(
+                    sortedQuotations.getQuotations().get(startIndex + j),
+                    sortedQuotations.getQuotations().get(startIndex + j + 1));
+
+            if (performance > 0) {
+                numberOfUpDays++;
+                upVolumeSum = upVolumeSum + sortedQuotations.getQuotations().get(startIndex + j).getVolume();
+                averageVolumeSum = averageVolumeSum + maData.getSma30Volume();
+            }
+        }
+
+        if (numberOfUpDays == thresholdDaysWithHigherCloses && upVolumeSum > averageVolumeSum) {
             return true;
         }
 
