@@ -8,7 +8,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import backend.controller.scan.IndicatorCalculator;
+import backend.controller.scan.IndicatorCalculationController;
 import backend.dao.quotation.provider.QuotationProviderDAO;
 import backend.dao.quotation.provider.QuotationProviderYahooDAOStub;
 import backend.model.Currency;
@@ -485,7 +485,7 @@ public class QuotationServiceFixture {
             final List<Quotation> quotations) {
         Quotation quotation;
         List<Quotation> quotationsWithIndicators = new ArrayList<>();
-        IndicatorCalculator indicatorCalculator = new IndicatorCalculator();
+        IndicatorCalculationController indicatorCalculator = new IndicatorCalculationController();
 
         // Quotations of Instrument are needed for indicator calculation.
         instrument.setQuotations(quotations);

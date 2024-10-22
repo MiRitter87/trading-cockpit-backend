@@ -14,7 +14,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import backend.controller.scan.IndicatorCalculator;
+import backend.controller.scan.IndicatorCalculationController;
 import backend.dao.quotation.provider.QuotationProviderYahooDAO;
 import backend.dao.quotation.provider.QuotationProviderYahooDAOStub;
 import backend.model.StockExchange;
@@ -105,7 +105,7 @@ public class InstrumentCheckExtremumControllerTest {
      * Initializes the indicators of the DML stock.
      */
     private void initializeDMLIndicators() {
-        IndicatorCalculator indicatorCalculator = new IndicatorCalculator();
+        IndicatorCalculationController indicatorCalculator = new IndicatorCalculationController();
         List<Quotation> sortedQuotations;
         Instrument instrument = new Instrument();
         Quotation quotation;
@@ -208,12 +208,14 @@ public class InstrumentCheckExtremumControllerTest {
         calendar.set(2021, 8, 10); // Largest daily high/low-spread occurred on 10.09.21
         expectedProtocolEntry1.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
         expectedProtocolEntry1.setCategory(ProtocolEntryCategory.UNCERTAIN);
-        expectedProtocolEntry1.setText(MessageFormat.format(this.resources.getString("protocol.largestDailySpread"), expectedPercentage1));
+        expectedProtocolEntry1.setText(
+                MessageFormat.format(this.resources.getString("protocol.largestDailySpread"), expectedPercentage1));
 
         calendar.set(2021, 9, 12); // A new largest daily high/low-spread occurred on 12.10.21.
         expectedProtocolEntry2.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
         expectedProtocolEntry2.setCategory(ProtocolEntryCategory.UNCERTAIN);
-        expectedProtocolEntry2.setText(MessageFormat.format(this.resources.getString("protocol.largestDailySpread"), expectedPercentage2));
+        expectedProtocolEntry2.setText(
+                MessageFormat.format(this.resources.getString("protocol.largestDailySpread"), expectedPercentage2));
 
         // Call controller to perform check.
         calendar.set(2021, 8, 6); // Begin check on 06.09.21.

@@ -63,9 +63,9 @@ public class ScanThread extends DataRetrievalThread {
     private ScanDAO scanDAO;
 
     /**
-     * Indicator Calculator.
+     * Controller organizing the calculation of indicators.
      */
-    private IndicatorCalculator indicatorCalculator;
+    private IndicatorCalculationController indicatorCalculator;
 
     /**
      * Controller for statistical data.
@@ -96,7 +96,7 @@ public class ScanThread extends DataRetrievalThread {
         this.quotationDAO = DAOManager.getInstance().getQuotationDAO();
         this.scanDAO = DAOManager.getInstance().getScanDAO();
 
-        this.indicatorCalculator = new IndicatorCalculator();
+        this.indicatorCalculator = new IndicatorCalculationController();
         this.statisticCalculationController = new StatisticCalculationController();
     }
 

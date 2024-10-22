@@ -14,7 +14,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import backend.controller.scan.IndicatorCalculator;
+import backend.controller.scan.IndicatorCalculationController;
 import backend.dao.quotation.provider.QuotationProviderYahooDAO;
 import backend.dao.quotation.provider.QuotationProviderYahooDAOStub;
 import backend.model.StockExchange;
@@ -105,7 +105,7 @@ public class InstrumentCheckCountingControllerTest {
      * Initializes the indicators of the DML stock.
      */
     private void initializeDMLIndicators() {
-        IndicatorCalculator indicatorCalculator = new IndicatorCalculator();
+        IndicatorCalculationController indicatorCalculator = new IndicatorCalculationController();
         List<Quotation> sortedQuotations;
         Instrument instrument = new Instrument();
         Quotation quotation;
