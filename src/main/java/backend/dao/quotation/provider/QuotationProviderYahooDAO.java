@@ -147,58 +147,35 @@ public class QuotationProviderYahooDAO extends AbstractQuotationProviderDAO impl
     protected List<Quotation> convertJSONToQuotations(final String quotationHistoryAsJSON) throws Exception {
         List<Quotation> quotationHistory = new ArrayList<>();
         Quotation quotation;
-        Map<?, ?> map;
-        ObjectMapper mapper = new ObjectMapper();
         String symbol = "";
         boolean historyIsIncomplete = false;
+        LinkedHashMap<?, ?> resultAttributes = this.getResultAttributes(quotationHistoryAsJSON);
+        ArrayList<?> timestampData = (ArrayList<?>) resultAttributes.get("timestamp");
 
-        try {
-            map = mapper.readValue(quotationHistoryAsJSON, Map.class);
-            LinkedHashMap<?, ?> quoteResponse = (LinkedHashMap<?, ?>) map.get("chart");
-            ArrayList<?> result = (ArrayList<?>) quoteResponse.get("result");
-            LinkedHashMap<?, ?> resultAttributes = (LinkedHashMap<?, ?>) result.get(0);
-            ArrayList<?> timestampData = (ArrayList<?>) resultAttributes.get("timestamp");
+        if (timestampData == null) {
+            throw new Exception("There are no Quotation data (timestamps) for the given Instrument.");
+        }
 
-            if (timestampData == null) {
-                throw new Exception("There are no Quotation data (timestamps) for the given Instrument.");
+        LinkedHashMap<?, ?> metaAttributes = (LinkedHashMap<?, ?>) resultAttributes.get("meta");
+        LinkedHashMap<?, ?> indicators = (LinkedHashMap<?, ?>) resultAttributes.get("indicators");
+        ArrayList<?> quote = (ArrayList<?>) indicators.get("quote");
+        LinkedHashMap<?, ?> quoteAttributes = (LinkedHashMap<?, ?>) quote.get(0);
+        ArrayList<?> volumeData = (ArrayList<?>) quoteAttributes.get("volume");
+
+        symbol = (String) metaAttributes.get("symbol");
+
+        for (int i = timestampData.size(); i > 0; i--) {
+            try {
+                quotation = new Quotation();
+                quotation.setDate(this.getDate(timestampData.get(i - 1)));
+                quotation.setCurrency(this.getCurrency((String) metaAttributes.get("currency")));
+                quotation.setVolume(this.getVolumeFromQuotationHistoryResponse(volumeData, i - 1));
+                this.setOHLCData(quotation, i, quoteAttributes);
+                quotationHistory.add(quotation);
+            } catch (Exception exception) {
+                historyIsIncomplete = true;
+                continue;
             }
-
-            LinkedHashMap<?, ?> metaAttributes = (LinkedHashMap<?, ?>) resultAttributes.get("meta");
-            LinkedHashMap<?, ?> indicators = (LinkedHashMap<?, ?>) resultAttributes.get("indicators");
-            ArrayList<?> quote = (ArrayList<?>) indicators.get("quote");
-            LinkedHashMap<?, ?> quoteAttributes = (LinkedHashMap<?, ?>) quote.get(0);
-            ArrayList<?> volumeData = (ArrayList<?>) quoteAttributes.get("volume");
-            ArrayList<?> openData = (ArrayList<?>) quoteAttributes.get("open");
-            ArrayList<?> highData = (ArrayList<?>) quoteAttributes.get("high");
-            ArrayList<?> lowData = (ArrayList<?>) quoteAttributes.get("low");
-            ArrayList<?> closeData = (ArrayList<?>) quoteAttributes.get("close");
-
-            symbol = (String) metaAttributes.get("symbol");
-
-            for (int i = timestampData.size(); i > 0; i--) {
-                try {
-                    quotation = new Quotation();
-                    quotation.setDate(this.getDate(timestampData.get(i - 1)));
-                    quotation.setCurrency(this.getCurrency((String) metaAttributes.get("currency")));
-                    quotation.setVolume(this.getVolumeFromQuotationHistoryResponse(volumeData, i - 1));
-                    quotation.setOpen(
-                            this.getPriceFromQuotationHistoryResponse(openData, i - 1, quotation.getCurrency()));
-                    quotation.setHigh(
-                            this.getPriceFromQuotationHistoryResponse(highData, i - 1, quotation.getCurrency()));
-                    quotation
-                            .setLow(this.getPriceFromQuotationHistoryResponse(lowData, i - 1, quotation.getCurrency()));
-                    quotation.setClose(
-                            this.getPriceFromQuotationHistoryResponse(closeData, i - 1, quotation.getCurrency()));
-                    quotationHistory.add(quotation);
-                } catch (Exception exception) {
-                    historyIsIncomplete = true;
-                    continue;
-                }
-            }
-        } catch (JsonMappingException e) {
-            throw new Exception(e);
-        } catch (JsonProcessingException e) {
-            throw new Exception(e);
         }
 
         if (historyIsIncomplete) {
@@ -208,6 +185,43 @@ public class QuotationProviderYahooDAO extends AbstractQuotationProviderDAO impl
         }
 
         return quotationHistory;
+    }
+
+    /**
+     * Gets a LinkedHashMap containing the result attributes of the WebService response.
+     *
+     * @param quotationHistoryAsJSON The quotation history as JSON String.
+     * @return LinkedHashMap containing the result attributes
+     * @throws Exception Failed to read values from JSON response.
+     */
+    private LinkedHashMap<?, ?> getResultAttributes(final String quotationHistoryAsJSON) throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        Map<?, ?> map = mapper.readValue(quotationHistoryAsJSON, Map.class);
+        LinkedHashMap<?, ?> quoteResponse = (LinkedHashMap<?, ?>) map.get("chart");
+        ArrayList<?> result = (ArrayList<?>) quoteResponse.get("result");
+
+        return (LinkedHashMap<?, ?>) result.get(0);
+    }
+
+    /**
+     * Fills the OHLC price data of the given Quotation.
+     *
+     * @param quotation       The Quotation whose data are to be filled.
+     * @param index           The index where the price data are taken from.
+     * @param quoteAttributes The array of quotations.
+     * @throws Exception Failed to read price data.
+     */
+    private void setOHLCData(final Quotation quotation, final int index, final LinkedHashMap<?, ?> quoteAttributes)
+            throws Exception {
+        ArrayList<?> openData = (ArrayList<?>) quoteAttributes.get("open");
+        ArrayList<?> highData = (ArrayList<?>) quoteAttributes.get("high");
+        ArrayList<?> lowData = (ArrayList<?>) quoteAttributes.get("low");
+        ArrayList<?> closeData = (ArrayList<?>) quoteAttributes.get("close");
+
+        quotation.setOpen(this.getPriceFromQuotationHistoryResponse(openData, index - 1, quotation.getCurrency()));
+        quotation.setHigh(this.getPriceFromQuotationHistoryResponse(highData, index - 1, quotation.getCurrency()));
+        quotation.setLow(this.getPriceFromQuotationHistoryResponse(lowData, index - 1, quotation.getCurrency()));
+        quotation.setClose(this.getPriceFromQuotationHistoryResponse(closeData, index - 1, quotation.getCurrency()));
     }
 
     /**
