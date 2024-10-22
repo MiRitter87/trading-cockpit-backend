@@ -68,11 +68,6 @@ public class ScanThread extends DataRetrievalThread {
     private IndicatorCalculationController indicatorCalculator;
 
     /**
-     * Controller for statistical data.
-     */
-    private StatisticCalculationController statisticCalculationController;
-
-    /**
      * Application logging.
      */
     public static final Logger LOGGER = LogManager.getLogger(ScanThread.class);
@@ -97,7 +92,6 @@ public class ScanThread extends DataRetrievalThread {
         this.scanDAO = DAOManager.getInstance().getScanDAO();
 
         this.indicatorCalculator = new IndicatorCalculationController();
-        this.statisticCalculationController = new StatisticCalculationController();
     }
 
     /**
@@ -475,8 +469,10 @@ public class ScanThread extends DataRetrievalThread {
      * Updates the statistics.
      */
     private void updateStatistics() {
+        StatisticCalculationController statisticCalculationController = new StatisticCalculationController();
+
         try {
-            this.statisticCalculationController.updateStatistic();
+            statisticCalculationController.updateStatistic();
         } catch (Exception e) {
             LOGGER.error("Failed to update the statistics.", e);
         }
