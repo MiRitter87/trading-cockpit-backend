@@ -423,6 +423,8 @@ public class Instrument {
      */
     @Override
     public boolean equals(final Object obj) {
+        InstrumentValidator validator = new InstrumentValidator(this);
+
         if (this == obj) {
             return true;
         }
@@ -433,95 +435,16 @@ public class Instrument {
             return false;
         }
         Instrument other = (Instrument) obj;
-        if (id == null) {
-            if (other.id != null) {
-                return false;
-            }
-        } else if (!id.equals(other.id)) {
+
+        if (!validator.areAttributesEqual(other)) {
             return false;
         }
-        if (name == null) {
-            if (other.name != null) {
-                return false;
-            }
-        } else if (!name.equals(other.name)) {
-            return false;
-        }
-        if (stockExchange != other.stockExchange) {
-            return false;
-        }
-        if (symbol == null) {
-            if (other.symbol != null) {
-                return false;
-            }
-        } else if (!symbol.equals(other.symbol)) {
-            return false;
-        }
-        if (type != other.type) {
-            return false;
-        }
-        if (companyPathInvestingCom == null) {
-            if (other.companyPathInvestingCom != null) {
-                return false;
-            }
-        } else if (!companyPathInvestingCom.equals(other.companyPathInvestingCom)) {
-            return false;
-        }
-        if (sector == null && other.sector != null) {
-            return false;
-        } else if (sector != null && other.sector == null) {
-            return false;
-        } else if (sector != null && other.sector != null && !sector.getId().equals(other.sector.getId())) {
-            return false;
-        }
-        if (industryGroup == null && other.industryGroup != null) {
-            return false;
-        } else if (industryGroup != null && other.industryGroup == null) {
-            return false;
-        } else if (industryGroup != null && other.industryGroup != null
-                && !industryGroup.getId().equals(other.industryGroup.getId())) {
-            return false;
-        }
-        if (dividend == null && other.dividend != null) {
-            return false;
-        } else if (dividend != null && other.dividend == null) {
-            return false;
-        } else if (dividend != null && other.dividend != null && !dividend.getId().equals(other.dividend.getId())) {
-            return false;
-        }
-        if (divisor == null && other.divisor != null) {
-            return false;
-        } else if (divisor != null && other.divisor == null) {
-            return false;
-        } else if (divisor != null && other.divisor != null && !divisor.getId().equals(other.divisor.getId())) {
-            return false;
-        }
-        if (dataSourceList == null && other.dataSourceList != null) {
-            return false;
-        } else if (dataSourceList != null && other.dataSourceList == null) {
-            return false;
-        } else if (dataSourceList != null && other.dataSourceList != null
-                && !dataSourceList.getId().equals(other.dataSourceList.getId())) {
+
+        if (!validator.areReferencesEqual(other)) {
             return false;
         }
 
         return true;
-    }
-
-    /**
-     * Gets the quotation with the given id.
-     *
-     * @param quotationId The id of the quotation.
-     * @return The quotation with the given id, if found.
-     */
-    public Quotation getQuotationWithId(final Integer quotationId) {
-        for (Quotation tempQuotation : this.quotations) {
-            if (tempQuotation.getId().equals(quotationId)) {
-                return tempQuotation;
-            }
-        }
-
-        return null;
     }
 
     /**

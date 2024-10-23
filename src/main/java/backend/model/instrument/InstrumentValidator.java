@@ -32,6 +32,102 @@ public class InstrumentValidator {
     }
 
     /**
+     * Checks if the attributes of this Instrument are equal to the attributes of the other instrument.
+     *
+     * @param otherInstrument The other Instrument checked for equality.
+     * @return true, if both objects are equal in their attributes.
+     */
+    public boolean areAttributesEqual(final Instrument otherInstrument) {
+        if (this.instrument.getId() == null) {
+            if (otherInstrument.getId() != null) {
+                return false;
+            }
+        } else if (!this.instrument.getId().equals(otherInstrument.getId())) {
+            return false;
+        }
+        if (this.instrument.getName() == null) {
+            if (otherInstrument.getName() != null) {
+                return false;
+            }
+        } else if (!this.instrument.getName().equals(otherInstrument.getName())) {
+            return false;
+        }
+        if (this.instrument.getStockExchange() != otherInstrument.getStockExchange()) {
+            return false;
+        }
+        if (this.instrument.getSymbol() == null) {
+            if (otherInstrument.getSymbol() != null) {
+                return false;
+            }
+        } else if (!instrument.getSymbol().equals(otherInstrument.getSymbol())) {
+            return false;
+        }
+        if (this.instrument.getType() != otherInstrument.getType()) {
+            return false;
+        }
+        if (this.instrument.getCompanyPathInvestingCom() == null) {
+            if (otherInstrument.getCompanyPathInvestingCom() != null) {
+                return false;
+            }
+        } else if (!this.instrument.getCompanyPathInvestingCom().equals(otherInstrument.getCompanyPathInvestingCom())) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Checks if the references of this Instrument are equal to the attributes of the other instrument.
+     *
+     * @param otherInstrument The other Instrument checked for equality.
+     * @return true, if both objects are equal in their references.
+     */
+    public boolean areReferencesEqual(final Instrument otherInstrument) {
+        if (this.instrument.getSector() == null && otherInstrument.getSector() != null) {
+            return false;
+        } else if (this.instrument.getSector() != null && otherInstrument.getSector() == null) {
+            return false;
+        } else if (this.instrument.getSector() != null && otherInstrument.getSector() != null
+                && !this.instrument.getSector().getId().equals(otherInstrument.getSector().getId())) {
+            return false;
+        }
+        if (this.instrument.getIndustryGroup() == null && otherInstrument.getIndustryGroup() != null) {
+            return false;
+        } else if (this.instrument.getIndustryGroup() != null && otherInstrument.getIndustryGroup() == null) {
+            return false;
+        } else if (this.instrument.getIndustryGroup() != null && otherInstrument.getIndustryGroup() != null
+                && !this.instrument.getIndustryGroup().getId().equals(otherInstrument.getIndustryGroup().getId())) {
+            return false;
+        }
+        if (this.instrument.getDividend() == null && otherInstrument.getDividend() != null) {
+            return false;
+        } else if (this.instrument.getDividend() != null && otherInstrument.getDividend() == null) {
+            return false;
+        } else if (this.instrument.getDividend() != null && otherInstrument.getDividend() != null
+                && !this.instrument.getDividend().getId().equals(otherInstrument.getDividend().getId())) {
+            return false;
+        }
+        if (this.instrument.getDivisor() == null && otherInstrument.getDivisor() != null) {
+            return false;
+        } else if (this.instrument.getDivisor() != null && otherInstrument.getDivisor() == null) {
+            return false;
+        } else if (this.instrument.getDivisor() != null && otherInstrument.getDivisor() != null
+                && !this.instrument.getDivisor().getId().equals(otherInstrument.getDivisor().getId())) {
+            return false;
+        }
+        if (this.instrument.getDataSourceList() == null && otherInstrument.getDataSourceList() != null) {
+            return false;
+        } else if (this.instrument.getDataSourceList() != null && otherInstrument.getDataSourceList() == null) {
+            return false;
+        } else if (this.instrument.getDataSourceList() != null && otherInstrument.getDataSourceList() != null
+                && !this.instrument.getDataSourceList().getId().equals(otherInstrument.getDataSourceList().getId())) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Validates the instrument.
      *
      * @throws LocalizedException A general exception containing a localized message.
