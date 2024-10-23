@@ -168,10 +168,8 @@ public class StatisticHibernateDAO implements StatisticDAO {
             }
 
             criteriaQuery.where(predicates.toArray(new Predicate[predicates.size()]));
-
             TypedQuery<Statistic> typedQuery = entityManager.createQuery(criteriaQuery);
             statistics = typedQuery.getResultList();
-
             entityManager.getTransaction().commit();
         } catch (Exception exception) {
             // If something breaks a rollback is necessary.
