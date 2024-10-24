@@ -32,6 +32,107 @@ public class PriceAlertValidator {
     }
 
     /**
+     * Checks if the timestamps of this PriceAlert are equal to the other PriceAlert.
+     *
+     * @param other The other PriceAlert.
+     * @return true, if timestamps are equal; false, if not.
+     */
+    public boolean areTimestampsEqual(final PriceAlert other) {
+        if (this.priceAlert.getConfirmationTime() == null && other.getConfirmationTime() != null) {
+            return false;
+        }
+        if (this.priceAlert.getConfirmationTime() != null && other.getConfirmationTime() == null) {
+            return false;
+        }
+        if (this.priceAlert.getConfirmationTime() != null && other.getConfirmationTime() != null) {
+            if (this.priceAlert.getConfirmationTime().getTime() != other.getConfirmationTime().getTime()) {
+                return false;
+            }
+        }
+        if (this.priceAlert.getTriggerTime() == null && other.getTriggerTime() != null) {
+            return false;
+        }
+        if (this.priceAlert.getTriggerTime() != null && other.getTriggerTime() == null) {
+            return false;
+        }
+        if (this.priceAlert.getTriggerTime() != null && other.getTriggerTime() != null) {
+            if (this.priceAlert.getTriggerTime().getTime() != other.getTriggerTime().getTime()) {
+                return false;
+            }
+        }
+        if (this.priceAlert.getLastStockQuoteTime() == null && other.getLastStockQuoteTime() != null) {
+            return false;
+        }
+        if (this.priceAlert.getLastStockQuoteTime() != null && other.getLastStockQuoteTime() == null) {
+            return false;
+        }
+        if (this.priceAlert.getLastStockQuoteTime() != null && other.getLastStockQuoteTime() != null) {
+            if (this.priceAlert.getLastStockQuoteTime().getTime() != other.getLastStockQuoteTime().getTime()) {
+                return false;
+            }
+        }
+        if (this.priceAlert.getMailTransmissionTime() == null && other.getMailTransmissionTime() != null) {
+            return false;
+        }
+        if (this.priceAlert.getMailTransmissionTime() != null && other.getMailTransmissionTime() == null) {
+            return false;
+        }
+        if (this.priceAlert.getMailTransmissionTime() != null && other.getMailTransmissionTime() != null) {
+            if (this.priceAlert.getMailTransmissionTime().getTime() != other.getMailTransmissionTime().getTime()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Checks if basic attributes of this PriceAlert are equal to the other PriceAlert.
+     *
+     * @param other The other PriceAlert.
+     * @return true, if basic attribtues are equal; false, if not.
+     */
+    public boolean areBasicAttributesEqual(final PriceAlert other) {
+        if (this.priceAlert.getId() == null) {
+            if (other.getId() != null) {
+                return false;
+            }
+        } else if (!this.priceAlert.getId().equals(other.getId())) {
+            return false;
+        }
+
+        if (this.priceAlert.getAlertType() != other.getAlertType()) {
+            return false;
+        }
+
+        if (this.priceAlert.getPrice() == null) {
+            if (other.getPrice() != null) {
+                return false;
+            }
+        } else if (this.priceAlert.getPrice().compareTo(other.getPrice()) != 0) {
+            return false;
+        }
+
+        if (this.priceAlert.getCurrency() == null) {
+            if (other.getCurrency() != null) {
+                return false;
+            }
+        } else if (this.priceAlert.getCurrency().compareTo(other.getCurrency()) != 0) {
+            return false;
+        }
+
+        if (this.priceAlert.getInstrument() == null) {
+            if (other.getInstrument() != null) {
+                return false;
+            }
+        } else if (!this.priceAlert.getInstrument().equals(other.getInstrument())) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Validates the price alert.
      *
      * @throws LocalizedException A general exception containing a localized message.

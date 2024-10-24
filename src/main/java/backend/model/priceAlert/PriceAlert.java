@@ -331,6 +331,8 @@ public class PriceAlert {
      */
     @Override
     public boolean equals(final Object obj) {
+        PriceAlertValidator validator = new PriceAlertValidator(this);
+
         if (this == obj) {
             return true;
         }
@@ -341,70 +343,15 @@ public class PriceAlert {
             return false;
         }
         PriceAlert other = (PriceAlert) obj;
-        if (alertType != other.alertType) {
+
+        if (!validator.areTimestampsEqual(other)) {
             return false;
         }
-        if (confirmationTime == null && other.confirmationTime != null) {
+
+        if (!validator.areBasicAttributesEqual(other)) {
             return false;
         }
-        if (confirmationTime != null && other.confirmationTime == null) {
-            return false;
-        }
-        if (confirmationTime != null && other.confirmationTime != null) {
-            if (confirmationTime.getTime() != other.confirmationTime.getTime()) {
-                return false;
-            }
-        }
-        if (id == null) {
-            if (other.id != null) {
-                return false;
-            }
-        } else if (!id.equals(other.id)) {
-            return false;
-        }
-        if (price == null) {
-            if (other.price != null) {
-                return false;
-            }
-        } else if (price.compareTo(other.price) != 0) {
-            return false;
-        }
-        if (currency == null) {
-            if (other.currency != null) {
-                return false;
-            }
-        } else if (currency.compareTo(other.currency) != 0) {
-            return false;
-        }
-        if (instrument == null) {
-            if (other.instrument != null) {
-                return false;
-            }
-        } else if (!instrument.equals(other.instrument)) {
-            return false;
-        }
-        if (triggerTime == null && other.triggerTime != null) {
-            return false;
-        }
-        if (triggerTime != null && other.triggerTime == null) {
-            return false;
-        }
-        if (triggerTime != null && other.triggerTime != null) {
-            if (triggerTime.getTime() != other.triggerTime.getTime()) {
-                return false;
-            }
-        }
-        if (lastStockQuoteTime == null && other.lastStockQuoteTime != null) {
-            return false;
-        }
-        if (lastStockQuoteTime != null && other.lastStockQuoteTime == null) {
-            return false;
-        }
-        if (lastStockQuoteTime != null && other.lastStockQuoteTime != null) {
-            if (lastStockQuoteTime.getTime() != other.lastStockQuoteTime.getTime()) {
-                return false;
-            }
-        }
+
         if (Float.floatToIntBits(triggerDistancePercent) != Float.floatToIntBits(other.triggerDistancePercent)) {
             return false;
         }
@@ -418,17 +365,7 @@ public class PriceAlert {
         } else if (!alertMailAddress.equals(other.alertMailAddress)) {
             return false;
         }
-        if (mailTransmissionTime == null && other.mailTransmissionTime != null) {
-            return false;
-        }
-        if (mailTransmissionTime != null && other.mailTransmissionTime == null) {
-            return false;
-        }
-        if (mailTransmissionTime != null && other.mailTransmissionTime != null) {
-            if (mailTransmissionTime.getTime() != other.mailTransmissionTime.getTime()) {
-                return false;
-            }
-        }
+
         return true;
     }
 
