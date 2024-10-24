@@ -352,6 +352,23 @@ public class Quotation {
         }
         Quotation other = (Quotation) obj;
 
+        if (!this.ohlcEquals(other)) {
+            return false;
+        }
+
+        return currency == other.currency && Objects.equals(date, other.date) && Objects.equals(id, other.id)
+                && Objects.equals(indicator, other.indicator) && Objects.equals(instrument, other.instrument)
+                && Objects.equals(relativeStrengthData, other.relativeStrengthData) && volume == other.volume
+                && Objects.equals(movingAverageData, other.movingAverageData);
+    }
+
+    /**
+     * Checks if open, high, low, close data of some other Quotation are "equal to" this one.
+     *
+     * @param other The other Quotation.
+     * @return true, if OHLC data are equal; false, if not.
+     */
+    private boolean ohlcEquals(final Quotation other) {
         if (open == null && other.open != null) {
             return false;
         }
@@ -392,9 +409,6 @@ public class Quotation {
             return false;
         }
 
-        return currency == other.currency && Objects.equals(date, other.date) && Objects.equals(id, other.id)
-                && Objects.equals(indicator, other.indicator) && Objects.equals(instrument, other.instrument)
-                && Objects.equals(relativeStrengthData, other.relativeStrengthData) && volume == other.volume
-                && Objects.equals(movingAverageData, other.movingAverageData);
+        return true;
     }
 }
