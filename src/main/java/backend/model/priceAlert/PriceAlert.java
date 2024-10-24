@@ -3,19 +3,6 @@ package backend.model.priceAlert;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Objects;
-import java.util.Set;
-
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
-import jakarta.validation.ValidatorFactory;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
-
-import org.hibernate.validator.HibernateValidator;
-import org.hibernate.validator.messageinterpolation.ExpressionLanguageFeatureLevel;
 
 import backend.model.Currency;
 import backend.model.LocalizedException;
@@ -32,6 +19,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * An alert that a stock has reached a certain price at a stock exchange.
@@ -60,12 +51,12 @@ public class PriceAlert {
     /**
      * The maximum e-mail address field length allowed.
      */
-    private static final int MAX_MAIL_ADDRESS_LENGTH = 254;
+    public static final int MAX_MAIL_ADDRESS_LENGTH = 254;
 
     /**
      * The minimum e-mail address field length allowed.
      */
-    private static final int MIN_MAIL_ADDRESS_LENGTH = 5;
+    public static final int MIN_MAIL_ADDRESS_LENGTH = 5;
 
     /**
      * The ID.
@@ -448,52 +439,7 @@ public class PriceAlert {
      * @throws Exception          In case a general validation error occurred.
      */
     public void validate() throws LocalizedException, Exception {
-        this.validateAnnotations();
-        this.validateAdditionalCharacteristics();
-    }
-
-    /**
-     * Validates the price alert according to the annotations of the validation framework.
-     *
-     * @exception Exception In case the validation failed.
-     */
-    private void validateAnnotations() throws Exception {
-        ValidatorFactory validatorFactory = Validation.byProvider(HibernateValidator.class).configure()
-                .constraintExpressionLanguageFeatureLevel(ExpressionLanguageFeatureLevel.BEAN_METHODS)
-                .buildValidatorFactory();
-
-        Validator validator = validatorFactory.getValidator();
-        Set<ConstraintViolation<PriceAlert>> violations = validator.validate(this);
-
-        for (ConstraintViolation<PriceAlert> violation : violations) {
-            throw new Exception(violation.getMessage());
-        }
-    }
-
-    /**
-     * Validates additional characteristics of the PriceAlert besides annotations.
-     *
-     * @throws LocalizedException A general exception containing a localized message.
-     */
-    private void validateAdditionalCharacteristics() throws LocalizedException {
-        this.validateAlertMailAddress();
-    }
-
-    /**
-     * Validates the alertMailAddress attribute.
-     *
-     * @throws LocalizedException If validation failed.
-     */
-    private void validateAlertMailAddress() throws LocalizedException {
-        if (this.sendMail && this.alertMailAddress == null) {
-            throw new LocalizedException("priceAlert.alertMailAddress.notNull.message");
-        }
-
-        if (this.sendMail && this.alertMailAddress != null && (this.alertMailAddress.length() < MIN_MAIL_ADDRESS_LENGTH
-                || this.alertMailAddress.length() > MAX_MAIL_ADDRESS_LENGTH)) {
-
-            throw new LocalizedException("priceAlert.alertMailAddress.size.message", this.alertMailAddress.length(),
-                    MIN_MAIL_ADDRESS_LENGTH, MAX_MAIL_ADDRESS_LENGTH);
-        }
+        PriceAlertValidator validator = new PriceAlertValidator(this);
+        validator.validate();
     }
 }
