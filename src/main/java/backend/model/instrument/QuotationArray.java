@@ -235,16 +235,9 @@ public class QuotationArray {
         List<Quotation> weeklyQuotations = new ArrayList<>();
         Quotation weeklyQuotation = new Quotation();
         Quotation previousQuotation = null;
-        int startIndex;
 
         this.sortQuotationsByDate();
-
-        if (newestQuotation != null) {
-            startIndex = this.quotations.indexOf(newestQuotation);
-            dailyQuotations = this.quotations.subList(startIndex, this.quotations.size());
-        } else {
-            dailyQuotations = this.quotations;
-        }
+        dailyQuotations = this.getRelevantQuotations(newestQuotation);
 
         for (Quotation dailyQuotation : dailyQuotations) {
             if (this.isNewWeek(dailyQuotation, previousQuotation)) {
@@ -313,6 +306,28 @@ public class QuotationArray {
         }
 
         return false;
+    }
+
+    /**
+     * Determines the List of relevant quotations for the creation of weekly quotations. Relevant quotations begin at
+     * the given newestQuotation and reach up the the oldest Quotation.
+     *
+     * @param newestQuotation The newest Quotation to be included.
+     * @return A List of quotations beginning at the newestQuotation up until the oldest Quotation.
+     */
+    @JsonIgnore
+    private List<Quotation> getRelevantQuotations(final Quotation newestQuotation) {
+        List<Quotation> relevantQuotations = new ArrayList<>();
+        int startIndex;
+
+        if (newestQuotation != null) {
+            startIndex = this.quotations.indexOf(newestQuotation);
+            relevantQuotations = this.quotations.subList(startIndex, this.quotations.size());
+        } else {
+            relevantQuotations = this.quotations;
+        }
+
+        return relevantQuotations;
     }
 
     /**
