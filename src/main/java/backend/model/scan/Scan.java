@@ -293,6 +293,8 @@ public class Scan {
      */
     @Override
     public boolean equals(final Object obj) {
+        ScanValidator validator = new ScanValidator(this);
+
         if (this == obj) {
             return true;
         }
@@ -303,126 +305,17 @@ public class Scan {
             return false;
         }
         Scan other = (Scan) obj;
-        if (description == null) {
-            if (other.description != null) {
-                return false;
-            }
-        } else if (!description.equals(other.description)) {
-            return false;
-        }
-        if (id == null) {
-            if (other.id != null) {
-                return false;
-            }
-        } else if (!id.equals(other.id)) {
-            return false;
-        }
-        if (executionStatus != other.executionStatus) {
-            return false;
-        }
-        if (completionStatus != other.completionStatus) {
-            return false;
-        }
-        if (lastScan == null && other.lastScan != null) {
-            return false;
-        }
-        if (lastScan != null && other.lastScan == null) {
-            return false;
-        }
-        if (lastScan != null && other.lastScan != null) {
-            if (lastScan.getTime() != other.lastScan.getTime()) {
-                return false;
-            }
-        }
-        if (name == null) {
-            if (other.name != null) {
-                return false;
-            }
-        } else if (!name.equals(other.name)) {
-            return false;
-        }
-        if (progress == null) {
-            if (other.progress != null) {
-                return false;
-            }
-        } else if (!progress.equals(other.progress)) {
+
+        if (!validator.areAttributesEqual(other)) {
             return false;
         }
 
-        if (!this.areListsEqual(other)) {
+        if (!validator.areListsEqual(other)) {
             return false;
         }
 
-        if (!this.areIncompleteInstrumentsEqual(other)) {
+        if (!validator.areIncompleteInstrumentsEqual(other)) {
             return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Checks if the referenced lists are equal.
-     *
-     * @param other The other scan for comparison.
-     * @return true, if lists are equal; false otherwise.
-     */
-    private boolean areListsEqual(final Scan other) {
-        if (this.lists == null && other.lists != null) {
-            return false;
-        }
-
-        if (this.lists != null && other.lists == null) {
-            return false;
-        }
-
-        if (this.lists.size() != other.lists.size()) {
-            return false;
-        }
-
-        for (List tempList : this.lists) {
-            List otherList = other.getListWithId(tempList.getId());
-
-            if (otherList == null) {
-                return false;
-            }
-
-            if (!tempList.equals(otherList)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Checks if the referenced incomplete instruments are equal.
-     *
-     * @param other The other scan for comparison.
-     * @return true, if incomplete instruments are equal; false otherwise.
-     */
-    private boolean areIncompleteInstrumentsEqual(final Scan other) {
-        if (this.incompleteInstruments == null && other.incompleteInstruments != null) {
-            return false;
-        }
-
-        if (this.incompleteInstruments != null && other.incompleteInstruments == null) {
-            return false;
-        }
-
-        if (this.incompleteInstruments.size() != other.incompleteInstruments.size()) {
-            return false;
-        }
-
-        for (Instrument tempInstrument : this.incompleteInstruments) {
-            Instrument otherInstrument = other.getIncompleteInstrumentWithId(tempInstrument.getId());
-
-            if (otherInstrument == null) {
-                return false;
-            }
-
-            if (!tempInstrument.equals(otherInstrument)) {
-                return false;
-            }
         }
 
         return true;
