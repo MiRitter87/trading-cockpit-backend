@@ -5,6 +5,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import backend.model.instrument.Instrument;
+import backend.model.list.List;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -17,23 +21,10 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
-import jakarta.validation.ValidatorFactory;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-
-import org.hibernate.validator.HibernateValidator;
-import org.hibernate.validator.messageinterpolation.ExpressionLanguageFeatureLevel;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import backend.model.NoItemsException;
-import backend.model.instrument.Instrument;
-import backend.model.list.List;
 
 /**
  * A scan that retrieves quotes and calculates indicators of multiple instrument lists.
@@ -533,45 +524,7 @@ public class Scan {
      * @throws Exception In case a general validation error occurred.
      */
     public void validate() throws Exception {
-        this.validateAnnotations();
-        this.validateAdditionalCharacteristics();
-    }
-
-    /**
-     * Validates the scan according to the annotations of the validation framework.
-     *
-     * @exception Exception In case the validation failed.
-     */
-    private void validateAnnotations() throws Exception {
-        ValidatorFactory validatorFactory = Validation.byProvider(HibernateValidator.class).configure()
-                .constraintExpressionLanguageFeatureLevel(ExpressionLanguageFeatureLevel.BEAN_METHODS)
-                .buildValidatorFactory();
-
-        Validator validator = validatorFactory.getValidator();
-        Set<ConstraintViolation<Scan>> violations = validator.validate(this);
-
-        for (ConstraintViolation<Scan> violation : violations) {
-            throw new Exception(violation.getMessage());
-        }
-    }
-
-    /**
-     * Validates additional characteristics of the scan besides annotations.
-     *
-     * @throws NoItemsException Indicates that the scan has no lists defined.
-     */
-    private void validateAdditionalCharacteristics() throws NoItemsException {
-        this.validateListsDefined();
-    }
-
-    /**
-     * Checks if lists are defined.
-     *
-     * @throws NoItemsException If no lists are defined.
-     */
-    private void validateListsDefined() throws NoItemsException {
-        if (this.lists == null || this.lists.size() == 0) {
-            throw new NoItemsException();
-        }
+        ScanValidator validator = new ScanValidator(this);
+        validator.validate();
     }
 }
