@@ -1,10 +1,10 @@
 package backend.model.statistic;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Date;
 import java.util.Objects;
 
+import backend.model.LocalizedException;
+import backend.model.instrument.InstrumentType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -14,8 +14,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-import backend.model.LocalizedException;
-import backend.model.instrument.InstrumentType;
 
 /**
  * Statistical data of all instruments of an InstrumentType at a certain point in time.
@@ -452,38 +450,16 @@ public class Statistic {
      * Updates the percentage above SMA(50).
      */
     private void updatePercentAboveSma50() {
-        BigDecimal pctAboveSma50;
-        BigDecimal numAboveSma50;
-        BigDecimal totalNumber;
-        final int hundredPercent = 100;
-
-        if ((this.numberAboveSma50 + this.numberAtOrBelowSma50) != 0) {
-            numAboveSma50 = new BigDecimal(this.numberAboveSma50);
-            totalNumber = new BigDecimal(this.numberAboveSma50 + this.numberAtOrBelowSma50);
-
-            pctAboveSma50 = numAboveSma50.multiply(new BigDecimal(hundredPercent)).divide(totalNumber, 0,
-                    RoundingMode.HALF_UP);
-            this.percentAboveSma50 = pctAboveSma50.floatValue();
-        }
+        StatisticHelper helper = new StatisticHelper();
+        this.percentAboveSma50 = helper.getPercentAboveSma50(this);
     }
 
     /**
      * Updates the percentage above SMA(200).
      */
     private void updatePercentAboveSma200() {
-        BigDecimal pctAboveSma200;
-        BigDecimal numAboveSma200;
-        BigDecimal totalNumber;
-        final int hundredPercent = 100;
-
-        if ((this.numberAboveSma200 + this.numberAtOrBelowSma200) != 0) {
-            numAboveSma200 = new BigDecimal(this.numberAboveSma200);
-            totalNumber = new BigDecimal(this.numberAboveSma200 + this.numberAtOrBelowSma200);
-
-            pctAboveSma200 = numAboveSma200.multiply(new BigDecimal(hundredPercent)).divide(totalNumber, 0,
-                    RoundingMode.HALF_UP);
-            this.percentAboveSma200 = pctAboveSma200.floatValue();
-        }
+        StatisticHelper helper = new StatisticHelper();
+        this.percentAboveSma200 = helper.getPercentAboveSma200(this);
     }
 
     /**
