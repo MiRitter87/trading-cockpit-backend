@@ -502,40 +502,8 @@ public class Statistic {
      */
     @Override
     public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        Statistic other = (Statistic) obj;
-        if (date == null && other.date != null) {
-            return false;
-        }
-        if (date != null && other.date == null) {
-            return false;
-        }
-        if (date != null && other.date != null) {
-            if (date.getTime() != other.date.getTime()) {
-                return false;
-            }
-        }
-
-        return advanceDeclineNumber == other.advanceDeclineNumber && Objects.equals(id, other.id)
-                && Objects.equals(industryGroupId, other.industryGroupId) && Objects.equals(sectorId, other.sectorId)
-                && instrumentType == other.instrumentType && numberAboveSma50 == other.numberAboveSma50
-                && numberAdvance == other.numberAdvance && numberAtOrBelowSma50 == other.numberAtOrBelowSma50
-                && numberAboveSma200 == other.numberAboveSma200 && numberAtOrBelowSma200 == other.numberAtOrBelowSma200
-                && percentAboveSma200 == other.percentAboveSma200 && numberDecline == other.numberDecline
-                && numberOfInstruments == other.numberOfInstruments
-                && numberRitterMarketTrend == other.numberRitterMarketTrend
-                && numberUpOnVolume == other.numberUpOnVolume && numberDownOnVolume == other.numberDownOnVolume
-                && numberBearishReversal == other.numberBearishReversal
-                && numberBullishReversal == other.numberBullishReversal && numberChurning == other.numberChurning
-                && Float.floatToIntBits(percentAboveSma50) == Float.floatToIntBits(other.percentAboveSma50);
+        StatisticValidator validator = new StatisticValidator(this);
+        return validator.isStatisticEqual(obj);
     }
 
     /**
