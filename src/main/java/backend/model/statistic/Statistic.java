@@ -512,17 +512,7 @@ public class Statistic {
      * @throws LocalizedException A general exception containing a localized message.
      */
     public void validate() throws LocalizedException {
-        this.validateSectorAndIgDefined();
-    }
-
-    /**
-     * Validates sector and industry group reference. Only one of them or none can be defined.
-     *
-     * @throws LocalizedException If validation failed.
-     */
-    private void validateSectorAndIgDefined() throws LocalizedException {
-        if (this.sectorId != null && this.industryGroupId != null) {
-            throw new LocalizedException("statistic.sectorAndIgDefined");
-        }
+        StatisticValidator validator = new StatisticValidator(this);
+        validator.validate();
     }
 }

@@ -2,6 +2,8 @@ package backend.model.statistic;
 
 import java.util.Objects;
 
+import backend.model.LocalizedException;
+
 /**
  * Performs attribute validations of the Statistic model.
  *
@@ -73,5 +75,25 @@ public class StatisticValidator {
                         .floatToIntBits(other.getPercentAboveSma50())
                 && Float.floatToIntBits(this.statistic.getPercentAboveSma200()) == Float
                         .floatToIntBits(other.getPercentAboveSma200());
+    }
+
+    /**
+     * Validates the Statistic.
+     *
+     * @throws LocalizedException A general exception containing a localized message.
+     */
+    public void validate() throws LocalizedException {
+        this.validateSectorAndIgDefined();
+    }
+
+    /**
+     * Validates sector and industry group reference. Only one of them or none can be defined.
+     *
+     * @throws LocalizedException If validation failed.
+     */
+    private void validateSectorAndIgDefined() throws LocalizedException {
+        if (this.statistic.getSectorId() != null && this.statistic.getIndustryGroupId() != null) {
+            throw new LocalizedException("statistic.sectorAndIgDefined");
+        }
     }
 }
