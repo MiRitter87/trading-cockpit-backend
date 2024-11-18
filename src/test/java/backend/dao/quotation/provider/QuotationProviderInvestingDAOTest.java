@@ -12,7 +12,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
@@ -96,7 +95,7 @@ public class QuotationProviderInvestingDAOTest {
         instrument.setSymbol("AMZN");
         instrument.setStockExchange(StockExchange.NDQ);
         instrument.setType(InstrumentType.STOCK);
-        instrument.setCompanyPathInvestingCom("amazon-com-inc");
+        instrument.setCompanyPathInvestingCom("6435");
 
         return instrument;
     }
@@ -112,7 +111,7 @@ public class QuotationProviderInvestingDAOTest {
         instrument.setSymbol("DIA");
         instrument.setStockExchange(StockExchange.NYSE);
         instrument.setType(InstrumentType.ETF);
-        instrument.setCompanyPathInvestingCom("diamonds-trust");
+        instrument.setCompanyPathInvestingCom("504");
 
         return instrument;
     }
@@ -163,7 +162,7 @@ public class QuotationProviderInvestingDAOTest {
      */
     public void testGetQueryUrlCurrentQuotationStock() {
         Instrument amazonStock = this.getAmazonInstrument();
-        final String expectedURL = "https://www.investing.com/equities/amazon-com-inc";
+        final String expectedURL = "https://api.investing.com/api/financialdata/6435/historical/chart/?interval=PT1M&pointscount=60\\";
         String actualURL = "";
 
         try {
@@ -180,7 +179,7 @@ public class QuotationProviderInvestingDAOTest {
      */
     public void testGetQueryUrlCurrentQuotationETF() {
         Instrument diaETF = this.getDowJonesIndustrialETF();
-        final String expectedURL = "https://www.investing.com/etfs/diamonds-trust";
+        final String expectedURL = "https://api.investing.com/api/financialdata/504/historical/chart/?interval=PT1M&pointscount=60\\";
         String actualURL = "";
 
         try {
@@ -210,13 +209,13 @@ public class QuotationProviderInvestingDAOTest {
 
     // @Test
     /**
-     * An explorative test that tries to retrieve Quotation data using a cURL command.
+     * An explorative test that tries to retrieve Quotation data of the Amazon stock using a cURL command.
      */
     public void testGetCurrentQuotationCurl() {
         Process process = null;
         final InputStream resultStream;
         String result;
-        final String command = "curl \"https://api.investing.com/api/financialdata/6408/historical/chart/?interval=P1D&pointscount=60\" "
+        final String command = "curl \"https://api.investing.com/api/financialdata/6435/historical/chart/?interval=PT1M&pointscount=60\" "
                 + "--compressed -H \"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0\" "
                 + "-H \"Accept: */*\" -H \"Accept-Language: de,en-US;q=0.7,en;q=0.3\" -H \"Accept-Encoding: gzip, deflate\" "
                 + "-H \"Referer: https://www.investing.com/\" -H \"content-type: application/json\" -H \"domain-id: www\" "
