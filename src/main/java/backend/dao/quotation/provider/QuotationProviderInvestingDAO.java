@@ -24,10 +24,27 @@ public class QuotationProviderInvestingDAO extends AbstractQuotationProviderDAO 
     private static final String PLACEHOLDER_COMPANY = "{company}";
 
     /**
+     * Placeholder for the URL used in a cURL command.
+     */
+    private static final String PLACEHOLDER_URL = "{URL}";
+
+    /**
      * URL to quote investing.com: Current quotation.
      */
     private static final String BASE_URL_CURRENT_QUOTATION = "https://api.investing.com/api/financialdata/"
             + PLACEHOLDER_COMPANY + "/historical/chart/?interval=PT1M&pointscount=60\\";
+
+    /**
+     * The cURL command used to query the current Quotation.
+     */
+    private static final String CURL_CURRENT_QUOTATION = "curl \"" + PLACEHOLDER_URL + "\" --compressed "
+            + "-H \"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0\" "
+            + "-H \"Accept: */*\" -H \"Accept-Language: de,en-US;q=0.7,en;q=0.3\" "
+            + "-H \"Accept-Encoding: gzip, deflate\" -H \"Referer: https://www.investing.com/\" "
+            + "-H \"content-type: application/json\" -H \"domain-id: www\" "
+            + "-H \"Origin: https://www.investing.com\" -H \"DNT: 1\" -H \"Sec-GPC: 1\" "
+            + "-H \"Connection: keep-alive\" -H \"Sec-Fetch-Dest: empty\" -H \"Sec-Fetch-Mode: cors\" "
+            + "-H \"Sec-Fetch-Site: same-site\" -H \"Priority: u=4\" -H \"TE: trailers\"";
 
     /**
      * Initializes the QuotationProviderInvestingDAO.
@@ -113,16 +130,21 @@ public class QuotationProviderInvestingDAO extends AbstractQuotationProviderDAO 
         return queryUrl;
     }
 
-//    /**
-//     * Gets the
-//     *
-//     * @param instrument
-//     * @return
-//     * @throws Exception
-//     */
-//    protected String getCurlCommandCurrentQuotation(final Instrument instrument) throws Exception {
-//
-//    }
+    /**
+     * Gets the cURL command for retrieval of the current Quotation.
+     *
+     * @param instrument The Instrument for which the command is determined.
+     * @return The cUrl command.
+     * @throws Exception Command could not be created.
+     */
+    private String getCurlCommandCurrentQuotation(final Instrument instrument) throws Exception {
+        final String queryUrl = this.getQueryUrlCurrentQuotation(instrument);
+        String command = new String(CURL_CURRENT_QUOTATION);
+
+        command = command.replace(PLACEHOLDER_URL, queryUrl);
+
+        return command;
+    }
 
     /**
      * Extract Quotation data from HtmlPage using 'span' element.
