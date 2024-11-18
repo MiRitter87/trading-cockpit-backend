@@ -71,20 +71,6 @@ public class QuotationProviderInvestingDAOTest {
     }
 
     /**
-     * Gets a Quotation as expected from the investing.com Website in the fallback scenario file.
-     *
-     * @return A Quotation.
-     */
-    private Quotation getAmazonQuotationFallback() {
-        Quotation quotation = new Quotation();
-
-        quotation.setClose(BigDecimal.valueOf(154.07));
-        quotation.setCurrency(Currency.USD);
-
-        return quotation;
-    }
-
-    /**
      * Gets an Instrument of the Amazon stock.
      *
      * @return Instrument of the Amazon stock.
@@ -126,28 +112,6 @@ public class QuotationProviderInvestingDAOTest {
         try {
             actualQuotation = quotationProviderInvestingDAO.getCurrentQuotation(this.getAmazonInstrument());
             expectedQuotation = this.getAmazonQuotation();
-
-            assertTrue(expectedQuotation.getClose().compareTo(actualQuotation.getClose()) == 0);
-            assertEquals(expectedQuotation.getCurrency(), actualQuotation.getCurrency());
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
-    }
-
-    @Test
-    /**
-     * Tests getting current Quotation data from a stock listed at the NYSE. The fallback scenario is tested where the
-     * Investing server returns a different HTML document.
-     */
-    public void testGetCurrentQuotationNYSEFallback() {
-        Quotation actualQuotation, expectedQuotation;
-        Instrument amazonInstrument = this.getAmazonInstrument();
-
-        try {
-            amazonInstrument.setCompanyPathInvestingCom("fallback"); // Let the DAO stub use the fallback HTML document.
-
-            actualQuotation = quotationProviderInvestingDAO.getCurrentQuotation(amazonInstrument);
-            expectedQuotation = this.getAmazonQuotationFallback();
 
             assertTrue(expectedQuotation.getClose().compareTo(actualQuotation.getClose()) == 0);
             assertEquals(expectedQuotation.getCurrency(), actualQuotation.getCurrency());

@@ -86,12 +86,6 @@ public class QuotationProviderInvestingDAO extends AbstractQuotationProviderDAO 
 
         quotation = this.getQuotationUsingSpans(htmlPage, instrument);
 
-        // Fallback scenario in case the HTML page is returned in a different format. This happens during subsequent
-        // calls of the URL.
-        if (quotation == null) {
-            quotation = this.getQuotationUsingDivs(htmlPage, instrument);
-        }
-
         if (quotation == null) {
             throw new Exception("The price could not be determined.");
         }
@@ -130,7 +124,6 @@ public class QuotationProviderInvestingDAO extends AbstractQuotationProviderDAO 
 //
 //    }
 
-
     /**
      * Extract Quotation data from HtmlPage using 'span' element.
      *
@@ -154,48 +147,5 @@ public class QuotationProviderInvestingDAO extends AbstractQuotationProviderDAO 
         }
 
         return quotation;
-    }
-
-    /**
-     * Extract Quotation data from HtmlPage using 'div' element.
-     *
-     * @param htmlPage   The HTML page containing the Quotation information.
-     * @param instrument The Instrument for which Quotation data are extracted.
-     * @return The current Quotation.
-     */
-    private Quotation getQuotationUsingDivs(final HtmlPage htmlPage, final Instrument instrument) {
-        Quotation quotation = null;
-        String currentPrice = "";
-
-        final List<DomElement> divs = htmlPage.getElementsByTagName("div");
-        for (DomElement element : divs) {
-            if (this.isDomElementDivPrice(element)) {
-                quotation = new Quotation();
-                quotation.setCurrency(this.getCurrencyForStockExchange(instrument.getStockExchange()));
-                currentPrice = element.getFirstChild().asNormalizedText();
-                quotation.setClose(new BigDecimal(currentPrice));
-            }
-        }
-
-        return quotation;
-    }
-
-    /**
-     * Checks if the given DOM element 'div' contains the current price.
-     *
-     * @param element The DOM element of type 'div'.
-     * @return True, if element contains current price; false if not.
-     */
-    private boolean isDomElementDivPrice(final DomElement element) {
-        // The order of the attributes within the class attribute may vary.
-        // Thats why multiple constellations are checked here.
-        if (element.getAttribute("class").equals("text-5xl/9 font-bold md:text-[42px] md:leading-[60px] text-[#232526]")
-                || element.getAttribute("class")
-                        .equals("text-5xl/9 font-bold text-[#232526] md:text-[42px] md:leading-[60px]")) {
-
-            return true;
-        }
-
-        return false;
     }
 }
