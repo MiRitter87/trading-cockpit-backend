@@ -1,17 +1,18 @@
 package backend.dao.quotation.provider;
 
+import java.io.InputStream;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.DomElement;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
@@ -64,22 +65,22 @@ public class QuotationProviderInvestingDAO extends AbstractQuotationProviderDAO 
      */
     @Override
     public Quotation getCurrentQuotation(final Instrument instrument) throws Exception {
-        String url = this.getQueryUrlCurrentQuotation(instrument);
-        WebClient webClient = new WebClient();
-        HtmlPage htmlPage;
+        String command = this.getCurlCommandCurrentQuotation(instrument);
         Quotation quotation;
-
-        webClient.getOptions().setUseInsecureSSL(true);
-        webClient.getOptions().setCssEnabled(false);
-        webClient.getOptions().setJavaScriptEnabled(false);
-        webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
+        Process process = null;
+        final InputStream resultStream;
+        String jsonResult;
 
         try {
-            htmlPage = webClient.getPage(url);
+            process = Runtime.getRuntime().exec(command);
+            resultStream = process.getInputStream();
 
-            quotation = this.getQuotationFromHtmlPage(htmlPage, instrument);
+            jsonResult = IOUtils.toString(resultStream, StandardCharsets.UTF_8);
+            quotation = this.convertJSONtoCurrentQuotation(jsonResult, instrument);
         } finally {
-            webClient.close();
+            if (process != null) {
+                process.destroy();
+            }
         }
 
         return quotation;
@@ -93,27 +94,6 @@ public class QuotationProviderInvestingDAO extends AbstractQuotationProviderDAO 
             final InstrumentType instrumentType, final Integer years) throws Exception {
 
         throw new Exception("Method is not supported.");
-    }
-
-    /**
-     * Gets the current Quotation from the HTML page.
-     *
-     * @param htmlPage   The HTML page containing the Quotation information.
-     * @param instrument The Instrument for which Quotation data are extracted.
-     * @return The current Quotation.
-     * @throws Exception Failed to extract Quotation data from given HTML page.
-     */
-    protected Quotation getQuotationFromHtmlPage(final HtmlPage htmlPage, final Instrument instrument)
-            throws Exception {
-        Quotation quotation;
-
-        quotation = this.getQuotationUsingSpans(htmlPage, instrument);
-
-        if (quotation == null) {
-            throw new Exception("The price could not be determined.");
-        }
-
-        return quotation;
     }
 
     /**
@@ -201,30 +181,5 @@ public class QuotationProviderInvestingDAO extends AbstractQuotationProviderDAO 
         command = command.replace(PLACEHOLDER_URL, queryUrl);
 
         return command;
-    }
-
-    /**
-     * Extract Quotation data from HtmlPage using 'span' element.
-     *
-     * @param htmlPage   The HTML page containing the Quotation information.
-     * @param instrument The Instrument for which Quotation data are extracted.
-     * @return The current Quotation.
-     */
-    private Quotation getQuotationUsingSpans(final HtmlPage htmlPage, final Instrument instrument) {
-        Quotation quotation = null;
-        String currentPrice = "";
-
-        final List<DomElement> spans = htmlPage.getElementsByTagName("span");
-        for (DomElement element : spans) {
-            if (element.getAttribute("data-test").equals("instrument-price-last")
-                    && element.getAttribute("class").equals("text-2xl")) {
-                quotation = new Quotation();
-                quotation.setCurrency(this.getCurrencyForStockExchange(instrument.getStockExchange()));
-                currentPrice = element.getFirstChild().asNormalizedText();
-                quotation.setClose(new BigDecimal(currentPrice));
-            }
-        }
-
-        return quotation;
     }
 }
