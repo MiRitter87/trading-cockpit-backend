@@ -64,7 +64,7 @@ public class QuotationProviderInvestingDAOTest {
     private Quotation getAmazonQuotation() {
         Quotation quotation = new Quotation();
 
-        quotation.setClose(BigDecimal.valueOf(120.65));
+        quotation.setClose(BigDecimal.valueOf(228.22));
         quotation.setCurrency(Currency.USD);
 
         return quotation;
@@ -102,7 +102,7 @@ public class QuotationProviderInvestingDAOTest {
         return instrument;
     }
 
-    // @Test
+    @Test
     /**
      * Tests getting current Quotation data from a stock listed at the NYSE.
      */

@@ -1,8 +1,14 @@
 package backend.dao.quotation.provider;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
@@ -50,7 +56,7 @@ public class QuotationProviderInvestingDAO extends AbstractQuotationProviderDAO 
      * Initializes the QuotationProviderInvestingDAO.
      */
     public QuotationProviderInvestingDAO() {
-        this.disableHtmlUnitLogging();
+
     }
 
     /**
@@ -106,6 +112,57 @@ public class QuotationProviderInvestingDAO extends AbstractQuotationProviderDAO 
         if (quotation == null) {
             throw new Exception("The price could not be determined.");
         }
+
+        return quotation;
+    }
+
+    /**
+     * Converts a String containing Quotation data into a Quotation with the most recent data.
+     *
+     * @param jsonString A JSON string containing multiple quotations.
+     * @param instrument The Instrument the quotation data are related to.
+     * @return The most recent Quotation.
+     * @throws JsonMappingException    JSON Mapping failed.
+     * @throws JsonProcessingException JSON processing failed.
+     */
+    @SuppressWarnings("unchecked")
+    protected Quotation convertJSONtoCurrentQuotation(final String jsonString, final Instrument instrument)
+            throws JsonMappingException, JsonProcessingException {
+
+        String price;
+        String volume;
+        ObjectMapper mapper = new ObjectMapper();
+        Map<?, ?> map;
+        ArrayList<ArrayList<Object>> quotations;
+        ArrayList<Object> mostRecentQuotation;
+        Quotation quotation = new Quotation();
+        final int indexOpen = 1;
+        final int indexHigh = 2;
+        final int indexLow = 3;
+        final int indexClose = 4;
+        final int indexVolume = 5;
+
+        quotation.setCurrency(this.getCurrencyForStockExchange(instrument.getStockExchange()));
+
+        // Get the data of the most recent Quotation.
+        map = mapper.readValue(jsonString, Map.class);
+        quotations = (ArrayList<ArrayList<Object>>) map.get("data");
+        mostRecentQuotation = quotations.get(quotations.size() - 1);
+
+        // Convert raw data to Quotation object.
+        quotation.setDate(new Date((long) mostRecentQuotation.get(0)));
+
+        price = mostRecentQuotation.get(indexOpen).toString();
+        quotation.setOpen(new BigDecimal(price));
+        price = mostRecentQuotation.get(indexHigh).toString();
+        quotation.setHigh(new BigDecimal(price));
+        price = mostRecentQuotation.get(indexLow).toString();
+        quotation.setLow(new BigDecimal(price));
+        price = mostRecentQuotation.get(indexClose).toString();
+        quotation.setClose(new BigDecimal(price));
+
+        volume = mostRecentQuotation.get(indexVolume).toString();
+        quotation.setVolume(Long.parseLong(volume));
 
         return quotation;
     }
