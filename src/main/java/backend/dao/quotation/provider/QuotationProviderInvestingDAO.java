@@ -39,7 +39,7 @@ public class QuotationProviderInvestingDAO extends AbstractQuotationProviderDAO 
      * URL to quote investing.com: Current quotation.
      */
     private static final String BASE_URL_CURRENT_QUOTATION = "https://api.investing.com/api/financialdata/"
-            + PLACEHOLDER_COMPANY + "/historical/chart/?interval=PT1M&pointscount=60\\";
+            + PLACEHOLDER_COMPANY + "/historical/chart/?interval=PT1M&pointscount=60";
 
     /**
      * The cURL command used to query the current Quotation.

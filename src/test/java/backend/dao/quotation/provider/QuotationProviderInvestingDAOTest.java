@@ -121,7 +121,7 @@ public class QuotationProviderInvestingDAOTest {
      */
     public void testGetQueryUrlCurrentQuotationStock() {
         Instrument amazonStock = this.getAmazonInstrument();
-        final String expectedURL = "https://api.investing.com/api/financialdata/6435/historical/chart/?interval=PT1M&pointscount=60\\";
+        final String expectedURL = "https://api.investing.com/api/financialdata/6435/historical/chart/?interval=PT1M&pointscount=60";
         String actualURL = "";
 
         try {
@@ -138,7 +138,7 @@ public class QuotationProviderInvestingDAOTest {
      */
     public void testGetQueryUrlCurrentQuotationETF() {
         Instrument diaETF = this.getDowJonesIndustrialETF();
-        final String expectedURL = "https://api.investing.com/api/financialdata/504/historical/chart/?interval=PT1M&pointscount=60\\";
+        final String expectedURL = "https://api.investing.com/api/financialdata/504/historical/chart/?interval=PT1M&pointscount=60";
         String actualURL = "";
 
         try {
