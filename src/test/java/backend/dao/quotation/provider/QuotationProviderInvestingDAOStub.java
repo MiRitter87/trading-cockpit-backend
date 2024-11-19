@@ -1,5 +1,8 @@
 package backend.dao.quotation.provider;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
@@ -16,31 +19,20 @@ import backend.model.instrument.Quotation;
 public class QuotationProviderInvestingDAOStub extends QuotationProviderInvestingDAO {
     @Override
     public Quotation getCurrentQuotation(final Instrument instrument) throws Exception {
-        String userPath = System.getProperty("user.dir");
-        String htmlPath = "file:\\" + userPath;
-        WebClient webClient = new WebClient();
-        HtmlPage htmlPage;
-        Quotation quotation;
+        String jsonPath;
+        String quotationHistoryJSON;
+        Quotation quotation = null;
 
-        this.disableHtmlUnitLogging();
-
-        if (instrument.getSymbol().equals("AMZN") && instrument.getStockExchange().equals(StockExchange.NDQ)
-                && !instrument.getCompanyPathInvestingCom().equals("fallback")) {
-
-            htmlPath = htmlPath + "\\src\\test\\resources\\Investing\\investingNYSEQuoteAMZN.htm";
+        if (instrument.getSymbol().equals("AMZN") && instrument.getStockExchange().equals(StockExchange.NDQ)) {
+            jsonPath = "src/test/resources/Investing/investingCurlResultAAPL.json";
+            ;
+        } else {
+            return null;
         }
 
-        try {
-            webClient.getOptions().setUseInsecureSSL(true);
-            webClient.getOptions().setCssEnabled(false);
-            webClient.getOptions().setJavaScriptEnabled(false);
+        quotationHistoryJSON = Files.readString(Paths.get(jsonPath));
 
-            htmlPage = webClient.getPage(htmlPath);
-
-            quotation = this.getQuotationFromHtmlPage(htmlPage, instrument);
-        } finally {
-            webClient.close();
-        }
+        // this.convertJsonToCurrentQuotation(quotationHistoryJSON);
 
         return quotation;
     }

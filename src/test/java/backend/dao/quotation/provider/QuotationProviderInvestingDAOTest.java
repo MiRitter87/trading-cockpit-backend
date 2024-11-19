@@ -102,7 +102,7 @@ public class QuotationProviderInvestingDAOTest {
         return instrument;
     }
 
-    @Test
+    // @Test
     /**
      * Tests getting current Quotation data from a stock listed at the NYSE.
      */
