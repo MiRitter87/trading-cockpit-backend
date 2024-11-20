@@ -26,14 +26,9 @@ import backend.model.instrument.Quotation;
  */
 public class QuotationProviderInvestingDAO extends AbstractQuotationProviderDAO implements QuotationProviderDAO {
     /**
-     * Placeholder for the company used in a query URL.
+     * Placeholder for the ID of the instrument used in a query URL.
      */
-    private static final String PLACEHOLDER_COMPANY = "{company}";
-
-    /**
-     * Placeholder for the URL used in a cURL command.
-     */
-    private static final String PLACEHOLDER_URL = "{URL}";
+    private static final String PLACEHOLDER_INVESTING_ID = "{investing_id}";
 
     /**
      * Placeholder for the quotation interval used in a query URL.
@@ -41,10 +36,15 @@ public class QuotationProviderInvestingDAO extends AbstractQuotationProviderDAO 
     private static final String PLACEHOLDER_INTERVAL = "{interval}";
 
     /**
+     * Placeholder for the URL used in a cURL command.
+     */
+    private static final String PLACEHOLDER_URL = "{URL}";
+
+    /**
      * URL to quote investing.com: Current quotation.
      */
     private static final String BASE_URL_CURRENT_QUOTATION = "https://api.investing.com/api/financialdata/"
-            + PLACEHOLDER_COMPANY + "/historical/chart/?interval=" + PLACEHOLDER_INTERVAL + "&pointscount=60";
+            + PLACEHOLDER_INVESTING_ID + "/historical/chart/?interval=" + PLACEHOLDER_INTERVAL + "&pointscount=60";
 
     /**
      * The cURL command used to query the current Quotation.
@@ -167,7 +167,7 @@ public class QuotationProviderInvestingDAO extends AbstractQuotationProviderDAO 
                     + "because attribute 'companyPathInvestingCom' is not defined.");
         }
 
-        queryUrl = queryUrl.replace(PLACEHOLDER_COMPANY, instrument.getCompanyPathInvestingCom());
+        queryUrl = queryUrl.replace(PLACEHOLDER_INVESTING_ID, instrument.getCompanyPathInvestingCom());
         queryUrl = queryUrl.replace(PLACEHOLDER_INTERVAL, this.getInterval(instrument));
 
         return queryUrl;
