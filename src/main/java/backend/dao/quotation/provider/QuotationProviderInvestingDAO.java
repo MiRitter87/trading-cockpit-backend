@@ -36,10 +36,15 @@ public class QuotationProviderInvestingDAO extends AbstractQuotationProviderDAO 
     private static final String PLACEHOLDER_URL = "{URL}";
 
     /**
+     * Placeholder for the quotation interval used in a query URL.
+     */
+    private static final String PLACEHOLDER_INTERVAL = "{interval}";
+
+    /**
      * URL to quote investing.com: Current quotation.
      */
     private static final String BASE_URL_CURRENT_QUOTATION = "https://api.investing.com/api/financialdata/"
-            + PLACEHOLDER_COMPANY + "/historical/chart/?interval=PT1M&pointscount=60";
+            + PLACEHOLDER_COMPANY + "/historical/chart/?interval=" + PLACEHOLDER_INTERVAL + "&pointscount=60";
 
     /**
      * The cURL command used to query the current Quotation.
@@ -163,6 +168,7 @@ public class QuotationProviderInvestingDAO extends AbstractQuotationProviderDAO 
         }
 
         queryUrl = queryUrl.replace(PLACEHOLDER_COMPANY, instrument.getCompanyPathInvestingCom());
+        queryUrl = queryUrl.replace(PLACEHOLDER_INTERVAL, this.getInterval(instrument));
 
         return queryUrl;
     }
@@ -181,5 +187,28 @@ public class QuotationProviderInvestingDAO extends AbstractQuotationProviderDAO 
         command = command.replace(PLACEHOLDER_URL, queryUrl);
 
         return command;
+    }
+
+    /**
+     * Determines the query interval based on the stock exchange of the given Instrument.
+     *
+     * @param instrument The Instrument.
+     * @return The query interval.
+     */
+    private String getInterval(final Instrument instrument) {
+        switch (instrument.getStockExchange()) {
+        case NYSE:
+        case NDQ:
+        case AMEX:
+        case TSX:
+        case LSE:
+            return "PT1M";
+        case OTC:
+        case TSXV:
+        case CSE:
+            return "PT5M";
+        default:
+            return "";
+        }
     }
 }

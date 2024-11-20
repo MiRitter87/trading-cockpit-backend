@@ -117,12 +117,145 @@ public class QuotationProviderInvestingDAOTest {
 
     @Test
     /**
-     * Tests the retrieval of the query URL for the current quotation of a stock.
+     * Tests the retrieval of the query URL for the current quotation of a stock listed at the NYSE.
      */
-    public void testGetQueryUrlCurrentQuotationStock() {
+    public void testGetQueryUrlCurrentQuotationNYSE() {
         Instrument amazonStock = this.getAmazonInstrument();
         final String expectedURL = "https://api.investing.com/api/financialdata/6435/historical/chart/?interval=PT1M&pointscount=60";
         String actualURL = "";
+
+        amazonStock.setStockExchange(StockExchange.NYSE);
+
+        try {
+            actualURL = quotationProviderInvestingDAO.getQueryUrlCurrentQuotation(amazonStock);
+            assertEquals(expectedURL, actualURL);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    /**
+     * Tests the retrieval of the query URL for the current quotation of a stock listed at the Nasdaq.
+     */
+    public void testGetQueryUrlCurrentQuotationNasdaq() {
+        Instrument amazonStock = this.getAmazonInstrument();
+        final String expectedURL = "https://api.investing.com/api/financialdata/6435/historical/chart/?interval=PT1M&pointscount=60";
+        String actualURL = "";
+
+        try {
+            actualURL = quotationProviderInvestingDAO.getQueryUrlCurrentQuotation(amazonStock);
+            assertEquals(expectedURL, actualURL);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    /**
+     * Tests the retrieval of the query URL for the current quotation of a stock listed at the AMEX.
+     */
+    public void testGetQueryUrlCurrentQuotationAMEX() {
+        Instrument amazonStock = this.getAmazonInstrument();
+        final String expectedURL = "https://api.investing.com/api/financialdata/6435/historical/chart/?interval=PT1M&pointscount=60";
+        String actualURL = "";
+
+        amazonStock.setStockExchange(StockExchange.AMEX);
+
+        try {
+            actualURL = quotationProviderInvestingDAO.getQueryUrlCurrentQuotation(amazonStock);
+            assertEquals(expectedURL, actualURL);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    /**
+     * Tests the retrieval of the query URL for the current quotation of a stock listed at the US OTC.
+     */
+    public void testGetQueryUrlCurrentQuotationOTC() {
+        Instrument amazonStock = this.getAmazonInstrument();
+        final String expectedURL = "https://api.investing.com/api/financialdata/6435/historical/chart/?interval=PT5M&pointscount=60";
+        String actualURL = "";
+
+        amazonStock.setStockExchange(StockExchange.OTC);
+
+        try {
+            actualURL = quotationProviderInvestingDAO.getQueryUrlCurrentQuotation(amazonStock);
+            assertEquals(expectedURL, actualURL);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    /**
+     * Tests the retrieval of the query URL for the current quotation of a stock listed at the TSX.
+     */
+    public void testGetQueryUrlCurrentQuotationTSX() {
+        Instrument amazonStock = this.getAmazonInstrument();
+        final String expectedURL = "https://api.investing.com/api/financialdata/6435/historical/chart/?interval=PT1M&pointscount=60";
+        String actualURL = "";
+
+        amazonStock.setStockExchange(StockExchange.TSX);
+
+        try {
+            actualURL = quotationProviderInvestingDAO.getQueryUrlCurrentQuotation(amazonStock);
+            assertEquals(expectedURL, actualURL);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    /**
+     * Tests the retrieval of the query URL for the current quotation of a stock listed at the TSX/V.
+     */
+    public void testGetQueryUrlCurrentQuotationTSXV() {
+        Instrument amazonStock = this.getAmazonInstrument();
+        final String expectedURL = "https://api.investing.com/api/financialdata/6435/historical/chart/?interval=PT5M&pointscount=60";
+        String actualURL = "";
+
+        amazonStock.setStockExchange(StockExchange.TSXV);
+
+        try {
+            actualURL = quotationProviderInvestingDAO.getQueryUrlCurrentQuotation(amazonStock);
+            assertEquals(expectedURL, actualURL);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    /**
+     * Tests the retrieval of the query URL for the current quotation of a stock listed at the CSE.
+     */
+    public void testGetQueryUrlCurrentQuotationCSE() {
+        Instrument amazonStock = this.getAmazonInstrument();
+        final String expectedURL = "https://api.investing.com/api/financialdata/6435/historical/chart/?interval=PT5M&pointscount=60";
+        String actualURL = "";
+
+        amazonStock.setStockExchange(StockExchange.CSE);
+
+        try {
+            actualURL = quotationProviderInvestingDAO.getQueryUrlCurrentQuotation(amazonStock);
+            assertEquals(expectedURL, actualURL);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    /**
+     * Tests the retrieval of the query URL for the current quotation of a stock listed at the LSE.
+     */
+    public void testGetQueryUrlCurrentQuotationLSE() {
+        Instrument amazonStock = this.getAmazonInstrument();
+        final String expectedURL = "https://api.investing.com/api/financialdata/6435/historical/chart/?interval=PT1M&pointscount=60";
+        String actualURL = "";
+
+        amazonStock.setStockExchange(StockExchange.LSE);
 
         try {
             actualURL = quotationProviderInvestingDAO.getQueryUrlCurrentQuotation(amazonStock);
