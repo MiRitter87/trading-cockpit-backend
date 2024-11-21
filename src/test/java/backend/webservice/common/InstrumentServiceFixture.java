@@ -53,7 +53,7 @@ public class InstrumentServiceFixture {
     /**
      * Gets the instrument of the Apple stock.
      *
-     * @param sector The sector Instrument.
+     * @param sector        The sector Instrument.
      * @param industryGroup The industry group Instrument.
      * @return The instrument of the Apple stock.
      */
@@ -122,7 +122,7 @@ public class InstrumentServiceFixture {
      * Gets the Instrument of the Apple/Tesla ratio.
      *
      * @param dividend The dividend Instrument.
-     * @param divisor The divisor Instrument.
+     * @param divisor  The divisor Instrument.
      * @return The Instrument of the Apple/Tesla ratio.
      */
     public Instrument getAppleTeslaRatio(final Instrument dividend, final Instrument divisor) {
@@ -200,7 +200,7 @@ public class InstrumentServiceFixture {
         instrumentWS.setType(instrument.getType());
         instrumentWS.setStockExchange(instrument.getStockExchange());
         instrumentWS.setName(instrument.getName());
-        instrumentWS.setCompanyPathInvestingCom(instrument.getCompanyPathInvestingCom());
+        instrumentWS.setInvestingId(instrument.getInvestingId());
 
         // Object references.
         if (instrument.getSector() != null)
@@ -209,10 +209,10 @@ public class InstrumentServiceFixture {
         if (instrument.getIndustryGroup() != null)
             instrumentWS.setIndustryGroupId(instrument.getIndustryGroup().getId());
 
-        if(instrument.getDividend() != null)
+        if (instrument.getDividend() != null)
             instrumentWS.setDividendId(instrument.getDividend().getId());
 
-        if(instrument.getDivisor() != null)
+        if (instrument.getDivisor() != null)
             instrumentWS.setDivisorId(instrument.getDivisor().getId());
 
         return instrumentWS;

@@ -77,7 +77,7 @@ public class QuotationProviderInvestingDAOTest {
         instrument.setSymbol("AMZN");
         instrument.setStockExchange(StockExchange.NDQ);
         instrument.setType(InstrumentType.STOCK);
-        instrument.setCompanyPathInvestingCom("6435");
+        instrument.setInvestingId("6435");
 
         return instrument;
     }
@@ -93,7 +93,7 @@ public class QuotationProviderInvestingDAOTest {
         instrument.setSymbol("DIA");
         instrument.setStockExchange(StockExchange.NYSE);
         instrument.setType(InstrumentType.ETF);
-        instrument.setCompanyPathInvestingCom("504");
+        instrument.setInvestingId("504");
 
         return instrument;
     }
@@ -284,16 +284,16 @@ public class QuotationProviderInvestingDAOTest {
 
     @Test
     /**
-     * Tests the retrieval of the query URL if attribute 'companyPathInvestingCom' of Instrument is not defined.
+     * Tests the retrieval of the query URL if attribute 'investingId' of Instrument is not defined.
      */
-    public void testGetQueryUrlWithoutCompanyPath() {
+    public void testGetQueryUrlWithoutInvestingId() {
         Instrument amazonStock = this.getAmazonInstrument();
 
-        amazonStock.setCompanyPathInvestingCom("");
+        amazonStock.setInvestingId("");
 
         try {
             quotationProviderInvestingDAO.getQueryUrlCurrentQuotation(amazonStock);
-            fail("Determination of URL should have failed because attribute 'companyPathInvestingCom' is not defined.");
+            fail("Determination of URL should have failed because attribute 'investingId' is not defined.");
         } catch (Exception expected) {
             // All is well.
         }

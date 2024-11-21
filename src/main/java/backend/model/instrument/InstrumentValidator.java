@@ -65,11 +65,11 @@ public class InstrumentValidator {
         if (this.instrument.getType() != otherInstrument.getType()) {
             return false;
         }
-        if (this.instrument.getCompanyPathInvestingCom() == null) {
-            if (otherInstrument.getCompanyPathInvestingCom() != null) {
+        if (this.instrument.getInvestingId() == null) {
+            if (otherInstrument.getInvestingId() != null) {
                 return false;
             }
-        } else if (!this.instrument.getCompanyPathInvestingCom().equals(otherInstrument.getCompanyPathInvestingCom())) {
+        } else if (!this.instrument.getInvestingId().equals(otherInstrument.getInvestingId())) {
             return false;
         }
 
@@ -169,7 +169,7 @@ public class InstrumentValidator {
         this.validateDividend();
         this.validateDivisor();
         this.validateDataSourceList();
-        this.validateCompanyPathInvestingCom();
+        this.validateInvestingId();
     }
 
     /**
@@ -318,30 +318,28 @@ public class InstrumentValidator {
     }
 
     /**
-     * Validates the companyPathInvestingCom attribute.
+     * Validates the investingId attribute.
      *
      * @throws LocalizedException If validation failed.
      */
-    private void validateCompanyPathInvestingCom() throws LocalizedException {
+    private void validateInvestingId() throws LocalizedException {
         if (this.instrument.getDataSourceList() != null) {
-            if (this.instrument.getCompanyPathInvestingCom() != null
-                    && this.instrument.getCompanyPathInvestingCom().length() > 0) {
-                throw new LocalizedException("instrument.companyPathInvestingCom.dataSourceListDefined");
+            if (this.instrument.getInvestingId() != null && this.instrument.getInvestingId().length() > 0) {
+                throw new LocalizedException("instrument.investingId.dataSourceListeDefined");
             } else {
-                return; // No companyPathInvestingCom required, therefore no additional validation needed.
+                return; // No investingId required, therefore no additional validation needed.
             }
         }
 
-        if (this.instrument.getType() == InstrumentType.RATIO && this.instrument.getCompanyPathInvestingCom() != null
-                && this.instrument.getCompanyPathInvestingCom().length() > 0) {
-            throw new LocalizedException("instrument.companyPathInvestingCom.typeRatio");
+        if (this.instrument.getType() == InstrumentType.RATIO && this.instrument.getInvestingId() != null
+                && this.instrument.getInvestingId().length() > 0) {
+            throw new LocalizedException("instrument.investingId.typeRatio");
         }
 
-        if (this.instrument.getCompanyPathInvestingCom() != null
-                && this.instrument.getCompanyPathInvestingCom().length() > Instrument.MAX_COMP_PATH_INVESTING_LENGTH) {
-            throw new LocalizedException("instrument.companyPathInvestingCom.size.message",
-                    this.instrument.getCompanyPathInvestingCom().length(), "0",
-                    Instrument.MAX_COMP_PATH_INVESTING_LENGTH);
+        if (this.instrument.getInvestingId() != null
+                && this.instrument.getInvestingId().length() > Instrument.MAX_INVESTING_ID_LENGTH) {
+            throw new LocalizedException("instrument.investingId.size.message",
+                    this.instrument.getInvestingId().length(), "0", Instrument.MAX_INVESTING_ID_LENGTH);
         }
     }
 }

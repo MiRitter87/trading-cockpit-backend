@@ -295,20 +295,19 @@ public class InstrumentTest {
 
     @Test
     /**
-     * Tests validation of an Instrument whose companyPathInvestingCom is too long.
+     * Tests validation of an Instrument whose investingId is too long.
      */
-    public void testCompanyPathInvestingComTooLong() {
+    public void testInvestingIdTooLong() {
         String expectedErrorMessage;
         String errorMessage = "";
 
-        this.instrument.setCompanyPathInvestingCom("denison-mines-corp?cid=24520kjndfkvnfkjgndffjkkfn11");
-        expectedErrorMessage = MessageFormat.format(
-                this.resources.getString("instrument.companyPathInvestingCom.size.message"),
-                String.valueOf(this.instrument.getCompanyPathInvestingCom().length()), "0", "50");
+        this.instrument.setInvestingId("01234567890");
+        expectedErrorMessage = MessageFormat.format(this.resources.getString("instrument.investingId.size.message"),
+                String.valueOf(this.instrument.getInvestingId().length()), "0", "10");
 
         try {
             this.instrument.validate();
-            fail("Validation should have failed because companyPathInvestingCom is too long.");
+            fail("Validation should have failed because investingId is too long.");
         } catch (Exception expected) {
             errorMessage = expected.getLocalizedMessage();
         }
@@ -318,10 +317,10 @@ public class InstrumentTest {
 
     @Test
     /**
-     * Tests validation of an Instrument whose companyNameInvestingCom is null.
+     * Tests validation of an Instrument whose investingId is null.
      */
-    public void testCompanyPathInvestingComIsNull() {
-        this.instrument.setCompanyPathInvestingCom(null);
+    public void testInvestingIdIsNull() {
+        this.instrument.setInvestingId(null);
 
         try {
             this.instrument.validate();
@@ -643,16 +642,16 @@ public class InstrumentTest {
 
     @Test
     /**
-     * Tests validation of the companyPathInvestingCom if Instrument is of type RATIO.
+     * Tests validation of the investingId if Instrument is of type RATIO.
      */
-    public void testValidateCompanyPathInvestingOnRatio() {
-        String expectedErrorMessage = this.resources.getString("instrument.companyPathInvestingCom.typeRatio");
+    public void testValidateInvestingIdOnRatio() {
+        String expectedErrorMessage = this.resources.getString("instrument.investingId.typeRatio");
 
-        this.sectorIgRatio.setCompanyPathInvestingCom("testPath");
+        this.sectorIgRatio.setInvestingId("4711");
 
         try {
             this.sectorIgRatio.validate();
-            fail("Validation should have failed because companyPathInvestingCom of a RATIO is defined.");
+            fail("Validation should have failed because investingId of a RATIO is defined.");
         } catch (LocalizedException expected) {
             assertEquals(expectedErrorMessage, expected.getLocalizedMessage());
         } catch (Exception e) {
@@ -743,17 +742,16 @@ public class InstrumentTest {
 
     @Test
     /**
-     * Tests validation of the dataSourceList attribute while the companyPathInvestingCom is defined.
+     * Tests validation of the dataSourceList attribute while the investingId is defined.
      */
-    public void testValidateCompanyPathInvestingOnDataSourceList() {
-        String expectedErrorMessage = this.resources
-                .getString("instrument.companyPathInvestingCom.dataSourceListDefined");
+    public void testValidateInvestingIdOnDataSourceList() {
+        String expectedErrorMessage = this.resources.getString("instrument.investingId.dataSourceListeDefined");
 
-        // Validation should fail because no companyPathInvestingCom can be defined if dataSourceList is set.
+        // Validation should fail because no investingId can be defined if dataSourceList is set.
         try {
-            this.InstrumentWithDataSource.setCompanyPathInvestingCom("testCompanyPath");
+            this.InstrumentWithDataSource.setInvestingId("4711");
             this.InstrumentWithDataSource.validate();
-            fail("Validation should have failed because Instrument has a company path defined.");
+            fail("Validation should have failed because Instrument has an investingId defined.");
         } catch (LocalizedException expected) {
             assertEquals(expectedErrorMessage, expected.getLocalizedMessage());
         } catch (Exception e) {

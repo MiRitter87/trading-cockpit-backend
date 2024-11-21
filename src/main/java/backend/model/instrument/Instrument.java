@@ -60,9 +60,9 @@ public class Instrument {
     private static final int MAX_NAME_LENGTH = 50;
 
     /**
-     * The maximum 'Company Path Investing.com' field length allowed.
+     * The maximum 'investingId' field length allowed.
      */
-    protected static final int MAX_COMP_PATH_INVESTING_LENGTH = 50;
+    protected static final int MAX_INVESTING_ID_LENGTH = 10;
 
     /**
      * The ID.
@@ -116,13 +116,10 @@ public class Instrument {
     private Instrument industryGroup;
 
     /**
-     * The path of the URL that specifies the company at investing.com.
-     *
-     * Example: In the URL "https://www.investing.com/equities/apple-computer-inc" the company path would be
-     * "apple-computer-inc".
+     * The internal ID of the Instrument used at investing.com.
      */
-    @Column(name = "COMPANY_PATH_INVESTING_COM", length = MAX_COMP_PATH_INVESTING_LENGTH)
-    private String companyPathInvestingCom;
+    @Column(name = "INVESTING_ID", length = MAX_INVESTING_ID_LENGTH)
+    private String investingId;
 
     /**
      * The dividend of a ratio.
@@ -286,17 +283,17 @@ public class Instrument {
     }
 
     /**
-     * @return the companyPathInvestingCom
+     * @return the investingId
      */
-    public String getCompanyPathInvestingCom() {
-        return companyPathInvestingCom;
+    public String getInvestingId() {
+        return investingId;
     }
 
     /**
-     * @param companyPathInvestingCom the companyPathInvestingCom to set
+     * @param investingId the investingId to set
      */
-    public void setCompanyPathInvestingCom(final String companyPathInvestingCom) {
-        this.companyPathInvestingCom = companyPathInvestingCom;
+    public void setInvestingId(final String investingId) {
+        this.investingId = investingId;
     }
 
     /**
@@ -414,7 +411,7 @@ public class Instrument {
         result = prime * result + ((dividend == null) ? 0 : dividend.getId().hashCode());
         result = prime * result + ((divisor == null) ? 0 : divisor.getId().hashCode());
         result = prime * result + ((dataSourceList == null) ? 0 : dataSourceList.getId().hashCode());
-        result = prime * result + ((companyPathInvestingCom == null) ? 0 : companyPathInvestingCom.hashCode());
+        result = prime * result + ((investingId == null) ? 0 : investingId.hashCode());
         return result;
     }
 
