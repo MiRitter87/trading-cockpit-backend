@@ -299,6 +299,29 @@ public class QuotationProviderInvestingDAOTest {
         }
     }
 
+    @Test
+    /**
+     * Tests the retrieval of the query URL for the Quotation history.
+     */
+    public void testGetQueryUrlQuotationHistory() {
+        Instrument amazonStock = this.getAmazonInstrument();
+        final Integer years = 1;
+        String expectedUrl = "https://api.investing.com/api/financialdata/historical/6435"
+                + "?start-date={start_date}&end-date={end_date}&time-frame=Daily&add-missing-rows=false";
+        String actualUrl = "";
+
+        // Replace start and end date with the current date.
+        expectedUrl = expectedUrl.replace("{start_date}", quotationProviderInvestingDAO.getDateForHistory(-1));
+        expectedUrl = expectedUrl.replace("{end_date}", quotationProviderInvestingDAO.getDateForHistory(0));
+
+        try {
+            actualUrl = quotationProviderInvestingDAO.getQueryUrlQuotationHistory(amazonStock, years);
+            assertEquals(expectedUrl, actualUrl);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
     // @Test
     /**
      * An explorative test that tries to retrieve Quotation data of the Amazon stock using a cURL command.

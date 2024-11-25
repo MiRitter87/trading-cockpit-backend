@@ -369,39 +369,4 @@ public class QuotationProviderMarketWatchDAO extends AbstractQuotationProviderDA
 
         return date;
     }
-
-    /**
-     * Initializes and provides a Calendar for the query of historical quotations.
-     *
-     * @param yearOffset The offset allows for definition of the year. An offset of -1 subtracts 1 from the current
-     *                   year.
-     * @return A Calendar.
-     */
-    private Calendar getCalendarForHistory(final int yearOffset) {
-        Calendar calendar = Calendar.getInstance();
-        final int oneDayBefore = -1;
-        final int twoDaysBefore = -2;
-        final int threeDaysBefore = -3;
-
-        calendar.setTime(new Date());
-
-        /*
-         * The MarketWatch CSV API only supports the definition of a start and end date. A query of a full year of data
-         * regardless of the current date is not supported. Therefore in order to get the full 252 trading days of a
-         * year, the start and end date has to be set to the last Friday, if the current day is a Sunday or Monday. The
-         * API only provides data after the close of the trading day. Therefore always take at least the date of the
-         * previous day for the query.
-         */
-        if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
-            calendar.add(Calendar.DAY_OF_MONTH, twoDaysBefore);
-        } else if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY) {
-            calendar.add(Calendar.DAY_OF_MONTH, threeDaysBefore);
-        } else {
-            calendar.add(Calendar.DAY_OF_MONTH, oneDayBefore);
-        }
-
-        calendar.add(Calendar.YEAR, yearOffset);
-
-        return calendar;
-    }
 }

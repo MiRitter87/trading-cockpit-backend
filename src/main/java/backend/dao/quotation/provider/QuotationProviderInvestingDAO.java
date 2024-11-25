@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -41,10 +42,27 @@ public class QuotationProviderInvestingDAO extends AbstractQuotationProviderDAO 
     private static final String PLACEHOLDER_URL = "{URL}";
 
     /**
-     * URL to quote investing.com: Current quotation.
+     * Placeholder for the start date used in a query URL. The date format is yyyy-mm-dd.
+     */
+    private static final String PLACEHOLDER_START_DATE = "{start_date}";
+
+    /**
+     * Placeholder for the end date used in a query URL. The date format is yyyy-mm-dd.
+     */
+    private static final String PLACEHOLDER_END_DATE = "{end_date}";
+
+    /**
+     * URL to investing.com API: Current Quotation.
      */
     private static final String BASE_URL_CURRENT_QUOTATION = "https://api.investing.com/api/financialdata/"
             + PLACEHOLDER_INVESTING_ID + "/historical/chart/?interval=" + PLACEHOLDER_INTERVAL + "&pointscount=60";
+
+    /**
+     * URL to investing.com API: Quotation history.
+     */
+    private static final String BASE_URL_QUOTATION_HISTORY = "https://api.investing.com/api/financialdata/historical/"
+            + PLACEHOLDER_INVESTING_ID + "?start-date=" + PLACEHOLDER_START_DATE + "&end-date=" + PLACEHOLDER_END_DATE
+            + "&time-frame=Daily&add-missing-rows=false";
 
     /**
      * The cURL command used to query the current Quotation.
@@ -153,7 +171,7 @@ public class QuotationProviderInvestingDAO extends AbstractQuotationProviderDAO 
     }
 
     /**
-     * Gets the query URL for the current quotation of the given Instrument.
+     * Gets the query URL for the current Quotation of the given Instrument.
      *
      * @param instrument The Instrument for which the query URL is determined.
      * @return The query URL.
@@ -171,6 +189,69 @@ public class QuotationProviderInvestingDAO extends AbstractQuotationProviderDAO 
         queryUrl = queryUrl.replace(PLACEHOLDER_INTERVAL, this.getInterval(instrument));
 
         return queryUrl;
+    }
+
+    /**
+     * Gets the query URL for the Quotation history of the given Instrument.
+     *
+     * @param instrument The Instrument for which the query URL is determined.
+     * @param years      The number of years to be queried.
+     * @return The query URL.
+     * @throws Exception URL could not be created.
+     */
+    protected String getQueryUrlQuotationHistory(final Instrument instrument, final int years) throws Exception {
+        String queryUrl = new String(BASE_URL_QUOTATION_HISTORY);
+
+        if (instrument.getInvestingId() == null || "".equals(instrument.getInvestingId())) {
+            throw new Exception("Query URL for investing.com could not be created "
+                    + "because attribute 'investingId' is not defined.");
+        }
+
+        queryUrl = queryUrl.replace(PLACEHOLDER_INVESTING_ID, instrument.getInvestingId());
+        queryUrl = queryUrl.replace(PLACEHOLDER_START_DATE, this.getDateForHistory(-1));
+        queryUrl = queryUrl.replace(PLACEHOLDER_END_DATE, this.getDateForHistory(0));
+
+        return queryUrl;
+    }
+
+    /**
+     * Determines the date for the quotation history.
+     *
+     * @param yearOffset The offset allows for definition of the year. An offset of -1 subtracts 1 from the current
+     *                   year.
+     * @return The date in the format yyyy-mm-dd.
+     */
+    protected String getDateForHistory(final int yearOffset) {
+        StringBuilder stringBuilder = new StringBuilder();
+        Calendar calendar = this.getCalendarForHistory(yearOffset);
+        int day;
+        int month;
+        int year;
+        final int doubleDigitNumber = 10;
+
+        day = calendar.get(Calendar.DAY_OF_MONTH);
+        month = calendar.get(Calendar.MONTH) + 1; // Add 1 because the first month of the year is returned as 0 by the
+                                                  // Calendar.
+        year = calendar.get(Calendar.YEAR);
+
+        stringBuilder.append(year);
+        stringBuilder.append("-");
+
+        // Add a leading zero if day or month is returned as single-digit number.
+        if (month < doubleDigitNumber) {
+            stringBuilder.append("0");
+        }
+
+        stringBuilder.append(month);
+        stringBuilder.append("-");
+
+        if (day < doubleDigitNumber) {
+            stringBuilder.append("0");
+        }
+
+        stringBuilder.append(day);
+
+        return stringBuilder.toString();
     }
 
     /**
