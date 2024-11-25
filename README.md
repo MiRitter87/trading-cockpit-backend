@@ -41,13 +41,15 @@ The application uses Servlet Version 6 and Expression Language Version 5. The We
 
 ## Available Data Provider
 
-| Data Provider   			| Historical Quotations							| Real-Time Quotations				| Delayed Quotations	|
-|---------------------------|-----------------------------------------------|-----------------------------------|-----------------------|
-| Yahoo				 		| NYSE, NDQ, AMEX, OTC, TSX, TSX/V, CSE, LSE	| NYSE, NDQ, AMEX, TSX, TSX/V, CSE	| OTC, LSE				|
-| MarketWatch				| NYSE, NDQ, AMEX, OTC, TSX, TSX/V, CSE, LSE	|									|						|
-| Investing					|  												| NYSE, NDQ, AMEX, TSX, LSE			| OTC, TSX/V, CSE		|
-| GlobeAndMail				| NYSE, NDQ, AMEX, OTC, TSX, TSX/V, CSE			| NYSE, NDQ, AMEX, TSX, CSE			| OTC, TSX/V			|
-| CNBC						|												| NYSE, NDQ, AMEX, OTC, LSE			| TSX, TSX/V			|
+| Data Provider   			| Historical Quotations							| Real-Time Quotations				| Delayed Quotations								|
+|---------------------------|-----------------------------------------------|-----------------------------------|---------------------------------------------------|
+| Yahoo				 		| NYSE, NDQ, AMEX, OTC, TSX, TSX/V, CSE, LSE	| NYSE, NDQ, AMEX, TSX, TSX/V, CSE	| OTC, LSE											|
+| MarketWatch				| NYSE, NDQ, AMEX, OTC, TSX, TSX/V, CSE, LSE	|									|													|
+| Investing					|  												| 									| NYSE*, NDQ*, AMEX*, TSX*, LSE*, OTC, TSX/V, CSE	|
+| GlobeAndMail				| NYSE, NDQ, AMEX, OTC, TSX, TSX/V, CSE			| NYSE, NDQ, AMEX, TSX, CSE			| OTC, TSX/V										|
+| CNBC						|												| NYSE, NDQ, AMEX, OTC, LSE			| TSX, TSX/V										|
+
+*: 1-2 minutes delay
 
 ## Configuration
 The configuration file *tradingCockpitBackend.properties* has multiple properties that control the applications behavior.
