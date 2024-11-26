@@ -7,7 +7,11 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterAll;
@@ -96,6 +100,53 @@ public class QuotationProviderInvestingDAOTest {
         instrument.setInvestingId("504");
 
         return instrument;
+    }
+
+    /**
+     * Gets historical quotations of Denison Mines stock. The quotations of the three most recent trading days are
+     * provided.
+     *
+     * @return Historical quotations of Denison Mines stock
+     */
+    private List<Quotation> getDenisonMinesQuotationHistory() {
+        List<Quotation> historicalQuotations = new ArrayList<>();
+        Quotation quotation = new Quotation();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+
+        try {
+            quotation.setDate(dateFormat.parse("11/25/2024"));
+            quotation.setOpen(BigDecimal.valueOf(3.36));
+            quotation.setHigh(BigDecimal.valueOf(3.40));
+            quotation.setLow(BigDecimal.valueOf(3.18));
+            quotation.setClose(BigDecimal.valueOf(3.24));
+            quotation.setCurrency(Currency.CAD);
+            quotation.setVolume(2827091);
+            historicalQuotations.add(quotation);
+
+            quotation = new Quotation();
+            quotation.setDate(dateFormat.parse("11/22/2024"));
+            quotation.setOpen(BigDecimal.valueOf(3.33));
+            quotation.setHigh(BigDecimal.valueOf(3.34));
+            quotation.setLow(BigDecimal.valueOf(3.25));
+            quotation.setClose(BigDecimal.valueOf(3.32));
+            quotation.setCurrency(Currency.CAD);
+            quotation.setVolume(1835032);
+            historicalQuotations.add(quotation);
+
+            quotation = new Quotation();
+            quotation.setDate(dateFormat.parse("11/21/2024"));
+            quotation.setOpen(BigDecimal.valueOf(3.18));
+            quotation.setHigh(BigDecimal.valueOf(3.34));
+            quotation.setLow(BigDecimal.valueOf(3.17));
+            quotation.setClose(BigDecimal.valueOf(3.34));
+            quotation.setCurrency(Currency.CAD);
+            quotation.setVolume(2075737);
+            historicalQuotations.add(quotation);
+        } catch (ParseException e) {
+            fail(e.getMessage());
+        }
+
+        return historicalQuotations;
     }
 
     @Test
@@ -317,6 +368,43 @@ public class QuotationProviderInvestingDAOTest {
         try {
             actualUrl = quotationProviderInvestingDAO.getQueryUrlQuotationHistory(amazonStock, years);
             assertEquals(expectedUrl, actualUrl);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    // @Test
+    /**
+     * Tests the retrieval of the quotation history of a stock traded at the TSX.
+     */
+    public void testGetQuotationHistoryTSX() {
+        List<Quotation> actualQuotationHistory, expectedQuotationHistory;
+        Quotation actualQuotation, expectedQuotation;
+        Instrument dmlStock = new Instrument();
+
+        dmlStock.setSymbol("DML");
+        dmlStock.setStockExchange(StockExchange.TSX);
+        dmlStock.setType(InstrumentType.STOCK);
+
+        try {
+            actualQuotationHistory = quotationProviderInvestingDAO.getQuotationHistory(dmlStock, 1);
+            expectedQuotationHistory = this.getDenisonMinesQuotationHistory();
+
+            // 251 Trading days of a full year (holiday may be included).
+            assertEquals(251, actualQuotationHistory.size());
+
+            // Check the three most recent quotations.
+            actualQuotation = actualQuotationHistory.get(0);
+            expectedQuotation = expectedQuotationHistory.get(0);
+            assertEquals(expectedQuotation, actualQuotation);
+
+            actualQuotation = actualQuotationHistory.get(1);
+            expectedQuotation = expectedQuotationHistory.get(1);
+            assertEquals(expectedQuotation, actualQuotation);
+
+            actualQuotation = actualQuotationHistory.get(2);
+            expectedQuotation = expectedQuotationHistory.get(2);
+            assertEquals(expectedQuotation, actualQuotation);
         } catch (Exception e) {
             fail(e.getMessage());
         }
