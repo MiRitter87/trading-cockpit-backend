@@ -193,10 +193,14 @@ public class QuotationProviderYahooDAOTest {
     public void testGetQuotationHistoryTSX() {
         List<Quotation> actualQuotationHistory, expectedQuotationHistory;
         Quotation actualQuotation, expectedQuotation;
+        Instrument dmlStock = new Instrument();
+
+        dmlStock.setSymbol("DML");
+        dmlStock.setStockExchange(StockExchange.TSX);
+        dmlStock.setType(InstrumentType.STOCK);
 
         try {
-            actualQuotationHistory = quotationProviderYahooDAO.getQuotationHistory("DML", StockExchange.TSX,
-                    InstrumentType.STOCK, 1);
+            actualQuotationHistory = quotationProviderYahooDAO.getQuotationHistory(dmlStock, 1);
             expectedQuotationHistory = this.fixtureHelper.getDenisonMinesQuotationHistory();
 
             // 252 Trading days of a full year.
@@ -226,10 +230,14 @@ public class QuotationProviderYahooDAOTest {
     public void testGetQuotationHistoryLSE() {
         List<Quotation> actualQuotationHistory, expectedQuotationHistory;
         Quotation actualQuotation, expectedQuotation;
+        Instrument rioStock = new Instrument();
+
+        rioStock.setSymbol("RIO");
+        rioStock.setStockExchange(StockExchange.LSE);
+        rioStock.setType(InstrumentType.STOCK);
 
         try {
-            actualQuotationHistory = quotationProviderYahooDAO.getQuotationHistory("RIO", StockExchange.LSE,
-                    InstrumentType.STOCK, 1);
+            actualQuotationHistory = quotationProviderYahooDAO.getQuotationHistory(rioStock, 1);
             expectedQuotationHistory = this.fixtureHelper.getRioTintoQuotationHistory();
 
             // 251 Trading days of a full year. Volume data are missing for a single day which is excluded. Therefore
@@ -262,10 +270,14 @@ public class QuotationProviderYahooDAOTest {
     public void testGetQuotationHistoryIncomplete() {
         final int expectedNumberOfQuotations = 14, actualNumberOfQuotations;
         List<Quotation> actualQuotations;
+        Instrument bnchStock = new Instrument();
+
+        bnchStock.setSymbol("BNCH");
+        bnchStock.setStockExchange(StockExchange.TSXV);
+        bnchStock.setType(InstrumentType.STOCK);
 
         try {
-            actualQuotations = quotationProviderYahooDAO.getQuotationHistory("BNCH", StockExchange.TSXV,
-                    InstrumentType.STOCK, 1);
+            actualQuotations = quotationProviderYahooDAO.getQuotationHistory(bnchStock, 1);
             actualNumberOfQuotations = actualQuotations.size();
 
             assertEquals(expectedNumberOfQuotations, actualNumberOfQuotations);

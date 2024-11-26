@@ -65,10 +65,14 @@ public class QuotationArrayTest {
      */
     private void setUp() {
         List<Quotation> quotations = new ArrayList<>();
+        Instrument dmlStock = new Instrument();
+
+        dmlStock.setSymbol("DML");
+        dmlStock.setStockExchange(StockExchange.TSX);
+        dmlStock.setType(InstrumentType.STOCK);
 
         try {
-            quotations.addAll(
-                    quotationProviderYahooDAO.getQuotationHistory("DML", StockExchange.TSX, InstrumentType.STOCK, 1));
+            quotations.addAll(quotationProviderYahooDAO.getQuotationHistory(dmlStock, 1));
             this.quotationArray = new QuotationArray(quotations);
         } catch (Exception e) {
             fail(e.getMessage());

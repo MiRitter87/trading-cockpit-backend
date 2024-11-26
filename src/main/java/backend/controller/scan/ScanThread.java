@@ -201,8 +201,7 @@ public class ScanThread extends DataRetrievalThread {
             quotationProviderDAO = this.getQuotationProviderDAO(instrument.getStockExchange());
             databaseQuotations.addAll(this.quotationDAO.getQuotationsOfInstrument(instrument.getId()));
             instrument.setQuotations(databaseQuotations);
-            List<Quotation> wsQuotations = quotationProviderDAO.getQuotationHistory(instrument.getSymbol(),
-                    instrument.getStockExchange(), instrument.getType(), 1);
+            List<Quotation> wsQuotations = quotationProviderDAO.getQuotationHistory(instrument, 1);
 
             for (Quotation wsQuotation : wsQuotations) {
                 obsoleteQuotations

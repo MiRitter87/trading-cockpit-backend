@@ -9,7 +9,6 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
-import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 
 /**
@@ -51,18 +50,17 @@ public class QuotationProviderGlobeAndMailDAOStub extends QuotationProviderGlobe
     }
 
     @Override
-    public List<Quotation> getQuotationHistory(String symbol, StockExchange stockExchange,
-            InstrumentType instrumentType, Integer years) throws Exception {
-
+    public List<Quotation> getQuotationHistory(Instrument instrument, Integer years) throws Exception {
         String csvPath = "";
 
-        if (symbol.equals("DML") && stockExchange.equals(StockExchange.TSX))
+        if (instrument.getSymbol().equals("DML") && instrument.getStockExchange().equals(StockExchange.TSX)) {
             csvPath = "src/test/resources/GlobeAndMail/GlobeAndMailTSXHistoryDML.csv";
-        else
+        } else {
             return null;
+        }
 
         String quotationHistoryCSV = Files.readString(Paths.get(csvPath));
 
-        return this.convertCSVToQuotations(quotationHistoryCSV, stockExchange);
+        return this.convertCSVToQuotations(quotationHistoryCSV, instrument.getStockExchange());
     }
 }

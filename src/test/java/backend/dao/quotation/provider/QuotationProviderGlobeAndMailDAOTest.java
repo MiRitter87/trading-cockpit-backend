@@ -482,8 +482,8 @@ public class QuotationProviderGlobeAndMailDAOTest {
         Quotation expectedQuotation;
 
         try {
-            actualQuotationHistory.setQuotations(quotationProviderGlobeAndMailDAO.getQuotationHistory("DML",
-                    StockExchange.TSX, InstrumentType.STOCK, 1));
+            actualQuotationHistory.setQuotations(
+                    quotationProviderGlobeAndMailDAO.getQuotationHistory(this.getDenisonMinesInstrument(), 1));
             expectedQuotationHistory = this.getDenisonMinesQuotationHistory();
 
             actualQuotationHistory.sortQuotationsByDate();

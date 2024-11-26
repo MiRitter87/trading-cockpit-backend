@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 
 import backend.model.Currency;
 import backend.model.StockExchange;
+import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 
@@ -387,10 +388,14 @@ public class QuotationProviderMarketWatchDAOTest {
     public void testGetQuotationHistoryTSX() {
         List<Quotation> actualQuotationHistory, expectedQuotationHistory;
         Quotation actualQuotation, expectedQuotation;
+        Instrument dmlStock = new Instrument();
+
+        dmlStock.setSymbol("DML");
+        dmlStock.setStockExchange(StockExchange.TSX);
+        dmlStock.setType(InstrumentType.STOCK);
 
         try {
-            actualQuotationHistory = quotationProviderMarketWatchDAO.getQuotationHistory("DML", StockExchange.TSX,
-                    InstrumentType.STOCK, 1);
+            actualQuotationHistory = quotationProviderMarketWatchDAO.getQuotationHistory(dmlStock, 1);
             expectedQuotationHistory = this.getDenisonMinesQuotationHistory();
 
             // 252 Trading days of a full year.
@@ -420,10 +425,14 @@ public class QuotationProviderMarketWatchDAOTest {
     public void testGetQuotationHistoryLSE() {
         List<Quotation> actualQuotationHistory, expectedQuotationHistory;
         Quotation actualQuotation, expectedQuotation;
+        Instrument rioStock = new Instrument();
+
+        rioStock.setSymbol("RIO");
+        rioStock.setStockExchange(StockExchange.LSE);
+        rioStock.setType(InstrumentType.STOCK);
 
         try {
-            actualQuotationHistory = quotationProviderMarketWatchDAO.getQuotationHistory("RIO", StockExchange.LSE,
-                    InstrumentType.STOCK, 1);
+            actualQuotationHistory = quotationProviderMarketWatchDAO.getQuotationHistory(rioStock, 1);
             expectedQuotationHistory = this.getRioTintoQuotationHistory();
 
             // 251 Trading days of a full year.

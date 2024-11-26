@@ -104,8 +104,7 @@ public class IndicatorCalculatorTest {
         this.dmlStock.setName("Denison Mines");
 
         try {
-            quotations.addAll(
-                    quotationProviderYahooDAO.getQuotationHistory("DML", StockExchange.TSX, InstrumentType.STOCK, 1));
+            quotations.addAll(quotationProviderYahooDAO.getQuotationHistory(this.dmlStock, 1));
             this.dmlStock.setQuotations(quotations);
         } catch (Exception e) {
             fail(e.getMessage());
@@ -125,8 +124,7 @@ public class IndicatorCalculatorTest {
         this.rioStock.setName("Rio Tinto");
 
         try {
-            quotations.addAll(
-                    quotationProviderYahooDAO.getQuotationHistory("RIO", StockExchange.LSE, InstrumentType.STOCK, 1));
+            quotations.addAll(quotationProviderYahooDAO.getQuotationHistory(this.rioStock, 1));
             this.rioStock.setQuotations(quotations);
         } catch (Exception e) {
             fail(e.getMessage());

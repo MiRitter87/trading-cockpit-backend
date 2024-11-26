@@ -99,17 +99,18 @@ public class QuotationProviderMarketWatchDAO extends AbstractQuotationProviderDA
      * Gets the Quotation history.
      */
     @Override
-    public List<Quotation> getQuotationHistory(final String symbol, final StockExchange stockExchange,
-            final InstrumentType instrumentType, final Integer years) throws Exception {
+    public List<Quotation> getQuotationHistory(final Instrument instrument, final Integer years) throws Exception {
 
-        String csvQuotationHistory = this.getQuotationHistoryCSVFromMarketWatch(symbol, stockExchange, instrumentType,
-                years);
+        String csvQuotationHistory = this.getQuotationHistoryCSVFromMarketWatch(instrument.getSymbol(),
+                instrument.getStockExchange(), instrument.getType(), years);
 
         if ("".equals(csvQuotationHistory)) {
-            throw new Exception(MessageFormat.format("The server returned empty CSV data for symbol {0}.", symbol));
+            throw new Exception(
+                    MessageFormat.format("The server returned empty CSV data for symbol {0}.", instrument.getSymbol()));
         }
 
-        List<Quotation> quotationHistory = this.convertCSVToQuotations(csvQuotationHistory, stockExchange);
+        List<Quotation> quotationHistory = this.convertCSVToQuotations(csvQuotationHistory,
+                instrument.getStockExchange());
 
         return quotationHistory;
     }

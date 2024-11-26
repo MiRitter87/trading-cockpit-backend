@@ -15,9 +15,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
-import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 
 /**
@@ -113,9 +111,7 @@ public class QuotationProviderInvestingDAO extends AbstractQuotationProviderDAO 
      * Gets the Quotation history.
      */
     @Override
-    public List<Quotation> getQuotationHistory(final String symbol, final StockExchange stockExchange,
-            final InstrumentType instrumentType, final Integer years) throws Exception {
-
+    public List<Quotation> getQuotationHistory(final Instrument instrument, final Integer years) throws Exception {
         throw new Exception("Method is not supported.");
     }
 

@@ -377,10 +377,14 @@ public class QuotationServiceFixture {
     public List<Quotation> getDenisonMinesQuotationsWithoutIndicators(final Instrument instrument) {
         QuotationProviderDAO quotationProviderYahooDAO = new QuotationProviderYahooDAOStub();
         List<Quotation> quotationsWithoutIndicators = new ArrayList<>();
+        Instrument dmlStock = new Instrument();
+
+        dmlStock.setSymbol("DML");
+        dmlStock.setStockExchange(StockExchange.TSX);
+        dmlStock.setType(InstrumentType.STOCK);
 
         try {
-            quotationsWithoutIndicators.addAll(
-                    quotationProviderYahooDAO.getQuotationHistory("DML", StockExchange.TSX, InstrumentType.STOCK, 1));
+            quotationsWithoutIndicators.addAll(quotationProviderYahooDAO.getQuotationHistory(dmlStock, 1));
 
             for (Quotation tempQuotation : quotationsWithoutIndicators) {
                 tempQuotation.setInstrument(instrument);

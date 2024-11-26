@@ -92,10 +92,15 @@ public class InstrumentCheckExtremumControllerTest {
      * Initializes quotations of the DML stock.
      */
     private void initializeDMLQuotations() {
+        Instrument dmlStock = new Instrument();
+
+        dmlStock.setSymbol("DML");
+        dmlStock.setStockExchange(StockExchange.TSX);
+        dmlStock.setType(InstrumentType.STOCK);
+
         try {
             this.dmlQuotations = new QuotationArray();
-            this.dmlQuotations.setQuotations(
-                    quotationProviderYahooDAO.getQuotationHistory("DML", StockExchange.TSX, InstrumentType.STOCK, 1));
+            this.dmlQuotations.setQuotations(quotationProviderYahooDAO.getQuotationHistory(dmlStock, 1));
         } catch (Exception e) {
             fail(e.getMessage());
         }

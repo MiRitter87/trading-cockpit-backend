@@ -97,8 +97,7 @@ public class AverageTrueRangeCalculatorTest {
         this.dmlStock.setName("Denison Mines");
 
         try {
-            quotations.addAll(
-                    quotationProviderYahooDAO.getQuotationHistory("DML", StockExchange.TSX, InstrumentType.STOCK, 1));
+            quotations.addAll(quotationProviderYahooDAO.getQuotationHistory(this.dmlStock, 1));
             this.dmlStock.setQuotations(quotations);
         } catch (Exception e) {
             fail(e.getMessage());

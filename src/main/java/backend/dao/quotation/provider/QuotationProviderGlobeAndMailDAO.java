@@ -22,7 +22,6 @@ import com.opencsv.CSVReader;
 import backend.model.Currency;
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
-import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -113,16 +112,17 @@ public class QuotationProviderGlobeAndMailDAO extends AbstractQuotationProviderD
      * Gets the Quotation history.
      */
     @Override
-    public List<Quotation> getQuotationHistory(final String symbol, final StockExchange stockExchange,
-            final InstrumentType instrumentType, final Integer years) throws Exception {
-
-        String csvQuotationHistory = this.getQuotationHistoryCSVFromGlobeAndMail(symbol, stockExchange, years);
+    public List<Quotation> getQuotationHistory(final Instrument instrument, final Integer years) throws Exception {
+        String csvQuotationHistory = this.getQuotationHistoryCSVFromGlobeAndMail(instrument.getSymbol(),
+                instrument.getStockExchange(), years);
 
         if ("".equals(csvQuotationHistory)) {
-            throw new Exception(MessageFormat.format("The server returned empty CSV data for symbol {0}.", symbol));
+            throw new Exception(
+                    MessageFormat.format("The server returned empty CSV data for symbol {0}.", instrument.getSymbol()));
         }
 
-        List<Quotation> quotationHistory = this.convertCSVToQuotations(csvQuotationHistory, stockExchange);
+        List<Quotation> quotationHistory = this.convertCSVToQuotations(csvQuotationHistory,
+                instrument.getStockExchange());
 
         return quotationHistory;
     }
