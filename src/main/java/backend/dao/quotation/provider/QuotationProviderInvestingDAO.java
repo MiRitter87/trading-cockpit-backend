@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -97,7 +98,7 @@ public class QuotationProviderInvestingDAO extends AbstractQuotationProviderDAO 
             resultStream = process.getInputStream();
 
             jsonResult = IOUtils.toString(resultStream, StandardCharsets.UTF_8);
-            quotation = this.convertJSONtoCurrentQuotation(jsonResult, instrument);
+            quotation = this.convertJSONToCurrentQuotation(jsonResult, instrument);
         } finally {
             if (process != null) {
                 process.destroy();
@@ -125,7 +126,7 @@ public class QuotationProviderInvestingDAO extends AbstractQuotationProviderDAO 
      * @throws JsonProcessingException JSON processing failed.
      */
     @SuppressWarnings("unchecked")
-    protected Quotation convertJSONtoCurrentQuotation(final String jsonString, final Instrument instrument)
+    protected Quotation convertJSONToCurrentQuotation(final String jsonString, final Instrument instrument)
             throws JsonMappingException, JsonProcessingException {
 
         String price;
@@ -164,6 +165,61 @@ public class QuotationProviderInvestingDAO extends AbstractQuotationProviderDAO 
         quotation.setVolume(Long.parseLong(volume));
 
         return quotation;
+    }
+
+    /**
+     * Converts a String containing Quotation data into a List of quotations.
+     *
+     * @param jsonString The JSON String containing the Quotation history.
+     * @param instrument The Instrument whose quotations are retrieved.
+     * @return A List of quotations.
+     * @throws JsonMappingException    JSON Mapping failed.
+     * @throws JsonProcessingException JSON processing failed.
+     */
+    @SuppressWarnings("unchecked")
+    protected List<Quotation> convertJSONToQuotationHistory(final String jsonString, final Instrument instrument)
+            throws JsonMappingException, JsonProcessingException {
+
+        ObjectMapper mapper = new ObjectMapper();
+        Map<?, ?> map;
+        ArrayList<LinkedHashMap<?, ?>> quotationsRaw;
+        Quotation quotation;
+        List<Quotation> quotations = new ArrayList<>();
+        Integer rawDate;
+        Long dateInMilliseconds;
+        String price;
+        Integer rawVolume;
+        final int millisecondsPerSecond = 1000;
+
+        map = mapper.readValue(jsonString, Map.class);
+        quotationsRaw = (ArrayList<LinkedHashMap<?, ?>>) map.get("data");
+
+        for (LinkedHashMap<?, ?> currentQuotation : quotationsRaw) {
+            quotation = new Quotation();
+
+            quotation.setCurrency(this.getCurrencyForStockExchange(instrument.getStockExchange()));
+
+            rawDate = (Integer) currentQuotation.get("rowDateRaw"); // The rowDateRaw is in seconds.
+            dateInMilliseconds = Long.valueOf(rawDate);
+            dateInMilliseconds = dateInMilliseconds * millisecondsPerSecond;
+            quotation.setDate(new Date(dateInMilliseconds));
+
+            price = (String) currentQuotation.get("last_open");
+            quotation.setOpen(new BigDecimal(price));
+            price = (String) currentQuotation.get("last_max");
+            quotation.setHigh(new BigDecimal(price));
+            price = (String) currentQuotation.get("last_min");
+            quotation.setLow(new BigDecimal(price));
+            price = (String) currentQuotation.get("last_close");
+            quotation.setClose(new BigDecimal(price));
+
+            rawVolume = (Integer) currentQuotation.get("volumeRaw");
+            quotation.setVolume(Long.valueOf(rawVolume));
+
+            quotations.add(quotation);
+        }
+
+        return quotations;
     }
 
     /**

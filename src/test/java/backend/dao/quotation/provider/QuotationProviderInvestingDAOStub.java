@@ -28,7 +28,7 @@ public class QuotationProviderInvestingDAOStub extends QuotationProviderInvestin
 
         quotationHistoryJSON = Files.readString(Paths.get(jsonPath));
 
-        return this.convertJSONtoCurrentQuotation(quotationHistoryJSON, instrument);
+        return this.convertJSONToCurrentQuotation(quotationHistoryJSON, instrument);
     }
 
     @Override
@@ -44,7 +44,6 @@ public class QuotationProviderInvestingDAOStub extends QuotationProviderInvestin
 
         quotationHistoryJSON = Files.readString(Paths.get(jsonPath));
 
-        // return this.convertJSONToQuotations(quotationHistoryJson, instrument.getStockExchange());
-        return null;
+        return this.convertJSONToQuotationHistory(quotationHistoryJSON, instrument);
     }
 }

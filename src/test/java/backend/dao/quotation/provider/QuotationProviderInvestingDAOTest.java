@@ -7,8 +7,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -111,40 +109,39 @@ public class QuotationProviderInvestingDAOTest {
     private List<Quotation> getDenisonMinesQuotationHistory() {
         List<Quotation> historicalQuotations = new ArrayList<>();
         Quotation quotation = new Quotation();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+        long secondsSince1970;
 
-        try {
-            quotation.setDate(dateFormat.parse("11/25/2024"));
-            quotation.setOpen(BigDecimal.valueOf(3.36));
-            quotation.setHigh(BigDecimal.valueOf(3.40));
-            quotation.setLow(BigDecimal.valueOf(3.18));
-            quotation.setClose(BigDecimal.valueOf(3.24));
-            quotation.setCurrency(Currency.CAD);
-            quotation.setVolume(2827091);
-            historicalQuotations.add(quotation);
+        secondsSince1970 = 1732492800000L;
+        quotation.setDate(new Date(secondsSince1970));
+        quotation.setOpen(new BigDecimal("3.36"));
+        quotation.setHigh(new BigDecimal("3.40"));
+        quotation.setLow(new BigDecimal("3.18"));
+        quotation.setClose(new BigDecimal("3.24"));
+        quotation.setCurrency(Currency.CAD);
+        quotation.setVolume(2827091);
+        historicalQuotations.add(quotation);
 
-            quotation = new Quotation();
-            quotation.setDate(dateFormat.parse("11/22/2024"));
-            quotation.setOpen(BigDecimal.valueOf(3.33));
-            quotation.setHigh(BigDecimal.valueOf(3.34));
-            quotation.setLow(BigDecimal.valueOf(3.25));
-            quotation.setClose(BigDecimal.valueOf(3.32));
-            quotation.setCurrency(Currency.CAD);
-            quotation.setVolume(1835032);
-            historicalQuotations.add(quotation);
+        quotation = new Quotation();
+        secondsSince1970 = 1732233600000L;
+        quotation.setDate(new Date(secondsSince1970));
+        quotation.setOpen(new BigDecimal("3.33"));
+        quotation.setHigh(new BigDecimal("3.34"));
+        quotation.setLow(new BigDecimal("3.25"));
+        quotation.setClose(new BigDecimal("3.32"));
+        quotation.setCurrency(Currency.CAD);
+        quotation.setVolume(1835032);
+        historicalQuotations.add(quotation);
 
-            quotation = new Quotation();
-            quotation.setDate(dateFormat.parse("11/21/2024"));
-            quotation.setOpen(BigDecimal.valueOf(3.18));
-            quotation.setHigh(BigDecimal.valueOf(3.34));
-            quotation.setLow(BigDecimal.valueOf(3.17));
-            quotation.setClose(BigDecimal.valueOf(3.34));
-            quotation.setCurrency(Currency.CAD);
-            quotation.setVolume(2075737);
-            historicalQuotations.add(quotation);
-        } catch (ParseException e) {
-            fail(e.getMessage());
-        }
+        quotation = new Quotation();
+        secondsSince1970 = 1732147200000L;
+        quotation.setDate(new Date(secondsSince1970));
+        quotation.setOpen(new BigDecimal("3.18"));
+        quotation.setHigh(new BigDecimal("3.34"));
+        quotation.setLow(new BigDecimal("3.17"));
+        quotation.setClose(new BigDecimal("3.34"));
+        quotation.setCurrency(Currency.CAD);
+        quotation.setVolume(2075737);
+        historicalQuotations.add(quotation);
 
         return historicalQuotations;
     }
@@ -373,7 +370,7 @@ public class QuotationProviderInvestingDAOTest {
         }
     }
 
-    // @Test
+    @Test
     /**
      * Tests the retrieval of the quotation history of a stock traded at the TSX.
      */
