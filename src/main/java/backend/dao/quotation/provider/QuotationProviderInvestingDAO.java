@@ -64,9 +64,9 @@ public class QuotationProviderInvestingDAO extends AbstractQuotationProviderDAO 
             + "&time-frame=Daily&add-missing-rows=false";
 
     /**
-     * The cURL command used to query the current Quotation.
+     * The cURL command used to query current and historical quotations.
      */
-    private static final String CURL_CURRENT_QUOTATION = "curl \"" + PLACEHOLDER_URL + "\" --compressed "
+    private static final String CURL_COMMAND = "curl \"" + PLACEHOLDER_URL + "\" --compressed "
             + "-H \"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0\" "
             + "-H \"Accept: */*\" -H \"Accept-Language: de,en-US;q=0.7,en;q=0.3\" "
             + "-H \"Accept-Encoding: gzip, deflate\" -H \"Referer: https://www.investing.com/\" "
@@ -113,7 +113,25 @@ public class QuotationProviderInvestingDAO extends AbstractQuotationProviderDAO 
      */
     @Override
     public List<Quotation> getQuotationHistory(final Instrument instrument, final Integer years) throws Exception {
-        throw new Exception("Method is not supported.");
+        String command = this.getCurlCommandQuotationHistory(instrument, years);
+        List<Quotation> quotations;
+        Process process = null;
+        final InputStream resultStream;
+        String jsonResult;
+
+        try {
+            process = Runtime.getRuntime().exec(command);
+            resultStream = process.getInputStream();
+
+            jsonResult = IOUtils.toString(resultStream, StandardCharsets.UTF_8);
+            quotations = this.convertJSONToQuotationHistory(jsonResult, instrument);
+        } finally {
+            if (process != null) {
+                process.destroy();
+            }
+        }
+
+        return quotations;
     }
 
     /**
@@ -315,7 +333,24 @@ public class QuotationProviderInvestingDAO extends AbstractQuotationProviderDAO 
      */
     private String getCurlCommandCurrentQuotation(final Instrument instrument) throws Exception {
         final String queryUrl = this.getQueryUrlCurrentQuotation(instrument);
-        String command = new String(CURL_CURRENT_QUOTATION);
+        String command = new String(CURL_COMMAND);
+
+        command = command.replace(PLACEHOLDER_URL, queryUrl);
+
+        return command;
+    }
+
+    /**
+     * Gets the cURL command for retrieval of the Quotation history.
+     *
+     * @param instrument The Instrument for which the command is determined.
+     * @param years      The number of years to be queried.
+     * @return The cUrl command.
+     * @throws Exception Command could not be created.
+     */
+    private String getCurlCommandQuotationHistory(final Instrument instrument, final Integer years) throws Exception {
+        final String queryUrl = this.getQueryUrlQuotationHistory(instrument, years);
+        String command = new String(CURL_COMMAND);
 
         command = command.replace(PLACEHOLDER_URL, queryUrl);
 
