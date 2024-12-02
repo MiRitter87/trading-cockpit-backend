@@ -152,7 +152,7 @@ public class DashboardService {
      */
     private void initializeStatistics() throws Exception {
         StatisticCalculationController statisticCalculationController = new StatisticCalculationController();
-        final int requestedStatistics = 10; // 10 are needed for Aggregate Indicator calculation.
+        final int requestedStatistics = 11; // Get enough statistics for SMA(10), even if there are holidays in between.
 
         this.statistics = statisticCalculationController.getStatisticsForSectorOrIg(this.instrument, this.list,
                 requestedStatistics);
