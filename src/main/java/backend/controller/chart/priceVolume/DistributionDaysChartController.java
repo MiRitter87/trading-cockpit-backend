@@ -21,6 +21,7 @@ import org.jfree.data.xy.OHLCDataset;
 import backend.controller.NoQuotationsExistException;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
+import backend.model.instrument.QuotationArray;
 
 /**
  * Controller for the creation of a chart displaying an Instrument with Distribution Days.
@@ -28,6 +29,11 @@ import backend.model.instrument.Quotation;
  * @author Michael
  */
 public class DistributionDaysChartController extends PriceVolumeChartController {
+    /**
+     * The factor used to calculate the performance threshold that defines a Distribution Day.
+     */
+    private static final float DD_THRESHOLD_FACTOR = (float) 0.274;
+
     /**
      * Gets a chart of an Instrument marked with Distribution Days.
      *
@@ -60,6 +66,55 @@ public class DistributionDaysChartController extends PriceVolumeChartController 
         chart = new JFreeChart(instrument.getName(), JFreeChart.DEFAULT_TITLE_FONT, combinedPlot, true);
 
         return chart;
+    }
+
+    /**
+     * Determines the rolling 25-day sum of Distribution Days for the given Quotation.
+     *
+     * @param quotation              The Quotation for which the sum is calculated.
+     * @param quotationsSortedByDate A List of Quotations sorted by Date.
+     * @return The rolling 25-day sum of Distribution Days.
+     */
+    public int getDistributionDaysSum(final Quotation quotation, final List<Quotation> quotationsSortedByDate) {
+        List<Integer> indexOfDistributionDays = this.getIndexOfDistributionDays(quotationsSortedByDate);
+        int numberOfDistributionDays = this.getDistributionDaysSum(quotation, quotationsSortedByDate,
+                indexOfDistributionDays);
+
+        return numberOfDistributionDays;
+    }
+
+    /**
+     * Checks if the day of the current Quotation constitutes a Distribution Day.
+     *
+     * @param currentQuotation       The current Quotation.
+     * @param previousQuotation      The previous Quotation.
+     * @param quotationsSortedByDate A List of Quotations sorted by Date.
+     * @return true, if day of current Quotation is Distribution Day; false, if not.
+     */
+    public boolean isDistributionDay(final Quotation currentQuotation, final Quotation previousQuotation,
+            final List<Quotation> quotationsSortedByDate) {
+
+        float performance;
+        float averagePerformance;
+        float performanceThreshold;
+        final int minDaysForAveragePerformance = 50;
+        final int maxDaysForAveragePerformance = 200;
+
+        performance = this.getPerformanceCalculator().getPerformance(currentQuotation, previousQuotation);
+        averagePerformance = this.getPerformanceCalculator().getAveragePerformanceOfDownDays(currentQuotation,
+                new QuotationArray(quotationsSortedByDate), minDaysForAveragePerformance, maxDaysForAveragePerformance);
+
+        if (averagePerformance == 0) {
+            return false;
+        }
+
+        performanceThreshold = averagePerformance * DD_THRESHOLD_FACTOR;
+
+        if (performance <= performanceThreshold && (currentQuotation.getVolume() > previousQuotation.getVolume())) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -145,21 +200,6 @@ public class DistributionDaysChartController extends PriceVolumeChartController 
                 numberOfDistributionDays++;
             }
         }
-
-        return numberOfDistributionDays;
-    }
-
-    /**
-     * Determines the rolling 25-day sum of Distribution Days for the given Quotation.
-     *
-     * @param quotation              The Quotation for which the sum is calculated.
-     * @param quotationsSortedByDate A List of Quotations sorted by Date.
-     * @return The rolling 25-day sum of Distribution Days.
-     */
-    public int getDistributionDaysSum(final Quotation quotation, final List<Quotation> quotationsSortedByDate) {
-        List<Integer> indexOfDistributionDays = this.getIndexOfDistributionDays(quotationsSortedByDate);
-        int numberOfDistributionDays = this.getDistributionDaysSum(quotation, quotationsSortedByDate,
-                indexOfDistributionDays);
 
         return numberOfDistributionDays;
     }

@@ -46,11 +46,6 @@ import backend.webservice.Indicator;
  */
 public class PriceVolumeChartController extends ChartController {
     /**
-     * The factor used to calculate the performance threshold that defines a Distribution Day.
-     */
-    private static final float DD_THRESHOLD_FACTOR = (float) 0.274;
-
-    /**
      * Provider of indicator plots.
      */
     private ChartIndicatorProvider chartIndicatorProvider;
@@ -479,39 +474,5 @@ public class PriceVolumeChartController extends ChartController {
         for (HorizontalLine horizontalLine : horizontalLines) {
             this.addHorizontalLine(candleStickSubplot, horizontalLine.getPrice().doubleValue(), Color.BLACK);
         }
-    }
-
-    /**
-     * Checks if the day of the current Quotation constitutes a Distribution Day.
-     *
-     * @param currentQuotation       The current Quotation.
-     * @param previousQuotation      The previous Quotation.
-     * @param quotationsSortedByDate A List of Quotations sorted by Date.
-     * @return true, if day of current Quotation is Distribution Day; false, if not.
-     */
-    public boolean isDistributionDay(final Quotation currentQuotation, final Quotation previousQuotation,
-            final List<Quotation> quotationsSortedByDate) {
-
-        float performance;
-        float averagePerformance;
-        float performanceThreshold;
-        final int minDaysForAveragePerformance = 50;
-        final int maxDaysForAveragePerformance = 200;
-
-        performance = this.performanceCalculator.getPerformance(currentQuotation, previousQuotation);
-        averagePerformance = this.performanceCalculator.getAveragePerformanceOfDownDays(currentQuotation,
-                new QuotationArray(quotationsSortedByDate), minDaysForAveragePerformance, maxDaysForAveragePerformance);
-
-        if (averagePerformance == 0) {
-            return false;
-        }
-
-        performanceThreshold = averagePerformance * DD_THRESHOLD_FACTOR;
-
-        if (performance <= performanceThreshold && (currentQuotation.getVolume() > previousQuotation.getVolume())) {
-            return true;
-        }
-
-        return false;
     }
 }

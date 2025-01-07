@@ -1,6 +1,8 @@
 package backend.controller.chart.priceVolume;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
@@ -136,5 +138,57 @@ public class DistributionDaysChartControllerTest {
                 this.dmlStock.getQuotationsSortedByDate());
 
         assertEquals(expectedDDSum, actualDDSum);
+    }
+
+    @Test
+    /**
+     * Tests the check if the current Quotation constitutes a Distribution Day. In this test the necessary requirements
+     * for a Distribution Day are met.
+     */
+    public void testIsDistributionDay() {
+        List<Quotation> quotationsSortedByDate = this.dmlStock.getQuotationsSortedByDate();
+        Quotation currentQuotation = quotationsSortedByDate.get(0);
+        Quotation previousQuotation = quotationsSortedByDate.get(1);
+
+        boolean isDistributionDay = this.distributionDaysChartController.isDistributionDay(currentQuotation,
+                previousQuotation, quotationsSortedByDate);
+
+        assertTrue(isDistributionDay);
+    }
+
+    @Test
+    /**
+     * Tests the check if the current Quotation constitutes a Distribution Day. In this test the volume is not higher
+     * than the previous days volume. Therefore no Distribution Day is given.
+     */
+    public void testNoDDVolumeTooLow() {
+        List<Quotation> quotationsSortedByDate = this.dmlStock.getQuotationsSortedByDate();
+        Quotation currentQuotation = quotationsSortedByDate.get(0);
+        Quotation previousQuotation = quotationsSortedByDate.get(1);
+
+        currentQuotation.setVolume(previousQuotation.getVolume() - 1);
+
+        boolean isDistributionDay = this.distributionDaysChartController.isDistributionDay(currentQuotation,
+                previousQuotation, quotationsSortedByDate);
+
+        assertFalse(isDistributionDay);
+    }
+
+    @Test
+    /**
+     * Tests the check if the current Quotation constitutes a Distribution Day. In this test the performance is not low
+     * enough to constitute a Distribution Day.
+     */
+    public void testNoDDPerformanceTooHigh() {
+        List<Quotation> quotationsSortedByDate = this.dmlStock.getQuotationsSortedByDate();
+        Quotation currentQuotation = quotationsSortedByDate.get(0);
+        Quotation previousQuotation = quotationsSortedByDate.get(1);
+
+        currentQuotation.setClose(previousQuotation.getClose());
+
+        boolean isDistributionDay = this.distributionDaysChartController.isDistributionDay(currentQuotation,
+                previousQuotation, quotationsSortedByDate);
+
+        assertFalse(isDistributionDay);
     }
 }

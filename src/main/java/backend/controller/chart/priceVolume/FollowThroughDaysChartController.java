@@ -235,6 +235,8 @@ public class FollowThroughDaysChartController extends PriceVolumeChartController
      */
     private boolean isDistributionDayFollowing(final Quotation quotation, final List<Quotation> quotationsSortedByDate,
             final int numberDays) {
+
+        DistributionDaysChartController ddChartController = new DistributionDaysChartController();
         Quotation currentQuotation;
         Quotation nextQuotation;
         int indexStart;
@@ -258,7 +260,7 @@ public class FollowThroughDaysChartController extends PriceVolumeChartController
             currentQuotation = quotationsSortedByDate.get(i + 1);
             nextQuotation = quotationsSortedByDate.get(i);
 
-            if (this.isDistributionDay(nextQuotation, currentQuotation, quotationsSortedByDate)) {
+            if (ddChartController.isDistributionDay(nextQuotation, currentQuotation, quotationsSortedByDate)) {
                 return true;
             }
         }
