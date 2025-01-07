@@ -135,13 +135,12 @@ public class ChartRestService {
     /**
      * Provides a chart of an Instrument marked with Pocket Pivots.
      *
-     * @param instrumentId    The ID of the Instrument used for chart creation.
-     * @param overlays        The requested chart overlays.
-     * @param withVolume      Show volume information.
-     * @param withSma30Volume Show SMA(30) of volume.
-     * @param indicator       The Indicator that is being displayed above the chart.
-     * @param rsInstrumentId  The ID of the Instrument used to build the RS line (only used if type of Indicator is
-     *                        RS_LINE).
+     * @param instrumentId   The ID of the Instrument used for chart creation.
+     * @param overlays       The requested chart overlays.
+     * @param withVolume     Show volume information.
+     * @param indicator      The Indicator that is being displayed above the chart.
+     * @param rsInstrumentId The ID of the Instrument used to build the RS line (only used if type of Indicator is
+     *                       RS_LINE).
      * @return The chart.
      */
     @GET
@@ -149,13 +148,11 @@ public class ChartRestService {
     @Produces("image/png")
     public Response getPriceVolumeChart(@PathParam("instrumentId") final Integer instrumentId,
             @QueryParam("overlays") final List<String> overlays, @QueryParam("withVolume") final boolean withVolume,
-            @QueryParam("withSma30Volume") final boolean withSma30Volume,
             @QueryParam("indicator") final Indicator indicator,
             @QueryParam("rsInstrumentId") final Integer rsInstrumentId) {
 
         ChartService chartService = new ChartService();
-        return chartService.getPriceVolumeChart(instrumentId, overlays, withVolume, withSma30Volume, indicator,
-                rsInstrumentId);
+        return chartService.getPriceVolumeChart(instrumentId, overlays, withVolume, indicator, rsInstrumentId);
     }
 
     /**

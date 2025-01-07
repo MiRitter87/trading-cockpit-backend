@@ -317,26 +317,24 @@ public class ChartService {
      * Provides a chart of an Instrument with price and volume. Additional overlays and subplots can be added to the
      * chart on demand.
      *
-     * @param instrumentId    The ID of the Instrument used for chart creation.
-     * @param overlays        The requested chart overlays.
-     * @param withVolume      Show volume information.
-     * @param withSma30Volume Show SMA(30) of volume.
-     * @param indicator       The Indicator that is being displayed above the chart.
-     * @param rsInstrumentId  The ID of the Instrument used to build the RS line (only used if type of Indicator is
-     *                        RS_LINE).
+     * @param instrumentId   The ID of the Instrument used for chart creation.
+     * @param overlays       The requested chart overlays.
+     * @param withVolume     Show volume information.
+     * @param indicator      The Indicator that is being displayed above the chart.
+     * @param rsInstrumentId The ID of the Instrument used to build the RS line (only used if type of Indicator is
+     *                       RS_LINE).
      * @return A Response containing the generated chart.
      */
     public Response getPriceVolumeChart(final Integer instrumentId, final List<String> overlays,
-            final boolean withVolume, final boolean withSma30Volume, final Indicator indicator,
-            final Integer rsInstrumentId) {
+            final boolean withVolume, final Indicator indicator, final Integer rsInstrumentId) {
 
         PriceVolumeChartController priceVolumeChartController = new PriceVolumeChartController();
         JFreeChart chart;
         StreamingOutput streamingOutput = null;
 
         try {
-            chart = priceVolumeChartController.getPriceVolumeChart(instrumentId, overlays, withVolume, withSma30Volume,
-                    indicator, rsInstrumentId);
+            chart = priceVolumeChartController.getPriceVolumeChart(instrumentId, overlays, withVolume, indicator,
+                    rsInstrumentId);
 
             streamingOutput = new StreamingOutput() {
                 @Override

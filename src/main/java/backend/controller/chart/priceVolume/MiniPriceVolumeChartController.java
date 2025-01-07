@@ -47,7 +47,7 @@ public class MiniPriceVolumeChartController extends PriceVolumeChartController {
         this.getChartOverlayProvider().addEma21(instrument, candleStickSubplot);
         this.getChartOverlayProvider().addSma50(instrument, candleStickSubplot);
 
-        this.getChartOverlayProvider().addMovingAverageVolume(instrument, true, volumeSubplot);
+        this.getChartOverlayProvider().addMovingAverageVolume(instrument, volumeSubplot);
         this.clipVolumeAt2TimesAverage(volumeSubplot, instrument);
 
         // The whole years trading history is needed to calculate the threshold of the Bollinger BandWidth.

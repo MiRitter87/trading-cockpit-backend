@@ -206,21 +206,15 @@ public class ChartOverlayProvider {
      * Adds the SMA(30) of the volume to the chart.
      *
      * @param instrument      The Instrument whose price and volume data are displayed.
-     * @param withSma30Volume Show SMA(30) of volume.
      * @param volumeSubplot   The Plot to which the SMA(30) of the volume is added.
      */
-    public void addMovingAverageVolume(final Instrument instrument, final boolean withSma30Volume,
-            final XYPlot volumeSubplot) {
+    public void addMovingAverageVolume(final Instrument instrument, final XYPlot volumeSubplot) {
         List<Quotation> quotationsSortedByDate = instrument.getQuotationsSortedByDate();
         TimeSeriesCollection timeSeriesCollection = new TimeSeriesCollection();
         TimeSeries sma30VolumeTimeSeries = new TimeSeries(
                 this.resources.getString("chart.priceVolume.timeSeriesSma30VolumeName"));
         int index = volumeSubplot.getDatasetCount();
         MovingAverageData maData;
-
-        if (!withSma30Volume) {
-            return;
-        }
 
         for (Quotation tempQuotation : quotationsSortedByDate) {
             maData = tempQuotation.getMovingAverageData();

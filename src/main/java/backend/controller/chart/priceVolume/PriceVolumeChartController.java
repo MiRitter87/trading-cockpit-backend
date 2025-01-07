@@ -98,20 +98,19 @@ public class PriceVolumeChartController extends ChartController {
     /**
      * Gets a chart of an Instrument with volume information.
      *
-     * @param instrumentId    The ID of the Instrument used for chart creation.
-     * @param overlays        The requested chart overlays.
-     * @param withVolume      Show volume information.
-     * @param withSma30Volume Show SMA(30) of volume.
-     * @param indicator       The Indicator that is being displayed above the chart.
-     * @param rsInstrumentId  The ID of the Instrument used to build the RS line (only used if type of Indicator is
-     *                        RS_LINE).
+     * @param instrumentId   The ID of the Instrument used for chart creation.
+     * @param overlays       The requested chart overlays.
+     * @param withVolume     Show volume information.
+     * @param indicator      The Indicator that is being displayed above the chart.
+     * @param rsInstrumentId The ID of the Instrument used to build the RS line (only used if type of Indicator is
+     *                       RS_LINE).
      * @return The chart.
      * @throws NoQuotationsExistException No quotations exist for the Quotation with the given ID.
      * @throws Exception                  Chart generation failed.
      */
     public JFreeChart getPriceVolumeChart(final Integer instrumentId, final List<String> overlays,
-            final boolean withVolume, final boolean withSma30Volume, final Indicator indicator,
-            final Integer rsInstrumentId) throws NoQuotationsExistException, Exception {
+            final boolean withVolume, final Indicator indicator, final Integer rsInstrumentId)
+            throws NoQuotationsExistException, Exception {
 
         Instrument instrument = this.getInstrumentWithQuotations(instrumentId, TRADING_DAYS_PER_YEAR);
         JFreeChart chart;
@@ -124,7 +123,7 @@ public class PriceVolumeChartController extends ChartController {
 
         if (withVolume) {
             volumeSubplot = this.getVolumePlot(instrument, dateAxis);
-            this.chartOverlayProvider.addMovingAverageVolume(instrument, withSma30Volume, volumeSubplot);
+            this.addMovingAverageVolume(instrument, overlays, volumeSubplot);
             this.clipVolumeAt2TimesAverage(volumeSubplot, instrument);
         }
 
@@ -417,6 +416,25 @@ public class PriceVolumeChartController extends ChartController {
 
         if (overlays.contains(ChartOverlay.SMA_200.toString())) {
             this.chartOverlayProvider.addSma200(instrument, candleStickSubplot);
+        }
+    }
+
+    /**
+     * Adds a moving average of the volume to the chart.
+     *
+     * @param instrument    The Instrument whose price and volume data are displayed.
+     * @param overlays      The requested chart overlays.
+     * @param volumeSubplot The Plot to which the moving average is added.
+     */
+    protected void addMovingAverageVolume(final Instrument instrument, final List<String> overlays,
+            final XYPlot volumeSubplot) {
+
+        if (overlays == null || overlays.isEmpty()) {
+            return;
+        }
+
+        if (overlays.contains(ChartOverlay.SMA_30_VOLUME.toString())) {
+            this.chartOverlayProvider.addMovingAverageVolume(instrument, volumeSubplot);
         }
     }
 

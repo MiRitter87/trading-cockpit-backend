@@ -57,7 +57,7 @@ public class HealthCheckChartController extends PriceVolumeChartController {
         this.addMovingAveragesPrice(instrument, candleStickSubplot);
 
         XYPlot volumeSubplot = this.getVolumePlot(instrument, dateAxis);
-        this.getChartOverlayProvider().addMovingAverageVolume(instrument, true, volumeSubplot);
+        this.getChartOverlayProvider().addMovingAverageVolume(instrument, volumeSubplot);
         this.clipVolumeAt2TimesAverage(volumeSubplot, instrument);
 
         XYPlot healthSubplot = this.getHealthPlot(instrument, dateAxis, profile, lookbackPeriod);
