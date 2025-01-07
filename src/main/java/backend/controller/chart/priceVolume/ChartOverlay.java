@@ -24,5 +24,10 @@ public enum ChartOverlay {
     /**
      * Simple Moving Average - Period 200.
      */
-    SMA_200
+    SMA_200,
+
+    /**
+     * Simple Moving Average of volume - Period 30.
+     */
+    SMA_30_VOLUME
 }
