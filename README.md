@@ -85,4 +85,4 @@ The configuration file *tradingCockpitBackend.properties* has multiple propertie
 
 ## License
 
-Copyright © 2022-2024, [MiRitter87](https://github.com/MiRitter87). No License.
+Copyright © 2022-2025, [MiRitter87](https://github.com/MiRitter87). No License.
