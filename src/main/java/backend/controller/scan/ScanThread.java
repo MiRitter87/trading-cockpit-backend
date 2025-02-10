@@ -2,6 +2,7 @@ package backend.controller.scan;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.net.SocketException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -227,7 +228,12 @@ public class ScanThread extends DataRetrievalThread {
             this.scan.getIncompleteInstruments().remove(instrument);
         } catch (Exception e) {
             this.scan.addIncompleteInstrument(instrument);
-            LOGGER.error("Failed to update quotations of instrument with ID " + instrument.getId(), e);
+            if (e.getCause() instanceof SocketException) {
+                LOGGER.error("Failed to update quotations of instrument with ID " + instrument.getId()
+                        + " (Socket Closed).");
+            } else {
+                LOGGER.error("Failed to update quotations of instrument with ID " + instrument.getId(), e);
+            }
         }
     }
 
