@@ -138,24 +138,13 @@ public class ScanThread extends DataRetrievalThread {
      */
     private Set<Instrument> getInstrumentsOfScan() {
         if (this.scanOnlyIncompleteInstruments) {
-            return this.getIncompleteInstrumentsFromScan();
+            Set<Instrument> incompleteInstruments = new HashSet<>();
+            // A copy of the scans Set is provided allowing for deletion during iteration.
+            incompleteInstruments.addAll(this.scan.getIncompleteInstruments());
+            return incompleteInstruments;
         } else {
             return this.scan.getInstrumentsFromScanLists();
         }
-    }
-
-    /**
-     * Provides all incomplete instruments defined in the current scan. A copy of the scans Set is provided allowing for
-     * deletion during iteration.
-     *
-     * @return All incomplete instruments defined in the current scan.
-     */
-    private Set<Instrument> getIncompleteInstrumentsFromScan() {
-        Set<Instrument> incompleteInstruments = new HashSet<>();
-
-        incompleteInstruments.addAll(this.scan.getIncompleteInstruments());
-
-        return incompleteInstruments;
     }
 
     /**
