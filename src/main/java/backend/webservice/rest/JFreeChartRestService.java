@@ -19,7 +19,6 @@ import backend.webservice.common.JFreeChartService;
  */
 @Path("/charts/jFreeChart")
 public class JFreeChartRestService {
-
     /**
      * Provides a chart with the cumulative Advance Decline Number.
      *
@@ -133,7 +132,7 @@ public class JFreeChartRestService {
     }
 
     /**
-     * Provides a chart of an Instrument marked with Pocket Pivots.
+     * Provides a price/volume chart of an Instrument.
      *
      * @param instrumentId   The ID of the Instrument used for chart creation.
      * @param overlays       The requested chart overlays.
