@@ -32,11 +32,11 @@ import jakarta.ws.rs.core.StreamingOutput;
 
 /**
  * Common implementation of the Chart WebService that can be used by multiple service interfaces like SOAP or REST. This
- * service provides several types of charts as PNG images.
+ * service provides several types of charts as PNG images. JFreeChart is used to render the charts.
  *
  * @author Michael
  */
-public class ChartService {
+public class JFreeChartService {
     /**
      * The standard width of charts.
      */

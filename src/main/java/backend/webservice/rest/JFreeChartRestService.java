@@ -10,15 +10,15 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Response;
 import backend.controller.instrumentCheck.HealthCheckProfile;
 import backend.webservice.Indicator;
-import backend.webservice.common.ChartService;
+import backend.webservice.common.JFreeChartService;
 
 /**
  * WebService for Chart access using REST technology.
  *
  * @author Michael
  */
-@Path("/charts")
-public class ChartRestService {
+@Path("/charts/jFreeChart")
+public class JFreeChartRestService {
 
     /**
      * Provides a chart with the cumulative Advance Decline Number.
@@ -30,7 +30,7 @@ public class ChartRestService {
     @Path("/cumulativeADNumber")
     @Produces("image/png")
     public Response getAdvanceDeclineNumberChart(@QueryParam("listId") final Integer listId) {
-        ChartService chartService = new ChartService();
+        JFreeChartService chartService = new JFreeChartService();
         return chartService.getAdvanceDeclineNumberChart(listId);
     }
 
@@ -44,7 +44,7 @@ public class ChartRestService {
     @Path("/instrumentsAboveSma50")
     @Produces("image/png")
     public Response getInstrumentsAboveSma50Chart(@QueryParam("listId") final Integer listId) {
-        ChartService chartService = new ChartService();
+        JFreeChartService chartService = new JFreeChartService();
         return chartService.getInstrumentsAboveSma50Chart(listId);
     }
 
@@ -58,7 +58,7 @@ public class ChartRestService {
     @Path("/instrumentsAboveSma200")
     @Produces("image/png")
     public Response getInstrumentsAboveSma200Chart(@QueryParam("listId") final Integer listId) {
-        ChartService chartService = new ChartService();
+        JFreeChartService chartService = new JFreeChartService();
         return chartService.getInstrumentsAboveSma200Chart(listId);
     }
 
@@ -72,7 +72,7 @@ public class ChartRestService {
     @Path("/distributionDays/{instrumentId}")
     @Produces("image/png")
     public Response getDistributionDaysChart(@PathParam("instrumentId") final Integer instrumentId) {
-        ChartService chartService = new ChartService();
+        JFreeChartService chartService = new JFreeChartService();
         return chartService.getDistributionDaysChart(instrumentId);
     }
 
@@ -86,7 +86,7 @@ public class ChartRestService {
     @Path("/followThroughDays/{instrumentId}")
     @Produces("image/png")
     public Response getFollowThroughDaysChart(@PathParam("instrumentId") final Integer instrumentId) {
-        ChartService chartService = new ChartService();
+        JFreeChartService chartService = new JFreeChartService();
         return chartService.getFollowThroughDaysChart(instrumentId);
     }
 
@@ -100,7 +100,7 @@ public class ChartRestService {
     @Path("/ritterMarketTrend")
     @Produces("image/png")
     public Response getRitterMarketTrendChart(@QueryParam("listId") final Integer listId) {
-        ChartService chartService = new ChartService();
+        JFreeChartService chartService = new JFreeChartService();
         return chartService.getRitterMarketTrendChart(listId);
     }
 
@@ -114,7 +114,7 @@ public class ChartRestService {
     @Path("/ritterPatternIndicator")
     @Produces("image/png")
     public Response getRitterPatternIndicatorChart(@QueryParam("listId") final Integer listId) {
-        ChartService chartService = new ChartService();
+        JFreeChartService chartService = new JFreeChartService();
         return chartService.getRitterPatternIndicatorChart(listId);
     }
 
@@ -128,7 +128,7 @@ public class ChartRestService {
     @Path("/pocketPivots/{instrumentId}")
     @Produces("image/png")
     public Response getPocketPivotsChart(@PathParam("instrumentId") final Integer instrumentId) {
-        ChartService chartService = new ChartService();
+        JFreeChartService chartService = new JFreeChartService();
         return chartService.getPocketPivotsChart(instrumentId);
     }
 
@@ -151,7 +151,7 @@ public class ChartRestService {
             @QueryParam("indicator") final Indicator indicator,
             @QueryParam("rsInstrumentId") final Integer rsInstrumentId) {
 
-        ChartService chartService = new ChartService();
+        JFreeChartService chartService = new JFreeChartService();
         return chartService.getPriceVolumeChart(instrumentId, overlays, withVolume, indicator, rsInstrumentId);
     }
 
@@ -165,7 +165,7 @@ public class ChartRestService {
     @Path("/priceVolume/mini/{instrumentId}")
     @Produces("image/png")
     public Response getMiniPriceVolumeChart(@PathParam("instrumentId") final Integer instrumentId) {
-        ChartService chartService = new ChartService();
+        JFreeChartService chartService = new JFreeChartService();
         return chartService.getMiniPriceVolumeChart(instrumentId);
     }
 
@@ -184,7 +184,7 @@ public class ChartRestService {
             @QueryParam("profile") final HealthCheckProfile profile,
             @QueryParam("lookbackPeriod") final Integer lookbackPeriod) {
 
-        ChartService chartService = new ChartService();
+        JFreeChartService chartService = new JFreeChartService();
         return chartService.getHealthCheckChart(instrumentId, profile, lookbackPeriod);
     }
 
@@ -202,7 +202,7 @@ public class ChartRestService {
     public Response getAggregateIndicatorChart(@PathParam("instrumentId") final Integer instrumentId,
             @QueryParam("listId") final Integer listId) {
 
-        ChartService chartService = new ChartService();
+        JFreeChartService chartService = new JFreeChartService();
         return chartService.getAggregateIndicatorChart(instrumentId, listId);
     }
 }
