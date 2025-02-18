@@ -37,10 +37,10 @@ public class ChartDataService {
     public WebServiceResult getPriceVolumeData(final Integer instrumentId) {
         PriceVolumeDataController priceVolumeDataController = new PriceVolumeDataController();
         WebServiceResult getPriceVolumeDataResult = new WebServiceResult(null);
-        QuotationArray quotations = new QuotationArray();
+        QuotationArray quotations;
 
         try {
-            quotations.setQuotations(priceVolumeDataController.getPriceVolumeData(instrumentId));
+            quotations = priceVolumeDataController.getPriceVolumeData(instrumentId);
             getPriceVolumeDataResult.setData(quotations);
         } catch (Exception e) {
             getPriceVolumeDataResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
