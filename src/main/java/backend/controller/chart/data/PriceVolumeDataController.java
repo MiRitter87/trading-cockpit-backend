@@ -1,7 +1,10 @@
 package backend.controller.chart.data;
 
+import backend.controller.scan.BollingerCalculator;
 import backend.dao.DAOManager;
 import backend.dao.quotation.persistence.QuotationDAO;
+import backend.model.instrument.Indicator;
+import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
 
 /**
@@ -33,11 +36,35 @@ public class PriceVolumeDataController {
         QuotationArray quotations = new QuotationArray(this.quotationDAO.getQuotationsOfInstrument(instrumentId));
 
         quotations.sortQuotationsByDate();
-
-        // Calculate BBW(10,2)
+        this.calculateBBWData(quotations);
 
         // Calculate SlowSto(14,3)
 
         return quotations;
+    }
+
+    /**
+     * Calculates the Bollinger BandWidth for the given quotations.
+     *
+     * @param quotations An array of quotations.
+     */
+    private void calculateBBWData(final QuotationArray quotations) {
+        BollingerCalculator bollingerCalculator = new BollingerCalculator();
+        float bollingerBandWidth;
+        final int bbwPeriodDays = 10;
+
+        for (Quotation quotation : quotations.getQuotations()) {
+            bollingerBandWidth = bollingerCalculator.getBollingerBandWidth(bbwPeriodDays, 2, quotation, quotations);
+
+            if (bollingerBandWidth == 0) {
+                continue;
+            }
+
+            if (quotation.getIndicator() == null) {
+                quotation.setIndicator(new Indicator());
+            }
+
+            quotation.getIndicator().setBollingerBandWidth10Days(bollingerBandWidth);
+        }
     }
 }
