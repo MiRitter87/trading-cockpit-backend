@@ -1,6 +1,7 @@
 package backend.controller.chart.data;
 
 import backend.controller.scan.BollingerCalculator;
+import backend.controller.scan.StochasticCalculator;
 import backend.dao.DAOManager;
 import backend.dao.quotation.persistence.QuotationDAO;
 import backend.model.instrument.Indicator;
@@ -37,8 +38,7 @@ public class PriceVolumeDataController {
 
         quotations.sortQuotationsByDate();
         this.calculateBBWData(quotations);
-
-        // Calculate SlowSto(14,3)
+        this.calculateSlowStochasticData(quotations);
 
         return quotations;
     }
@@ -65,6 +65,32 @@ public class PriceVolumeDataController {
             }
 
             quotation.getIndicator().setBollingerBandWidth10Days(bollingerBandWidth);
+        }
+    }
+
+    /**
+     * Calculates the Slow Stochastic for the given quotations.
+     *
+     * @param quotations An array of quotations.
+     */
+    private void calculateSlowStochasticData(final QuotationArray quotations) {
+        StochasticCalculator stochasticCalculator = new StochasticCalculator();
+        float slowStochastic;
+        final int periodDays = 14;
+        final int smoothingDays = 3;
+
+        for (Quotation quotation : quotations.getQuotations()) {
+            slowStochastic = stochasticCalculator.getSlowStochastic(periodDays, smoothingDays, quotation, quotations);
+
+            if (slowStochastic == 0) {
+                continue;
+            }
+
+            if (quotation.getIndicator() == null) {
+                quotation.setIndicator(new Indicator());
+            }
+
+            quotation.getIndicator().setSlowStochastic14Days(slowStochastic);
         }
     }
 }
