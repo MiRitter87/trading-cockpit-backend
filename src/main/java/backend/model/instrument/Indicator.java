@@ -6,6 +6,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 /**
  * Indicator data that are calculated based on quotations.
@@ -94,6 +95,12 @@ public class Indicator {
      */
     @Column(name = "ATRP_20_DAYS")
     private float averageTrueRangePercent20;
+
+    /**
+     * The Slow Stochastic - 14 day period.
+     */
+    @Transient
+    private float slowStochastic14Days;
 
     /**
      * Default constructor.
@@ -282,6 +289,20 @@ public class Indicator {
      */
     public void setAverageTrueRangePercent20(final float averageTrueRangePercent20) {
         this.averageTrueRangePercent20 = averageTrueRangePercent20;
+    }
+
+    /**
+     * @return the slowStochastic14Days
+     */
+    public float getSlowStochastic14Days() {
+        return slowStochastic14Days;
+    }
+
+    /**
+     * @param slowStochastic14Days the slowStochastic14Days to set
+     */
+    public void setSlowStochastic14Days(final float slowStochastic14Days) {
+        this.slowStochastic14Days = slowStochastic14Days;
     }
 
     /**
