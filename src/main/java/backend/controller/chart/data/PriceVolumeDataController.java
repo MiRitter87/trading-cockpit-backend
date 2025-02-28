@@ -1,10 +1,14 @@
 package backend.controller.chart.data;
 
+import java.util.List;
+
+import backend.controller.RatioCalculator;
 import backend.controller.scan.BollingerCalculator;
 import backend.controller.scan.StochasticCalculator;
 import backend.dao.DAOManager;
 import backend.dao.quotation.persistence.QuotationDAO;
 import backend.model.instrument.Indicator;
+import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
 
@@ -39,6 +43,7 @@ public class PriceVolumeDataController {
         quotations.sortQuotationsByDate();
         this.calculateBBWData(quotations);
         this.calculateSlowStochasticData(quotations);
+        this.calculateRsLineData(quotations);
 
         return quotations;
     }
@@ -91,6 +96,47 @@ public class PriceVolumeDataController {
             }
 
             quotation.getIndicator().setSlowStochastic14Days(slowStochastic);
+        }
+    }
+
+    /**
+     * Calculates the Relative Strength Line for the given quotations. The industry group of the Instrument is used for
+     * calculation.
+     *
+     * @param quotations An array of quotations.
+     * @throws Exception Failed to calculate ratio for RS-Line.
+     */
+    private void calculateRsLineData(final QuotationArray quotations) throws Exception {
+        Quotation targetQuotation;
+        int quotationIndex;
+        List<Quotation> ratioQuotations;
+        RatioCalculator ratioCalculator = new RatioCalculator();
+        Instrument dividendInstrument = new Instrument();
+        Instrument divisorInstrument = new Instrument();
+        Instrument industryGroup = quotations.getQuotations().get(0).getInstrument().getIndustryGroup();
+
+        if (industryGroup == null) {
+            // The RS-Line can only be calculated if the Instrument is related to an industry group.
+            return;
+        }
+
+        dividendInstrument.setQuotations(quotations.getQuotations());
+        divisorInstrument.setQuotations(this.quotationDAO.getQuotationsOfInstrument(industryGroup.getId()));
+        ratioQuotations = ratioCalculator.getRatios(dividendInstrument, divisorInstrument);
+
+        for (Quotation quotation : ratioQuotations) {
+            quotationIndex = quotations.getIndexOfQuotationWithDate(quotation.getDate());
+            targetQuotation = quotations.getQuotations().get(quotationIndex);
+
+            if (targetQuotation == null) {
+                continue;
+            }
+
+            if (targetQuotation.getIndicator() == null) {
+                targetQuotation.setIndicator(new Indicator());
+            }
+
+            targetQuotation.getIndicator().setRsLinePrice(quotation.getClose());
         }
     }
 }
