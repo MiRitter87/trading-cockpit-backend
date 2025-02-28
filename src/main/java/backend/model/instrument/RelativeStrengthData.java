@@ -1,5 +1,6 @@
 package backend.model.instrument;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -69,6 +70,12 @@ public class RelativeStrengthData {
      */
     @Transient
     private int rsNumberCompositeIg;
+
+    /**
+     * The price of the relative strength line.
+     */
+    @Transient
+    private BigDecimal rsLinePrice;
 
     /**
      * The Indicator this data belong to.
@@ -193,6 +200,20 @@ public class RelativeStrengthData {
      */
     public void setRsNumberCompositeIg(final int rsNumberCompositeIg) {
         this.rsNumberCompositeIg = rsNumberCompositeIg;
+    }
+
+    /**
+     * @return the rsLinePrice
+     */
+    public BigDecimal getRsLinePrice() {
+        return rsLinePrice;
+    }
+
+    /**
+     * @param rsLinePrice the rsLinePrice to set
+     */
+    public void setRsLinePrice(final BigDecimal rsLinePrice) {
+        this.rsLinePrice = rsLinePrice;
     }
 
     /**

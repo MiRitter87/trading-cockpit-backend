@@ -11,6 +11,7 @@ import backend.model.instrument.Indicator;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
+import backend.model.instrument.RelativeStrengthData;
 
 /**
  * Controller to provide data for the construction of a price/volume chart.
@@ -132,11 +133,11 @@ public class PriceVolumeDataController {
                 continue;
             }
 
-            if (targetQuotation.getIndicator() == null) {
-                targetQuotation.setIndicator(new Indicator());
+            if (targetQuotation.getRelativeStrengthData() == null) {
+                targetQuotation.setRelativeStrengthData(new RelativeStrengthData());
             }
 
-            targetQuotation.getIndicator().setRsLinePrice(quotation.getClose());
+            targetQuotation.getRelativeStrengthData().setRsLinePrice(quotation.getClose());
         }
     }
 }
