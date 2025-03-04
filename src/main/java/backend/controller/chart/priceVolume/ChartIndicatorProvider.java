@@ -248,7 +248,10 @@ public class ChartIndicatorProvider {
         for (Quotation quotation : quotationArray.getQuotations()) {
             slowStochastic = this.stochasticCalculator.getSlowStochastic(daysPeriod, smoothingPeriod, quotation,
                     quotationArray);
-            timeSeries.add(new Day(quotation.getDate()), slowStochastic);
+
+            if (slowStochastic > 0) {
+                timeSeries.add(new Day(quotation.getDate()), slowStochastic);
+            }
         }
 
         timeSeriesCollection.addSeries(timeSeries);
