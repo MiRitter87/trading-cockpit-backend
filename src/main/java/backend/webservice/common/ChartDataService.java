@@ -7,6 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import backend.controller.chart.data.PriceVolumeDataController;
+import backend.controller.instrumentCheck.HealthCheckProfile;
 import backend.model.instrument.QuotationArray;
 import backend.model.webservice.WebServiceMessage;
 import backend.model.webservice.WebServiceMessageType;
@@ -49,5 +50,20 @@ public class ChartDataService {
         }
 
         return getPriceVolumeDataResult;
+    }
+
+    /**
+     * Provides data to build a price/volume chart of an Instrument. Additionally, events of a health check are
+     * provided.
+     *
+     * @param instrumentId   The ID of the Instrument used for data determination.
+     * @param profile        The HealthCheckProfile that is used.
+     * @param lookbackPeriod The number of days taken into account for health check routines.
+     * @return The chart data.
+     */
+    public WebServiceResult getHealthCheckData(final Integer instrumentId, final HealthCheckProfile profile,
+            final Integer lookbackPeriod) {
+
+        return null;
     }
 }
