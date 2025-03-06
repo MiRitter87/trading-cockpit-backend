@@ -127,7 +127,7 @@ public class HealthCheckChartController extends PriceVolumeChartController {
      * @return The Protocol.
      * @throws Exception Failed to perform health check.
      */
-    private Protocol getHealthProtocol(final Instrument instrument, final HealthCheckProfile profile,
+    public Protocol getHealthProtocol(final Instrument instrument, final HealthCheckProfile profile,
             final Integer lookbackPeriod) throws Exception {
 
         InstrumentCheckController instrumentCheckController = new InstrumentCheckController();

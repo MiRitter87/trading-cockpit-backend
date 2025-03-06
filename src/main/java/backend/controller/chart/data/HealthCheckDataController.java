@@ -1,10 +1,13 @@
 package backend.controller.chart.data;
 
+import backend.controller.chart.priceVolume.HealthCheckChartController;
 import backend.controller.instrumentCheck.HealthCheckProfile;
 import backend.dao.DAOManager;
 import backend.dao.quotation.persistence.QuotationDAO;
 import backend.model.chart.HealthCheckChartData;
+import backend.model.instrument.Instrument;
 import backend.model.instrument.QuotationArray;
+import backend.model.protocol.Protocol;
 
 /**
  * Controller to provide data for the construction of a price/volume chart with health check information.
@@ -39,6 +42,7 @@ public class HealthCheckDataController {
         HealthCheckChartData chartData = new HealthCheckChartData();
 
         chartData.setQuotations(this.getQuotationArray(instrumentId));
+        chartData.setProtocol(this.getHealthProtocol(chartData.getQuotations(), instrumentId, profile, lookbackPeriod));
 
         return chartData;
     }
@@ -56,5 +60,26 @@ public class HealthCheckDataController {
         quotations.sortQuotationsByDate();
 
         return quotations;
+    }
+
+    /**
+     * Determines the Protocol of the health check.
+     *
+     * @param quotations     The quotations building the trading history.
+     * @param instrumentId   The ID of the Instrument used for data determination.
+     * @param profile        The HealthCheckProfile that is used.
+     * @param lookbackPeriod The number of days taken into account for health check routines.
+     * @return The Protocol.
+     * @throws Exception Failed to perform health check.
+     */
+    private Protocol getHealthProtocol(final QuotationArray quotations, final Integer instrumentId,
+            final HealthCheckProfile profile, final Integer lookbackPeriod) throws Exception {
+
+        HealthCheckChartController healthCheckChartController = new HealthCheckChartController();
+        Instrument instrument = new Instrument();
+        instrument.setId(instrumentId);
+        instrument.setQuotations(quotations.getQuotations());
+
+        return healthCheckChartController.getHealthProtocol(instrument, profile, lookbackPeriod);
     }
 }
