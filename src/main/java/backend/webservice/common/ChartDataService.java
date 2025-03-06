@@ -6,8 +6,10 @@ import java.util.ResourceBundle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import backend.controller.chart.data.HealthCheckDataController;
 import backend.controller.chart.data.PriceVolumeDataController;
 import backend.controller.instrumentCheck.HealthCheckProfile;
+import backend.model.chart.HealthCheckChartData;
 import backend.model.instrument.QuotationArray;
 import backend.model.webservice.WebServiceMessage;
 import backend.model.webservice.WebServiceMessageType;
@@ -64,6 +66,19 @@ public class ChartDataService {
     public WebServiceResult getHealthCheckData(final Integer instrumentId, final HealthCheckProfile profile,
             final Integer lookbackPeriod) {
 
-        return null;
+        HealthCheckDataController healthCheckDataController = new HealthCheckDataController();
+        WebServiceResult getHealthCheckDataResult = new WebServiceResult(null);
+        HealthCheckChartData chartData;
+
+        try {
+            chartData = healthCheckDataController.getHealthCheckData(instrumentId, profile, lookbackPeriod);
+            getHealthCheckDataResult.setData(chartData);
+        } catch (Exception e) {
+            getHealthCheckDataResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
+                    this.resources.getString("chartData.healthCheck.getError")));
+            LOGGER.error(MessageFormat.format(this.resources.getString("chartData.healthCheck.getError"), e));
+        }
+
+        return getHealthCheckDataResult;
     }
 }

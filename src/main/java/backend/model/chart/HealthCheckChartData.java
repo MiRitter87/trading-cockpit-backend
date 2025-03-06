@@ -1,8 +1,6 @@
 package backend.model.chart;
 
-import java.util.List;
-
-import backend.model.instrument.Quotation;
+import backend.model.instrument.QuotationArray;
 import backend.model.protocol.Protocol;
 
 /**
@@ -14,7 +12,7 @@ public class HealthCheckChartData {
     /**
      * The quotations.
      */
-    private List<Quotation> quotations;
+    private QuotationArray quotations;
 
     /**
      * The health check protocol.
@@ -24,14 +22,14 @@ public class HealthCheckChartData {
     /**
      * @return the quotations
      */
-    public List<Quotation> getQuotations() {
+    public QuotationArray getQuotations() {
         return quotations;
     }
 
     /**
      * @param quotations the quotations to set
      */
-    public void setQuotations(final List<Quotation> quotations) {
+    public void setQuotations(final QuotationArray quotations) {
         this.quotations = quotations;
     }
 
