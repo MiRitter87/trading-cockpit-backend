@@ -99,12 +99,13 @@ public class HealthCheckDataController {
     private Map<Long, Integer> getHealthEvents(final QuotationArray quotations, final Protocol protocol,
             final HealthCheckProfile profile) {
 
+        HealthCheckChartController healthCheckChartController = new HealthCheckChartController();
         Map<Long, Integer> healthEvents = new HashMap<>();
+        int eventNumber;
 
-        // TODO Remove dummy value creation.
-        for (int i = 0; i <= 2; i++) {
-            Quotation quotation = quotations.getQuotations().get(i);
-            healthEvents.put(quotation.getDate().getTime(), i);
+        for (Quotation quotation : quotations.getQuotations()) {
+            eventNumber = healthCheckChartController.getEventNumber(protocol, profile, quotation);
+            healthEvents.put(quotation.getDate().getTime(), eventNumber);
         }
 
         return healthEvents;
