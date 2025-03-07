@@ -1,5 +1,7 @@
 package backend.model.chart;
 
+import java.util.Map;
+
 import backend.model.instrument.QuotationArray;
 import backend.model.protocol.Protocol;
 
@@ -18,6 +20,11 @@ public class HealthCheckChartData {
      * The health check protocol.
      */
     private Protocol protocol;
+
+    /**
+     * A Map of dates with a sum of positive and negative health events for each date.
+     */
+    private Map<Long, Integer> healthEvents;
 
     /**
      * @return the quotations
@@ -47,4 +54,17 @@ public class HealthCheckChartData {
         this.protocol = protocol;
     }
 
+    /**
+     * @return the healthEvents
+     */
+    public Map<Long, Integer> getHealthEvents() {
+        return healthEvents;
+    }
+
+    /**
+     * @param healthEvents the healthEvents to set
+     */
+    public void setHealthEvents(final Map<Long, Integer> healthEvents) {
+        this.healthEvents = healthEvents;
+    }
 }

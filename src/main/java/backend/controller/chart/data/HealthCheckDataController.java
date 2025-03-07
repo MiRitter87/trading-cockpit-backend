@@ -1,11 +1,15 @@
 package backend.controller.chart.data;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import backend.controller.chart.priceVolume.HealthCheckChartController;
 import backend.controller.instrumentCheck.HealthCheckProfile;
 import backend.dao.DAOManager;
 import backend.dao.quotation.persistence.QuotationDAO;
 import backend.model.chart.HealthCheckChartData;
 import backend.model.instrument.Instrument;
+import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
 import backend.model.protocol.Protocol;
 
@@ -43,6 +47,7 @@ public class HealthCheckDataController {
 
         chartData.setQuotations(this.getQuotationArray(instrumentId));
         chartData.setProtocol(this.getHealthProtocol(chartData.getQuotations(), instrumentId, profile, lookbackPeriod));
+        chartData.setHealthEvents(this.getHealthEvents(chartData.getQuotations(), chartData.getProtocol(), profile));
 
         return chartData;
     }
@@ -81,5 +86,27 @@ public class HealthCheckDataController {
         instrument.setQuotations(quotations.getQuotations());
 
         return healthCheckChartController.getHealthProtocol(instrument, profile, lookbackPeriod);
+    }
+
+    /**
+     * Determines the number of health events and their dates of occurrence.
+     *
+     * @param quotations The quotations building the trading history.
+     * @param protocol   The Protocol that contains the health check events.
+     * @param profile    The HealthCheckProfile that is used.
+     * @return A Map of dates with a sum of positive and negative health events for each date.
+     */
+    private Map<Long, Integer> getHealthEvents(final QuotationArray quotations, final Protocol protocol,
+            final HealthCheckProfile profile) {
+
+        Map<Long, Integer> healthEvents = new HashMap<>();
+
+        // TODO Remove dummy value creation.
+        for (int i = 0; i <= 2; i++) {
+            Quotation quotation = quotations.getQuotations().get(i);
+            healthEvents.put(quotation.getDate().getTime(), i);
+        }
+
+        return healthEvents;
     }
 }
