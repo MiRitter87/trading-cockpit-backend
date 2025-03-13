@@ -10,7 +10,7 @@ import backend.controller.chart.data.HealthCheckDataController;
 import backend.controller.chart.data.PriceVolumeDataController;
 import backend.controller.instrumentCheck.HealthCheckProfile;
 import backend.model.chart.HealthCheckChartData;
-import backend.model.instrument.QuotationArray;
+import backend.model.chart.PriceVolumeChartData;
 import backend.model.webservice.WebServiceMessage;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
@@ -40,11 +40,11 @@ public class ChartDataService {
     public WebServiceResult getPriceVolumeData(final Integer instrumentId) {
         PriceVolumeDataController priceVolumeDataController = new PriceVolumeDataController();
         WebServiceResult getPriceVolumeDataResult = new WebServiceResult(null);
-        QuotationArray quotations;
+        PriceVolumeChartData chartData = new PriceVolumeChartData();
 
         try {
-            quotations = priceVolumeDataController.getPriceVolumeData(instrumentId);
-            getPriceVolumeDataResult.setData(quotations);
+            chartData.setQuotations(priceVolumeDataController.getPriceVolumeData(instrumentId));
+            getPriceVolumeDataResult.setData(chartData);
         } catch (Exception e) {
             getPriceVolumeDataResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
                     this.resources.getString("chartData.priceVolume.getError")));
