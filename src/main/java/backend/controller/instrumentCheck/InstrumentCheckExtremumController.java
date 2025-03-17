@@ -64,6 +64,11 @@ public class InstrumentCheckExtremumController {
         for (int i = startIndex; i >= 0; i--) {
             currentQuotation = sortedQuotations.getQuotations().get(i);
             largestDownQuotation = this.getLargestDownDay(sortedQuotations.getQuotations(), currentQuotation);
+
+            if (largestDownQuotation == null) {
+                continue;
+            }
+
             largestDownDayPerformance = this.performanceCalculator.getPricePerformanceForDays(1, largestDownQuotation,
                     sortedQuotations);
 
@@ -220,7 +225,7 @@ public class InstrumentCheckExtremumController {
         Quotation previousQuotation;
 
         // Determine the Quotation with the largest negative performance.
-        for (int i = 0; i < quotations.size() - 2; i++) {
+        for (int i = 0; i <= quotations.size() - 2; i++) {
             currentQuotation = quotations.get(i);
             previousQuotation = quotations.get(i + 1);
 
@@ -295,7 +300,7 @@ public class InstrumentCheckExtremumController {
             }
 
             currentSpread = currentQuotation.getHigh().floatValue() / currentQuotation.getLow().floatValue();
-            //Convert to percentage value
+            // Convert to percentage value
             currentSpread = (currentSpread - 1) * hundredPercent;
 
             if (currentSpread > largestDailySpread) {

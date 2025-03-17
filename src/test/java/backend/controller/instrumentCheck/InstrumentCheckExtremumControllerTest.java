@@ -283,4 +283,60 @@ public class InstrumentCheckExtremumControllerTest {
             fail(e.getMessage());
         }
     }
+
+    @Test
+    /**
+     * Tests the check if Instrument had largest down-day of the year. Set starting date before begin of trading
+     * history.
+     */
+    public void testCheckLargestDownDayStartBeforeHistory() {
+        ProtocolEntry expectedProtocolEntry1 = new ProtocolEntry();
+        ProtocolEntry expectedProtocolEntry2 = new ProtocolEntry();
+        ProtocolEntry expectedProtocolEntry3 = new ProtocolEntry();
+        ProtocolEntry actualProtocolEntry;
+        List<ProtocolEntry> protocolEntries;
+        Calendar calendar = Calendar.getInstance();
+
+        // Define the expected protocol entries.
+        calendar.set(2022, 6, 12); // Largest down day is 12.07.22 (-3,08%)
+        expectedProtocolEntry1.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
+        expectedProtocolEntry1.setCategory(ProtocolEntryCategory.VIOLATION);
+        expectedProtocolEntry1
+                .setText(MessageFormat.format(this.resources.getString("protocol.largestDownDay"), "-3,08"));
+
+        calendar.set(2022, 6, 21); // Largest down day is 21.07.22 (-4,58%)
+        expectedProtocolEntry2.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
+        expectedProtocolEntry2.setCategory(ProtocolEntryCategory.VIOLATION);
+        expectedProtocolEntry2
+                .setText(MessageFormat.format(this.resources.getString("protocol.largestDownDay"), "-4,58"));
+
+        calendar.set(2022, 6, 22); // Largest down day is 22.07.22 (-6,85%)
+        expectedProtocolEntry3.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
+        expectedProtocolEntry3.setCategory(ProtocolEntryCategory.VIOLATION);
+        expectedProtocolEntry3
+                .setText(MessageFormat.format(this.resources.getString("protocol.largestDownDay"), "-6,85"));
+
+        // Shrink size of quotation history simplifying start before history began.
+        this.dmlQuotations.setQuotations(this.dmlQuotations.getQuotations().subList(0, 10));
+
+        // Call controller to perform check.
+        calendar.set(2022, 6, 10); // Begin check on 10.07.22
+        try {
+            protocolEntries = this.instrumentCheckExtremumController.checkLargestDownDay(calendar.getTime(),
+                    this.dmlQuotations);
+
+            // Verify the check result.
+            assertEquals(3, protocolEntries.size());
+
+            // Validate the protocol entries.
+            actualProtocolEntry = protocolEntries.get(0);
+            assertEquals(expectedProtocolEntry1, actualProtocolEntry);
+            actualProtocolEntry = protocolEntries.get(1);
+            assertEquals(expectedProtocolEntry2, actualProtocolEntry);
+            actualProtocolEntry = protocolEntries.get(2);
+            assertEquals(expectedProtocolEntry3, actualProtocolEntry);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
 }
