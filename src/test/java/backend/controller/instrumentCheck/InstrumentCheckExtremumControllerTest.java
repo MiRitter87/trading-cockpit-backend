@@ -339,4 +339,48 @@ public class InstrumentCheckExtremumControllerTest {
             fail(e.getMessage());
         }
     }
+
+    @Test
+    /**
+     * Tests the check if Instrument had largest up-day of the year. Set starting date before begin of trading history.
+     */
+    public void testCheckLargestUpDayStartBeforeHistory() {
+        ProtocolEntry expectedProtocolEntry1 = new ProtocolEntry();
+        ProtocolEntry expectedProtocolEntry2 = new ProtocolEntry();
+        ProtocolEntry actualProtocolEntry;
+        List<ProtocolEntry> protocolEntries;
+        Calendar calendar = Calendar.getInstance();
+
+        // Define the expected protocol entry.
+        calendar.set(2022, 6, 13); // Largest up day is 13.07.22 (0,79%)
+        expectedProtocolEntry1.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
+        expectedProtocolEntry1.setCategory(ProtocolEntryCategory.UNCERTAIN);
+        expectedProtocolEntry1.setText(MessageFormat.format(this.resources.getString("protocol.largestUpDay"), "0,79"));
+
+        calendar.set(2022, 6, 14); // Largest up day is 14.07.22 (7,87%)
+        expectedProtocolEntry2.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
+        expectedProtocolEntry2.setCategory(ProtocolEntryCategory.UNCERTAIN);
+        expectedProtocolEntry2.setText(MessageFormat.format(this.resources.getString("protocol.largestUpDay"), "7,87"));
+
+        // Shrink size of quotation history simplifying start before history began.
+        this.dmlQuotations.setQuotations(this.dmlQuotations.getQuotations().subList(0, 10));
+
+        // Call controller to perform check.
+        calendar.set(2022, 6, 10); // Begin check on 10.07.22
+        try {
+            protocolEntries = this.instrumentCheckExtremumController.checkLargestUpDay(calendar.getTime(),
+                    this.dmlQuotations);
+
+            // Verify the check result.
+            assertEquals(2, protocolEntries.size());
+
+            // Validate the protocol entries.
+            actualProtocolEntry = protocolEntries.get(0);
+            assertEquals(expectedProtocolEntry1, actualProtocolEntry);
+            actualProtocolEntry = protocolEntries.get(1);
+            assertEquals(expectedProtocolEntry2, actualProtocolEntry);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
 }

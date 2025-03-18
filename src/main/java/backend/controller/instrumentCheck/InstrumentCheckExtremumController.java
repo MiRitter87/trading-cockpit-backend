@@ -112,6 +112,11 @@ public class InstrumentCheckExtremumController {
         for (int i = startIndex; i >= 0; i--) {
             currentQuotation = sortedQuotations.getQuotations().get(i);
             largestUpQuotation = this.getLargestUpDay(sortedQuotations.getQuotations(), currentQuotation);
+
+            if (largestUpQuotation == null) {
+                continue;
+            }
+
             largestUpDayPerformance = this.performanceCalculator.getPricePerformanceForDays(1, largestUpQuotation,
                     sortedQuotations);
 
@@ -260,7 +265,7 @@ public class InstrumentCheckExtremumController {
         Quotation previousQuotation;
 
         // Determine the Quotation with the largest positive performance.
-        for (int i = 0; i < quotations.size() - 2; i++) {
+        for (int i = 0; i <= quotations.size() - 2; i++) {
             currentQuotation = quotations.get(i);
             previousQuotation = quotations.get(i + 1);
 
