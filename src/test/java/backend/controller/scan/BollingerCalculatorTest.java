@@ -138,7 +138,25 @@ public class BollingerCalculatorTest {
      */
     public void testGetBollingerBandWidthThreshold() {
         QuotationArray sortedQuotations = new QuotationArray(this.dmlStock.getQuotationsSortedByDate());
-        float expectedThreshold = (float) 14.22;
+        float expectedThreshold = (float) 13.86;
+        float actualThreshold;
+
+        actualThreshold = this.bollingerCalculator.getBollingerBandWidthThreshold(10, 2, 20,
+                sortedQuotations.getQuotations().get(0), sortedQuotations);
+
+        assertEquals(expectedThreshold, actualThreshold);
+    }
+
+    @Test
+    /**
+     * Tests the calculation of the Bollinger BandWidth threshold of an instrument that only has a short trading
+     * history.
+     */
+    public void testBBWThresholdShortHistory() {
+        // Reduce trading history to ten days.
+        QuotationArray sortedQuotations = new QuotationArray(this.dmlStock.getQuotationsSortedByDate().subList(0, 10));
+
+        float expectedThreshold = 24.75f;
         float actualThreshold;
 
         actualThreshold = this.bollingerCalculator.getBollingerBandWidthThreshold(10, 2, 20,

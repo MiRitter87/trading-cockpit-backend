@@ -99,9 +99,10 @@ public class BollingerCalculator {
         }
 
         // Calculate all Bollinger BandWidth values and store results.
-        for (int i = indexOfQuotation; i < (sortedQuotations.getQuotations().size() - period); i++) {
+        for (int i = indexOfQuotation; i <= (sortedQuotations.getQuotations().size() - period); i++) {
             tempQuotation = sortedQuotations.getQuotations().get(i);
-            bollingerBandWidth = this.getBollingerBandWidth(period, 2, tempQuotation, sortedQuotations);
+            bollingerBandWidth = this.getBollingerBandWidth(period, standardDeviations, tempQuotation,
+                    sortedQuotations);
 
             if (bollingerBandWidth > 0) {
                 bbwValues.add(bollingerBandWidth);
