@@ -123,6 +123,12 @@ public class PriceVolumeDataController {
 
         dividendInstrument.setQuotations(quotations.getQuotations());
         divisorInstrument.setQuotations(this.quotationDAO.getQuotationsOfInstrument(industryGroup.getId()));
+
+        if (dividendInstrument.getQuotations().size() == 0 || divisorInstrument.getQuotations().size() == 0) {
+            // The RS-Line can only be calculated if quotations exist for both dividend and divisor.
+            return;
+        }
+
         ratioQuotations = ratioCalculator.getRatios(dividendInstrument, divisorInstrument);
 
         for (Quotation quotation : ratioQuotations) {
