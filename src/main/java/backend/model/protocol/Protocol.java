@@ -28,9 +28,9 @@ public class Protocol {
     private int confirmationPercentage;
 
     /**
-     * The percentage of protocol entries that constitute uncertainty.
+     * The percentage of protocol entries that constitute a warning.
      */
-    private int uncertainPercentage;
+    private int warningPercentage;
 
     /**
      * The percentage of protocol entries that constitute violations.
@@ -75,17 +75,17 @@ public class Protocol {
     }
 
     /**
-     * @return the uncertainPercentage
+     * @return the warningPercentage
      */
-    public int getUncertainPercentage() {
-        return uncertainPercentage;
+    public int getWarningPercentage() {
+        return warningPercentage;
     }
 
     /**
-     * @param uncertainPercentage the uncertainPercentage to set
+     * @param warningPercentage the warningPercentage to set
      */
-    public void setUncertainPercentage(final int uncertainPercentage) {
-        this.uncertainPercentage = uncertainPercentage;
+    public void setWarningPercentage(final int warningPercentage) {
+        this.warningPercentage = warningPercentage;
     }
 
     /**
@@ -135,12 +135,12 @@ public class Protocol {
     }
 
     /**
-     * Calculates percentage values for confirmations, violations and uncertainties based on all protocol entries.
+     * Calculates percentage values for confirmations, violations and warnings based on all protocol entries.
      */
     public void calculatePercentages() {
         int numberOfConfirmations = 0;
         int numberOfViolations = 0;
-        int numberOfUncertainties = 0;
+        int numberOfWarnings = 0;
         final int hundredPercent = 100;
 
         if (this.protocolEntries.size() == 0) {
@@ -152,8 +152,8 @@ public class Protocol {
                 numberOfConfirmations++;
             } else if (entry.getCategory() == ProtocolEntryCategory.VIOLATION) {
                 numberOfViolations++;
-            } else if (entry.getCategory() == ProtocolEntryCategory.UNCERTAIN) {
-                numberOfUncertainties++;
+            } else if (entry.getCategory() == ProtocolEntryCategory.WARNING) {
+                numberOfWarnings++;
             }
         }
 
@@ -163,7 +163,7 @@ public class Protocol {
         this.violationPercentage = new BigDecimal(numberOfViolations)
                 .divide(new BigDecimal(this.protocolEntries.size()), 2, RoundingMode.HALF_UP)
                 .multiply(new BigDecimal(hundredPercent)).intValue();
-        this.uncertainPercentage = new BigDecimal(numberOfUncertainties)
+        this.warningPercentage = new BigDecimal(numberOfWarnings)
                 .divide(new BigDecimal(this.protocolEntries.size()), 2, RoundingMode.HALF_UP)
                 .multiply(new BigDecimal(hundredPercent)).intValue();
     }

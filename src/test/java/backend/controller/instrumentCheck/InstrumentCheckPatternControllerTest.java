@@ -209,7 +209,7 @@ public class InstrumentCheckPatternControllerTest {
         // Define the expected protocol entry.
         calendar.set(2022, 2, 10); // Churning on 10.03.22
         expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
-        expectedProtocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
+        expectedProtocolEntry.setCategory(ProtocolEntryCategory.WARNING);
         expectedProtocolEntry.setText(this.resources.getString("protocol.churning"));
 
         // Call controller to perform check.
@@ -301,7 +301,7 @@ public class InstrumentCheckPatternControllerTest {
         // Define the expected protocol entry.
         calendar.set(2022, 1, 28); // Gap up on 28.02.22
         expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
-        expectedProtocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
+        expectedProtocolEntry.setCategory(ProtocolEntryCategory.WARNING);
         expectedProtocolEntry.setText(MessageFormat.format(resources.getString("protocol.gapUp"), gapSizePercent));
 
         // Call controller to perform check.

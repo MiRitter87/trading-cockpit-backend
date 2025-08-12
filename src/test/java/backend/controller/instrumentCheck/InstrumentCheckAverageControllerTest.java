@@ -223,7 +223,7 @@ public class InstrumentCheckAverageControllerTest {
         // Define the expected protocol entry.
         calendar.set(2022, 6, 22); // The day on which the price is extended above the SMA(200).
         expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
-        expectedProtocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
+        expectedProtocolEntry.setCategory(ProtocolEntryCategory.WARNING);
         expectedProtocolEntry.setText(
                 MessageFormat.format(this.resources.getString("protocol.extendedAboveSma200"), percentAboveSma200));
 

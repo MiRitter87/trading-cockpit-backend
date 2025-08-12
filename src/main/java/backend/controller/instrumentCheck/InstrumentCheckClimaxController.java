@@ -78,7 +78,7 @@ public class InstrumentCheckClimaxController {
 
             if (performanceOneWeek >= CLIMAX_ONE_WEEK_THRESHOLD) {
                 protocolEntry = new ProtocolEntry();
-                protocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
+                protocolEntry.setCategory(ProtocolEntryCategory.WARNING);
                 protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(currentDayQuotation.getDate()));
                 protocolEntry.setText(
                         MessageFormat.format(this.resources.getString("protocol.climaxOneWeek"), performanceOneWeek));
@@ -120,7 +120,7 @@ public class InstrumentCheckClimaxController {
 
             if (performanceThreeWeeks >= CLIMAX_THREE_WEEKS_THRESHOLD) {
                 protocolEntry = new ProtocolEntry();
-                protocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
+                protocolEntry.setCategory(ProtocolEntryCategory.WARNING);
                 protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(currentDayQuotation.getDate()));
                 protocolEntry.setText(MessageFormat.format(this.resources.getString("protocol.climaxThreeWeeks"),
                         performanceThreeWeeks));
@@ -173,7 +173,7 @@ public class InstrumentCheckClimaxController {
 
             if (numberOfUpDays >= thresholdNumberOfUpDays) {
                 protocolEntry = new ProtocolEntry();
-                protocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
+                protocolEntry.setCategory(ProtocolEntryCategory.WARNING);
                 protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(currentQuotation.getDate()));
                 protocolEntry.setText(this.resources.getString("protocol.timeClimax"));
                 protocolEntries.add(protocolEntry);

@@ -87,7 +87,7 @@ public class HealthCheckChartControllerTest {
         // One sell into strength
         protocolEntry = new ProtocolEntry();
         protocolEntry.setDate(calendar.getTime());
-        protocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
+        protocolEntry.setCategory(ProtocolEntryCategory.WARNING);
         this.protocol.getProtocolEntries().add(protocolEntry);
 
         // One violation yesterday
@@ -130,9 +130,9 @@ public class HealthCheckChartControllerTest {
 
     @Test
     /**
-     * Tests the determination of the event number using only uncertainties.
+     * Tests the determination of the event number using only warnings.
      */
-    public void testGetEventNumberUncertainties() {
+    public void testGetEventNumberWarnings() {
         int actualEventNumber;
         final int expectedEventNumer = 1;
         Quotation quotation = new Quotation();

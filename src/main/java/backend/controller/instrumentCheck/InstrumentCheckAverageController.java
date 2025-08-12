@@ -191,7 +191,7 @@ public class InstrumentCheckAverageController {
 
             if (percentAboveSma200 >= EXTENDED_ABOVE_SMA200_THRESHOLD) {
                 protocolEntry = new ProtocolEntry();
-                protocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
+                protocolEntry.setCategory(ProtocolEntryCategory.WARNING);
                 protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(currentDayQuotation.getDate()));
                 protocolEntry.setText(MessageFormat.format(this.resources.getString("protocol.extendedAboveSma200"),
                         percentAboveSma200));

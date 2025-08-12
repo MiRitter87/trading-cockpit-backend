@@ -17,7 +17,7 @@ public enum ProtocolEntryCategory {
     VIOLATION,
 
     /**
-     * The behavior is not clearly confirming or violating a trend.
+     * The behavior constitutes a warning sign.
      */
-    UNCERTAIN
+    WARNING
 }

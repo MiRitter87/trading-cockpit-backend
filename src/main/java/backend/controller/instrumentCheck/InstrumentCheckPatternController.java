@@ -202,7 +202,7 @@ public class InstrumentCheckPatternController {
 
             if (isChurning) {
                 protocolEntry = new ProtocolEntry();
-                protocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
+                protocolEntry.setCategory(ProtocolEntryCategory.WARNING);
                 protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(currentQuotation.getDate()));
                 protocolEntry.setText(this.resources.getString("protocol.churning"));
                 protocolEntries.add(protocolEntry);
@@ -288,7 +288,7 @@ public class InstrumentCheckPatternController {
 
             if (gapUpSize >= EXHAUSTION_GAP_THRESHOLD) {
                 protocolEntry = new ProtocolEntry();
-                protocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
+                protocolEntry.setCategory(ProtocolEntryCategory.WARNING);
                 protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(currentQuotation.getDate()));
                 protocolEntry.setText(MessageFormat.format(resources.getString("protocol.gapUp"), gapUpSize));
                 protocolEntries.add(protocolEntry);

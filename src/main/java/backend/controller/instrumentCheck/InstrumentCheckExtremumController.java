@@ -122,7 +122,7 @@ public class InstrumentCheckExtremumController {
 
             if (largestUpQuotation.equals(currentQuotation)) {
                 protocolEntry = new ProtocolEntry();
-                protocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
+                protocolEntry.setCategory(ProtocolEntryCategory.WARNING);
                 protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(largestUpQuotation.getDate()));
                 protocolEntry.setText(MessageFormat.format(this.resources.getString("protocol.largestUpDay"),
                         largestUpDayPerformance));
@@ -165,7 +165,7 @@ public class InstrumentCheckExtremumController {
 
             if (largestSpreadQuotation.equals(currentQuotation)) {
                 protocolEntry = new ProtocolEntry();
-                protocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
+                protocolEntry.setCategory(ProtocolEntryCategory.WARNING);
                 protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(largestSpreadQuotation.getDate()));
                 protocolEntry.setText(MessageFormat.format(this.resources.getString("protocol.largestDailySpread"),
                         spreadSizePercent));
@@ -205,7 +205,7 @@ public class InstrumentCheckExtremumController {
 
             if (largestVolumeQuotation.equals(currentQuotation)) {
                 protocolEntry = new ProtocolEntry();
-                protocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
+                protocolEntry.setCategory(ProtocolEntryCategory.WARNING);
                 protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(largestVolumeQuotation.getDate()));
                 protocolEntry.setText(this.resources.getString("protocol.largestDailyVolume"));
                 protocolEntries.add(protocolEntry);

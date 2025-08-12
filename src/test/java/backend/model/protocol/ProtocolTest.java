@@ -49,7 +49,7 @@ public class ProtocolTest {
 
         entry = new ProtocolEntry();
         entry.setText("Entry 3");
-        entry.setCategory(ProtocolEntryCategory.UNCERTAIN);
+        entry.setCategory(ProtocolEntryCategory.WARNING);
         calendar.set(2023, 10, 2);
         entry.setDate(calendar.getTime());
         this.protocol.getProtocolEntries().add(entry);

@@ -176,7 +176,7 @@ public class InstrumentCheckExtremumControllerTest {
         // Define the expected protocol entry.
         calendar.set(2021, 9, 12); // Largest up day is 12.10.21 (19,41%)
         expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
-        expectedProtocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
+        expectedProtocolEntry.setCategory(ProtocolEntryCategory.WARNING);
         expectedProtocolEntry.setText(MessageFormat.format(this.resources.getString("protocol.largestUpDay"), "19,41"));
 
         // Call controller to perform check.
@@ -212,13 +212,13 @@ public class InstrumentCheckExtremumControllerTest {
         // Define the expected protocol entries.
         calendar.set(2021, 8, 10); // Largest daily high/low-spread occurred on 10.09.21
         expectedProtocolEntry1.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
-        expectedProtocolEntry1.setCategory(ProtocolEntryCategory.UNCERTAIN);
+        expectedProtocolEntry1.setCategory(ProtocolEntryCategory.WARNING);
         expectedProtocolEntry1.setText(
                 MessageFormat.format(this.resources.getString("protocol.largestDailySpread"), expectedPercentage1));
 
         calendar.set(2021, 9, 12); // A new largest daily high/low-spread occurred on 12.10.21.
         expectedProtocolEntry2.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
-        expectedProtocolEntry2.setCategory(ProtocolEntryCategory.UNCERTAIN);
+        expectedProtocolEntry2.setCategory(ProtocolEntryCategory.WARNING);
         expectedProtocolEntry2.setText(
                 MessageFormat.format(this.resources.getString("protocol.largestDailySpread"), expectedPercentage2));
 
@@ -256,12 +256,12 @@ public class InstrumentCheckExtremumControllerTest {
         // Define the expected protocol entries.
         calendar.set(2022, 0, 5); // Largest daily volume occurred on 05.01.22.
         expectedProtocolEntry1.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
-        expectedProtocolEntry1.setCategory(ProtocolEntryCategory.UNCERTAIN);
+        expectedProtocolEntry1.setCategory(ProtocolEntryCategory.WARNING);
         expectedProtocolEntry1.setText(this.resources.getString("protocol.largestDailyVolume"));
 
         calendar.set(2022, 1, 4); // A new largest daily volume occurred on 04.02.22.
         expectedProtocolEntry2.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
-        expectedProtocolEntry2.setCategory(ProtocolEntryCategory.UNCERTAIN);
+        expectedProtocolEntry2.setCategory(ProtocolEntryCategory.WARNING);
         expectedProtocolEntry2.setText(this.resources.getString("protocol.largestDailyVolume"));
 
         // Call controller to perform check.
@@ -354,12 +354,12 @@ public class InstrumentCheckExtremumControllerTest {
         // Define the expected protocol entry.
         calendar.set(2022, 6, 13); // Largest up day is 13.07.22 (0,79%)
         expectedProtocolEntry1.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
-        expectedProtocolEntry1.setCategory(ProtocolEntryCategory.UNCERTAIN);
+        expectedProtocolEntry1.setCategory(ProtocolEntryCategory.WARNING);
         expectedProtocolEntry1.setText(MessageFormat.format(this.resources.getString("protocol.largestUpDay"), "0,79"));
 
         calendar.set(2022, 6, 14); // Largest up day is 14.07.22 (7,87%)
         expectedProtocolEntry2.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
-        expectedProtocolEntry2.setCategory(ProtocolEntryCategory.UNCERTAIN);
+        expectedProtocolEntry2.setCategory(ProtocolEntryCategory.WARNING);
         expectedProtocolEntry2.setText(MessageFormat.format(this.resources.getString("protocol.largestUpDay"), "7,87"));
 
         // Shrink size of quotation history simplifying start before history began.

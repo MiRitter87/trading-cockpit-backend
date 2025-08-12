@@ -142,7 +142,7 @@ public class InstrumentCheckClimaxControllerTest {
         // Define the expected protocol entry.
         calendar.set(2022, 2, 2); // The day on which a climax of at least 25% within a week occurred: 02.03.22.
         expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
-        expectedProtocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
+        expectedProtocolEntry.setCategory(ProtocolEntryCategory.WARNING);
         expectedProtocolEntry
                 .setText(MessageFormat.format(this.resources.getString("protocol.climaxOneWeek"), "25,79"));
 
@@ -176,7 +176,7 @@ public class InstrumentCheckClimaxControllerTest {
         // Define the expected protocol entry.
         calendar.set(2021, 8, 16); // The day on which a climax of at least 25% within a week occurred: 16.09.21.
         expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
-        expectedProtocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
+        expectedProtocolEntry.setCategory(ProtocolEntryCategory.WARNING);
         expectedProtocolEntry
                 .setText(MessageFormat.format(this.resources.getString("protocol.climaxThreeWeeks"), "55,4"));
 
@@ -211,7 +211,7 @@ public class InstrumentCheckClimaxControllerTest {
         // Define the expected protocol entry.
         calendar.set(2022, 5, 7); // The day showing a climax movement (07.06.22).
         expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
-        expectedProtocolEntry.setCategory(ProtocolEntryCategory.UNCERTAIN);
+        expectedProtocolEntry.setCategory(ProtocolEntryCategory.WARNING);
         expectedProtocolEntry.setText(this.resources.getString("protocol.timeClimax"));
 
         // Call controller to perform check.

@@ -203,7 +203,7 @@ public class HealthCheckChartController extends PriceVolumeChartController {
             }
 
             if (profile == HealthCheckProfile.SELLING_INTO_STRENGTH
-                    && tempEntry.getCategory() == ProtocolEntryCategory.UNCERTAIN) {
+                    && tempEntry.getCategory() == ProtocolEntryCategory.WARNING) {
                 eventNumber++;
             }
 
@@ -215,7 +215,7 @@ public class HealthCheckChartController extends PriceVolumeChartController {
                 case VIOLATION:
                     eventNumber--;
                     break;
-                case UNCERTAIN:
+                case WARNING:
                     eventNumber--;
                     break;
                 default:
