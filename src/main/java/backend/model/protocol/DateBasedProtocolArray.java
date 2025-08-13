@@ -1,5 +1,6 @@
 package backend.model.protocol;
 
+import java.util.Date;
 import java.util.List;
 
 import jakarta.xml.bind.annotation.XmlElement;
@@ -11,6 +12,9 @@ import jakarta.xml.bind.annotation.XmlElementWrapper;
  * @author Michael
  */
 public class DateBasedProtocolArray {
+    /**
+     * A list of date-based protocol entries.
+     */
     private List<DateBasedProtocolEntry> dateBasedProtocolEntries = null;
 
     /**
@@ -27,5 +31,21 @@ public class DateBasedProtocolArray {
      */
     public void setDateBasedProtocolEntries(final List<DateBasedProtocolEntry> dateBasedProtocolEntries) {
         this.dateBasedProtocolEntries = dateBasedProtocolEntries;
+    }
+
+    /**
+     * Gets the DateBasedProtocolEntry of the given date.
+     *
+     * @param date The requested Date.
+     * @return The DateBasedProtocolEntry of the given Date, if exists.
+     */
+    public DateBasedProtocolEntry getEntryOfDate(final Date date) {
+        for (DateBasedProtocolEntry entry : this.dateBasedProtocolEntries) {
+            if (entry.getDate().getTime() == date.getTime()) {
+                return entry;
+            }
+        }
+
+        return null;
     }
 }

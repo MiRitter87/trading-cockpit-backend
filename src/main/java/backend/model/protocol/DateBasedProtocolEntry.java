@@ -126,13 +126,16 @@ public class DateBasedProtocolEntry {
      * Indicates whether some other DateBasedProtocolEntry is "equal to" this one.
      */
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
+    public boolean equals(final Object obj) {
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         DateBasedProtocolEntry other = (DateBasedProtocolEntry) obj;
         return confirmationPercentage == other.confirmationPercentage && Objects.equals(date, other.date)
                 && Objects.equals(simpleProtocolEntries, other.simpleProtocolEntries)

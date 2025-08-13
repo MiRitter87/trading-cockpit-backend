@@ -1,11 +1,15 @@
 package backend.controller.instrumentCheck;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Calendar;
 import java.util.ResourceBundle;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
+import backend.model.protocol.DateBasedProtocolArray;
 import backend.model.protocol.Protocol;
 import backend.model.protocol.ProtocolEntry;
 import backend.model.protocol.ProtocolEntryCategory;
@@ -82,5 +86,17 @@ public class ProtocolConverterTest {
         protocol.getProtocolEntries().add(protocolEntry);
 
         return protocol;
+    }
+
+    @Test
+    /**
+     * Tests the conversion of a Protocol to a DateBasedProtocolArray.
+     */
+    public void testConvertToDateBasedProtocolArray() {
+        DateBasedProtocolArray actualDateBasedProtocolArray = this.protocolConverter
+                .convertToDateBasedProtocolArray(this.getProtocolForTest());
+        final int expectedEntries = 2;
+
+        assertEquals(expectedEntries, actualDateBasedProtocolArray.getDateBasedProtocolEntries().size());
     }
 }

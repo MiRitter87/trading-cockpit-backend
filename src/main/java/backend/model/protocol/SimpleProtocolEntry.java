@@ -65,13 +65,16 @@ public class SimpleProtocolEntry {
      * Indicates whether some other SimpleProtocolEntry is "equal to" this one.
      */
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
+    public boolean equals(final Object obj) {
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         SimpleProtocolEntry other = (SimpleProtocolEntry) obj;
         return category == other.category && Objects.equals(text, other.text);
     }
