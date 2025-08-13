@@ -58,6 +58,13 @@ public class ProtocolConverterTest {
         ProtocolEntry protocolEntry;
         Calendar calendar = Calendar.getInstance();
 
+        calendar.set(2025, 7, 12);
+        protocolEntry = new ProtocolEntry();
+        protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
+        protocolEntry.setCategory(ProtocolEntryCategory.WARNING);
+        protocolEntry.setText(this.resources.getString("protocol.churning"));
+        protocol.getProtocolEntries().add(protocolEntry);
+
         calendar.set(2025, 7, 13);
         protocolEntry = new ProtocolEntry();
         protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
@@ -77,13 +84,6 @@ public class ProtocolConverterTest {
         protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
         protocolEntry.setCategory(ProtocolEntryCategory.VIOLATION);
         protocolEntry.setText(this.resources.getString("protocol.downOnVolume"));
-        protocol.getProtocolEntries().add(protocolEntry);
-
-        calendar.set(2025, 7, 12);
-        protocolEntry = new ProtocolEntry();
-        protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
-        protocolEntry.setCategory(ProtocolEntryCategory.WARNING);
-        protocolEntry.setText(this.resources.getString("protocol.churning"));
         protocol.getProtocolEntries().add(protocolEntry);
 
         return protocol;

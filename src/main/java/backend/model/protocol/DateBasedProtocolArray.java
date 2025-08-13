@@ -1,5 +1,6 @@
 package backend.model.protocol;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -47,5 +48,12 @@ public class DateBasedProtocolArray {
         }
 
         return null;
+    }
+
+    /**
+     * Sorts the date-based protocol entries by their date. Newest first.
+     */
+    public void sortDateBasedEntriesByDate() {
+        Collections.sort(this.dateBasedProtocolEntries, new DateBasedProtocolEntryDateComparator());
     }
 }

@@ -35,6 +35,8 @@ public class ProtocolConverter {
             }
         }
 
+        dateBasedProtocolArray.sortDateBasedEntriesByDate();
+
         return dateBasedProtocolArray;
     }
 }
