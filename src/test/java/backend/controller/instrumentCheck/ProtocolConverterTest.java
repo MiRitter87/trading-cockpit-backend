@@ -3,6 +3,7 @@ package backend.controller.instrumentCheck;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.ResourceBundle;
 
 import org.junit.jupiter.api.AfterEach;
@@ -90,13 +91,33 @@ public class ProtocolConverterTest {
 
     @Test
     /**
-     * Tests the conversion of a Protocol to a DateBasedProtocolArray.
+     * Tests the conversion of a Protocol to a DateBasedProtocolArray. The correct number of entries is verified.
      */
-    public void testConvertToDateBasedProtocolArray() {
+    public void testConvertToDateBasedProtocolArrayEntries() {
         DateBasedProtocolArray actualDateBasedProtocolArray = this.protocolConverter
                 .convertToDateBasedProtocolArray(this.getProtocolForTest());
         final int expectedEntries = 2;
 
         assertEquals(expectedEntries, actualDateBasedProtocolArray.getDateBasedProtocolEntries().size());
+    }
+
+    @Test
+    /**
+     * Tests the conversion of a Protocol to a DateBasedProtocolArray. The correct sorting of the entries is verified.
+     */
+    public void testConvertToDateBasedProtocolArraySorting() {
+        DateBasedProtocolArray actualDateBasedProtocolArray = this.protocolConverter
+                .convertToDateBasedProtocolArray(this.getProtocolForTest());
+        Calendar calendar = Calendar.getInstance();
+        final Date expectedEntry1Date;
+        final Date expectedEntry2Date;
+
+        calendar.set(2025, 7, 13);
+        expectedEntry1Date = DateTools.getDateWithoutIntradayAttributes(calendar.getTime());
+        calendar.set(2025, 7, 12);
+        expectedEntry2Date = DateTools.getDateWithoutIntradayAttributes(calendar.getTime());
+
+        assertEquals(expectedEntry1Date, actualDateBasedProtocolArray.getDateBasedProtocolEntries().get(0).getDate());
+        assertEquals(expectedEntry2Date, actualDateBasedProtocolArray.getDateBasedProtocolEntries().get(1).getDate());
     }
 }
