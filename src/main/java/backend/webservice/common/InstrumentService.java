@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 import backend.controller.NoQuotationsExistException;
 import backend.controller.instrumentCheck.HealthCheckProfile;
 import backend.controller.instrumentCheck.InstrumentCheckController;
+import backend.controller.instrumentCheck.ProtocolConverter;
 import backend.dao.DAOManager;
 import backend.dao.ObjectUnchangedException;
 import backend.dao.chart.ChartObjectDAO;
@@ -27,6 +28,7 @@ import backend.model.instrument.InstrumentType;
 import backend.model.instrument.InstrumentWS;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
+import backend.model.protocol.DateBasedProtocolArray;
 import backend.model.protocol.Protocol;
 import backend.model.webservice.WebServiceMessage;
 import backend.model.webservice.WebServiceMessageType;
@@ -299,14 +301,15 @@ public class InstrumentService {
     }
 
     /**
-     * Checks the health of the Instrument with the given id.
+     * Checks the health of the Instrument with the given id. The results are event-based. Each health check event is
+     * represented by a table row.
      *
      * @param instrumentId   The ID of the instrument.
      * @param lookbackPeriod The number of days taken into account for health check routines.
      * @param profile        The HealthCheckProfile that is being used.
      * @return A Protocol with health information about the given Instrument.
      */
-    public WebServiceResult getHealthProtocolWithLookbackPeriod(final Integer instrumentId,
+    public WebServiceResult getHealthProtocolWithLookbackPeriodEventBased(final Integer instrumentId,
             final Integer lookbackPeriod, final HealthCheckProfile profile) {
         WebServiceResult getHealthProtocolResult = new WebServiceResult();
         InstrumentCheckController controller = new InstrumentCheckController();
@@ -320,6 +323,44 @@ public class InstrumentService {
 
             protocol = controller.checkInstrument(instrumentId, startDate, profile);
             getHealthProtocolResult.setData(protocol);
+        } catch (NoQuotationsExistException noQuotationsExistException) {
+            getHealthProtocolResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
+                    this.resources.getString("instrument.getHealthNoQuotationsForDate")));
+        } catch (Exception e) {
+            getHealthProtocolResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
+                    this.resources.getString("instrument.getHealthError")));
+            LOGGER.error(this.resources.getString("instrument.getHealthError"), e.getMessage(), e);
+        }
+
+        return getHealthProtocolResult;
+    }
+
+    /**
+     * Checks the health of the Instrument with the given id. The results are date-based. Multiple health check events
+     * are associated to a date. Each date is represented by a table row.
+     *
+     * @param instrumentId   The ID of the instrument.
+     * @param lookbackPeriod The number of days taken into account for health check routines.
+     * @param profile        The HealthCheckProfile that is being used.
+     * @return A Protocol with health information about the given Instrument.
+     */
+    public WebServiceResult getHealthProtocolWithLookbackPeriodDateBased(final Integer instrumentId,
+            final Integer lookbackPeriod, final HealthCheckProfile profile) {
+        WebServiceResult getHealthProtocolResult = new WebServiceResult();
+        InstrumentCheckController controller = new InstrumentCheckController();
+        ProtocolConverter protocolConverter = new ProtocolConverter();
+        Protocol protocol;
+        Date startDate;
+        QuotationArray quotations;
+        DateBasedProtocolArray dateBasedProtocolArray;
+
+        try {
+            quotations = new QuotationArray(this.quotationDAO.getQuotationsOfInstrument(instrumentId));
+            startDate = controller.getStartDate(lookbackPeriod, quotations);
+
+            protocol = controller.checkInstrument(instrumentId, startDate, profile);
+            dateBasedProtocolArray = protocolConverter.convertToDateBasedProtocolArray(protocol);
+            getHealthProtocolResult.setData(dateBasedProtocolArray);
         } catch (NoQuotationsExistException noQuotationsExistException) {
             getHealthProtocolResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
                     this.resources.getString("instrument.getHealthNoQuotationsForDate")));

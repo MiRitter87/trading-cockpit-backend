@@ -111,7 +111,8 @@ public class InstrumentRestService {
     }
 
     /**
-     * Checks the health of the Instrument with the given id.
+     * Checks the health of the Instrument with the given id. The results are event-based. Each health check event is
+     * represented by a table row.
      *
      * @param id             The ID of the instrument.
      * @param lookbackPeriod The number of days taken into account for health check routines.
@@ -119,12 +120,31 @@ public class InstrumentRestService {
      * @return A Protocol with health information about the given Instrument.
      */
     @GET
-    @Path("/{id}/health/lookbackPeriod")
+    @Path("/{id}/health/lookbackPeriod/eventBased")
     @Produces(MediaType.APPLICATION_JSON)
-    public WebServiceResult getHealthProtocolWithLookbackPeriod(@PathParam("id") final Integer id,
+    public WebServiceResult getHealthProtocolWithLookbackPeriodEventBased(@PathParam("id") final Integer id,
             @QueryParam("lookbackPeriod") final Integer lookbackPeriod,
             @QueryParam("profile") final HealthCheckProfile profile) {
         InstrumentService instrumentService = new InstrumentService();
-        return instrumentService.getHealthProtocolWithLookbackPeriod(id, lookbackPeriod, profile);
+        return instrumentService.getHealthProtocolWithLookbackPeriodEventBased(id, lookbackPeriod, profile);
+    }
+
+    /**
+     * Checks the health of the Instrument with the given id. The results are date-based. Multiple health check events
+     * are associated to a date. Each date is represented by a table row.
+     *
+     * @param id             The ID of the instrument.
+     * @param lookbackPeriod The number of days taken into account for health check routines.
+     * @param profile        The HealthCheckProfile that is being used.
+     * @return A Protocol with health information about the given Instrument.
+     */
+    @GET
+    @Path("/{id}/health/lookbackPeriod/dateBased")
+    @Produces(MediaType.APPLICATION_JSON)
+    public WebServiceResult getHealthProtocolWithLookbackPeriodDateBased(@PathParam("id") final Integer id,
+            @QueryParam("lookbackPeriod") final Integer lookbackPeriod,
+            @QueryParam("profile") final HealthCheckProfile profile) {
+        InstrumentService instrumentService = new InstrumentService();
+        return instrumentService.getHealthProtocolWithLookbackPeriodDateBased(id, lookbackPeriod, profile);
     }
 }
