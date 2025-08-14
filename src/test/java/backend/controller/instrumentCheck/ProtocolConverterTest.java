@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import backend.model.protocol.DateBasedProtocolArray;
+import backend.model.protocol.DateBasedProtocolEntry;
 import backend.model.protocol.Protocol;
 import backend.model.protocol.ProtocolEntry;
 import backend.model.protocol.ProtocolEntryCategory;
@@ -119,5 +120,24 @@ public class ProtocolConverterTest {
 
         assertEquals(expectedEntry1Date, actualDateBasedProtocolArray.getDateBasedProtocolEntries().get(0).getDate());
         assertEquals(expectedEntry2Date, actualDateBasedProtocolArray.getDateBasedProtocolEntries().get(1).getDate());
+    }
+
+    @Test
+    /**
+     * Tests the conversion of a Protocol to a DateBasedProtocolArray. The correct counting of events for each category
+     * is verified.
+     */
+    public void testConvertToDateBasedProtocolArrayCounting() {
+        DateBasedProtocolArray dateBasedProtocolArray = this.protocolConverter
+                .convertToDateBasedProtocolArray(this.getProtocolForTest());
+        DateBasedProtocolEntry entry;
+        final int expectedConfirmationPercent = 33;
+        final int expectedWarningPercent = 33;
+        final int expectedViolationPercent = 33;
+
+        entry = dateBasedProtocolArray.getDateBasedProtocolEntries().get(0);
+        assertEquals(expectedConfirmationPercent, entry.getConfirmationPercentage());
+        assertEquals(expectedWarningPercent, entry.getWarningPercentage());
+        assertEquals(expectedViolationPercent, entry.getViolationPercentage());
     }
 }

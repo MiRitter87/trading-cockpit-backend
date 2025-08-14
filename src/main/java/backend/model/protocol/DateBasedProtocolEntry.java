@@ -1,5 +1,7 @@
 package backend.model.protocol;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -140,5 +142,39 @@ public class DateBasedProtocolEntry {
         return confirmationPercentage == other.confirmationPercentage && Objects.equals(date, other.date)
                 && Objects.equals(simpleProtocolEntries, other.simpleProtocolEntries)
                 && violationPercentage == other.violationPercentage && warningPercentage == other.warningPercentage;
+    }
+
+    /**
+     * Calculates percentage values for confirmations, violations and warnings based on all protocol entries.
+     */
+    public void calculatePercentages() {
+        int numberOfConfirmations = 0;
+        int numberOfViolations = 0;
+        int numberOfWarnings = 0;
+        final int hundredPercent = 100;
+
+        if (this.simpleProtocolEntries.size() == 0) {
+            return; // Prevent division by zero.
+        }
+
+        for (SimpleProtocolEntry entry : this.simpleProtocolEntries) {
+            if (entry.getCategory() == ProtocolEntryCategory.CONFIRMATION) {
+                numberOfConfirmations++;
+            } else if (entry.getCategory() == ProtocolEntryCategory.VIOLATION) {
+                numberOfViolations++;
+            } else if (entry.getCategory() == ProtocolEntryCategory.WARNING) {
+                numberOfWarnings++;
+            }
+        }
+
+        this.confirmationPercentage = new BigDecimal(numberOfConfirmations)
+                .divide(new BigDecimal(this.simpleProtocolEntries.size()), 2, RoundingMode.HALF_UP)
+                .multiply(new BigDecimal(hundredPercent)).intValue();
+        this.violationPercentage = new BigDecimal(numberOfViolations)
+                .divide(new BigDecimal(this.simpleProtocolEntries.size()), 2, RoundingMode.HALF_UP)
+                .multiply(new BigDecimal(hundredPercent)).intValue();
+        this.warningPercentage = new BigDecimal(numberOfWarnings)
+                .divide(new BigDecimal(this.simpleProtocolEntries.size()), 2, RoundingMode.HALF_UP)
+                .multiply(new BigDecimal(hundredPercent)).intValue();
     }
 }
