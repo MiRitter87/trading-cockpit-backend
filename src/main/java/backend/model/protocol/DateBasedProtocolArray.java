@@ -61,7 +61,7 @@ public class DateBasedProtocolArray {
      * Calculates percentage values for confirmations, violations and warnings based on all protocol entries.
      */
     public void calculatePercentages() {
-        for(DateBasedProtocolEntry entry : this.dateBasedProtocolEntries) {
+        for (DateBasedProtocolEntry entry : this.dateBasedProtocolEntries) {
             entry.calculatePercentages();
         }
     }

@@ -38,6 +38,7 @@ public class ProtocolConverter {
 
             newSimpleEntry = new SimpleProtocolEntry();
             newSimpleEntry.setCategory(protocolEntry.getCategory());
+            newSimpleEntry.setText(protocolEntry.getText());
             dateBasedProtocolEntry.getSimpleProtocolEntries().add(newSimpleEntry);
         }
 

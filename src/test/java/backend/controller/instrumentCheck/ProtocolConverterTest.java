@@ -15,6 +15,7 @@ import backend.model.protocol.DateBasedProtocolEntry;
 import backend.model.protocol.Protocol;
 import backend.model.protocol.ProtocolEntry;
 import backend.model.protocol.ProtocolEntryCategory;
+import backend.model.protocol.SimpleProtocolEntry;
 import backend.tools.DateTools;
 
 /**
@@ -92,14 +93,48 @@ public class ProtocolConverterTest {
 
     @Test
     /**
-     * Tests the conversion of a Protocol to a DateBasedProtocolArray. The correct number of entries is verified.
+     * Tests the conversion of a Protocol to a DateBasedProtocolArray. The entries are verified.
      */
     public void testConvertToDateBasedProtocolArrayEntries() {
         DateBasedProtocolArray actualDateBasedProtocolArray = this.protocolConverter
                 .convertToDateBasedProtocolArray(this.getProtocolForTest());
         final int expectedEntries = 2;
+        DateBasedProtocolEntry actualDateBasedEntry;
+        DateBasedProtocolEntry expectedDateBasedEntry = new DateBasedProtocolEntry();
 
+        SimpleProtocolEntry expectedSimpleEntry = new SimpleProtocolEntry();
+        Calendar calendar = Calendar.getInstance();
+
+        // Verify correct number of date-based protocol entries.
         assertEquals(expectedEntries, actualDateBasedProtocolArray.getDateBasedProtocolEntries().size());
+
+        // Verify the first date-based protocol entry with its simple protocol entries.
+        calendar.set(2025, 7, 13);
+        expectedDateBasedEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
+
+        actualDateBasedEntry = actualDateBasedProtocolArray.getDateBasedProtocolEntries().get(0);
+        assertEquals(expectedDateBasedEntry.getDate(), actualDateBasedEntry.getDate());
+
+        for (SimpleProtocolEntry actualEntry : actualDateBasedEntry.getSimpleProtocolEntries()) {
+            if (actualEntry.getCategory() == ProtocolEntryCategory.CONFIRMATION) {
+                assertEquals(this.resources.getString("protocol.upOnVolume"), actualEntry.getText());
+            } else if (actualEntry.getCategory() == ProtocolEntryCategory.WARNING) {
+                assertEquals(this.resources.getString("protocol.timeClimax"), actualEntry.getText());
+            } else if (actualEntry.getCategory() == ProtocolEntryCategory.VIOLATION) {
+                assertEquals(this.resources.getString("protocol.downOnVolume"), actualEntry.getText());
+            }
+        }
+
+        // Verify the second date-based protocol entry with its simple protocol entries.
+        calendar.set(2025, 7, 12);
+        expectedDateBasedEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
+
+        actualDateBasedEntry = actualDateBasedProtocolArray.getDateBasedProtocolEntries().get(1);
+        assertEquals(expectedDateBasedEntry.getDate(), actualDateBasedEntry.getDate());
+
+        expectedSimpleEntry.setCategory(ProtocolEntryCategory.WARNING);
+        expectedSimpleEntry.setText(this.resources.getString("protocol.churning"));
+        assertEquals(expectedSimpleEntry, actualDateBasedEntry.getSimpleProtocolEntries().get(0));
     }
 
     @Test
@@ -124,8 +159,8 @@ public class ProtocolConverterTest {
 
     @Test
     /**
-     * Tests the conversion of a Protocol to a DateBasedProtocolArray. The correct counting of events for each category
-     * is verified.
+     * Tests the conversion of a Protocol to a DateBasedProtocolArray. The correct percentage calculation of events for
+     * each category is verified.
      */
     public void testConvertToDateBasedProtocolArrayCounting() {
         DateBasedProtocolArray dateBasedProtocolArray = this.protocolConverter
