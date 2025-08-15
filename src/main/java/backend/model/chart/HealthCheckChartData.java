@@ -3,7 +3,7 @@ package backend.model.chart;
 import java.util.Map;
 
 import backend.model.instrument.QuotationArray;
-import backend.model.protocol.Protocol;
+import backend.model.protocol.DateBasedProtocolArray;
 
 /**
  * A collection of data that are used to construct a price/volume chart with Instrument health check information.
@@ -19,7 +19,7 @@ public class HealthCheckChartData {
     /**
      * The health check protocol.
      */
-    private Protocol protocol;
+    private DateBasedProtocolArray protocol;
 
     /**
      * A Map of dates with a sum of positive and negative health events for each date.
@@ -43,14 +43,14 @@ public class HealthCheckChartData {
     /**
      * @return the protocol
      */
-    public Protocol getProtocol() {
+    public DateBasedProtocolArray getProtocol() {
         return protocol;
     }
 
     /**
      * @param protocol the protocol to set
      */
-    public void setProtocol(final Protocol protocol) {
+    public void setProtocol(final DateBasedProtocolArray protocol) {
         this.protocol = protocol;
     }
 

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import backend.controller.chart.priceVolume.HealthCheckChartController;
 import backend.controller.instrumentCheck.HealthCheckProfile;
+import backend.controller.instrumentCheck.ProtocolConverter;
 import backend.dao.DAOManager;
 import backend.dao.quotation.persistence.QuotationDAO;
 import backend.model.chart.HealthCheckChartData;
@@ -44,10 +45,13 @@ public class HealthCheckDataController {
             final Integer lookbackPeriod) throws Exception {
 
         HealthCheckChartData chartData = new HealthCheckChartData();
+        ProtocolConverter converter = new ProtocolConverter();
+        Protocol protocol;
 
         chartData.setQuotations(this.getQuotationArray(instrumentId));
-        chartData.setProtocol(this.getHealthProtocol(chartData.getQuotations(), instrumentId, profile, lookbackPeriod));
-        chartData.setHealthEvents(this.getHealthEvents(chartData.getQuotations(), chartData.getProtocol(), profile));
+        protocol = this.getHealthProtocol(chartData.getQuotations(), instrumentId, profile, lookbackPeriod);
+        chartData.setHealthEvents(this.getHealthEvents(chartData.getQuotations(), protocol, profile));
+        chartData.setProtocol(converter.convertToDateBasedProtocolArray(protocol));
 
         return chartData;
     }
