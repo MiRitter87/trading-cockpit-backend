@@ -289,9 +289,9 @@ public class InstrumentCheckPatternControllerTest {
 
     @Test
     /**
-     * Tests the check if Instrument made a gap up.
+     * Tests the check if Instrument made an exhaustion gap up.
      */
-    public void testCheckGapUp() {
+    public void testCheckExhaustionGapUp() {
         ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
         ProtocolEntry actualProtocolEntry;
         List<ProtocolEntry> protocolEntries;
@@ -302,12 +302,14 @@ public class InstrumentCheckPatternControllerTest {
         calendar.set(2022, 1, 28); // Gap up on 28.02.22
         expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
         expectedProtocolEntry.setCategory(ProtocolEntryCategory.WARNING);
-        expectedProtocolEntry.setText(MessageFormat.format(resources.getString("protocol.gapUp"), gapSizePercent));
+        expectedProtocolEntry
+                .setText(MessageFormat.format(resources.getString("protocol.exhaustionGapUp"), gapSizePercent));
 
         // Call controller to perform check.
         calendar.set(2022, 1, 22); // Begin check on 22.02.22
         try {
-            protocolEntries = this.instrumentCheckPatternController.checkGapUp(calendar.getTime(), this.dmlQuotations);
+            protocolEntries = this.instrumentCheckPatternController.checkExhaustionGapUp(calendar.getTime(),
+                    this.dmlQuotations);
 
             // Verify the check result.
             assertEquals(1, protocolEntries.size());

@@ -185,7 +185,7 @@ public class InstrumentCheckController {
                 .addAll(this.instrumentCheckClimaxController.checkClimaxMoveThreeWeeks(startDate, quotations));
         sellingIntoStrength
                 .addAll(this.instrumentCheckAverageController.checkExtendedAboveSma200(startDate, quotations));
-        sellingIntoStrength.addAll(this.instrumentCheckPatternController.checkGapUp(startDate, quotations));
+        sellingIntoStrength.addAll(this.instrumentCheckPatternController.checkExhaustionGapUp(startDate, quotations));
 
         this.setProfile(sellingIntoStrength, HealthCheckProfile.SELLING_INTO_STRENGTH);
         protocol.getProtocolEntries().addAll(sellingIntoStrength);
