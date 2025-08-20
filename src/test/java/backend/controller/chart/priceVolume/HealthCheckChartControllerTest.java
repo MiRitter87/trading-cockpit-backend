@@ -10,7 +10,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import backend.controller.instrumentCheck.HealthCheckProfile;
 import backend.model.instrument.Quotation;
 import backend.model.protocol.Protocol;
 import backend.model.protocol.ProtocolEntry;
@@ -100,51 +99,6 @@ public class HealthCheckChartControllerTest {
 
     @Test
     /**
-     * Tests the determination of the event number using only confirmations.
-     */
-    public void testGetEventNumberConfirmations() {
-        int actualEventNumber;
-        final int expectedEventNumer = 3;
-        Quotation quotation = new Quotation();
-
-        quotation.setDate(new Date());
-        actualEventNumber = this.healthCheckChartController.getEventNumber(this.protocol,
-                HealthCheckProfile.CONFIRMATIONS, quotation);
-        assertEquals(expectedEventNumer, actualEventNumber);
-    }
-
-    @Test
-    /**
-     * Tests the determination of the event number using only violations.
-     */
-    public void testGetEventNumberViolations() {
-        int actualEventNumber;
-        final int expectedEventNumer = 1;
-        Quotation quotation = new Quotation();
-
-        quotation.setDate(new Date());
-        actualEventNumber = this.healthCheckChartController.getEventNumber(this.protocol,
-                HealthCheckProfile.SELLING_INTO_WEAKNESS, quotation);
-        assertEquals(expectedEventNumer, actualEventNumber);
-    }
-
-    @Test
-    /**
-     * Tests the determination of the event number using only warnings.
-     */
-    public void testGetEventNumberWarnings() {
-        int actualEventNumber;
-        final int expectedEventNumer = 1;
-        Quotation quotation = new Quotation();
-
-        quotation.setDate(new Date());
-        actualEventNumber = this.healthCheckChartController.getEventNumber(this.protocol,
-                HealthCheckProfile.SELLING_INTO_STRENGTH, quotation);
-        assertEquals(expectedEventNumer, actualEventNumber);
-    }
-
-    @Test
-    /**
      * Tests the determination of the event number using all entries.
      */
     public void testGetEventNumberAll() {
@@ -153,8 +107,7 @@ public class HealthCheckChartControllerTest {
         Quotation quotation = new Quotation();
 
         quotation.setDate(new Date());
-        actualEventNumber = this.healthCheckChartController.getEventNumber(this.protocol, HealthCheckProfile.ALL,
-                quotation);
+        actualEventNumber = this.healthCheckChartController.getEventNumber(this.protocol, quotation);
         assertEquals(expectedEventNumer, actualEventNumber);
     }
 
@@ -172,8 +125,7 @@ public class HealthCheckChartControllerTest {
         calendar.add(Calendar.DAY_OF_MONTH, -1);
         quotation.setDate(calendar.getTime());
 
-        actualEventNumber = this.healthCheckChartController.getEventNumber(this.protocol, HealthCheckProfile.ALL,
-                quotation);
+        actualEventNumber = this.healthCheckChartController.getEventNumber(this.protocol, quotation);
         assertEquals(expectedEventNumer, actualEventNumber);
     }
 }

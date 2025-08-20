@@ -50,7 +50,7 @@ public class HealthCheckDataController {
 
         chartData.setQuotations(this.getQuotationArray(instrumentId));
         protocol = this.getHealthProtocol(chartData.getQuotations(), instrumentId, profile, lookbackPeriod);
-        chartData.setHealthEvents(this.getHealthEvents(chartData.getQuotations(), protocol, profile));
+        chartData.setHealthEvents(this.getHealthEvents(chartData.getQuotations(), protocol));
         chartData.setProtocol(converter.convertToDateBasedProtocolArray(protocol));
 
         return chartData;
@@ -93,22 +93,20 @@ public class HealthCheckDataController {
     }
 
     /**
-     * Determines the number of health events and their dates of occurrence.
+     * Determines the sum of health events and their dates of occurrence.
      *
      * @param quotations The quotations building the trading history.
      * @param protocol   The Protocol that contains the health check events.
-     * @param profile    The HealthCheckProfile that is used.
      * @return A Map of dates with a sum of positive and negative health events for each date.
      */
-    private Map<Long, Integer> getHealthEvents(final QuotationArray quotations, final Protocol protocol,
-            final HealthCheckProfile profile) {
+    private Map<Long, Integer> getHealthEvents(final QuotationArray quotations, final Protocol protocol) {
 
         HealthCheckChartController healthCheckChartController = new HealthCheckChartController();
         Map<Long, Integer> healthEvents = new HashMap<>();
         int eventNumber;
 
         for (Quotation quotation : quotations.getQuotations()) {
-            eventNumber = healthCheckChartController.getEventNumber(protocol, profile, quotation);
+            eventNumber = healthCheckChartController.getEventNumber(protocol, quotation);
             healthEvents.put(quotation.getDate().getTime(), eventNumber);
         }
 

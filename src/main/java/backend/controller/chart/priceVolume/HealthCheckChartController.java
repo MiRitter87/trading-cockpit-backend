@@ -27,7 +27,6 @@ import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
 import backend.model.protocol.Protocol;
 import backend.model.protocol.ProtocolEntry;
-import backend.model.protocol.ProtocolEntryCategory;
 
 /**
  * Controller for the creation of a chart displaying an Instrument with health check events.
@@ -165,7 +164,7 @@ public class HealthCheckChartController extends PriceVolumeChartController {
         healthEventTimeSeries = new TimeSeries(timeSeriesName);
 
         for (Quotation tempQuotation : quotationsSortedByDate) {
-            eventNumber = this.getEventNumber(protocol, profile, tempQuotation);
+            eventNumber = this.getEventNumber(protocol, tempQuotation);
             healthEventTimeSeries.add(new Day(tempQuotation.getDate()), eventNumber);
         }
 
@@ -175,52 +174,32 @@ public class HealthCheckChartController extends PriceVolumeChartController {
     }
 
     /**
-     * Determines the number of events in the given Protocol for the day of the given Quotation. The calculation method
-     * is based on the given HealthCheckProfile.
+     * Determines the aggregate number of events in the given Protocol for the day of the given Quotation. Confirmations
+     * are counted positive while violations and warnings are counted negative.
      *
      * @param protocol  The Protocol that contains the health check events.
-     * @param profile   The HealthCheckProfile that is used.
      * @param quotation The Quotation containing the date information.
      * @return The calculated health check event number.
      */
-    public int getEventNumber(final Protocol protocol, final HealthCheckProfile profile, final Quotation quotation) {
+    public int getEventNumber(final Protocol protocol, final Quotation quotation) {
         List<ProtocolEntry> entriesOfDate;
         int eventNumber = 0;
 
         entriesOfDate = protocol.getEntriesOfDate(quotation.getDate());
 
         for (ProtocolEntry tempEntry : entriesOfDate) {
-            if ((profile == HealthCheckProfile.CONFIRMATIONS
-                    || profile == HealthCheckProfile.CONFIRMATIONS_WITHOUT_COUNTING)
-                    && tempEntry.getCategory() == ProtocolEntryCategory.CONFIRMATION) {
+            switch (tempEntry.getCategory()) {
+            case CONFIRMATION:
                 eventNumber++;
-            }
-
-            if ((profile == HealthCheckProfile.SELLING_INTO_WEAKNESS
-                    || profile == HealthCheckProfile.WEAKNESS_WITHOUT_COUNTING)
-                    && tempEntry.getCategory() == ProtocolEntryCategory.VIOLATION) {
-                eventNumber++;
-            }
-
-            if (profile == HealthCheckProfile.SELLING_INTO_STRENGTH
-                    && tempEntry.getCategory() == ProtocolEntryCategory.WARNING) {
-                eventNumber++;
-            }
-
-            if (profile == HealthCheckProfile.ALL || profile == HealthCheckProfile.ALL_WITHOUT_COUNTING) {
-                switch (tempEntry.getCategory()) {
-                case CONFIRMATION:
-                    eventNumber++;
-                    break;
-                case VIOLATION:
-                    eventNumber--;
-                    break;
-                case WARNING:
-                    eventNumber--;
-                    break;
-                default:
-                    break;
-                }
+                break;
+            case VIOLATION:
+                eventNumber--;
+                break;
+            case WARNING:
+                eventNumber--;
+                break;
+            default:
+                break;
             }
         }
 
@@ -237,6 +216,7 @@ public class HealthCheckChartController extends PriceVolumeChartController {
         switch (profile) {
         case ALL:
         case ALL_WITHOUT_COUNTING:
+        case AFTER_BREAKOUT:
             healthEventRenderer.setSeriesPaint(0, Color.BLUE);
             break;
         case CONFIRMATIONS:
