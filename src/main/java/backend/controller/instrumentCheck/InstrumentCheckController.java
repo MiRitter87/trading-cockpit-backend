@@ -108,6 +108,9 @@ public class InstrumentCheckController {
         case WEAKNESS_WITHOUT_COUNTING:
             this.checkWeaknessWithoutCounting(startDate, quotations, protocol);
             break;
+        case AFTER_BREAKOUT:
+            this.checkAfterBreakout(startDate, quotations, protocol);
+            break;
         default:
             break;
         }
@@ -243,6 +246,36 @@ public class InstrumentCheckController {
 
         this.setProfile(sellingIntoWeakness, HealthCheckProfile.SELLING_INTO_WEAKNESS);
         protocol.getProtocolEntries().addAll(sellingIntoWeakness);
+    }
+
+    /**
+     * Checks price and volume action that is relevant after the first couple of days after a breakout.
+     *
+     * @param startDate  The start date of the health check.
+     * @param quotations The quotations that build the trading history of an Instrument.
+     * @param protocol   The Protocol to which possible events are added.
+     * @throws Exception Health check failed.
+     */
+    private void checkAfterBreakout(final Date startDate, final QuotationArray quotations, final Protocol protocol)
+            throws Exception {
+
+        List<ProtocolEntry> afterBreakout = new ArrayList<>();
+
+        afterBreakout.addAll(this.instrumentCheckCountingController.checkMoreUpThanDownDays(startDate, quotations));
+        afterBreakout.addAll(this.instrumentCheckCountingController.checkMoreGoodThanBadCloses(startDate, quotations));
+        afterBreakout.addAll(this.instrumentCheckCountingController.checkThreeHigherCloses(startDate, quotations));
+        afterBreakout.addAll(this.instrumentCheckPatternController.checkUpOnVolume(startDate, quotations));
+
+        afterBreakout.addAll(this.instrumentCheckAverageController.checkCloseBelowSma50(startDate, quotations));
+        afterBreakout.addAll(this.instrumentCheckAverageController.checkCloseBelowEma21(startDate, quotations));
+        afterBreakout.addAll(this.instrumentCheckCountingController.checkMoreDownThanUpDays(startDate, quotations));
+        afterBreakout.addAll(this.instrumentCheckCountingController.checkMoreBadThanGoodCloses(startDate, quotations));
+        afterBreakout.addAll(this.instrumentCheckPatternController.checkDownOnVolume(startDate, quotations));
+        afterBreakout.addAll(this.instrumentCheckPatternController.checkHighVolumeReversal(startDate, quotations));
+        afterBreakout.addAll(this.instrumentCheckCountingController.checkThreeLowerCloses(startDate, quotations));
+
+        this.setProfile(afterBreakout, HealthCheckProfile.AFTER_BREAKOUT);
+        protocol.getProtocolEntries().addAll(afterBreakout);
     }
 
     /**
