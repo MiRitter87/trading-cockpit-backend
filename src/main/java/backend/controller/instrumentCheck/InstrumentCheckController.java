@@ -111,6 +111,9 @@ public class InstrumentCheckController {
         case AFTER_BREAKOUT:
             this.checkAfterBreakout(startDate, quotations, protocol);
             break;
+        case REVERSAL_ALERT:
+            this.checkReversalAlert(startDate, quotations, protocol);
+            break;
         default:
             break;
         }
@@ -276,6 +279,31 @@ public class InstrumentCheckController {
 
         this.setProfile(afterBreakout, HealthCheckProfile.AFTER_BREAKOUT);
         protocol.getProtocolEntries().addAll(afterBreakout);
+    }
+
+    /**
+     * Checks price and volume action that indicates a reversal in price after an up-trend.
+     *
+     * @param startDate  The start date of the health check.
+     * @param quotations The quotations that build the trading history of an Instrument.
+     * @param protocol   The Protocol to which possible events are added.
+     * @throws Exception Health check failed.
+     */
+    private void checkReversalAlert(final Date startDate, final QuotationArray quotations, final Protocol protocol)
+            throws Exception {
+
+        List<ProtocolEntry> reversalAlert = new ArrayList<>();
+
+        reversalAlert.addAll(this.instrumentCheckExtremumController.checkLargestDownDay(startDate, quotations));
+        reversalAlert.addAll(this.instrumentCheckPatternController.checkDownOnVolume(startDate, quotations));
+        reversalAlert.addAll(this.instrumentCheckPatternController.checkHighVolumeReversal(startDate, quotations));
+
+        reversalAlert.addAll(this.instrumentCheckExtremumController.checkLargestDailySpread(startDate, quotations));
+        reversalAlert.addAll(this.instrumentCheckExtremumController.checkLargestDailyVolume(startDate, quotations));
+        reversalAlert.addAll(this.instrumentCheckPatternController.checkChurning(startDate, quotations));
+
+        this.setProfile(reversalAlert, HealthCheckProfile.REVERSAL_ALERT);
+        protocol.getProtocolEntries().addAll(reversalAlert);
     }
 
     /**

@@ -47,5 +47,10 @@ public enum HealthCheckProfile {
     /**
      * Health check routines that are relevant during the first couple of days after a breakout has occurred.
      */
-    AFTER_BREAKOUT
+    AFTER_BREAKOUT,
+
+    /**
+     * Price and volume action that indicates a reversal in price after an up-trend.
+     */
+    REVERSAL_ALERT
 }

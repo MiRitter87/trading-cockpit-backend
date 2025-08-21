@@ -228,6 +228,7 @@ public class HealthCheckChartController extends PriceVolumeChartController {
             break;
         case SELLING_INTO_WEAKNESS:
         case WEAKNESS_WITHOUT_COUNTING:
+        case REVERSAL_ALERT:
             healthEventRenderer.setSeriesPaint(0, Color.RED);
             break;
         default:
