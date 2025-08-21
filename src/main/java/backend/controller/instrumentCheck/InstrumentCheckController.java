@@ -82,6 +82,26 @@ public class InstrumentCheckController {
         quotations.sortQuotationsByDate();
         this.checkQuotationsExistAfterStartDate(startDate, quotations);
 
+        this.checkInstrument(profile, startDate, quotations, protocol);
+
+        protocol.sortEntriesByDate();
+        protocol.calculatePercentages();
+
+        return protocol;
+    }
+
+    /**
+     * Performs instrument checks based on the given profile.
+     *
+     * @param profile    The HealthCheckProfile that is used.
+     * @param startDate  The start date of the health check.
+     * @param quotations The quotations that build the trading history of an Instrument.
+     * @param protocol   he Protocol to which possible events are added.
+     * @throws Exception Health check failed.
+     */
+    private void checkInstrument(final HealthCheckProfile profile, final Date startDate,
+            final QuotationArray quotations, final Protocol protocol) throws Exception {
+
         switch (profile) {
         case ALL:
             this.checkConfirmations(startDate, quotations, protocol);
@@ -114,14 +134,12 @@ public class InstrumentCheckController {
         case REVERSAL_ALERT:
             this.checkReversalAlert(startDate, quotations, protocol);
             break;
+        case INSTITUTIONS:
+            this.checkInstitutions(startDate, quotations, protocol);
+            break;
         default:
             break;
         }
-
-        protocol.sortEntriesByDate();
-        protocol.calculatePercentages();
-
-        return protocol;
     }
 
     /**
@@ -304,6 +322,37 @@ public class InstrumentCheckController {
 
         this.setProfile(reversalAlert, HealthCheckProfile.REVERSAL_ALERT);
         protocol.getProtocolEntries().addAll(reversalAlert);
+    }
+
+    /**
+     * Checks price and volume action indicating buying or selling of institutional investors.
+     *
+     * @param startDate  The start date of the health check.
+     * @param quotations The quotations that build the trading history of an Instrument.
+     * @param protocol   The Protocol to which possible events are added.
+     * @throws Exception Health check failed.
+     */
+    private void checkInstitutions(final Date startDate, final QuotationArray quotations, final Protocol protocol)
+            throws Exception {
+
+        List<ProtocolEntry> institutions = new ArrayList<>();
+
+        institutions.addAll(this.instrumentCheckCountingController.checkThreeHigherCloses(startDate, quotations));
+        institutions.addAll(this.instrumentCheckPatternController.checkUpOnVolume(startDate, quotations));
+
+        institutions.addAll(this.instrumentCheckAverageController.checkCloseBelowSma50(startDate, quotations));
+        institutions.addAll(this.instrumentCheckExtremumController.checkLargestDownDay(startDate, quotations));
+        institutions.addAll(this.instrumentCheckPatternController.checkDownOnVolume(startDate, quotations));
+        institutions.addAll(this.instrumentCheckPatternController.checkHighVolumeReversal(startDate, quotations));
+        institutions.addAll(this.instrumentCheckCountingController.checkThreeLowerCloses(startDate, quotations));
+
+        institutions.addAll(this.instrumentCheckExtremumController.checkLargestUpDay(startDate, quotations));
+        institutions.addAll(this.instrumentCheckExtremumController.checkLargestDailySpread(startDate, quotations));
+        institutions.addAll(this.instrumentCheckExtremumController.checkLargestDailyVolume(startDate, quotations));
+        institutions.addAll(this.instrumentCheckPatternController.checkChurning(startDate, quotations));
+
+        this.setProfile(institutions, HealthCheckProfile.INSTITUTIONS);
+        protocol.getProtocolEntries().addAll(institutions);
     }
 
     /**

@@ -52,5 +52,10 @@ public enum HealthCheckProfile {
     /**
      * Price and volume action that indicates a reversal in price after an up-trend.
      */
-    REVERSAL_ALERT
+    REVERSAL_ALERT,
+
+    /**
+     * Price and volume action indicating buying or selling of institutional investors.
+     */
+    INSTITUTIONS
 }

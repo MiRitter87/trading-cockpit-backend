@@ -217,6 +217,7 @@ public class HealthCheckChartController extends PriceVolumeChartController {
         case ALL:
         case ALL_WITHOUT_COUNTING:
         case AFTER_BREAKOUT:
+        case INSTITUTIONS:
             healthEventRenderer.setSeriesPaint(0, Color.BLUE);
             break;
         case CONFIRMATIONS:
