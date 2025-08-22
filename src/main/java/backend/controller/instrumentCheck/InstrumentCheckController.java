@@ -286,6 +286,7 @@ public class InstrumentCheckController {
         afterBreakout.addAll(this.instrumentCheckCountingController.checkMoreGoodThanBadCloses(startDate, quotations));
         afterBreakout.addAll(this.instrumentCheckCountingController.checkThreeHigherCloses(startDate, quotations));
         afterBreakout.addAll(this.instrumentCheckPatternController.checkUpOnVolume(startDate, quotations));
+        afterBreakout.addAll(this.instrumentCheckPatternController.checkBullishGapUp(startDate, quotations));
 
         afterBreakout.addAll(this.instrumentCheckAverageController.checkCloseBelowSma50(startDate, quotations));
         afterBreakout.addAll(this.instrumentCheckAverageController.checkCloseBelowEma21(startDate, quotations));
