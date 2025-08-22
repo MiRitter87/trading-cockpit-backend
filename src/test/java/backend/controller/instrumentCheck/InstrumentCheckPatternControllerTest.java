@@ -295,4 +295,39 @@ public class InstrumentCheckPatternControllerTest {
             fail(e.getMessage());
         }
     }
+
+    @Test
+    /**
+     * Tests the check if Instrument made a bullish gap up.
+     */
+    public void testCheckBullishGapUp() {
+        ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
+        ProtocolEntry actualProtocolEntry;
+        List<ProtocolEntry> protocolEntries;
+        Calendar calendar = Calendar.getInstance();
+        float gapSizePercent = (float) 1.14;
+
+        // Define the expected protocol entry.
+        calendar.set(2022, 1, 28); // Gap up on 28.02.22
+        expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
+        expectedProtocolEntry.setCategory(ProtocolEntryCategory.CONFIRMATION);
+        expectedProtocolEntry
+                .setText(MessageFormat.format(resources.getString("protocol.bullishGapUp"), gapSizePercent));
+
+        // Call controller to perform check.
+        calendar.set(2022, 1, 22); // Begin check on 22.02.22
+        try {
+            protocolEntries = this.instrumentCheckPatternController.checkBullishGapUp(calendar.getTime(),
+                    this.dmlQuotations);
+
+            // Verify the check result.
+            assertEquals(1, protocolEntries.size());
+
+            // Validate the protocol entry.
+            actualProtocolEntry = protocolEntries.get(0);
+            assertEquals(expectedProtocolEntry, actualProtocolEntry);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
 }

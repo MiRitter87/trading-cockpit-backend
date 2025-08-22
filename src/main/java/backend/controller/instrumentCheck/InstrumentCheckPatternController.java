@@ -25,6 +25,11 @@ public class InstrumentCheckPatternController {
     private static final float EXHAUSTION_GAP_THRESHOLD = 1;
 
     /**
+     * The threshold of a gap up that constitutes a bullish gap.
+     */
+    private static final float BULLISH_GAP_THRESHOLD = 1;
+
+    /**
      * Access to localized application resources.
      */
     private ResourceBundle resources = ResourceBundle.getBundle("backend");
@@ -258,6 +263,53 @@ public class InstrumentCheckPatternController {
                 protocolEntry.setCategory(ProtocolEntryCategory.WARNING);
                 protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(currentQuotation.getDate()));
                 protocolEntry.setText(MessageFormat.format(resources.getString("protocol.exhaustionGapUp"), gapUpSize));
+                protocolEntries.add(protocolEntry);
+            }
+        }
+
+        return protocolEntries;
+    }
+
+    /**
+     * Checks for days on which the Instrument builds a bullish gap up (low of the current day is higher than the
+     * high of the previous day). The check begins at the start date and goes up until the most recent Quotation.
+     *
+     * @param startDate        The date at which the check starts.
+     * @param sortedQuotations The quotations sorted by date that build the trading history.
+     * @return List of ProtocolEntry, for each day on which the Instrument builds a gap up.
+     * @throws Exception The check failed because data are not fully available or corrupt.
+     */
+    public List<ProtocolEntry> checkBullishGapUp(final Date startDate, final QuotationArray sortedQuotations)
+            throws Exception {
+
+        int startIndex;
+        Quotation currentQuotation;
+        Quotation previousQuotation;
+        List<ProtocolEntry> protocolEntries = new ArrayList<>();
+        ProtocolEntry protocolEntry;
+        float gapUpSize;
+
+        startIndex = sortedQuotations.getIndexOfQuotationWithDate(startDate);
+
+        if (startIndex == -1) {
+            throw new Exception("Could not find a quotation at or after the given start date.");
+        }
+
+        for (int i = startIndex; i >= 0; i--) {
+            if ((i + 1) < sortedQuotations.getQuotations().size()) {
+                previousQuotation = sortedQuotations.getQuotations().get(i + 1);
+            } else {
+                continue;
+            }
+
+            currentQuotation = sortedQuotations.getQuotations().get(i);
+            gapUpSize = this.patternControllerHelper.getGapUpSize(currentQuotation, previousQuotation);
+
+            if (gapUpSize >= BULLISH_GAP_THRESHOLD) {
+                protocolEntry = new ProtocolEntry();
+                protocolEntry.setCategory(ProtocolEntryCategory.CONFIRMATION);
+                protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(currentQuotation.getDate()));
+                protocolEntry.setText(MessageFormat.format(resources.getString("protocol.bullishGapUp"), gapUpSize));
                 protocolEntries.add(protocolEntry);
             }
         }
