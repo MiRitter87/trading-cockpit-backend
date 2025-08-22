@@ -1,7 +1,6 @@
 package backend.controller.instrumentCheck;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.text.MessageFormat;
@@ -257,31 +256,6 @@ public class InstrumentCheckPatternControllerTest {
             // Validate the protocol entry.
             actualProtocolEntry = protocolEntries.get(0);
             assertEquals(expectedProtocolEntry, actualProtocolEntry);
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
-    }
-
-    @Test
-    /**
-     * Tests the check if a Quotation constitutes a bullish reversal (open and close in upper third of candle on
-     * above-average volume).
-     */
-    public void testIsBullishHighVolumeReversal() {
-        Calendar calendar = Calendar.getInstance();
-        int indexOfBullishReversal;
-        Quotation quotation;
-        boolean actualIsBullishReversal, expectedIsBullishReversal = true;
-
-        calendar.set(2021, 10, 9); // Bullish reversal occurred on 09.11.21
-        indexOfBullishReversal = this.dmlQuotations.getIndexOfQuotationWithDate(calendar.getTime());
-        quotation = this.dmlQuotations.getQuotations().get(indexOfBullishReversal);
-
-        assertNotNull(quotation);
-
-        try {
-            actualIsBullishReversal = this.instrumentCheckPatternController.isBullishHighVolumeReversal(quotation);
-            assertEquals(expectedIsBullishReversal, actualIsBullishReversal);
         } catch (Exception e) {
             fail(e.getMessage());
         }

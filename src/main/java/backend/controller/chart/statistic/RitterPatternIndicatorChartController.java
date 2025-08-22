@@ -22,7 +22,7 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 
 import backend.controller.chart.ChartController;
-import backend.controller.instrumentCheck.InstrumentCheckPatternController;
+import backend.controller.instrumentCheck.PatternControllerHelper;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
@@ -209,14 +209,14 @@ public class RitterPatternIndicatorChartController extends ChartController {
      */
     private int getPatternIndicatorValue(final Quotation currentQuotation, final Quotation previousQuotation)
             throws Exception {
-        InstrumentCheckPatternController patternController = new InstrumentCheckPatternController();
+        PatternControllerHelper patternControllerHelper = new PatternControllerHelper();
         int patternIndicatorValue = 0;
 
-        if (patternController.isUpOnVolume(currentQuotation, previousQuotation)) {
+        if (patternControllerHelper.isUpOnVolume(currentQuotation, previousQuotation)) {
             patternIndicatorValue++;
         }
 
-        if (patternController.isDownOnVolume(currentQuotation, previousQuotation)) {
+        if (patternControllerHelper.isDownOnVolume(currentQuotation, previousQuotation)) {
             patternIndicatorValue--;
         }
 

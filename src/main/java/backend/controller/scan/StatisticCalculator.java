@@ -2,7 +2,7 @@ package backend.controller.scan;
 
 import java.math.BigDecimal;
 
-import backend.controller.instrumentCheck.InstrumentCheckPatternController;
+import backend.controller.instrumentCheck.PatternControllerHelper;
 import backend.model.instrument.MovingAverageData;
 import backend.model.instrument.Quotation;
 
@@ -12,6 +12,18 @@ import backend.model.instrument.Quotation;
  * @author Michael
  */
 public class StatisticCalculator {
+    /**
+     * Helper class for pattern-related tasks.
+     */
+    private PatternControllerHelper patternControllerHelper;
+
+    /**
+     * Initializes the StatisticCalculator.
+     */
+    public StatisticCalculator() {
+        this.patternControllerHelper = new PatternControllerHelper();
+    }
+
     /**
      * Compares the price of the current and previous Quotation and checks if the Instrument has advanced.
      *
@@ -179,11 +191,10 @@ public class StatisticCalculator {
      * @return 1, if Quotation traded up on volume; 0, if not.
      */
     public int getNumberUpOnVolume(final Quotation currentQuotation, final Quotation previousQuotation) {
-        InstrumentCheckPatternController patternController = new InstrumentCheckPatternController();
         boolean isUpOnVolume = false;
 
         try {
-            isUpOnVolume = patternController.isUpOnVolume(currentQuotation, previousQuotation);
+            isUpOnVolume = this.patternControllerHelper.isUpOnVolume(currentQuotation, previousQuotation);
         } catch (Exception e) {
             return 0;
         }
@@ -203,11 +214,10 @@ public class StatisticCalculator {
      * @return 1, if Quotation traded down on volume; 0, if not.
      */
     public int getNumberDownOnVolume(final Quotation currentQuotation, final Quotation previousQuotation) {
-        InstrumentCheckPatternController patternController = new InstrumentCheckPatternController();
         boolean isDownOnVolume = false;
 
         try {
-            isDownOnVolume = patternController.isDownOnVolume(currentQuotation, previousQuotation);
+            isDownOnVolume = this.patternControllerHelper.isDownOnVolume(currentQuotation, previousQuotation);
         } catch (Exception e) {
             return 0;
         }
@@ -226,11 +236,10 @@ public class StatisticCalculator {
      * @return 1, if Quotation made a bearish reversal; 0, if not.
      */
     public int getNumberBearishReversal(final Quotation currentQuotation) {
-        InstrumentCheckPatternController patternController = new InstrumentCheckPatternController();
         boolean isBearishReversal = false;
 
         try {
-            isBearishReversal = patternController.isBearishHighVolumeReversal(currentQuotation);
+            isBearishReversal = this.patternControllerHelper.isBearishHighVolumeReversal(currentQuotation);
         } catch (Exception e) {
             return 0;
         }
@@ -249,11 +258,10 @@ public class StatisticCalculator {
      * @return 1, if Quotation made a bullish reversal; 0, if not.
      */
     public int getNumberBullishReversal(final Quotation currentQuotation) {
-        InstrumentCheckPatternController patternController = new InstrumentCheckPatternController();
         boolean isBullishReversal = false;
 
         try {
-            isBullishReversal = patternController.isBullishHighVolumeReversal(currentQuotation);
+            isBullishReversal = this.patternControllerHelper.isBullishHighVolumeReversal(currentQuotation);
         } catch (Exception e) {
             return 0;
         }
@@ -273,11 +281,10 @@ public class StatisticCalculator {
      * @return 1, if Quotation is churning; 0, if not.
      */
     public int getNumberChurning(final Quotation currentQuotation, final Quotation previousQuotation) {
-        InstrumentCheckPatternController patternController = new InstrumentCheckPatternController();
         boolean isChurning = false;
 
         try {
-            isChurning = patternController.isChurning(currentQuotation, previousQuotation);
+            isChurning = this.patternControllerHelper.isChurning(currentQuotation, previousQuotation);
         } catch (Exception e) {
             return 0;
         }
