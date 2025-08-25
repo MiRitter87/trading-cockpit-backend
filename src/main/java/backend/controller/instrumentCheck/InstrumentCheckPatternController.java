@@ -271,8 +271,8 @@ public class InstrumentCheckPatternController {
     }
 
     /**
-     * Checks for days on which the Instrument builds a bullish gap up (low of the current day is higher than the
-     * high of the previous day). The check begins at the start date and goes up until the most recent Quotation.
+     * Checks for days on which the Instrument builds a bullish gap up (low of the current day is higher than the high
+     * of the previous day). The check begins at the start date and goes up until the most recent Quotation.
      *
      * @param startDate        The date at which the check starts.
      * @param sortedQuotations The quotations sorted by date that build the trading history.
@@ -315,5 +315,20 @@ public class InstrumentCheckPatternController {
         }
 
         return protocolEntries;
+    }
+
+    /**
+     * Checks if the instrument made a new 52-week high on a closing basis. The check begins at the start date and goes
+     * up until the most recent Quotation.
+     *
+     * @param startDate        The date at which the check starts.
+     * @param sortedQuotations The quotations sorted by date that build the trading history.
+     * @return List of ProtocolEntry, for each day on which the Instrument builds a gap up.
+     * @throws Exception The check failed because data are not fully available or corrupt.
+     */
+    public List<ProtocolEntry> checkNew52WeekHigh(final Date startDate, final QuotationArray sortedQuotations)
+            throws Exception {
+
+        return null;
     }
 }

@@ -330,4 +330,51 @@ public class InstrumentCheckPatternControllerTest {
             fail(e.getMessage());
         }
     }
+
+    //@Test
+    /**
+     * Tests the check if Instrument made a new 52-week high.
+     */
+    public void testCheckNew52WeekHigh() {
+        ProtocolEntry expectedProtocolEntry1;
+        ProtocolEntry expectedProtocolEntry2;
+        List<ProtocolEntry> protocolEntries;
+        Calendar calendar = Calendar.getInstance();
+
+        // Define the expected protocol entries.
+        calendar.set(2021, 10, 8); // The first day with a new 52-week high.
+        expectedProtocolEntry1 = new ProtocolEntry();
+        expectedProtocolEntry1.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
+        expectedProtocolEntry1.setCategory(ProtocolEntryCategory.CONFIRMATION);
+        expectedProtocolEntry1.setText(this.resources.getString("protocol.new52WeekHigh"));
+
+        calendar.set(2021, 10, 9); // The second day with a new 52-week high.
+        expectedProtocolEntry2 = new ProtocolEntry();
+        expectedProtocolEntry2.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
+        expectedProtocolEntry2.setCategory(ProtocolEntryCategory.CONFIRMATION);
+        expectedProtocolEntry2.setText(this.resources.getString("protocol.new52WeekHigh"));
+
+        // Call controller to perform check.
+        calendar.set(2021, 10, 8); // Begin check on 08.11.21.
+        try {
+            protocolEntries = this.instrumentCheckPatternController.checkNew52WeekHigh(calendar.getTime(),
+                    this.dmlQuotations);
+
+            // Verify the check result.
+            assertEquals(2, protocolEntries.size());
+
+            // Validate the protocol entries.
+            for (ProtocolEntry actualProtocolEntry : protocolEntries) {
+                if (actualProtocolEntry.getDate().getTime() == expectedProtocolEntry1.getDate().getTime()) {
+                    assertEquals(expectedProtocolEntry1, actualProtocolEntry);
+                } else if (actualProtocolEntry.getDate().getTime() == expectedProtocolEntry2.getDate().getTime()) {
+                    assertEquals(expectedProtocolEntry2, actualProtocolEntry);
+                } else {
+                    fail("The result of the check contains an unexpected protocol entry.");
+                }
+            }
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
 }
