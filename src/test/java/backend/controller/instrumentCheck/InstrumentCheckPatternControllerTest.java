@@ -331,7 +331,7 @@ public class InstrumentCheckPatternControllerTest {
         }
     }
 
-    //@Test
+    @Test
     /**
      * Tests the check if Instrument made a new 52-week high.
      */

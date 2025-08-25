@@ -329,6 +329,39 @@ public class InstrumentCheckPatternController {
     public List<ProtocolEntry> checkNew52WeekHigh(final Date startDate, final QuotationArray sortedQuotations)
             throws Exception {
 
-        return null;
+        int startIndex;
+        Quotation currentQuotation;
+        Quotation previousQuotation;
+        List<ProtocolEntry> protocolEntries = new ArrayList<>();
+        ProtocolEntry protocolEntry;
+        float maxClosingHigh;
+
+        startIndex = sortedQuotations.getIndexOfQuotationWithDate(startDate);
+
+        if (startIndex == -1) {
+            throw new Exception("Could not find a quotation at or after the given start date.");
+        }
+
+        for (int i = startIndex; i >= 0; i--) {
+            if ((i + 1) < sortedQuotations.getQuotations().size()) {
+                previousQuotation = sortedQuotations.getQuotations().get(i + 1);
+            } else {
+                continue;
+            }
+
+            currentQuotation = sortedQuotations.getQuotations().get(i);
+            maxClosingHigh = this.patternControllerHelper.get52WeekHigh(sortedQuotations.getQuotations(),
+                    previousQuotation);
+
+            if (currentQuotation.getClose().floatValue() > maxClosingHigh) {
+                protocolEntry = new ProtocolEntry();
+                protocolEntry.setCategory(ProtocolEntryCategory.CONFIRMATION);
+                protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(currentQuotation.getDate()));
+                protocolEntry.setText(this.resources.getString("protocol.new52WeekHigh"));
+                protocolEntries.add(protocolEntry);
+            }
+        }
+
+        return protocolEntries;
     }
 }

@@ -1,6 +1,8 @@
 package backend.controller.instrumentCheck;
 
 import java.math.BigDecimal;
+import java.util.Calendar;
+import java.util.List;
 
 import backend.controller.scan.PerformanceCalculator;
 import backend.model.instrument.MovingAverageData;
@@ -208,5 +210,42 @@ public class PatternControllerHelper {
                 previousQuotation.getHigh().floatValue());
 
         return gapSize;
+    }
+
+    /**
+     * Determines the 52-week high on a closing basis.
+     *
+     * @param quotations   A list of quotations sorted by date that build the trading history.
+     * @param endQuotation The latest Quotation for which the check is executed.
+     * @return The Quotation of the largest down-day.
+     */
+    public float get52WeekHigh(final List<Quotation> quotations, final Quotation endQuotation) {
+        Quotation currentQuotation;
+        float maxClosingPrice = 0;
+        Calendar calendar = Calendar.getInstance();
+
+        calendar.setTime(endQuotation.getDate());
+        calendar.add(Calendar.YEAR, -1);
+
+        // Determine the highest closing price of the last 52 weeks.
+        for (int i = 0; i <= quotations.size() - 1; i++) {
+            currentQuotation = quotations.get(i);
+
+            // Ignore quotations newer than the date of the end quotation.
+            if (currentQuotation.getDate().getTime() > endQuotation.getDate().getTime()) {
+                continue;
+            }
+
+            // Ignore quotations more than one year older than the date of the end quotation.
+            if (currentQuotation.getDate().getTime() < calendar.getTimeInMillis()) {
+                continue;
+            }
+
+            if (currentQuotation.getClose().floatValue() > maxClosingPrice) {
+                maxClosingPrice = currentQuotation.getClose().floatValue();
+            }
+        }
+
+        return maxClosingPrice;
     }
 }
