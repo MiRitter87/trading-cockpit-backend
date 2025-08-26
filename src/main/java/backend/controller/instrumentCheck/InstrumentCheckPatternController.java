@@ -229,7 +229,7 @@ public class InstrumentCheckPatternController {
      *
      * @param startDate        The date at which the check starts.
      * @param sortedQuotations The quotations sorted by date that build the trading history.
-     * @return List of ProtocolEntry, for each day on which the Instrument builds a gap up.
+     * @return List of ProtocolEntry, for each day on which the Instrument builds an exhaustion gap up.
      * @throws Exception The check failed because data are not fully available or corrupt.
      */
     public List<ProtocolEntry> checkExhaustionGapUp(final Date startDate, final QuotationArray sortedQuotations)
@@ -276,7 +276,7 @@ public class InstrumentCheckPatternController {
      *
      * @param startDate        The date at which the check starts.
      * @param sortedQuotations The quotations sorted by date that build the trading history.
-     * @return List of ProtocolEntry, for each day on which the Instrument builds a gap up.
+     * @return List of ProtocolEntry, for each day on which the Instrument builds a bullish gap up.
      * @throws Exception The check failed because data are not fully available or corrupt.
      */
     public List<ProtocolEntry> checkBullishGapUp(final Date startDate, final QuotationArray sortedQuotations)
@@ -323,7 +323,7 @@ public class InstrumentCheckPatternController {
      *
      * @param startDate        The date at which the check starts.
      * @param sortedQuotations The quotations sorted by date that build the trading history.
-     * @return List of ProtocolEntry, for each day on which the Instrument builds a gap up.
+     * @return List of ProtocolEntry, for each day on which the Instrument makes a new 52-week high.
      * @throws Exception The check failed because data are not fully available or corrupt.
      */
     public List<ProtocolEntry> checkNew52WeekHigh(final Date startDate, final QuotationArray sortedQuotations)
@@ -363,5 +363,20 @@ public class InstrumentCheckPatternController {
         }
 
         return protocolEntries;
+    }
+
+    /**
+     * Checks if the instrument closed near its daily high price. The check begins at the start date and goes up until
+     * the most recent Quotation.
+     *
+     * @param startDate        The date at which the check starts.
+     * @param sortedQuotations The quotations sorted by date that build the trading history.
+     * @return List of ProtocolEntry, for each day on which the Instrument closes near the daily high price.
+     * @throws Exception The check failed because data are not fully available or corrupt.
+     */
+    public List<ProtocolEntry> checkCloseNearHigh(final Date startDate, final QuotationArray sortedQuotations)
+            throws Exception {
+
+        return null;
     }
 }
