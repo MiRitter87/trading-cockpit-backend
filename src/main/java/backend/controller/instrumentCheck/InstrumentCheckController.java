@@ -160,6 +160,7 @@ public class InstrumentCheckController {
         confirmations.addAll(this.instrumentCheckCountingController.checkThreeHigherCloses(startDate, quotations));
         confirmations.addAll(this.instrumentCheckPatternController.checkUpOnVolume(startDate, quotations));
         confirmations.addAll(this.instrumentCheckPatternController.checkNew52WeekHigh(startDate, quotations));
+        confirmations.addAll(this.instrumentCheckPatternController.checkCloseNearHigh(startDate, quotations));
 
         this.setProfile(confirmations, HealthCheckProfile.CONFIRMATIONS);
         protocol.getProtocolEntries().addAll(confirmations);
@@ -181,6 +182,7 @@ public class InstrumentCheckController {
         confirmations.addAll(this.instrumentCheckCountingController.checkThreeHigherCloses(startDate, quotations));
         confirmations.addAll(this.instrumentCheckPatternController.checkUpOnVolume(startDate, quotations));
         confirmations.addAll(this.instrumentCheckPatternController.checkNew52WeekHigh(startDate, quotations));
+        confirmations.addAll(this.instrumentCheckPatternController.checkCloseNearHigh(startDate, quotations));
 
         this.setProfile(confirmations, HealthCheckProfile.CONFIRMATIONS_WITHOUT_COUNTING);
         protocol.getProtocolEntries().addAll(confirmations);
@@ -290,6 +292,7 @@ public class InstrumentCheckController {
         afterBreakout.addAll(this.instrumentCheckPatternController.checkUpOnVolume(startDate, quotations));
         afterBreakout.addAll(this.instrumentCheckPatternController.checkBullishGapUp(startDate, quotations));
         afterBreakout.addAll(this.instrumentCheckPatternController.checkNew52WeekHigh(startDate, quotations));
+        afterBreakout.addAll(this.instrumentCheckPatternController.checkCloseNearHigh(startDate, quotations));
 
         afterBreakout.addAll(this.instrumentCheckAverageController.checkCloseBelowSma50(startDate, quotations));
         afterBreakout.addAll(this.instrumentCheckAverageController.checkCloseBelowEma21(startDate, quotations));
