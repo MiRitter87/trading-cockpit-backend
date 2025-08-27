@@ -201,4 +201,20 @@ public class InstrumentCheckAverageController {
 
         return protocolEntries;
     }
+
+    /**
+     * Checks if the price is extended on a one year basis. The price is considered extended if its extension above the
+     * SMA(50) belongs to the top 5% of all values. The check begins at the start date and goes up until the most recent
+     * Quotation.
+     *
+     * @param startDate        The date at which the check starts.
+     * @param sortedQuotations The quotations sorted by date that build the trading history.
+     * @return List of ProtocolEntry, for all days on which the price is historically extended.
+     * @throws Exception The check failed because data are not fully available or corrupt.
+     */
+    public List<ProtocolEntry> checkExtendedOneYear(final Date startDate, final QuotationArray sortedQuotations)
+            throws Exception {
+
+        return null;
+    }
 }

@@ -243,4 +243,37 @@ public class InstrumentCheckAverageControllerTest {
             fail(e.getMessage());
         }
     }
+
+    //@Test
+    /**
+     * Tests the check if the price is extended on a one year basis.
+     */
+    public void testCheckExtendedOneYear() {
+        ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
+        ProtocolEntry actualProtocolEntry;
+        List<ProtocolEntry> protocolEntries;
+        Calendar calendar = Calendar.getInstance();
+
+        // Define the expected protocol entry.
+        calendar.set(2022, 2, 9); // The day on which the price is extended historically.
+        expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
+        expectedProtocolEntry.setCategory(ProtocolEntryCategory.WARNING);
+        expectedProtocolEntry.setText(this.resources.getString("protocol.extendedOneYear"));
+
+        // Call controller to perform check.
+        calendar.set(2022, 2, 1); // Begin check on 01.03.22
+        try {
+            protocolEntries = this.instrumentCheckAverageController.checkExtendedOneYear(calendar.getTime(),
+                    this.dmlQuotations);
+
+            // Verify the check result
+            assertEquals(1, protocolEntries.size());
+
+            // Validate the protocol entry
+            actualProtocolEntry = protocolEntries.get(0);
+            assertEquals(expectedProtocolEntry, actualProtocolEntry);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
 }
