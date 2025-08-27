@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import backend.controller.chart.ChartController;
 import backend.controller.scan.PerformanceCalculator;
 import backend.model.instrument.MovingAverageData;
 import backend.model.instrument.Quotation;
@@ -30,6 +31,18 @@ public class InstrumentCheckAverageController {
      * Access to localized application resources.
      */
     private ResourceBundle resources = ResourceBundle.getBundle("backend");
+
+    /**
+     * The PerformanceCalculator.
+     */
+    private PerformanceCalculator performanceCalculator;
+
+    /**
+     * Initializes the InstrumentCheckAverageController.
+     */
+    public InstrumentCheckAverageController() {
+        this.performanceCalculator = new PerformanceCalculator();
+    }
 
     /**
      * Checks if the price has breached the SMA(50) on a closing basis. The check begins at the start date and goes up
@@ -170,7 +183,6 @@ public class InstrumentCheckAverageController {
         MovingAverageData currentDayMaData;
         ProtocolEntry protocolEntry;
         List<ProtocolEntry> protocolEntries = new ArrayList<>();
-        PerformanceCalculator performanceCalculator = new PerformanceCalculator();
 
         startIndex = sortedQuotations.getIndexOfQuotationWithDate(startDate);
 
@@ -186,7 +198,7 @@ public class InstrumentCheckAverageController {
                 continue; // Can't perform check if no SMA(200) is available.
             }
 
-            percentAboveSma200 = performanceCalculator.getPerformance(currentDayQuotation.getClose().floatValue(),
+            percentAboveSma200 = this.performanceCalculator.getPerformance(currentDayQuotation.getClose().floatValue(),
                     currentDayMaData.getSma200());
 
             if (percentAboveSma200 >= EXTENDED_ABOVE_SMA200_THRESHOLD) {
@@ -215,6 +227,57 @@ public class InstrumentCheckAverageController {
     public List<ProtocolEntry> checkExtendedOneYear(final Date startDate, final QuotationArray sortedQuotations)
             throws Exception {
 
-        return null;
+        int startIndex;
+        Quotation currentDayQuotation;
+        MovingAverageData currentDayMaData;
+        float percentAboveSma50;
+        float thresholdExtended;
+        ProtocolEntry protocolEntry;
+        List<ProtocolEntry> protocolEntries = new ArrayList<>();
+
+        startIndex = sortedQuotations.getIndexOfQuotationWithDate(startDate);
+
+        if (startIndex == -1) {
+            throw new Exception("Could not find a quotation at or after the given start date.");
+        }
+
+        for (int i = startIndex; i >= 0; i--) {
+            currentDayQuotation = sortedQuotations.getQuotations().get(i);
+            currentDayMaData = currentDayQuotation.getMovingAverageData();
+
+            if (currentDayMaData == null || currentDayMaData.getSma50() == 0) {
+                continue; // Can't perform check if no SMA(50) is available.
+            }
+
+            percentAboveSma50 = this.performanceCalculator.getPerformance(currentDayQuotation.getClose().floatValue(),
+                    currentDayMaData.getSma50());
+            thresholdExtended = this.getExtendedAboveSma50Threshold(sortedQuotations, i,
+                    ChartController.TRADING_DAYS_PER_YEAR);
+
+            if (percentAboveSma50 >= thresholdExtended) {
+                protocolEntry = new ProtocolEntry();
+                protocolEntry.setCategory(ProtocolEntryCategory.WARNING);
+                protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(currentDayQuotation.getDate()));
+                protocolEntry.setText(this.resources.getString("protocol.extendedOneYear"));
+                protocolEntries.add(protocolEntry);
+            }
+
+        }
+
+        return protocolEntries;
+    }
+
+    /**
+     * Determines the percentage threshold that indicates price is extended above SMA(50) historically.
+     *
+     * @param sortedQuotations The quotations sorted by date that build the trading history.
+     * @param index            The start index used for threshold calculation.
+     * @param tradingDays      The lookback period of days taken into account.
+     * @return The threshold percentage that indicates price is extended.
+     */
+    private float getExtendedAboveSma50Threshold(final QuotationArray sortedQuotations, final int index,
+            final int tradingDays) {
+
+        return 0;
     }
 }
