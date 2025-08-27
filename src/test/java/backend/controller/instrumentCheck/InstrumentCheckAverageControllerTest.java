@@ -244,7 +244,7 @@ public class InstrumentCheckAverageControllerTest {
         }
     }
 
-    //@Test
+    @Test
     /**
      * Tests the check if the price is extended on a one year basis.
      */
@@ -255,13 +255,13 @@ public class InstrumentCheckAverageControllerTest {
         Calendar calendar = Calendar.getInstance();
 
         // Define the expected protocol entry.
-        calendar.set(2022, 2, 9); // The day on which the price is extended historically.
+        calendar.set(2022, 2, 10); // The day on which the price is extended historically.
         expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
         expectedProtocolEntry.setCategory(ProtocolEntryCategory.WARNING);
         expectedProtocolEntry.setText(this.resources.getString("protocol.extendedOneYear"));
 
         // Call controller to perform check.
-        calendar.set(2022, 2, 1); // Begin check on 01.03.22
+        calendar.set(2021, 9, 20); // Begin check on 20.10.21
         try {
             protocolEntries = this.instrumentCheckAverageController.checkExtendedOneYear(calendar.getTime(),
                     this.dmlQuotations);

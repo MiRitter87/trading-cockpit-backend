@@ -2,6 +2,7 @@ package backend.controller.instrumentCheck;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -254,7 +255,7 @@ public class InstrumentCheckAverageController {
             thresholdExtended = this.getExtendedAboveSma50Threshold(sortedQuotations, i,
                     ChartController.TRADING_DAYS_PER_YEAR);
 
-            if (percentAboveSma50 >= thresholdExtended) {
+            if (percentAboveSma50 > thresholdExtended) {
                 protocolEntry = new ProtocolEntry();
                 protocolEntry.setCategory(ProtocolEntryCategory.WARNING);
                 protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(currentDayQuotation.getDate()));
@@ -268,7 +269,7 @@ public class InstrumentCheckAverageController {
     }
 
     /**
-     * Determines the percentage threshold that indicates price is extended above SMA(50) historically.
+     * Determines the percentage threshold that indicates price is extended above the SMA(50) historically.
      *
      * @param sortedQuotations The quotations sorted by date that build the trading history.
      * @param index            The start index used for threshold calculation.
@@ -278,6 +279,38 @@ public class InstrumentCheckAverageController {
     private float getExtendedAboveSma50Threshold(final QuotationArray sortedQuotations, final int index,
             final int tradingDays) {
 
-        return 0;
+        ArrayList<Float> deviationSma50Values = new ArrayList<>();
+        int currentIndex;
+        int thresholdIndex;
+        float percentAboveSma50;
+        final int percentThreshold = 95;
+        final int hundredPercent = 100;
+
+        for (Quotation currentQuotation : sortedQuotations.getQuotations()) {
+            currentIndex = sortedQuotations.getQuotations().indexOf(currentQuotation);
+
+            if (currentIndex < index || currentIndex >= index + tradingDays) {
+                continue;
+            }
+
+            if (currentQuotation.getMovingAverageData() == null
+                    || currentQuotation.getMovingAverageData().getSma50() == 0) {
+                continue;
+            }
+
+            percentAboveSma50 = this.performanceCalculator.getPerformance(currentQuotation.getClose().floatValue(),
+                    currentQuotation.getMovingAverageData().getSma50());
+            deviationSma50Values.add(percentAboveSma50);
+        }
+
+        // Sort values descending.
+        Collections.sort(deviationSma50Values);
+        Collections.reverse(deviationSma50Values);
+
+        // Get the index of the threshold value.
+        thresholdIndex = deviationSma50Values.size() - (deviationSma50Values.size() * percentThreshold / hundredPercent)
+                - 1;
+
+        return deviationSma50Values.get(thresholdIndex);
     }
 }
