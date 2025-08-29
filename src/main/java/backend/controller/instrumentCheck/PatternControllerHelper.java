@@ -50,6 +50,11 @@ public class PatternControllerHelper {
     private static final float CLOSE_NEAR_HIGH_THRESHOLD = (float) 0.9;
 
     /**
+     * The threshold of the daily price range that constitutes a "close near low".
+     */
+    private static final float CLOSE_NEAR_LOW_THRESHOLD = (float) 0.1;
+
+    /**
      * Performance calculator.
      */
     private PerformanceCalculator performanceCalculator;
@@ -270,6 +275,28 @@ public class PatternControllerHelper {
                 .add(dailyPriceRange.multiply(new BigDecimal(CLOSE_NEAR_HIGH_THRESHOLD)));
 
         if (currentQuotation.getClose().compareTo(nearHighThresholdPrice) >= 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Checks if the current Quotation closes near its low price.
+     *
+     * @param currentQuotation The current Quotation.
+     * @return true, if currentQuotation closes near its low price; false, if not.
+     * @throws Exception Determination failed.
+     */
+    public boolean isCloseNearLow(final Quotation currentQuotation) throws Exception {
+        BigDecimal dailyPriceRange;
+        BigDecimal nearLowThresholdPrice;
+
+        dailyPriceRange = currentQuotation.getHigh().subtract(currentQuotation.getLow());
+        nearLowThresholdPrice = currentQuotation.getLow()
+                .add(dailyPriceRange.multiply(new BigDecimal(CLOSE_NEAR_LOW_THRESHOLD)));
+
+        if (currentQuotation.getClose().compareTo(nearLowThresholdPrice) <= 0) {
             return true;
         }
 

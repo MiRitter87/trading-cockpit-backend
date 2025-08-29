@@ -416,6 +416,31 @@ public class InstrumentCheckPatternController {
     public List<ProtocolEntry> checkCloseNearLow(final Date startDate, final QuotationArray sortedQuotations)
             throws Exception {
 
-        return null;
+        int startIndex;
+        Quotation currentQuotation;
+        List<ProtocolEntry> protocolEntries = new ArrayList<>();
+        ProtocolEntry protocolEntry;
+        boolean isCloseNearLow;
+
+        startIndex = sortedQuotations.getIndexOfQuotationWithDate(startDate);
+
+        if (startIndex == -1) {
+            throw new Exception("Could not find a quotation at or after the given start date.");
+        }
+
+        for (int i = startIndex; i >= 0; i--) {
+            currentQuotation = sortedQuotations.getQuotations().get(i);
+            isCloseNearLow = this.patternControllerHelper.isCloseNearLow(currentQuotation);
+
+            if (isCloseNearLow) {
+                protocolEntry = new ProtocolEntry();
+                protocolEntry.setCategory(ProtocolEntryCategory.VIOLATION);
+                protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(currentQuotation.getDate()));
+                protocolEntry.setText(this.resources.getString("protocol.closeNearLow"));
+                protocolEntries.add(protocolEntry);
+            }
+        }
+
+        return protocolEntries;
     }
 }

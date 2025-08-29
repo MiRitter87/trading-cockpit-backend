@@ -411,7 +411,7 @@ public class InstrumentCheckPatternControllerTest {
         }
     }
 
-    // @Test
+    @Test
     /**
      * Tests the check if Instrument closed near its daily low price.
      */
