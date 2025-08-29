@@ -240,6 +240,7 @@ public class InstrumentCheckController {
         sellingIntoWeakness
                 .addAll(this.instrumentCheckPatternController.checkHighVolumeReversal(startDate, quotations));
         sellingIntoWeakness.addAll(this.instrumentCheckCountingController.checkThreeLowerCloses(startDate, quotations));
+        sellingIntoWeakness.addAll(this.instrumentCheckPatternController.checkCloseNearLow(startDate, quotations));
 
         this.setProfile(sellingIntoWeakness, HealthCheckProfile.WEAKNESS_WITHOUT_COUNTING);
         protocol.getProtocolEntries().addAll(sellingIntoWeakness);
@@ -269,6 +270,7 @@ public class InstrumentCheckController {
         sellingIntoWeakness
                 .addAll(this.instrumentCheckPatternController.checkHighVolumeReversal(startDate, quotations));
         sellingIntoWeakness.addAll(this.instrumentCheckCountingController.checkThreeLowerCloses(startDate, quotations));
+        sellingIntoWeakness.addAll(this.instrumentCheckPatternController.checkCloseNearLow(startDate, quotations));
 
         this.setProfile(sellingIntoWeakness, HealthCheckProfile.SELLING_INTO_WEAKNESS);
         protocol.getProtocolEntries().addAll(sellingIntoWeakness);
@@ -302,6 +304,7 @@ public class InstrumentCheckController {
         afterBreakout.addAll(this.instrumentCheckPatternController.checkDownOnVolume(startDate, quotations));
         afterBreakout.addAll(this.instrumentCheckPatternController.checkHighVolumeReversal(startDate, quotations));
         afterBreakout.addAll(this.instrumentCheckCountingController.checkThreeLowerCloses(startDate, quotations));
+        afterBreakout.addAll(this.instrumentCheckPatternController.checkCloseNearLow(startDate, quotations));
 
         this.setProfile(afterBreakout, HealthCheckProfile.AFTER_BREAKOUT);
         protocol.getProtocolEntries().addAll(afterBreakout);
@@ -323,6 +326,7 @@ public class InstrumentCheckController {
         reversalAlert.addAll(this.instrumentCheckExtremumController.checkLargestDownDay(startDate, quotations));
         reversalAlert.addAll(this.instrumentCheckPatternController.checkDownOnVolume(startDate, quotations));
         reversalAlert.addAll(this.instrumentCheckPatternController.checkHighVolumeReversal(startDate, quotations));
+        reversalAlert.addAll(this.instrumentCheckPatternController.checkCloseNearLow(startDate, quotations));
 
         reversalAlert.addAll(this.instrumentCheckExtremumController.checkLargestDailySpread(startDate, quotations));
         reversalAlert.addAll(this.instrumentCheckExtremumController.checkLargestDailyVolume(startDate, quotations));
