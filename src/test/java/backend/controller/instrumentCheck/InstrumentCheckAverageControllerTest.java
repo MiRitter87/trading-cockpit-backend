@@ -205,6 +205,39 @@ public class InstrumentCheckAverageControllerTest {
         }
     }
 
+    // @Test
+    /**
+     * Tests the check if the price of an Instrument closed above SMA(50).
+     */
+    public void testCheckCloseAboveSma50() {
+        ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
+        ProtocolEntry actualProtocolEntry;
+        List<ProtocolEntry> protocolEntries;
+        Calendar calendar = Calendar.getInstance();
+
+        // Define the expected protocol entry.
+        calendar.set(2022, 1, 24); // The day on which the price closed above the SMA(50).
+        expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
+        expectedProtocolEntry.setCategory(ProtocolEntryCategory.CONFIRMATION);
+        expectedProtocolEntry.setText(this.resources.getString("protocol.closeAboveSma50HighVolume"));
+
+        // Call controller to perform check.
+        calendar.set(2022, 0, 1); // Begin check on 01.01.22
+        try {
+            protocolEntries = this.instrumentCheckAverageController.checkCloseAboveSma50(calendar.getTime(),
+                    this.dmlQuotations);
+
+            // Verify the check result
+            assertEquals(1, protocolEntries.size());
+
+            // Validate the protocol entry
+            actualProtocolEntry = protocolEntries.get(0);
+            assertEquals(expectedProtocolEntry, actualProtocolEntry);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
     @Test
     /**
      * Tests the check if the price of an Instrument is extended above the SMA(200).

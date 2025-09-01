@@ -164,6 +164,24 @@ public class InstrumentCheckAverageController {
     }
 
     /**
+     * Checks if the price has jumped above the SMA(50) on a closing basis on above-average volume. The check begins at
+     * the start date and goes up until the most recent Quotation.
+     *
+     * For each day on which the price has jumped above the SMA(50) on a closing basis on above-average volume, a
+     * ProtocolEntry is provided with further information.
+     *
+     * @param startDate        The date at which the check starts.
+     * @param sortedQuotations The quotations sorted by date that build the trading history.
+     * @return List of ProtocolEntry, for all days on which the price jumped above the SMA(50).
+     * @throws Exception The check failed because data are not fully available or corrupt.
+     */
+    public List<ProtocolEntry> checkCloseAboveSma50(final Date startDate, final QuotationArray sortedQuotations)
+            throws Exception {
+
+        return null;
+    }
+
+    /**
      * Checks if the price is extended above the SMA(200) on a closing basis. The check begins at the start date and
      * goes up until the most recent Quotation.
      *
