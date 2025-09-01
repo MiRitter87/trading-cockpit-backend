@@ -205,7 +205,7 @@ public class InstrumentCheckAverageControllerTest {
         }
     }
 
-    // @Test
+    @Test
     /**
      * Tests the check if the price of an Instrument closed above SMA(50).
      */

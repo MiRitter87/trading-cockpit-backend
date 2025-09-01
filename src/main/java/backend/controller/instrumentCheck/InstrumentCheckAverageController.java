@@ -177,8 +177,48 @@ public class InstrumentCheckAverageController {
      */
     public List<ProtocolEntry> checkCloseAboveSma50(final Date startDate, final QuotationArray sortedQuotations)
             throws Exception {
+        int startIndex;
+        Quotation currentDayQuotation;
+        Quotation previousDayQuotation;
+        List<ProtocolEntry> protocolEntries = new ArrayList<>();
+        ProtocolEntry protocolEntry;
+        MovingAverageData currentDayMaData;
+        MovingAverageData previousDayMaData;
 
-        return null;
+        startIndex = sortedQuotations.getIndexOfQuotationWithDate(startDate);
+
+        if (startIndex == -1) {
+            throw new Exception("Could not find a quotation at or after the given start date.");
+        }
+
+        for (int i = startIndex; i >= 0; i--) {
+            if ((i + 1) < sortedQuotations.getQuotations().size()) {
+                previousDayQuotation = sortedQuotations.getQuotations().get(i + 1);
+            } else {
+                continue;
+            }
+
+            currentDayQuotation = sortedQuotations.getQuotations().get(i);
+            currentDayMaData = currentDayQuotation.getMovingAverageData();
+            previousDayMaData = previousDayQuotation.getMovingAverageData();
+
+            if (previousDayMaData == null || currentDayMaData == null) {
+                continue;
+            }
+
+            if (previousDayQuotation.getClose().floatValue() <= previousDayMaData.getSma50()
+                    && currentDayQuotation.getClose().floatValue() > currentDayMaData.getSma50()
+                    && currentDayQuotation.getVolume() > currentDayMaData.getSma30Volume()) {
+
+                protocolEntry = new ProtocolEntry();
+                protocolEntry.setCategory(ProtocolEntryCategory.CONFIRMATION);
+                protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(currentDayQuotation.getDate()));
+                protocolEntry.setText(this.resources.getString("protocol.closeAboveSma50HighVolume"));
+                protocolEntries.add(protocolEntry);
+            }
+        }
+
+        return protocolEntries;
     }
 
     /**
