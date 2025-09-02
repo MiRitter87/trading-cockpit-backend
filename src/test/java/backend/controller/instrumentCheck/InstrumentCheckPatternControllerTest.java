@@ -443,4 +443,37 @@ public class InstrumentCheckPatternControllerTest {
             fail(e.getMessage());
         }
     }
+
+    // @Test
+    /**
+     * Tests the check if the RS-line of an Instrument made a new 52-week high.
+     */
+    public void testCheckRsLineNew52WeekHigh() {
+        ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
+        ProtocolEntry actualProtocolEntry;
+        List<ProtocolEntry> protocolEntries;
+        Calendar calendar = Calendar.getInstance();
+
+        // Define the expected protocol entry.
+        calendar.set(2021, 10, 9); // New RS line 52w-high on 09.11.21
+        expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
+        expectedProtocolEntry.setCategory(ProtocolEntryCategory.CONFIRMATION);
+        expectedProtocolEntry.setText(this.resources.getString("protocol.rsLineNew52WeekHigh"));
+
+        // Call controller to perform check.
+        calendar.set(2021, 10, 9); // Begin check on 09.11.21
+        try {
+            protocolEntries = this.instrumentCheckPatternController.checkRsLineNew52WeekHigh(calendar.getTime(),
+                    this.dmlQuotations);
+
+            // Verify the check result.
+            assertEquals(1, protocolEntries.size());
+
+            // Validate the protocol entry.
+            actualProtocolEntry = protocolEntries.get(0);
+            assertEquals(expectedProtocolEntry, actualProtocolEntry);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
 }
