@@ -3,6 +3,7 @@ package backend.controller.instrumentCheck;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.Calendar;
 import java.util.List;
@@ -22,6 +23,7 @@ import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
+import backend.model.instrument.RelativeStrengthData;
 import backend.model.protocol.ProtocolEntry;
 import backend.model.protocol.ProtocolEntryCategory;
 import backend.tools.DateTools;
@@ -77,6 +79,7 @@ public class InstrumentCheckPatternControllerTest {
 
         this.initializeDMLQuotations();
         this.initializeDMLIndicators();
+        this.initializeDummyRsLinePrices();
     }
 
     @AfterEach
@@ -126,6 +129,27 @@ public class InstrumentCheckPatternControllerTest {
                 quotation = indicatorCalculator.calculateIndicators(instrument, quotation, true);
             else
                 quotation = indicatorCalculator.calculateIndicators(instrument, quotation, false);
+        }
+    }
+
+    /**
+     * Initializes dummy values of the RS-line prices.
+     */
+    private void initializeDummyRsLinePrices() {
+        BigDecimal rsLinePrice = new BigDecimal(30);
+
+        for (Quotation quotation : this.dmlQuotations.getQuotations()) {
+            if (quotation.getRelativeStrengthData() == null) {
+                quotation.setRelativeStrengthData(new RelativeStrengthData());
+            }
+
+            if (this.dmlQuotations.getQuotations().indexOf(quotation) > 1) {
+                quotation.getRelativeStrengthData().setRsLinePrice(rsLinePrice);
+            } else {
+                quotation.getRelativeStrengthData().setRsLinePrice(new BigDecimal(0.1));
+            }
+
+            rsLinePrice = rsLinePrice.subtract(new BigDecimal(0.1));
         }
     }
 
@@ -455,13 +479,13 @@ public class InstrumentCheckPatternControllerTest {
         Calendar calendar = Calendar.getInstance();
 
         // Define the expected protocol entry.
-        calendar.set(2021, 10, 9); // New RS line 52w-high on 09.11.21
+        calendar.set(2022, 6, 20); // New RS line 52w-high on 20.07.22
         expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
         expectedProtocolEntry.setCategory(ProtocolEntryCategory.CONFIRMATION);
         expectedProtocolEntry.setText(this.resources.getString("protocol.rsLineNew52WeekHigh"));
 
         // Call controller to perform check.
-        calendar.set(2021, 10, 9); // Begin check on 09.11.21
+        calendar.set(2021, 6, 20); // Begin check on 20.07.22
         try {
             protocolEntries = this.instrumentCheckPatternController.checkRsLineNew52WeekHigh(calendar.getTime(),
                     this.dmlQuotations);
