@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import backend.controller.NoQuotationsExistException;
+import backend.controller.chart.data.PriceVolumeDataController;
 import backend.dao.DAOManager;
 import backend.dao.quotation.persistence.QuotationDAO;
 import backend.model.instrument.Quotation;
@@ -76,12 +77,10 @@ public class InstrumentCheckController {
     public Protocol checkInstrument(final Integer instrumentId, final Date startDate, final HealthCheckProfile profile)
             throws NoQuotationsExistException, Exception {
 
-        QuotationArray quotations = new QuotationArray(this.quotationDAO.getQuotationsOfInstrument(instrumentId));
+        QuotationArray quotations = this.getQuotations(instrumentId);
         Protocol protocol = new Protocol();
 
-        quotations.sortQuotationsByDate();
         this.checkQuotationsExistAfterStartDate(startDate, quotations);
-
         this.checkInstrument(profile, startDate, quotations, protocol);
 
         protocol.sortEntriesByDate();
@@ -425,5 +424,22 @@ public class InstrumentCheckController {
         for (ProtocolEntry protocolEntry : protocolEntries) {
             protocolEntry.setProfile(profile);
         }
+    }
+
+    /**
+     * Returns a QuotationArray for the Instrument with the given ID.
+     *
+     * @param instrumentId The ID of the requested Instrument.
+     * @return A QuotationArray.
+     * @throws Exception Failed to initialize quotations.
+     */
+    private QuotationArray getQuotations(final Integer instrumentId) throws Exception {
+        PriceVolumeDataController pvDataController = new PriceVolumeDataController();
+        QuotationArray quotations = new QuotationArray(this.quotationDAO.getQuotationsOfInstrument(instrumentId));
+
+        quotations.sortQuotationsByDate();
+        pvDataController.calculateRsLineData(quotations);
+
+        return quotations;
     }
 }

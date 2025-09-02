@@ -107,7 +107,7 @@ public class PriceVolumeDataController {
      * @param quotations An array of quotations.
      * @throws Exception Failed to calculate ratio for RS-Line.
      */
-    private void calculateRsLineData(final QuotationArray quotations) throws Exception {
+    public void calculateRsLineData(final QuotationArray quotations) throws Exception {
         Quotation targetQuotation;
         int quotationIndex;
         List<Quotation> ratioQuotations;
