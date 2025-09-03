@@ -468,7 +468,7 @@ public class InstrumentCheckPatternControllerTest {
         }
     }
 
-    // @Test
+    @Test
     /**
      * Tests the check if the RS-line of an Instrument made a new 52-week high.
      */
@@ -485,7 +485,7 @@ public class InstrumentCheckPatternControllerTest {
         expectedProtocolEntry.setText(this.resources.getString("protocol.rsLineNew52WeekHigh"));
 
         // Call controller to perform check.
-        calendar.set(2021, 6, 20); // Begin check on 20.07.22
+        calendar.set(2022, 6, 20); // Begin check on 20.07.22
         try {
             protocolEntries = this.instrumentCheckPatternController.checkRsLineNew52WeekHigh(calendar.getTime(),
                     this.dmlQuotations);

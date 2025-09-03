@@ -377,7 +377,43 @@ public class InstrumentCheckPatternController {
     public List<ProtocolEntry> checkRsLineNew52WeekHigh(final Date startDate, final QuotationArray sortedQuotations)
             throws Exception {
 
-        return null;
+        int startIndex;
+        Quotation currentQuotation;
+        Quotation previousQuotation;
+        List<ProtocolEntry> protocolEntries = new ArrayList<>();
+        ProtocolEntry protocolEntry;
+        float maxRsLineHigh;
+
+        startIndex = sortedQuotations.getIndexOfQuotationWithDate(startDate);
+
+        if (startIndex == -1) {
+            throw new Exception("Could not find a quotation at or after the given start date.");
+        }
+
+        for (int i = startIndex; i >= 0; i--) {
+            if ((i + 1) < sortedQuotations.getQuotations().size()) {
+                previousQuotation = sortedQuotations.getQuotations().get(i + 1);
+            } else {
+                continue;
+            }
+
+            currentQuotation = sortedQuotations.getQuotations().get(i);
+
+            maxRsLineHigh = this.patternControllerHelper.getRsLine52WeekHigh(sortedQuotations.getQuotations(),
+                    previousQuotation);
+
+            if (currentQuotation.getRelativeStrengthData() != null
+                    && currentQuotation.getRelativeStrengthData().getRsLinePrice().floatValue() > maxRsLineHigh) {
+
+                protocolEntry = new ProtocolEntry();
+                protocolEntry.setCategory(ProtocolEntryCategory.CONFIRMATION);
+                protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(currentQuotation.getDate()));
+                protocolEntry.setText(this.resources.getString("protocol.rsLineNew52WeekHigh"));
+                protocolEntries.add(protocolEntry);
+            }
+        }
+
+        return protocolEntries;
     }
 
     /**
