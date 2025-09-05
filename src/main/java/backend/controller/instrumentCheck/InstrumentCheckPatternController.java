@@ -403,6 +403,7 @@ public class InstrumentCheckPatternController {
                     previousQuotation);
 
             if (currentQuotation.getRelativeStrengthData() != null
+                    && currentQuotation.getRelativeStrengthData().getRsLinePrice() != null
                     && currentQuotation.getRelativeStrengthData().getRsLinePrice().floatValue() > maxRsLineHigh) {
 
                 protocolEntry = new ProtocolEntry();

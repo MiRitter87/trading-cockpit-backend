@@ -278,7 +278,8 @@ public class PatternControllerHelper {
         for (int i = 0; i <= quotations.size() - 1; i++) {
             currentQuotation = quotations.get(i);
 
-            if (currentQuotation.getRelativeStrengthData() == null) {
+            if (currentQuotation.getRelativeStrengthData() == null
+                    || currentQuotation.getRelativeStrengthData().getRsLinePrice() == null) {
                 continue;
             }
 
