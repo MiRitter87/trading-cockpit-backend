@@ -7,7 +7,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import backend.controller.chart.ChartController;
 import backend.controller.scan.PerformanceCalculator;
 import backend.model.instrument.MovingAverageData;
 import backend.model.instrument.Quotation;
@@ -23,6 +22,11 @@ import backend.tools.DateTools;
  * @author Michael
  */
 public class InstrumentCheckAverageController {
+    /**
+     * The number of trading days per year.
+     */
+    private static final int TRADING_DAYS_PER_YEAR = 252;
+
     /**
      * The percentage threshold used to determine "extended above SMA(200)".
      */
@@ -310,8 +314,7 @@ public class InstrumentCheckAverageController {
 
             percentAboveSma50 = this.performanceCalculator.getPerformance(currentDayQuotation.getClose().floatValue(),
                     currentDayMaData.getSma50());
-            thresholdExtended = this.getExtendedAboveSma50Threshold(sortedQuotations, i,
-                    ChartController.TRADING_DAYS_PER_YEAR);
+            thresholdExtended = this.getExtendedAboveSma50Threshold(sortedQuotations, i, TRADING_DAYS_PER_YEAR);
 
             if (percentAboveSma50 > thresholdExtended) {
                 protocolEntry = new ProtocolEntry();
