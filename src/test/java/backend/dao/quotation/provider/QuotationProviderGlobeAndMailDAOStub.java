@@ -24,7 +24,7 @@ public class QuotationProviderGlobeAndMailDAOStub extends QuotationProviderGlobe
     @Override
     public Quotation getCurrentQuotation(final Instrument instrument) throws Exception {
         String userPath = System.getProperty("user.dir");
-        String htmlPath = "file:\\" + userPath;
+        String htmlPath = "file:" + userPath;
         WebClient webClient = new WebClient();
         HtmlPage htmlPage;
         Quotation quotation;
@@ -32,7 +32,7 @@ public class QuotationProviderGlobeAndMailDAOStub extends QuotationProviderGlobe
         this.disableHtmlUnitLogging();
 
         if (instrument.getSymbol().equals("PMET") && instrument.getStockExchange().equals(StockExchange.TSXV))
-            htmlPath = htmlPath + "\\src\\test\\resources\\GlobeAndMail\\GlobeAndMailTSXVQuotePMET.htm";
+            htmlPath = htmlPath + "//src//test//resources//GlobeAndMail//GlobeAndMailTSXVQuotePMET.htm";
 
         try {
             webClient.getOptions().setUseInsecureSSL(true);

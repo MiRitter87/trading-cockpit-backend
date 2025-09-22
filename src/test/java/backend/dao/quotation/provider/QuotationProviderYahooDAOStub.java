@@ -21,11 +21,11 @@ public class QuotationProviderYahooDAOStub extends QuotationProviderYahooDAO {
         String jsonPath = "";
 
         if (instrument.getSymbol().equals("DML") && instrument.getStockExchange().equals(StockExchange.TSX)) {
-            jsonPath = "src/test/resources/yahoo/YahooTSEQuotationHistoryDML.json";
+            jsonPath = "src/test/resources/Yahoo/yahooTSEQuotationHistoryDML.json";
         } else if (instrument.getSymbol().equals("BNCH") && instrument.getStockExchange().equals(StockExchange.TSXV)) {
-            jsonPath = "src/test/resources/yahoo/YahooTSXVQuotationHistoryBNCH.json";
+            jsonPath = "src/test/resources/Yahoo/yahooTSXVQuotationHistoryBNCH.json";
         } else if (instrument.getSymbol().equals("RIO") && instrument.getStockExchange().equals(StockExchange.LSE)) {
-            jsonPath = "src/test/resources/yahoo/YahooLSEQuotationHistoryRIO.json";
+            jsonPath = "src/test/resources/Yahoo/yahooLSEQuotationHistoryRIO.json";
         } else {
             return null;
         }
