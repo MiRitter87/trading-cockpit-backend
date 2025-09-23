@@ -20,7 +20,7 @@
         <properties>
         	<!-- Database access -->
 	        <property name="jakarta.persistence.jdbc.driver" value="org.hsqldb.jdbcDriver" />
-	        <property name="jakarta.persistence.jdbc.url" value="jdbc:hsqldb:file:database/tradingCockpitBackend;shutdown=true" />
+	        <property name="jakarta.persistence.jdbc.url" value="jdbc:hsqldb:file:/opt/hsqldb-data/tradingCockpitBackend;shutdown=true" />
 	        <property name="jakarta.persistence.jdbc.user" value="SA" />
 	        <property name="jakarta.persistence.jdbc.password" value="" />
 	        
