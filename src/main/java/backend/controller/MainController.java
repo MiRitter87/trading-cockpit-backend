@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 import org.apache.logging.log4j.LogManager;
@@ -22,8 +24,7 @@ public final class MainController {
     /**
      * File path to configuration properties.
      */
-    protected static final String SUBPATH_CONFIGURATION_PROPERTIES = File.separator + "conf" + File.separator
-            + "tradingCockpitBackend.properties";
+    protected static final String CONFIG_FILE_NAME = "tradingCockpitBackend.properties";
 
     /**
      * Instance of the main controller.
@@ -123,10 +124,9 @@ public final class MainController {
         Properties properties = new Properties();
         String value = "";
         FileInputStream input = null;
-        String workingDir = System.getProperty("user.dir");
 
         try {
-            input = new FileInputStream(workingDir + SUBPATH_CONFIGURATION_PROPERTIES);
+            input = new FileInputStream(this.getConfigFilePath());
             properties.load(input);
             value = properties.getProperty(propertyKey);
         } catch (FileNotFoundException e) {
@@ -183,13 +183,34 @@ public final class MainController {
      * @throws Exception If config file could not be found.
      */
     private void checkConfigFileExisting() throws Exception {
-        String workingDir = System.getProperty("user.dir");
-        String filePath = workingDir + SUBPATH_CONFIGURATION_PROPERTIES;
+        String filePath = this.getConfigFilePath();
 
         File f = new File(filePath);
 
         if (!f.exists() || f.isDirectory()) {
+            LOGGER.info("Catalina home: " + System.getenv("CATALINA_HOME"));
             throw new Exception("Could not find configuration file using path: " + filePath);
         }
+    }
+
+    /**
+     * Provides the path to the configuration file.
+     *
+     * @return The path to the configuration file.
+     */
+    private String getConfigFilePath() {
+        String catalinaHome = System.getenv("CATALINA_HOME");
+        final String configFileName = "tradingCockpitBackend.properties";
+        Path configPath;
+
+        if (catalinaHome == null) {
+            // Running in Eclipse
+            configPath = Paths.get("conf", configFileName);
+        } else {
+            // Running on Apache Tomcat
+            configPath = Paths.get(catalinaHome, "conf", configFileName);
+        }
+
+        return configPath.toString();
     }
 }
