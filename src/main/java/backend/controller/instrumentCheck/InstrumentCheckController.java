@@ -164,10 +164,10 @@ public class InstrumentCheckController {
         confirmations.addAll(this.instrumentCheckCountingController.checkMoreGoodThanBadCloses(startDate, quotations));
         confirmations.addAll(this.instrumentCheckCountingController.checkThreeHigherCloses(startDate, quotations));
         confirmations.addAll(this.instrumentCheckPatternController.checkUpOnVolume(startDate, quotations));
-        confirmations.addAll(this.instrumentCheckPatternController.checkNew52WeekHigh(startDate, quotations));
+        confirmations.addAll(this.instrumentCheckHighLowController.checkNew52WeekHigh(startDate, quotations));
         confirmations.addAll(this.instrumentCheckHighLowController.checkCloseNearHigh(startDate, quotations));
         confirmations.addAll(this.instrumentCheckAverageController.checkCloseAboveSma50(startDate, quotations));
-        confirmations.addAll(this.instrumentCheckPatternController.checkRsLineNew52WeekHigh(startDate, quotations));
+        confirmations.addAll(this.instrumentCheckHighLowController.checkRsLineNew52WeekHigh(startDate, quotations));
 
         this.setProfile(confirmations, HealthCheckProfile.CONFIRMATIONS);
         protocol.getProtocolEntries().addAll(confirmations);
@@ -188,10 +188,10 @@ public class InstrumentCheckController {
 
         confirmations.addAll(this.instrumentCheckCountingController.checkThreeHigherCloses(startDate, quotations));
         confirmations.addAll(this.instrumentCheckPatternController.checkUpOnVolume(startDate, quotations));
-        confirmations.addAll(this.instrumentCheckPatternController.checkNew52WeekHigh(startDate, quotations));
+        confirmations.addAll(this.instrumentCheckHighLowController.checkNew52WeekHigh(startDate, quotations));
         confirmations.addAll(this.instrumentCheckHighLowController.checkCloseNearHigh(startDate, quotations));
         confirmations.addAll(this.instrumentCheckAverageController.checkCloseAboveSma50(startDate, quotations));
-        confirmations.addAll(this.instrumentCheckPatternController.checkRsLineNew52WeekHigh(startDate, quotations));
+        confirmations.addAll(this.instrumentCheckHighLowController.checkRsLineNew52WeekHigh(startDate, quotations));
 
         this.setProfile(confirmations, HealthCheckProfile.CONFIRMATIONS_WITHOUT_COUNTING);
         protocol.getProtocolEntries().addAll(confirmations);
@@ -249,7 +249,7 @@ public class InstrumentCheckController {
         sellingIntoWeakness
                 .addAll(this.instrumentCheckPatternController.checkHighVolumeReversal(startDate, quotations));
         sellingIntoWeakness.addAll(this.instrumentCheckCountingController.checkThreeLowerCloses(startDate, quotations));
-        sellingIntoWeakness.addAll(this.instrumentCheckPatternController.checkCloseNearLow(startDate, quotations));
+        sellingIntoWeakness.addAll(this.instrumentCheckHighLowController.checkCloseNearLow(startDate, quotations));
 
         this.setProfile(sellingIntoWeakness, HealthCheckProfile.WEAKNESS_WITHOUT_COUNTING);
         protocol.getProtocolEntries().addAll(sellingIntoWeakness);
@@ -279,7 +279,7 @@ public class InstrumentCheckController {
         sellingIntoWeakness
                 .addAll(this.instrumentCheckPatternController.checkHighVolumeReversal(startDate, quotations));
         sellingIntoWeakness.addAll(this.instrumentCheckCountingController.checkThreeLowerCloses(startDate, quotations));
-        sellingIntoWeakness.addAll(this.instrumentCheckPatternController.checkCloseNearLow(startDate, quotations));
+        sellingIntoWeakness.addAll(this.instrumentCheckHighLowController.checkCloseNearLow(startDate, quotations));
 
         this.setProfile(sellingIntoWeakness, HealthCheckProfile.SELLING_INTO_WEAKNESS);
         protocol.getProtocolEntries().addAll(sellingIntoWeakness);
@@ -303,9 +303,9 @@ public class InstrumentCheckController {
         afterBreakout.addAll(this.instrumentCheckCountingController.checkThreeHigherCloses(startDate, quotations));
         afterBreakout.addAll(this.instrumentCheckPatternController.checkUpOnVolume(startDate, quotations));
         afterBreakout.addAll(this.instrumentCheckPatternController.checkBullishGapUp(startDate, quotations));
-        afterBreakout.addAll(this.instrumentCheckPatternController.checkNew52WeekHigh(startDate, quotations));
+        afterBreakout.addAll(this.instrumentCheckHighLowController.checkNew52WeekHigh(startDate, quotations));
         afterBreakout.addAll(this.instrumentCheckHighLowController.checkCloseNearHigh(startDate, quotations));
-        afterBreakout.addAll(this.instrumentCheckPatternController.checkRsLineNew52WeekHigh(startDate, quotations));
+        afterBreakout.addAll(this.instrumentCheckHighLowController.checkRsLineNew52WeekHigh(startDate, quotations));
 
         afterBreakout.addAll(this.instrumentCheckAverageController.checkCloseBelowSma50(startDate, quotations));
         afterBreakout.addAll(this.instrumentCheckAverageController.checkCloseBelowEma21(startDate, quotations));
@@ -314,7 +314,7 @@ public class InstrumentCheckController {
         afterBreakout.addAll(this.instrumentCheckPatternController.checkDownOnVolume(startDate, quotations));
         afterBreakout.addAll(this.instrumentCheckPatternController.checkHighVolumeReversal(startDate, quotations));
         afterBreakout.addAll(this.instrumentCheckCountingController.checkThreeLowerCloses(startDate, quotations));
-        afterBreakout.addAll(this.instrumentCheckPatternController.checkCloseNearLow(startDate, quotations));
+        afterBreakout.addAll(this.instrumentCheckHighLowController.checkCloseNearLow(startDate, quotations));
 
         this.setProfile(afterBreakout, HealthCheckProfile.AFTER_BREAKOUT);
         protocol.getProtocolEntries().addAll(afterBreakout);
@@ -336,7 +336,7 @@ public class InstrumentCheckController {
         reversalAlert.addAll(this.instrumentCheckExtremumController.checkLargestDownDay(startDate, quotations));
         reversalAlert.addAll(this.instrumentCheckPatternController.checkDownOnVolume(startDate, quotations));
         reversalAlert.addAll(this.instrumentCheckPatternController.checkHighVolumeReversal(startDate, quotations));
-        reversalAlert.addAll(this.instrumentCheckPatternController.checkCloseNearLow(startDate, quotations));
+        reversalAlert.addAll(this.instrumentCheckHighLowController.checkCloseNearLow(startDate, quotations));
 
         reversalAlert.addAll(this.instrumentCheckExtremumController.checkLargestDailySpread(startDate, quotations));
         reversalAlert.addAll(this.instrumentCheckExtremumController.checkLargestDailyVolume(startDate, quotations));

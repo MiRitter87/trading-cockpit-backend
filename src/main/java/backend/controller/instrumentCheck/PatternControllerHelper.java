@@ -1,8 +1,6 @@
 package backend.controller.instrumentCheck;
 
 import java.math.BigDecimal;
-import java.util.Calendar;
-import java.util.List;
 
 import backend.controller.scan.PerformanceCalculator;
 import backend.model.instrument.MovingAverageData;
@@ -43,11 +41,6 @@ public class PatternControllerHelper {
      * The downwards performance threshold of a "Churning"-day.
      */
     private static final float CHURNING_DOWN_THRESHOLD = (float) -1.0;
-
-    /**
-     * The threshold of the daily price range that constitutes a "close near low".
-     */
-    private static final float CLOSE_NEAR_LOW_THRESHOLD = (float) 0.1;
 
     /**
      * Performance calculator.
@@ -215,106 +208,5 @@ public class PatternControllerHelper {
                 previousQuotation.getHigh().floatValue());
 
         return gapSize;
-    }
-
-    /**
-     * Determines the 52-week high on a closing basis.
-     *
-     * @param quotations   A list of quotations sorted by date that build the trading history.
-     * @param endQuotation The latest Quotation for which the check is executed.
-     * @return The 52-week high on a closing basis.
-     */
-    public float get52WeekHigh(final List<Quotation> quotations, final Quotation endQuotation) {
-        Quotation currentQuotation;
-        float maxClosingPrice = 0;
-        Calendar calendar = Calendar.getInstance();
-
-        calendar.setTime(endQuotation.getDate());
-        calendar.add(Calendar.YEAR, -1);
-
-        // Determine the highest closing price of the last 52 weeks.
-        for (int i = 0; i <= quotations.size() - 1; i++) {
-            currentQuotation = quotations.get(i);
-
-            // Ignore quotations newer than the date of the end quotation.
-            if (currentQuotation.getDate().getTime() > endQuotation.getDate().getTime()) {
-                continue;
-            }
-
-            // Ignore quotations more than one year older than the date of the end quotation.
-            if (currentQuotation.getDate().getTime() < calendar.getTimeInMillis()) {
-                continue;
-            }
-
-            if (currentQuotation.getClose().floatValue() > maxClosingPrice) {
-                maxClosingPrice = currentQuotation.getClose().floatValue();
-            }
-        }
-
-        return maxClosingPrice;
-    }
-
-    /**
-     * Determines the 52-week high of the RS-line on a closing basis.
-     *
-     * @param quotations   A list of quotations sorted by date that build the trading history.
-     * @param endQuotation The latest Quotation for which the check is executed.
-     * @return The 52-week high of the RS-Line on a closing basis.
-     */
-    public float getRsLine52WeekHigh(final List<Quotation> quotations, final Quotation endQuotation) {
-        Quotation currentQuotation;
-        float maxRsLinePrice = 0;
-        Calendar calendar = Calendar.getInstance();
-
-        calendar.setTime(endQuotation.getDate());
-        calendar.add(Calendar.YEAR, -1);
-
-        // Determine the highest closing price of the RS-line of the last 52 weeks.
-        for (int i = 0; i <= quotations.size() - 1; i++) {
-            currentQuotation = quotations.get(i);
-
-            if (currentQuotation.getRelativeStrengthData() == null
-                    || currentQuotation.getRelativeStrengthData().getRsLinePrice() == null) {
-                continue;
-            }
-
-            // Ignore quotations newer than the date of the end quotation.
-            if (currentQuotation.getDate().getTime() > endQuotation.getDate().getTime()) {
-                continue;
-            }
-
-            // Ignore quotations more than one year older than the date of the end quotation.
-            if (currentQuotation.getDate().getTime() < calendar.getTimeInMillis()) {
-                continue;
-            }
-
-            if (currentQuotation.getRelativeStrengthData().getRsLinePrice().floatValue() > maxRsLinePrice) {
-                maxRsLinePrice = currentQuotation.getRelativeStrengthData().getRsLinePrice().floatValue();
-            }
-        }
-
-        return maxRsLinePrice;
-    }
-
-    /**
-     * Checks if the current Quotation closes near its low price.
-     *
-     * @param currentQuotation The current Quotation.
-     * @return true, if currentQuotation closes near its low price; false, if not.
-     * @throws Exception Determination failed.
-     */
-    public boolean isCloseNearLow(final Quotation currentQuotation) throws Exception {
-        BigDecimal dailyPriceRange;
-        BigDecimal nearLowThresholdPrice;
-
-        dailyPriceRange = currentQuotation.getHigh().subtract(currentQuotation.getLow());
-        nearLowThresholdPrice = currentQuotation.getLow()
-                .add(dailyPriceRange.multiply(new BigDecimal(CLOSE_NEAR_LOW_THRESHOLD)));
-
-        if (currentQuotation.getClose().compareTo(nearLowThresholdPrice) <= 0) {
-            return true;
-        }
-
-        return false;
     }
 }
