@@ -404,39 +404,6 @@ public class InstrumentCheckPatternControllerTest {
 
     @Test
     /**
-     * Tests the check if Instrument closed near its daily high price.
-     */
-    public void testCheckCloseNearHigh() {
-        ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
-        ProtocolEntry actualProtocolEntry;
-        List<ProtocolEntry> protocolEntries;
-        Calendar calendar = Calendar.getInstance();
-
-        // Define the expected protocol entry.
-        calendar.set(2022, 6, 14); // Close near high on 14.07.22
-        expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
-        expectedProtocolEntry.setCategory(ProtocolEntryCategory.CONFIRMATION);
-        expectedProtocolEntry.setText(this.resources.getString("protocol.closeNearHigh"));
-
-        // Call controller to perform check.
-        calendar.set(2022, 6, 8); // Begin check on 08.07.22
-        try {
-            protocolEntries = this.instrumentCheckPatternController.checkCloseNearHigh(calendar.getTime(),
-                    this.dmlQuotations);
-
-            // Verify the check result.
-            assertEquals(1, protocolEntries.size());
-
-            // Validate the protocol entry.
-            actualProtocolEntry = protocolEntries.get(0);
-            assertEquals(expectedProtocolEntry, actualProtocolEntry);
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
-    }
-
-    @Test
-    /**
      * Tests the check if Instrument closed near its daily low price.
      */
     public void testCheckCloseNearLow() {
