@@ -277,7 +277,7 @@ public class InstrumentCheckPatternControllerTest {
         expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
         expectedProtocolEntry.setCategory(ProtocolEntryCategory.WARNING);
         expectedProtocolEntry
-                .setText(MessageFormat.format(resources.getString("protocol.exhaustionGapUp"), gapSizePercent));
+                .setText(MessageFormat.format(this.resources.getString("protocol.exhaustionGapUp"), gapSizePercent));
 
         // Call controller to perform check.
         calendar.set(2022, 1, 22); // Begin check on 22.02.22
@@ -312,12 +312,45 @@ public class InstrumentCheckPatternControllerTest {
         expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
         expectedProtocolEntry.setCategory(ProtocolEntryCategory.CONFIRMATION);
         expectedProtocolEntry
-                .setText(MessageFormat.format(resources.getString("protocol.bullishGapUp"), gapSizePercent));
+                .setText(MessageFormat.format(this.resources.getString("protocol.bullishGapUp"), gapSizePercent));
 
         // Call controller to perform check.
         calendar.set(2022, 1, 22); // Begin check on 22.02.22
         try {
             protocolEntries = this.instrumentCheckPatternController.checkBullishGapUp(calendar.getTime(),
+                    this.dmlQuotations);
+
+            // Verify the check result.
+            assertEquals(1, protocolEntries.size());
+
+            // Validate the protocol entry.
+            actualProtocolEntry = protocolEntries.get(0);
+            assertEquals(expectedProtocolEntry, actualProtocolEntry);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+//    @Test
+    /**
+     * Tests the check if Instrument made a Distribution Day.
+     */
+    public void testCheckDistributionDay() {
+        ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
+        ProtocolEntry actualProtocolEntry;
+        List<ProtocolEntry> protocolEntries;
+        Calendar calendar = Calendar.getInstance();
+
+        // Define the expected protocol entry.
+        calendar.set(2022, 1, 28); // Distribution Day on 22.07.22
+        expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
+        expectedProtocolEntry.setCategory(ProtocolEntryCategory.VIOLATION);
+        expectedProtocolEntry.setText(this.resources.getString("protocol.distributionDay"));
+
+        // Call controller to perform check.
+        calendar.set(2022, 6, 13); // Begin check on 13.07.22
+        try {
+            protocolEntries = this.instrumentCheckPatternController.checkDistributionDay(calendar.getTime(),
                     this.dmlQuotations);
 
             // Verify the check result.
