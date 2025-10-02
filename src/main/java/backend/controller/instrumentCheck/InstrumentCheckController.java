@@ -250,6 +250,7 @@ public class InstrumentCheckController {
                 .addAll(this.instrumentCheckPatternController.checkHighVolumeReversal(startDate, quotations));
         sellingIntoWeakness.addAll(this.instrumentCheckCountingController.checkThreeLowerCloses(startDate, quotations));
         sellingIntoWeakness.addAll(this.instrumentCheckHighLowController.checkCloseNearLow(startDate, quotations));
+        sellingIntoWeakness.addAll(this.instrumentCheckPatternController.checkDistributionDay(startDate, quotations));
 
         this.setProfile(sellingIntoWeakness, HealthCheckProfile.WEAKNESS_WITHOUT_COUNTING);
         protocol.getProtocolEntries().addAll(sellingIntoWeakness);
@@ -280,6 +281,7 @@ public class InstrumentCheckController {
                 .addAll(this.instrumentCheckPatternController.checkHighVolumeReversal(startDate, quotations));
         sellingIntoWeakness.addAll(this.instrumentCheckCountingController.checkThreeLowerCloses(startDate, quotations));
         sellingIntoWeakness.addAll(this.instrumentCheckHighLowController.checkCloseNearLow(startDate, quotations));
+        sellingIntoWeakness.addAll(this.instrumentCheckPatternController.checkDistributionDay(startDate, quotations));
 
         this.setProfile(sellingIntoWeakness, HealthCheckProfile.SELLING_INTO_WEAKNESS);
         protocol.getProtocolEntries().addAll(sellingIntoWeakness);
@@ -315,6 +317,7 @@ public class InstrumentCheckController {
         afterBreakout.addAll(this.instrumentCheckPatternController.checkHighVolumeReversal(startDate, quotations));
         afterBreakout.addAll(this.instrumentCheckCountingController.checkThreeLowerCloses(startDate, quotations));
         afterBreakout.addAll(this.instrumentCheckHighLowController.checkCloseNearLow(startDate, quotations));
+        afterBreakout.addAll(this.instrumentCheckPatternController.checkDistributionDay(startDate, quotations));
 
         this.setProfile(afterBreakout, HealthCheckProfile.AFTER_BREAKOUT);
         protocol.getProtocolEntries().addAll(afterBreakout);
@@ -337,6 +340,7 @@ public class InstrumentCheckController {
         reversalAlert.addAll(this.instrumentCheckPatternController.checkDownOnVolume(startDate, quotations));
         reversalAlert.addAll(this.instrumentCheckPatternController.checkHighVolumeReversal(startDate, quotations));
         reversalAlert.addAll(this.instrumentCheckHighLowController.checkCloseNearLow(startDate, quotations));
+        reversalAlert.addAll(this.instrumentCheckPatternController.checkDistributionDay(startDate, quotations));
 
         reversalAlert.addAll(this.instrumentCheckExtremumController.checkLargestDailySpread(startDate, quotations));
         reversalAlert.addAll(this.instrumentCheckExtremumController.checkLargestDailyVolume(startDate, quotations));
@@ -368,6 +372,7 @@ public class InstrumentCheckController {
         institutions.addAll(this.instrumentCheckPatternController.checkDownOnVolume(startDate, quotations));
         institutions.addAll(this.instrumentCheckPatternController.checkHighVolumeReversal(startDate, quotations));
         institutions.addAll(this.instrumentCheckCountingController.checkThreeLowerCloses(startDate, quotations));
+        institutions.addAll(this.instrumentCheckPatternController.checkDistributionDay(startDate, quotations));
 
         institutions.addAll(this.instrumentCheckExtremumController.checkLargestUpDay(startDate, quotations));
         institutions.addAll(this.instrumentCheckExtremumController.checkLargestDailySpread(startDate, quotations));
