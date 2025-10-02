@@ -331,7 +331,7 @@ public class InstrumentCheckPatternControllerTest {
         }
     }
 
-//    @Test
+    @Test
     /**
      * Tests the check if Instrument made a Distribution Day.
      */
@@ -342,7 +342,7 @@ public class InstrumentCheckPatternControllerTest {
         Calendar calendar = Calendar.getInstance();
 
         // Define the expected protocol entry.
-        calendar.set(2022, 1, 28); // Distribution Day on 22.07.22
+        calendar.set(2022, 6, 22); // Distribution Day on 22.07.22
         expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
         expectedProtocolEntry.setCategory(ProtocolEntryCategory.VIOLATION);
         expectedProtocolEntry.setText(this.resources.getString("protocol.distributionDay"));

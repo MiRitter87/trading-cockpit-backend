@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import backend.controller.chart.priceVolume.DistributionDaysChartController;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
 import backend.model.protocol.ProtocolEntry;
@@ -329,6 +330,40 @@ public class InstrumentCheckPatternController {
     public List<ProtocolEntry> checkDistributionDay(final Date startDate, final QuotationArray sortedQuotations)
             throws Exception {
 
-        return null;
+        DistributionDaysChartController ddController = new DistributionDaysChartController();
+        int startIndex;
+        Quotation currentQuotation;
+        Quotation previousQuotation;
+        List<ProtocolEntry> protocolEntries = new ArrayList<>();
+        ProtocolEntry protocolEntry;
+        boolean isDistributionDay;
+
+        startIndex = sortedQuotations.getIndexOfQuotationWithDate(startDate);
+
+        if (startIndex == -1) {
+            throw new Exception("Could not find a quotation at or after the given start date.");
+        }
+
+        for (int i = startIndex; i >= 0; i--) {
+            if ((i + 1) < sortedQuotations.getQuotations().size()) {
+                previousQuotation = sortedQuotations.getQuotations().get(i + 1);
+            } else {
+                continue;
+            }
+
+            currentQuotation = sortedQuotations.getQuotations().get(i);
+            isDistributionDay = ddController.isDistributionDay(currentQuotation, previousQuotation,
+                    sortedQuotations.getQuotations());
+
+            if (isDistributionDay) {
+                protocolEntry = new ProtocolEntry();
+                protocolEntry.setCategory(ProtocolEntryCategory.VIOLATION);
+                protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(currentQuotation.getDate()));
+                protocolEntry.setText(this.resources.getString("protocol.distributionDay"));
+                protocolEntries.add(protocolEntry);
+            }
+        }
+
+        return protocolEntries;
     }
 }
