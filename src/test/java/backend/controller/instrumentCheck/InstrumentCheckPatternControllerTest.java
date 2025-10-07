@@ -363,4 +363,37 @@ public class InstrumentCheckPatternControllerTest {
             fail(e.getMessage());
         }
     }
+
+    // @Test
+    /**
+     * Test the check if Instrument made a Pocket Pivot.
+     */
+    public void testCheckPocketPivot() {
+        ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
+        ProtocolEntry actualProtocolEntry;
+        List<ProtocolEntry> protocolEntries;
+        Calendar calendar = Calendar.getInstance();
+
+        // Define the expected protocol entry.
+        calendar.set(2022, 3, 7); // Pocket Pivot on 07.04.22
+        expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
+        expectedProtocolEntry.setCategory(ProtocolEntryCategory.CONFIRMATION);
+        expectedProtocolEntry.setText(this.resources.getString("protocol.pocketPivot"));
+
+        // Call controller to perform check.
+        calendar.set(2022, 2, 15); // Begin check on 15.03.22
+        try {
+            protocolEntries = this.instrumentCheckPatternController.checkPocketPivot(calendar.getTime(),
+                    this.dmlQuotations);
+
+            // Verify the check result.
+            assertEquals(1, protocolEntries.size());
+
+            // Validate the protocol entry.
+            actualProtocolEntry = protocolEntries.get(0);
+            assertEquals(expectedProtocolEntry, actualProtocolEntry);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
 }

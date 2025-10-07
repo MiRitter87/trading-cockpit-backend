@@ -366,4 +366,19 @@ public class InstrumentCheckPatternController {
 
         return protocolEntries;
     }
+
+    /**
+     * Checks for days on which the Instrument builds a Pocket Pivot. The check begins at the start date and goes up
+     * until the most recent Quotation.
+     *
+     * @param startDate        The date at which the check starts.
+     * @param sortedQuotations The quotations sorted by date that build the trading history.
+     * @return List of ProtocolEntry, for each day on which the Instrument builds a Pocket Pivot.
+     * @throws Exception The check failed because data are not fully available or corrupt.
+     */
+    public List<ProtocolEntry> checkPocketPivot(final Date startDate, final QuotationArray sortedQuotations)
+            throws Exception {
+
+        return null;
+    }
 }
