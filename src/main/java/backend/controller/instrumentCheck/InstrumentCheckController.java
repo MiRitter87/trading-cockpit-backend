@@ -168,6 +168,7 @@ public class InstrumentCheckController {
         confirmations.addAll(this.instrumentCheckHighLowController.checkCloseNearHigh(startDate, quotations));
         confirmations.addAll(this.instrumentCheckAverageController.checkCloseAboveSma50(startDate, quotations));
         confirmations.addAll(this.instrumentCheckHighLowController.checkRsLineNew52WeekHigh(startDate, quotations));
+        confirmations.addAll(this.instrumentCheckPatternController.checkPocketPivot(startDate, quotations));
 
         this.setProfile(confirmations, HealthCheckProfile.CONFIRMATIONS);
         protocol.getProtocolEntries().addAll(confirmations);
@@ -192,6 +193,7 @@ public class InstrumentCheckController {
         confirmations.addAll(this.instrumentCheckHighLowController.checkCloseNearHigh(startDate, quotations));
         confirmations.addAll(this.instrumentCheckAverageController.checkCloseAboveSma50(startDate, quotations));
         confirmations.addAll(this.instrumentCheckHighLowController.checkRsLineNew52WeekHigh(startDate, quotations));
+        confirmations.addAll(this.instrumentCheckPatternController.checkPocketPivot(startDate, quotations));
 
         this.setProfile(confirmations, HealthCheckProfile.CONFIRMATIONS_WITHOUT_COUNTING);
         protocol.getProtocolEntries().addAll(confirmations);
@@ -308,6 +310,7 @@ public class InstrumentCheckController {
         afterBreakout.addAll(this.instrumentCheckHighLowController.checkNew52WeekHigh(startDate, quotations));
         afterBreakout.addAll(this.instrumentCheckHighLowController.checkCloseNearHigh(startDate, quotations));
         afterBreakout.addAll(this.instrumentCheckHighLowController.checkRsLineNew52WeekHigh(startDate, quotations));
+        afterBreakout.addAll(this.instrumentCheckPatternController.checkPocketPivot(startDate, quotations));
 
         afterBreakout.addAll(this.instrumentCheckAverageController.checkCloseBelowSma50(startDate, quotations));
         afterBreakout.addAll(this.instrumentCheckAverageController.checkCloseBelowEma21(startDate, quotations));
@@ -366,6 +369,7 @@ public class InstrumentCheckController {
         institutions.addAll(this.instrumentCheckCountingController.checkThreeHigherCloses(startDate, quotations));
         institutions.addAll(this.instrumentCheckPatternController.checkUpOnVolume(startDate, quotations));
         institutions.addAll(this.instrumentCheckAverageController.checkCloseAboveSma50(startDate, quotations));
+        institutions.addAll(this.instrumentCheckPatternController.checkPocketPivot(startDate, quotations));
 
         institutions.addAll(this.instrumentCheckAverageController.checkCloseBelowSma50(startDate, quotations));
         institutions.addAll(this.instrumentCheckExtremumController.checkLargestDownDay(startDate, quotations));
