@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import backend.controller.chart.priceVolume.DistributionDaysChartController;
+import backend.controller.chart.priceVolume.PocketPivotChartController;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
 import backend.model.protocol.ProtocolEntry;
@@ -379,6 +380,36 @@ public class InstrumentCheckPatternController {
     public List<ProtocolEntry> checkPocketPivot(final Date startDate, final QuotationArray sortedQuotations)
             throws Exception {
 
-        return null;
+        PocketPivotChartController ppController = new PocketPivotChartController();
+        int startIndex;
+        Quotation currentQuotation;
+        List<ProtocolEntry> protocolEntries = new ArrayList<>();
+        ProtocolEntry protocolEntry;
+        boolean isPocketPivot;
+
+        startIndex = sortedQuotations.getIndexOfQuotationWithDate(startDate);
+
+        if (startIndex == -1) {
+            throw new Exception("Could not find a quotation at or after the given start date.");
+        }
+
+        for (int i = startIndex; i >= 0; i--) {
+            if ((i + 1) >= sortedQuotations.getQuotations().size()) {
+                continue;
+            }
+
+            currentQuotation = sortedQuotations.getQuotations().get(i);
+            isPocketPivot = ppController.isPocketPivot(sortedQuotations.getQuotations(), i);
+
+            if (isPocketPivot) {
+                protocolEntry = new ProtocolEntry();
+                protocolEntry.setCategory(ProtocolEntryCategory.CONFIRMATION);
+                protocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(currentQuotation.getDate()));
+                protocolEntry.setText(this.resources.getString("protocol.pocketPivot"));
+                protocolEntries.add(protocolEntry);
+            }
+        }
+
+        return protocolEntries;
     }
 }

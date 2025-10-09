@@ -364,7 +364,7 @@ public class InstrumentCheckPatternControllerTest {
         }
     }
 
-    // @Test
+    @Test
     /**
      * Test the check if Instrument made a Pocket Pivot.
      */
