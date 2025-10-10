@@ -166,6 +166,7 @@ public class InstrumentCheckController {
         confirmations.addAll(this.instrumentCheckPatternController.checkUpOnVolume(startDate, quotations));
         confirmations.addAll(this.instrumentCheckHighLowController.checkNew52WeekHigh(startDate, quotations));
         confirmations.addAll(this.instrumentCheckHighLowController.checkCloseNearHigh(startDate, quotations));
+        confirmations.addAll(this.instrumentCheckPatternController.checkBullishGapUp(startDate, quotations));
         confirmations.addAll(this.instrumentCheckAverageController.checkCloseAboveSma50(startDate, quotations));
         confirmations.addAll(this.instrumentCheckHighLowController.checkRsLineNew52WeekHigh(startDate, quotations));
         confirmations.addAll(this.instrumentCheckPatternController.checkPocketPivot(startDate, quotations));
@@ -191,6 +192,7 @@ public class InstrumentCheckController {
         confirmations.addAll(this.instrumentCheckPatternController.checkUpOnVolume(startDate, quotations));
         confirmations.addAll(this.instrumentCheckHighLowController.checkNew52WeekHigh(startDate, quotations));
         confirmations.addAll(this.instrumentCheckHighLowController.checkCloseNearHigh(startDate, quotations));
+        confirmations.addAll(this.instrumentCheckPatternController.checkBullishGapUp(startDate, quotations));
         confirmations.addAll(this.instrumentCheckAverageController.checkCloseAboveSma50(startDate, quotations));
         confirmations.addAll(this.instrumentCheckHighLowController.checkRsLineNew52WeekHigh(startDate, quotations));
         confirmations.addAll(this.instrumentCheckPatternController.checkPocketPivot(startDate, quotations));
@@ -314,6 +316,7 @@ public class InstrumentCheckController {
 
         afterBreakout.addAll(this.instrumentCheckAverageController.checkCloseBelowSma50(startDate, quotations));
         afterBreakout.addAll(this.instrumentCheckAverageController.checkCloseBelowEma21(startDate, quotations));
+        afterBreakout.addAll(this.instrumentCheckExtremumController.checkLargestDownDay(startDate, quotations));
         afterBreakout.addAll(this.instrumentCheckCountingController.checkMoreDownThanUpDays(startDate, quotations));
         afterBreakout.addAll(this.instrumentCheckCountingController.checkMoreBadThanGoodCloses(startDate, quotations));
         afterBreakout.addAll(this.instrumentCheckPatternController.checkDownOnVolume(startDate, quotations));
