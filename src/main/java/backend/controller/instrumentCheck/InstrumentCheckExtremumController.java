@@ -2,6 +2,7 @@ package backend.controller.instrumentCheck;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -216,7 +217,7 @@ public class InstrumentCheckExtremumController {
     }
 
     /**
-     * Determines the largest down-day of the given trading history.
+     * Determines the largest down-day of the last 52 weeks.
      *
      * @param quotations   A list of quotations sorted by date that build the trading history.
      * @param endQuotation The latest Quotation for which the check is executed.
@@ -228,13 +229,23 @@ public class InstrumentCheckExtremumController {
         Quotation largestDownQuotation = null;
         Quotation currentQuotation;
         Quotation previousQuotation;
+        Calendar calendar = Calendar.getInstance();
+
+        calendar.setTime(endQuotation.getDate());
+        calendar.add(Calendar.YEAR, -1);
 
         // Determine the Quotation with the largest negative performance.
         for (int i = 0; i <= quotations.size() - 2; i++) {
             currentQuotation = quotations.get(i);
             previousQuotation = quotations.get(i + 1);
 
+            // Ignore quotations newer than the date of the end quotation.
             if (currentQuotation.getDate().getTime() > endQuotation.getDate().getTime()) {
+                continue;
+            }
+
+            // Ignore quotations more than one year older than the date of the end quotation.
+            if (currentQuotation.getDate().getTime() < calendar.getTimeInMillis()) {
                 continue;
             }
 
@@ -250,8 +261,8 @@ public class InstrumentCheckExtremumController {
     }
 
     /**
-     * Determines the largest up-day of the given trading history. The checks are performed up until the given
-     * endQuotation. Quotations afterwards are not taken into account.
+     * Determines the largest up-day of the last 52 weeks. The checks are performed up until the given endQuotation.
+     * Quotations afterwards are not taken into account.
      *
      * @param quotations   A list of quotations sorted by date that build the trading history.
      * @param endQuotation The latest Quotation for which the check is executed.
@@ -263,13 +274,23 @@ public class InstrumentCheckExtremumController {
         Quotation largestUpQuotation = null;
         Quotation currentQuotation;
         Quotation previousQuotation;
+        Calendar calendar = Calendar.getInstance();
+
+        calendar.setTime(endQuotation.getDate());
+        calendar.add(Calendar.YEAR, -1);
 
         // Determine the Quotation with the largest positive performance.
         for (int i = 0; i <= quotations.size() - 2; i++) {
             currentQuotation = quotations.get(i);
             previousQuotation = quotations.get(i + 1);
 
+            // Ignore quotations newer than the date of the end quotation.
             if (currentQuotation.getDate().getTime() > endQuotation.getDate().getTime()) {
+                continue;
+            }
+
+            // Ignore quotations more than one year older than the date of the end quotation.
+            if (currentQuotation.getDate().getTime() < calendar.getTimeInMillis()) {
                 continue;
             }
 
@@ -285,8 +306,8 @@ public class InstrumentCheckExtremumController {
     }
 
     /**
-     * Determines the largest daily high/low-spread of the given trading history. The checks are performed up until the
-     * given endQuotation. Quotations afterwards are not taken into account.
+     * Determines the largest daily high/low-spread of the last 52 weeks. The checks are performed up until the given
+     * endQuotation. Quotations afterwards are not taken into account.
      *
      * @param quotations   A list of quotations sorted by date that build the trading history.
      * @param endQuotation The latest Quotation for which the check is executed.
@@ -297,10 +318,20 @@ public class InstrumentCheckExtremumController {
         float currentSpread;
         Quotation largestSpreadQuotation = null;
         final int hundredPercent = 100;
+        Calendar calendar = Calendar.getInstance();
+
+        calendar.setTime(endQuotation.getDate());
+        calendar.add(Calendar.YEAR, -1);
 
         // Determine the Quotation with the largest daily high/low-spread.
         for (Quotation currentQuotation : quotations) {
+            // Ignore quotations newer than the date of the end quotation.
             if (currentQuotation.getDate().getTime() > endQuotation.getDate().getTime()) {
+                continue;
+            }
+
+            // Ignore quotations more than one year older than the date of the end quotation.
+            if (currentQuotation.getDate().getTime() < calendar.getTimeInMillis()) {
                 continue;
             }
 
@@ -318,7 +349,7 @@ public class InstrumentCheckExtremumController {
     }
 
     /**
-     * Determines the largest daily volume of the given trading history. The checks are performed up until the given
+     * Determines the largest daily volume of the last 52 weeks. The checks are performed up until the given
      * endQuotation. Quotations afterwards are not taken into account.
      *
      * @param quotations   A list of quotations sorted by date that build the trading history.
@@ -328,10 +359,20 @@ public class InstrumentCheckExtremumController {
     private Quotation getLargestDailyVolume(final List<Quotation> quotations, final Quotation endQuotation) {
         long largestDailyVolume = 0;
         Quotation largestVolumeQuotation = null;
+        Calendar calendar = Calendar.getInstance();
+
+        calendar.setTime(endQuotation.getDate());
+        calendar.add(Calendar.YEAR, -1);
 
         // Determine the Quotation with the largest daily volume.
         for (Quotation currentQuotation : quotations) {
+            // Ignore quotations newer than the date of the end quotation.
             if (currentQuotation.getDate().getTime() > endQuotation.getDate().getTime()) {
+                continue;
+            }
+
+            // Ignore quotations more than one year older than the date of the end quotation.
+            if (currentQuotation.getDate().getTime() < calendar.getTimeInMillis()) {
                 continue;
             }
 
