@@ -35,7 +35,7 @@ public class AggregateIndicatorCalculatorTest {
     /**
      * Tasks to be performed before each test is run.
      */
-    private void setUp() {
+    public void setUp() {
         this.createUraInstrument();
         this.createUraQuotations();
         this.createStatistics();
@@ -45,7 +45,7 @@ public class AggregateIndicatorCalculatorTest {
     /**
      * Tasks to be performed after each test has been run.
      */
-    private void tearDown() {
+    public void tearDown() {
         this.uraIndustryGroup = null;
         this.statistics = null;
     }

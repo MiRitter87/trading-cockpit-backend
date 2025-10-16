@@ -164,7 +164,7 @@ public class QuotationServiceTest {
     /**
      * Tasks to be performed before each test is run.
      */
-    private void setUp() {
+    public void setUp() {
         this.fixtureHelper = new QuotationServiceFixture();
         this.createDummyInstruments();
         this.createDummyQuotations();
@@ -177,7 +177,7 @@ public class QuotationServiceTest {
     /**
      * Tasks to be performed after each test has been run.
      */
-    private void tearDown() {
+    public void tearDown() {
         this.deleteDummyQuotations();
         this.deleteDummyInstruments();
         this.fixtureHelper = null;

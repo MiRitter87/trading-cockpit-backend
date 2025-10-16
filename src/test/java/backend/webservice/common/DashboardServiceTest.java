@@ -93,7 +93,7 @@ public class DashboardServiceTest {
     /**
      * Tasks to be performed before each test is run.
      */
-    private void setUp() {
+    public void setUp() {
         this.createDummyInstruments();
         this.createDummyQuotations();
         this.createMovingAverageData();
@@ -105,7 +105,7 @@ public class DashboardServiceTest {
     /**
      * Tasks to be performed after each test has been run.
      */
-    private void tearDown() {
+    public void tearDown() {
         this.deleteDummyQuotations();
         this.deleteDummyInstruments();
     }

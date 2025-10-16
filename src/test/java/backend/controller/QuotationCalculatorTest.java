@@ -46,7 +46,7 @@ public class QuotationCalculatorTest {
     /**
      * Tasks to be performed before each test is run.
      */
-    private void setUp() {
+    public void setUp() {
         this.quotationCalculator = new QuotationCalculator();
         this.initializeInstruments();
         this.initializeAppleQuotations();
@@ -57,7 +57,7 @@ public class QuotationCalculatorTest {
     /**
      * Tasks to be performed after each test has been run.
      */
-    private void tearDown() {
+    public void tearDown() {
         this.quotationCalculator = null;
     }
 

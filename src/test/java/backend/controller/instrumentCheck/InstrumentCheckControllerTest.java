@@ -65,7 +65,7 @@ public class InstrumentCheckControllerTest {
     /**
      * Tasks to be performed before each test is run.
      */
-    private void setUp() {
+    public void setUp() {
         this.instrumentCheckController = new InstrumentCheckController();
 
         this.initializeDMLQuotations();
@@ -76,7 +76,7 @@ public class InstrumentCheckControllerTest {
     /**
      * Tasks to be performed after each test has been run.
      */
-    private void tearDown() {
+    public void tearDown() {
         this.instrumentCheckController = null;
         this.dmlQuotations = null;
     }

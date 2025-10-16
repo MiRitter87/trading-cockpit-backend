@@ -31,7 +31,7 @@ public class StatisticTest {
     /**
      * Tasks to be performed before each test is run.
      */
-    private void setUp() {
+    public void setUp() {
         this.statistic = new Statistic();
         this.statistic.setNumberAboveSma50(3);
         this.statistic.setNumberAtOrBelowSma50(2);
@@ -43,7 +43,7 @@ public class StatisticTest {
     /**
      * Tasks to be performed after each test has been run.
      */
-    private void tearDown() {
+    public void tearDown() {
         this.statistic = null;
     }
 

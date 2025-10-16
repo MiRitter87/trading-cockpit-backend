@@ -60,7 +60,7 @@ public class RatioCalculatorTest {
     /**
      * Tasks to be performed before each test is run.
      */
-    private void setUp() {
+    public void setUp() {
         this.ratioCalculator = new RatioCalculator();
         this.createTestData();
     }
@@ -69,7 +69,7 @@ public class RatioCalculatorTest {
     /**
      * Tasks to be performed after each test has been run.
      */
-    private void tearDown() {
+    public void tearDown() {
         this.deleteTestData();
         this.ratioCalculator = null;
     }

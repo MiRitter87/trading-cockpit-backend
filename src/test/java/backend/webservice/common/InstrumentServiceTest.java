@@ -146,7 +146,7 @@ public class InstrumentServiceTest {
     /**
      * Tasks to be performed before each test is run.
      */
-    private void setUp() {
+    public void setUp() {
         this.fixtureHelper = new InstrumentServiceFixture();
         this.createDummyInstruments();
         this.createDummyQuotations();
@@ -158,7 +158,7 @@ public class InstrumentServiceTest {
     /**
      * Tasks to be performed after each test has been run.
      */
-    private void tearDown() {
+    public void tearDown() {
         this.deleteDummyPriceAlerts();
         this.deleteDummyLists();
         this.deleteDummyQuotations();

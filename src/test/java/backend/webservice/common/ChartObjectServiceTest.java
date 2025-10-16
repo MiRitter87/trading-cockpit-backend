@@ -109,7 +109,7 @@ public class ChartObjectServiceTest {
     /**
      * Tasks to be performed before each test is run.
      */
-    private void setUp() {
+    public void setUp() {
         this.fixtureHelper = new ChartObjectServiceFixture();
         this.createDummyInstruments();
         this.createDummyHorizontalLines();
@@ -119,7 +119,7 @@ public class ChartObjectServiceTest {
     /**
      * Tasks to be performed after each test has been run.
      */
-    private void tearDown() {
+    public void tearDown() {
         this.deleteDummyHorizontalLines();
         this.deleteDummyInstruments();
         this.fixtureHelper = null;

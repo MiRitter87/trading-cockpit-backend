@@ -43,7 +43,7 @@ public class RelativeStrengthCalculatorTest {
     /**
      * Tasks to be performed before each test is run.
      */
-    private void setUp() {
+    public void setUp() {
         try {
             this.relativeStrengthCalculator = new RelativeStrengthCalculator();
             this.initializeDmlQuotations();
@@ -57,7 +57,7 @@ public class RelativeStrengthCalculatorTest {
     /**
      * Tasks to be performed after each test has been run.
      */
-    private void tearDown() {
+    public void tearDown() {
         this.relativeStrengthCalculator = null;
 
         this.dmlQuotation3 = null;

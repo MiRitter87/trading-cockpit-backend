@@ -63,7 +63,7 @@ public class CountingControllerHelperTest {
     /**
      * Tasks to be performed before each test is run.
      */
-    private void setUp() {
+    public void setUp() {
         this.countingControllerHelper = new CountingControllerHelper();
 
         this.initializeDMLQuotations();
@@ -74,7 +74,7 @@ public class CountingControllerHelperTest {
     /**
      * Tasks to be performed after each test has been run.
      */
-    private void tearDown() {
+    public void tearDown() {
         this.countingControllerHelper = null;
         this.dmlQuotations = null;
     }

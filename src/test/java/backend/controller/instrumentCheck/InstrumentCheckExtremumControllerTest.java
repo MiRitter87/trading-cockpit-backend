@@ -72,7 +72,7 @@ public class InstrumentCheckExtremumControllerTest {
     /**
      * Tasks to be performed before each test is run.
      */
-    private void setUp() {
+    public void setUp() {
         this.instrumentCheckExtremumController = new InstrumentCheckExtremumController();
 
         this.initializeDMLQuotations();
@@ -83,7 +83,7 @@ public class InstrumentCheckExtremumControllerTest {
     /**
      * Tasks to be performed after each test has been run.
      */
-    private void tearDown() {
+    public void tearDown() {
         this.instrumentCheckExtremumController = null;
         this.dmlQuotations = null;
     }

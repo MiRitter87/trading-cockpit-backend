@@ -117,7 +117,7 @@ public class ScanServiceTest {
     /**
      * Tasks to be performed before each test is run.
      */
-    private void setUp() {
+    public void setUp() {
         this.fixtureHelper = new ScanServiceFixture();
         this.createDummyInstruments();
         this.createDummyLists();
@@ -128,7 +128,7 @@ public class ScanServiceTest {
     /**
      * Tasks to be performed after each test has been run.
      */
-    private void tearDown() {
+    public void tearDown() {
         this.deleteDummyScans();
         this.deleteDummyLists();
         this.deleteDummyInstruments();

@@ -70,7 +70,7 @@ public class IndicatorCalculatorTest {
     /**
      * Tasks to be performed before each test is run.
      */
-    private void setUp() {
+    public void setUp() {
         try {
             this.indicatorCalculator = new IndicatorCalculator();
             this.initializeDmlInstrument();
@@ -84,7 +84,7 @@ public class IndicatorCalculatorTest {
     /**
      * Tasks to be performed after each test has been run.
      */
-    private void tearDown() {
+    public void tearDown() {
         this.indicatorCalculator = null;
 
         this.dmlStock = null;

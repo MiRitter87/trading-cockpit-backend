@@ -38,7 +38,7 @@ public class ProtocolConverterTest {
     /**
      * Tasks to be performed before each test is run.
      */
-    private void setUp() {
+    public void setUp() {
         this.protocolConverter = new ProtocolConverter();
     }
 
@@ -46,7 +46,7 @@ public class ProtocolConverterTest {
     /**
      * Tasks to be performed after each test has been run.
      */
-    private void tearDown() {
+    public void tearDown() {
         this.protocolConverter = null;
     }
 

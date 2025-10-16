@@ -27,7 +27,7 @@ public class ScanControllerTest {
     /**
      * Tasks to be performed before each test is run.
      */
-    private void setUp() {
+    public void setUp() {
         try {
             this.scanController = new ScanController();
         } catch (Exception e) {
@@ -39,7 +39,7 @@ public class ScanControllerTest {
     /**
      * Tasks to be performed after each test has been run.
      */
-    private void tearDown() {
+    public void tearDown() {
         this.scanController = null;
     }
 

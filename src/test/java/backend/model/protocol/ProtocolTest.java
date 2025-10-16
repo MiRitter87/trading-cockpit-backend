@@ -27,7 +27,7 @@ public class ProtocolTest {
     /**
      * Tasks to be performed before each test is run.
      */
-    private void setUp() {
+    public void setUp() {
         ProtocolEntry entry;
         Calendar calendar = Calendar.getInstance();
 
@@ -66,7 +66,7 @@ public class ProtocolTest {
     /**
      * Tasks to be performed after each test has been run.
      */
-    private void tearDown() {
+    public void tearDown() {
         this.protocol = null;
     }
 
@@ -88,7 +88,7 @@ public class ProtocolTest {
 
         expectedDate = DateTools.getDateWithoutIntradayAttributes(calendar.getTime());
 
-        for(ProtocolEntry entry: protocolEntries) {
+        for (ProtocolEntry entry : protocolEntries) {
             actualDate = DateTools.getDateWithoutIntradayAttributes(entry.getDate());
             assertEquals(expectedDate, actualDate);
         }

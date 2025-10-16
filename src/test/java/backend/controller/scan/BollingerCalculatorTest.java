@@ -65,7 +65,7 @@ public class BollingerCalculatorTest {
     /**
      * Tasks to be performed before each test is run.
      */
-    private void setUp() {
+    public void setUp() {
         try {
             this.bollingerCalculator = new BollingerCalculator();
             this.initializeDmlInstrument();
@@ -78,7 +78,7 @@ public class BollingerCalculatorTest {
     /**
      * Tasks to be performed after each test has been run.
      */
-    private void tearDown() {
+    public void tearDown() {
         this.bollingerCalculator = null;
 
         this.dmlStock = null;

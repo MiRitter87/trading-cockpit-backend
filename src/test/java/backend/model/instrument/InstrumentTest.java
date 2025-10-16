@@ -83,7 +83,7 @@ public class InstrumentTest {
     /**
      * Tasks to be performed before each test is run.
      */
-    private void setUp() {
+    public void setUp() {
         this.fixtureHelper = new InstrumentFixture();
         this.initializeQuotations();
         this.initializeInstruments();
@@ -93,7 +93,7 @@ public class InstrumentTest {
     /**
      * Tasks to be performed after each test has been run.
      */
-    private void tearDown() {
+    public void tearDown() {
         this.sectorIgRatio = null;
         this.industryGroup = null;
         this.sector = null;

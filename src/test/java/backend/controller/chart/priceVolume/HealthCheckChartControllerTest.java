@@ -35,7 +35,7 @@ public class HealthCheckChartControllerTest {
     /**
      * Tasks to be performed before each test is run.
      */
-    private void setUp() {
+    public void setUp() {
         try {
             this.healthCheckChartController = new HealthCheckChartController();
             this.protocol = new Protocol();
@@ -49,7 +49,7 @@ public class HealthCheckChartControllerTest {
     /**
      * Tasks to be performed after each test has been run.
      */
-    private void tearDown() {
+    public void tearDown() {
         this.healthCheckChartController = null;
         this.protocol = null;
     }

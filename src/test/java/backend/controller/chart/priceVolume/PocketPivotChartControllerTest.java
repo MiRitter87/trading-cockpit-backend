@@ -67,7 +67,7 @@ public class PocketPivotChartControllerTest {
     /**
      * Tasks to be performed before each test is run.
      */
-    private void setUp() {
+    public void setUp() {
         try {
             this.pocketPivotChartController = new PocketPivotChartController();
             this.initializeDmlInstrument();
@@ -81,7 +81,7 @@ public class PocketPivotChartControllerTest {
     /**
      * Tasks to be performed after each test has been run.
      */
-    private void tearDown() {
+    public void tearDown() {
         this.pocketPivotChartController = null;
         this.dmlStock = null;
     }

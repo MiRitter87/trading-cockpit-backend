@@ -115,7 +115,7 @@ public class StatisticCalculationControllerTest {
     /**
      * Tasks to be performed before each test is run.
      */
-    private void setUp() {
+    public void setUp() {
         this.createTestData();
     }
 
@@ -123,7 +123,7 @@ public class StatisticCalculationControllerTest {
     /**
      * Tasks to be performed after each test has been run.
      */
-    private void tearDown() {
+    public void tearDown() {
         this.deleteTestData();
     }
 
