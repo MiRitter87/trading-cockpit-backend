@@ -22,7 +22,7 @@
 		<hsql.version>2.7.4</hsql.version>
 		<hibernate.core.version>7.1.4.Final</hibernate.core.version>
 		<hibernate.validator.version>8.0.3.Final</hibernate.validator.version>
-		<jakarta.el.version>5.0.0</jakarta.el.version>
+		<jakarta.el.version>6.0.0</jakarta.el.version>
 		<junit.jupiter.version>6.0.0</junit.jupiter.version>
 		<log4j2.version>2.23.1</log4j2.version>
 		<jersey.version>3.1.6</jersey.version>
@@ -67,7 +67,7 @@
 		    <version>${hibernate.validator.version}</version>
 		</dependency>
 		
-		<!-- JUnit 5 -->
+		<!-- JUnit -->
   		<dependency>
   			<groupId>org.junit.jupiter</groupId>
  			<artifactId>junit-jupiter-engine</artifactId>
