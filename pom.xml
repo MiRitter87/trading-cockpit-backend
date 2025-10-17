@@ -27,7 +27,7 @@
 		<log4j2.version>2.25.2</log4j2.version>
 		<jersey.version>3.1.11</jersey.version>
 		<jakarta.servlet.version>6.1.0</jakarta.servlet.version>
-		<okhttp.version>4.12.0</okhttp.version>
+		<okhttp.version>5.2.1</okhttp.version>
 		<apache.poi.version>5.2.5</apache.poi.version>
 		<opencsv.version>5.9</opencsv.version>
 		<jfreechart.version>1.5.4</jfreechart.version>
@@ -131,7 +131,8 @@
 		<!-- Used for HTTP queries of third-party WebServices -->
 		<dependency>
     		<groupId>com.squareup.okhttp3</groupId>
-    		<artifactId>okhttp</artifactId>
+    		<!-- Might be changed from okhttp-jvm to okhttp after version 5.2.0 -->
+    		<artifactId>okhttp-jvm</artifactId>
     		<version>${okhttp.version}</version>
 		</dependency>
 		
