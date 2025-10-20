@@ -1,5 +1,7 @@
 package backend.controller.chart.priceVolume;
 
+import java.awt.Color;
+
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.plot.CombinedDomainXYPlot;
@@ -63,6 +65,7 @@ public class MiniPriceVolumeChartController extends PriceVolumeChartController {
 
         // Build chart based on combined Plot.
         chart = new JFreeChart(instrument.getName(), JFreeChart.DEFAULT_TITLE_FONT, combinedPlot, true);
+        chart.setBackgroundPaint(Color.decode("#EEEEEE"));
 
         return chart;
     }

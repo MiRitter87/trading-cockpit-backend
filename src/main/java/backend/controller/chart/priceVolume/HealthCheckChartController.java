@@ -70,6 +70,7 @@ public class HealthCheckChartController extends PriceVolumeChartController {
 
         // Build chart based on combined Plot.
         chart = new JFreeChart(instrument.getName(), JFreeChart.DEFAULT_TITLE_FONT, combinedPlot, true);
+        chart.setBackgroundPaint(Color.decode("#EEEEEE"));
 
         return chart;
     }
