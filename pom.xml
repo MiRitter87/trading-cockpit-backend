@@ -28,7 +28,7 @@
 		<jersey.version>3.1.11</jersey.version>
 		<jakarta.servlet.version>6.1.0</jakarta.servlet.version>
 		<okhttp.version>5.2.1</okhttp.version>
-		<apache.poi.version>5.2.5</apache.poi.version>
+		<apache.poi.version>5.4.1</apache.poi.version>
 		<opencsv.version>5.9</opencsv.version>
 		<jfreechart.version>1.5.4</jfreechart.version>
 		<htmlunit.version>2.70.0</htmlunit.version>
