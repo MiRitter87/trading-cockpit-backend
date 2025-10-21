@@ -32,7 +32,7 @@
 		<opencsv.version>5.12.0</opencsv.version>
 		<jfreechart.version>1.5.6</jfreechart.version>
 		<htmlunit.version>2.70.0</htmlunit.version>
-		<angus.mail.version>2.0.3</angus.mail.version>
+		<angus.mail.version>2.0.5</angus.mail.version>
 				
 		<!-- Define the location of the custom ruleset of Apache Checkstyle plugin. -->
     	<checkstyle.config.location>checkstyle/checkstyle.xml</checkstyle.config.location>
