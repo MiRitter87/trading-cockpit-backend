@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import backend.dao.DAOManager;
 import backend.dao.quotation.provider.QuotationProviderDAO;
 import backend.dao.quotation.provider.QuotationProviderYahooDAOStub;
 import backend.model.StockExchange;
@@ -61,6 +63,12 @@ public class FollowThroughDaysChartControllerTest {
      */
     public static void tearDownClass() {
         quotationProviderYahooDAO = null;
+
+        try {
+            DAOManager.getInstance().close();
+        } catch (IOException e) {
+            fail(e.getMessage());
+        }
     }
 
     @BeforeEach

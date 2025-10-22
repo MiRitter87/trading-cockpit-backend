@@ -3,13 +3,16 @@ package backend.controller.chart.priceVolume;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import backend.dao.DAOManager;
 import backend.model.instrument.Quotation;
 import backend.model.protocol.Protocol;
 import backend.model.protocol.ProtocolEntry;
@@ -30,6 +33,18 @@ public class HealthCheckChartControllerTest {
      * A Protocol used for tests.
      */
     private Protocol protocol;
+
+    @AfterAll
+    /**
+     * Tasks to be performed once at the end of the test class.
+     */
+    public static void tearDownClass() {
+        try {
+            DAOManager.getInstance().close();
+        } catch (IOException e) {
+            fail(e.getMessage());
+        }
+    }
 
     @BeforeEach
     /**
