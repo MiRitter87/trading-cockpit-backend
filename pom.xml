@@ -49,7 +49,7 @@
 		
 		<!-- Object-relational mapping using Hibernate -->
 		<dependency>
-	    	<groupId>org.hibernate</groupId>
+	    	<groupId>org.hibernate.orm</groupId>
 	    	<artifactId>hibernate-core</artifactId>
 	    	<version>${hibernate.core.version}</version>
 		</dependency>
