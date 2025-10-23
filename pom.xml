@@ -36,6 +36,10 @@
 				
 		<!-- Define the location of the custom ruleset of Apache Checkstyle plugin. -->
     	<checkstyle.config.location>checkstyle/checkstyle.xml</checkstyle.config.location>
+    	
+    	<!-- Use UTF-8 encoding-->
+    	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    	<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
 	
 	<dependencies>
