@@ -72,7 +72,7 @@ public class AggregateIndicatorChartController extends StatisticChartController 
         chart = ChartFactory.createTimeSeriesChart(this.instrument.getName(), null, null, dataset, true, true, false);
 
         this.addTriggerLines(chart.getXYPlot());
-        this.applyBackgroundTheme(chart);
+        this.applyStatisticalTheme(chart);
         chart.getXYPlot().setRangeAxisLocation(AxisLocation.TOP_OR_RIGHT);
 
         return chart;

@@ -89,7 +89,7 @@ public class RitterPatternIndicatorChartController extends ChartController {
                 true, false);
 
         this.addHorizontalLine(chart.getXYPlot(), 0, Color.BLACK);
-        this.applyBackgroundTheme(chart);
+        this.applyStatisticalTheme(chart);
         chart.getXYPlot().setRangeAxisLocation(AxisLocation.TOP_OR_RIGHT);
 
         return chart;

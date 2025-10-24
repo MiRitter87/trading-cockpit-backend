@@ -94,16 +94,27 @@ public abstract class ChartController {
     }
 
     /**
-     * Applies a custom theme to the given chart.
+     * Applies a custom theme to the given chart used by statistical charts.
      *
      * @param chart The chart.
      */
-    protected void applyBackgroundTheme(final JFreeChart chart) {
+    protected void applyStatisticalTheme(final JFreeChart chart) {
         XYPlot chartPlot;
+
+        chart.setBackgroundPaint(Color.decode("#EEEEEE"));
 
         chartPlot = chart.getXYPlot();
         chartPlot.setBackgroundPaint(Color.WHITE);
         chartPlot.setDomainGridlinePaint(Color.BLACK);
         chartPlot.setRangeGridlinePaint(Color.BLACK);
+    }
+
+    /**
+     * Applies a custom theme to the given chart used by Price Volume charts.
+     *
+     * @param chart The chart.
+     */
+    protected void applyPriceVolumeTheme(final JFreeChart chart) {
+        chart.setBackgroundPaint(Color.decode("#EEEEEE"));
     }
 }

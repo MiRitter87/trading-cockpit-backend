@@ -52,7 +52,7 @@ public class AdvanceDeclineNumberChartController extends StatisticChartControlle
                 null, null, dataset, true, true, false);
 
         this.addSma50(chart);
-        this.applyBackgroundTheme(chart);
+        this.applyStatisticalTheme(chart);
         chart.getXYPlot().setRangeAxisLocation(AxisLocation.TOP_OR_RIGHT);
 
         return chart;

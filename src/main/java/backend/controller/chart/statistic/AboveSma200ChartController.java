@@ -42,7 +42,7 @@ public class AboveSma200ChartController extends StatisticChartController {
         JFreeChart chart = ChartFactory.createTimeSeriesChart(
                 this.getResources().getString("chart.aboveSma200.titleName"), null, null, dataset, true, true, false);
 
-        this.applyBackgroundTheme(chart);
+        this.applyStatisticalTheme(chart);
         chart.getXYPlot().setRangeAxisLocation(AxisLocation.TOP_OR_RIGHT);
 
         return chart;

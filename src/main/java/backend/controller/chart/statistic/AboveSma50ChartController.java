@@ -52,7 +52,7 @@ public class AboveSma50ChartController extends StatisticChartController {
                 this.getResources().getString("chart.aboveSma50.titleName"), null, null, dataset, true, true, false);
 
         this.addSma10(chart);
-        this.applyBackgroundTheme(chart);
+        this.applyStatisticalTheme(chart);
         chart.getXYPlot().setRangeAxisLocation(AxisLocation.TOP_OR_RIGHT);
 
         return chart;
