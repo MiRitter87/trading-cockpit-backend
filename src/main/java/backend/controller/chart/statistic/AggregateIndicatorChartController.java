@@ -14,7 +14,7 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 
-import backend.controller.AggregateIndicatorCalculator;
+import backend.calculator.AggregateIndicatorCalculator;
 import backend.controller.NoQuotationsExistException;
 import backend.controller.scan.StatisticCalculationController;
 import backend.model.instrument.Instrument;

@@ -15,9 +15,9 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import backend.calculator.RatioCalculator;
 import backend.controller.DataProvider;
 import backend.controller.DataRetrievalThread;
-import backend.controller.RatioCalculator;
 import backend.dao.DAOManager;
 import backend.dao.ObjectUnchangedException;
 import backend.dao.quotation.persistence.QuotationDAO;

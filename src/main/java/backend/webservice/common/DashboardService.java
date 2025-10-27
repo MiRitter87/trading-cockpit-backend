@@ -6,7 +6,7 @@ import java.util.ResourceBundle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import backend.controller.AggregateIndicatorCalculator;
+import backend.calculator.AggregateIndicatorCalculator;
 import backend.controller.chart.priceVolume.DistributionDaysChartController;
 import backend.controller.scan.StatisticCalculationController;
 import backend.dao.DAOManager;

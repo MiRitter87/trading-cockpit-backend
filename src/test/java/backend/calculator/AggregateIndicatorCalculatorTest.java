@@ -1,4 +1,4 @@
-package backend.controller;
+package backend.calculator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

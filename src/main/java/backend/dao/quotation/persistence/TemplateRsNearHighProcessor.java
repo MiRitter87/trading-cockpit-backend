@@ -3,7 +3,7 @@ package backend.dao.quotation.persistence;
 import java.util.Iterator;
 import java.util.List;
 
-import backend.controller.RatioCalculator;
+import backend.calculator.RatioCalculator;
 import backend.controller.scan.IndicatorCalculator;
 import backend.model.LocalizedException;
 import backend.model.instrument.Instrument;
