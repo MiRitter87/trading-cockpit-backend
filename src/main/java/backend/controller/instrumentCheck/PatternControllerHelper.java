@@ -2,7 +2,7 @@ package backend.controller.instrumentCheck;
 
 import java.math.BigDecimal;
 
-import backend.controller.scan.PerformanceCalculator;
+import backend.calculator.PerformanceCalculator;
 import backend.model.instrument.MovingAverageData;
 import backend.model.instrument.Quotation;
 

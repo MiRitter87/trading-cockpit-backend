@@ -2,6 +2,12 @@ package backend.controller.scan;
 
 import java.util.List;
 
+import backend.calculator.AverageTrueRangeCalculator;
+import backend.calculator.BollingerCalculator;
+import backend.calculator.IndicatorCalculator;
+import backend.calculator.MovingAverageCalculator;
+import backend.calculator.PerformanceCalculator;
+import backend.calculator.RelativeStrengthCalculator;
 import backend.model.instrument.Indicator;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.MovingAverageData;

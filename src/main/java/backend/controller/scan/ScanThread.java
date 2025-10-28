@@ -15,6 +15,7 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import backend.calculator.QuotationCalculator;
 import backend.calculator.RatioCalculator;
 import backend.controller.DataProvider;
 import backend.controller.DataRetrievalThread;

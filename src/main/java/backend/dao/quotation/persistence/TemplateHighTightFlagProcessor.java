@@ -3,7 +3,7 @@ package backend.dao.quotation.persistence;
 import java.util.Iterator;
 import java.util.List;
 
-import backend.controller.scan.PerformanceCalculator;
+import backend.calculator.PerformanceCalculator;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
 

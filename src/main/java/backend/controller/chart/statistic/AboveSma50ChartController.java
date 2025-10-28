@@ -18,7 +18,7 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 
-import backend.controller.scan.MovingAverageCalculator;
+import backend.calculator.MovingAverageCalculator;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
 import backend.model.statistic.Statistic;

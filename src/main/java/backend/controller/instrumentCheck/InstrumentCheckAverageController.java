@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import backend.controller.scan.PerformanceCalculator;
+import backend.calculator.PerformanceCalculator;
 import backend.model.instrument.MovingAverageData;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;

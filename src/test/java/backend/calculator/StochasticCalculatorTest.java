@@ -1,4 +1,4 @@
-package backend.controller.scan;
+package backend.calculator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -21,15 +21,15 @@ import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
 
 /**
- * Tests the BollingerCalculator.
+ * Tests the StochasticCalculator.
  *
  * @author Michael
  */
-public class BollingerCalculatorTest {
+public class StochasticCalculatorTest {
     /**
-     * The BollingerCalculator under test.
+     * The StochasticCalculator under test.
      */
-    private BollingerCalculator bollingerCalculator;
+    private StochasticCalculator stochasticCalculator;
 
     /**
      * A trading instrument whose indicators are calculated.
@@ -67,7 +67,7 @@ public class BollingerCalculatorTest {
      */
     public void setUp() {
         try {
-            this.bollingerCalculator = new BollingerCalculator();
+            this.stochasticCalculator = new StochasticCalculator();
             this.initializeDmlInstrument();
         } catch (Exception e) {
             fail(e.getMessage());
@@ -79,7 +79,7 @@ public class BollingerCalculatorTest {
      * Tasks to be performed after each test has been run.
      */
     public void tearDown() {
-        this.bollingerCalculator = null;
+        this.stochasticCalculator = null;
 
         this.dmlStock = null;
     }
@@ -106,62 +106,31 @@ public class BollingerCalculatorTest {
 
     @Test
     /**
-     * Tests the calculation of the standard deviation.
+     * Tests the calculation of the Stochastic.
      */
-    public void testGetStandardDeviation() {
-        float[] inputValues = { 46, 69, 32, 60, 52, 41 };
-        float expectedStandardDeviation = (float) 12.1518;
-        float actualStandardDeviation;
-
-        actualStandardDeviation = this.bollingerCalculator.getStandardDeviation(inputValues);
-
-        assertEquals(expectedStandardDeviation, actualStandardDeviation);
-    }
-
-    @Test
-    /**
-     * Tests the calculation of the Bollinger BandWidth.
-     */
-    public void testGetBollingerBandWidth() {
+    public void testGetStochastic() {
         QuotationArray sortedQuotations = new QuotationArray(this.dmlStock.getQuotationsSortedByDate());
-        float actualBollingerBandWidth, expectedBollingerBandWidth = (float) 24.75;
+        float expectedStochastic = 48.57f, actualStochastic;
 
-        actualBollingerBandWidth = this.bollingerCalculator.getBollingerBandWidth(10, 2,
-                sortedQuotations.getQuotations().get(0), sortedQuotations);
+        actualStochastic = this.stochasticCalculator.getStochastic(14, sortedQuotations.getQuotations().get(0),
+                sortedQuotations);
 
-        assertEquals(expectedBollingerBandWidth, actualBollingerBandWidth);
+        assertEquals(expectedStochastic, actualStochastic);
     }
 
     @Test
     /**
-     * Tests the calculation of the Bollinger BandWidth threshold.
+     * Tests the calculation of the Slow Stochastic.
      */
-    public void testGetBollingerBandWidthThreshold() {
+    public void testGetSlowStochastic() {
         QuotationArray sortedQuotations = new QuotationArray(this.dmlStock.getQuotationsSortedByDate());
-        float expectedThreshold = (float) 13.86;
-        float actualThreshold;
+        float expectedSlowStochastic = 74.28f, actualSlowStochastic;
+        final int periodDays = 14;
+        final int smoothingPeriod = 3;
 
-        actualThreshold = this.bollingerCalculator.getBollingerBandWidthThreshold(10, 2, 20,
+        actualSlowStochastic = this.stochasticCalculator.getSlowStochastic(periodDays, smoothingPeriod,
                 sortedQuotations.getQuotations().get(0), sortedQuotations);
 
-        assertEquals(expectedThreshold, actualThreshold);
-    }
-
-    @Test
-    /**
-     * Tests the calculation of the Bollinger BandWidth threshold of an instrument that only has a short trading
-     * history.
-     */
-    public void testBBWThresholdShortHistory() {
-        // Reduce trading history to ten days.
-        QuotationArray sortedQuotations = new QuotationArray(this.dmlStock.getQuotationsSortedByDate().subList(0, 10));
-
-        float expectedThreshold = 24.75f;
-        float actualThreshold;
-
-        actualThreshold = this.bollingerCalculator.getBollingerBandWidthThreshold(10, 2, 20,
-                sortedQuotations.getQuotations().get(0), sortedQuotations);
-
-        assertEquals(expectedThreshold, actualThreshold);
+        assertEquals(expectedSlowStochastic, actualSlowStochastic);
     }
 }

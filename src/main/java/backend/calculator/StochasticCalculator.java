@@ -1,4 +1,4 @@
-package backend.controller.scan;
+package backend.calculator;
 
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;

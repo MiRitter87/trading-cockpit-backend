@@ -3,6 +3,7 @@ package backend.controller.scan;
 import java.util.ArrayList;
 import java.util.List;
 
+import backend.calculator.StatisticCalculator;
 import backend.dao.DAOManager;
 import backend.dao.ObjectUnchangedException;
 import backend.dao.instrument.InstrumentDAO;

@@ -2,9 +2,9 @@ package backend.controller.chart.data;
 
 import java.util.List;
 
+import backend.calculator.BollingerCalculator;
 import backend.calculator.RatioCalculator;
-import backend.controller.scan.BollingerCalculator;
-import backend.controller.scan.StochasticCalculator;
+import backend.calculator.StochasticCalculator;
 import backend.dao.DAOManager;
 import backend.dao.quotation.persistence.QuotationDAO;
 import backend.model.instrument.Indicator;

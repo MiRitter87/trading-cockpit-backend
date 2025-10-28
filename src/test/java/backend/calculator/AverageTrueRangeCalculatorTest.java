@@ -1,4 +1,4 @@
-package backend.controller.scan;
+package backend.calculator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;

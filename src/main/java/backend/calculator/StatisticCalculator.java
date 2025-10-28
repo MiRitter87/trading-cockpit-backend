@@ -1,4 +1,4 @@
-package backend.controller.scan;
+package backend.calculator;
 
 import java.math.BigDecimal;
 

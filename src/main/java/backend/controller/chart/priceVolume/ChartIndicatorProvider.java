@@ -16,9 +16,9 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 
+import backend.calculator.BollingerCalculator;
 import backend.calculator.RatioCalculator;
-import backend.controller.scan.BollingerCalculator;
-import backend.controller.scan.StochasticCalculator;
+import backend.calculator.StochasticCalculator;
 import backend.dao.quotation.persistence.QuotationDAO;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;

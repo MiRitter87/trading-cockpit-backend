@@ -2,7 +2,6 @@ package backend.calculator;
 
 import java.util.List;
 
-import backend.controller.scan.StochasticCalculator;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;

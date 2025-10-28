@@ -26,9 +26,9 @@ import org.jfree.data.xy.DefaultHighLowDataset;
 import org.jfree.data.xy.IntervalXYDataset;
 import org.jfree.data.xy.OHLCDataset;
 
+import backend.calculator.PerformanceCalculator;
 import backend.controller.NoQuotationsExistException;
 import backend.controller.chart.ChartController;
-import backend.controller.scan.PerformanceCalculator;
 import backend.dao.DAOManager;
 import backend.dao.chart.ChartObjectDAO;
 import backend.model.chart.HorizontalLine;
