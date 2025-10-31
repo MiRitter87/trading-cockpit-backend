@@ -215,4 +215,58 @@ public class MovingAverageCalculatorTest {
 
         assertEquals(expectedVolume, actualVolume);
     }
+
+    @Test
+    /**
+     * Tests the calculation of the Simple Moving Average if not enough quotations exist.
+     */
+    public void testGetSimpleMovingAverageTooFewQuotations() {
+        QuotationArray sortedQuotations;
+        float expectedSma50 = 0;
+        float actualSma50;
+
+        // Remove all quotations except of 49.
+        sortedQuotations = new QuotationArray(this.dmlStock.getQuotationsSortedByDate().subList(0, 49));
+
+        actualSma50 = this.movingAverageCalculator.getSimpleMovingAverage(50, sortedQuotations.getQuotations().get(0),
+                sortedQuotations);
+
+        assertEquals(expectedSma50, actualSma50);
+    }
+
+    @Test
+    /**
+     * Tests the calculation of the Exponential Moving Average if not enough quotations exist.
+     */
+    public void testGetExponentialMovingAverageTooFewQuotations() {
+        QuotationArray sortedQuotations;
+        float expectedEma10 = 0;
+        float actualEma10;
+
+        // Remove all quotations except of 19.
+        sortedQuotations = new QuotationArray(this.dmlStock.getQuotationsSortedByDate().subList(0, 19));
+
+        actualEma10 = this.movingAverageCalculator.getExponentialMovingAverage(10,
+                sortedQuotations.getQuotations().get(0), sortedQuotations);
+
+        assertEquals(expectedEma10, actualEma10);
+    }
+
+    @Test
+    /**
+     * Tests the calculation of the Simple Moving Average Volume if not enough quotations exist.
+     */
+    public void testGetSMAVolumeTooFewQuotations() {
+        QuotationArray sortedQuotations;
+        long expectedVolume = 0;
+        long actualVolume;
+
+        // Remove all quotations except of 9.
+        sortedQuotations = new QuotationArray(this.dmlStock.getQuotationsSortedByDate().subList(0, 9));
+
+        actualVolume = this.movingAverageCalculator.getSimpleMovingAverageVolume(10,
+                sortedQuotations.getQuotations().get(0), sortedQuotations);
+
+        assertEquals(expectedVolume, actualVolume);
+    }
 }
