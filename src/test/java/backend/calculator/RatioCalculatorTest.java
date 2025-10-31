@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -213,6 +214,36 @@ public class RatioCalculatorTest {
             assertEquals(expectedQuotation2, ratioQuotation);
         } catch (Exception e) {
             fail(e.getMessage());
+        }
+    }
+
+    @Test
+    /**
+     * Tests the calculation of ratio quotations if dividend quotations are missing.
+     */
+    public void testGetRatiosWithoutQuotationsDividend() {
+        this.dividendInstrument.setQuotations(new ArrayList<>());
+
+        try {
+            this.ratioCalculator.getRatios(this.dividendInstrument, this.divisorInstrument);
+            fail("Test should have failed, because dividend quotations are missing.");
+        } catch (Exception expected) {
+
+        }
+    }
+
+    @Test
+    /**
+     * Tests the calculation of ratio quotations if dividend quotations are missing.
+     */
+    public void testGetRatiosWithoutQuotationsDivisor() {
+        this.divisorInstrument.setQuotations(new ArrayList<>());
+
+        try {
+            this.ratioCalculator.getRatios(this.dividendInstrument, this.divisorInstrument);
+            fail("Test should have failed, because divisor quotations are missing.");
+        } catch (Exception expected) {
+
         }
     }
 }
