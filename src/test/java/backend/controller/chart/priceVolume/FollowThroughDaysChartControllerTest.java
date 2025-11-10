@@ -196,4 +196,70 @@ public class FollowThroughDaysChartControllerTest {
                 daysAfter);
         assertEquals(expectedLowPrice, actualLowPrice);
     }
+
+    @Test
+    /**
+     * Tests the check if the low before the FTD has been undercut after the FTD occurred.
+     */
+    public void testIsLowBeforeFTDUndercutYes() {
+        List<Quotation> quotationsSortedByDate = this.dmlStock.getQuotationsSortedByDate();
+        Quotation ftdQuotation = quotationsSortedByDate.get(6);
+        Quotation undercutQuotation;
+        boolean isLowUndercut;
+
+        // Modify price of following Quotation to assure price of FTD is undercut.
+        undercutQuotation = quotationsSortedByDate.get(0);
+        undercutQuotation.setLow(new BigDecimal("1.18"));
+
+        isLowUndercut = this.followThroughDaysChartController.isLowBeforeFTDUndercut(ftdQuotation,
+                quotationsSortedByDate, 10, 10);
+        assertTrue(isLowUndercut);
+    }
+
+    @Test
+    /**
+     * Tests the check if the low before the FTD has been undercut after the FTD occurred.
+     */
+    public void testIsLowBeforeFTDUndercutNo() {
+        List<Quotation> quotationsSortedByDate = this.dmlStock.getQuotationsSortedByDate();
+        Quotation ftdQuotation = quotationsSortedByDate.get(6);
+        boolean isLowUndercut;
+
+        isLowUndercut = this.followThroughDaysChartController.isLowBeforeFTDUndercut(ftdQuotation,
+                quotationsSortedByDate, 10, 10);
+        assertFalse(isLowUndercut);
+    }
+
+    @Test
+    /**
+     * Tests the check if a Distribution Day is following after the FTD.
+     */
+    public void testIsDistributionDayFollowingYes() {
+        List<Quotation> quotationsSortedByDate = this.dmlStock.getQuotationsSortedByDate();
+        Quotation ftdQuotation = quotationsSortedByDate.get(6);
+        boolean isDistributionDayFollowing;
+
+        isDistributionDayFollowing = this.followThroughDaysChartController.isDistributionDayFollowing(ftdQuotation,
+                quotationsSortedByDate, 10);
+        assertTrue(isDistributionDayFollowing);
+    }
+
+    @Test
+    /**
+     * Tests the check if a Distribution Day is following after the FTD.
+     */
+    public void testIsDistributionDayFollowingNo() {
+        List<Quotation> quotationsSortedByDate = this.dmlStock.getQuotationsSortedByDate();
+        Quotation ftdQuotation = quotationsSortedByDate.get(6);
+        Quotation distributionQuotation;
+        boolean isDistributionDayFollowing;
+
+        // Negate the Distribution Day to assure no Distribution Day is following.
+        distributionQuotation = quotationsSortedByDate.get(0);
+        distributionQuotation.setClose(distributionQuotation.getOpen());
+
+        isDistributionDayFollowing = this.followThroughDaysChartController.isDistributionDayFollowing(ftdQuotation,
+                quotationsSortedByDate, 10);
+        assertFalse(isDistributionDayFollowing);
+    }
 }

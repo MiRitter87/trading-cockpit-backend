@@ -234,7 +234,7 @@ public class FollowThroughDaysChartController extends PriceVolumeChartController
      * @param numberDays             The number of days checked after the given Quotation.
      * @return true, if Distribution Day follows in the given number of days after the given Quotation. False, if not.
      */
-    private boolean isDistributionDayFollowing(final Quotation quotation, final List<Quotation> quotationsSortedByDate,
+    public boolean isDistributionDayFollowing(final Quotation quotation, final List<Quotation> quotationsSortedByDate,
             final int numberDays) {
 
         DistributionDaysChartController ddChartController = new DistributionDaysChartController();
@@ -312,7 +312,7 @@ public class FollowThroughDaysChartController extends PriceVolumeChartController
      * @param daysAfterFTD           The number of days after the FTD to check if the low price has been undercut.
      * @return true, if low price before FTD has been undercut; false, if not.
      */
-    private boolean isLowBeforeFTDUndercut(final Quotation quotation, final List<Quotation> quotationsSortedByDate,
+    public boolean isLowBeforeFTDUndercut(final Quotation quotation, final List<Quotation> quotationsSortedByDate,
             final int daysBeforeFTD, final int daysAfterFTD) {
 
         BigDecimal lowBeforeFTD = this.getLowPrice(quotation, quotationsSortedByDate, -daysBeforeFTD);
