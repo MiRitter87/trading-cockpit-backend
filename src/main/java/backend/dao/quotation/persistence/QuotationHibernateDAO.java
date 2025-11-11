@@ -358,6 +358,13 @@ public class QuotationHibernateDAO implements QuotationDAO {
         graph.addAttributeNodes("instrument");
         graph.addAttributeNodes("indicator");
         graph.addSubgraph("instrument").addAttributeNodes("sector", "industryGroup", "dividend", "divisor");
+
+        // Prevent serialization errors when querying quotations by WebService.
+        graph.addSubgraph("instrument").addSubgraph("sector").addSubgraph("dataSourceList")
+                .addAttributeNodes("instruments");
+        graph.addSubgraph("instrument").addSubgraph("industryGroup").addSubgraph("dataSourceList")
+                .addAttributeNodes("instruments");
+        graph.addSubgraph("instrument").addSubgraph("dataSourceList").addAttributeNodes("instruments");
     }
 
     /**
