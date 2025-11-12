@@ -250,37 +250,61 @@ public class HealthCheckChartController extends PriceVolumeChartController {
 
         switch (profile) {
         case ALL:
+            timeSeriesName = this.getTimeSeriesName("chart.healthCheck.timeSeriesEventName.all", lookbackPeriod);
+            break;
         case ALL_WITHOUT_COUNTING:
-            timeSeriesName = MessageFormat
-                    .format(this.getResources().getString("chart.healthCheck.timeSeriesEventName.all"), lookbackPeriod);
+            timeSeriesName = this.getTimeSeriesName("chart.healthCheck.timeSeriesEventName.allWithoutCounting",
+                    lookbackPeriod);
             break;
         case CONFIRMATIONS:
-            timeSeriesName = MessageFormat.format(
-                    this.getResources().getString("chart.healthCheck.timeSeriesEventName.confirmations"),
+            timeSeriesName = this.getTimeSeriesName("chart.healthCheck.timeSeriesEventName.confirmations",
                     lookbackPeriod);
             break;
         case CONFIRMATIONS_WITHOUT_COUNTING:
-            timeSeriesName = MessageFormat.format(
-                    this.getResources().getString("chart.healthCheck.timeSeriesEventName.confirmationsWithoutCounting"),
-                    lookbackPeriod);
+            timeSeriesName = this.getTimeSeriesName(
+                    "chart.healthCheck.timeSeriesEventName.confirmationsWithoutCounting", lookbackPeriod);
             break;
         case SELLING_INTO_STRENGTH:
-            timeSeriesName = MessageFormat.format(
-                    this.getResources().getString("chart.healthCheck.timeSeriesEventName.strength"), lookbackPeriod);
+            timeSeriesName = this.getTimeSeriesName("chart.healthCheck.timeSeriesEventName.strength", lookbackPeriod);
             break;
         case SELLING_INTO_WEAKNESS:
-            timeSeriesName = MessageFormat.format(
-                    this.getResources().getString("chart.healthCheck.timeSeriesEventName.weakness"), lookbackPeriod);
+            timeSeriesName = this.getTimeSeriesName("chart.healthCheck.timeSeriesEventName.weakness", lookbackPeriod);
             break;
         case WEAKNESS_WITHOUT_COUNTING:
-            timeSeriesName = MessageFormat.format(
-                    this.getResources().getString("chart.healthCheck.timeSeriesEventName.weaknessWithoutCounting"),
+            timeSeriesName = this.getTimeSeriesName("chart.healthCheck.timeSeriesEventName.weaknessWithoutCounting",
+                    lookbackPeriod);
+            break;
+        case AFTER_BREAKOUT:
+            timeSeriesName = this.getTimeSeriesName("chart.healthCheck.timeSeriesEventName.afterBreakout",
+                    lookbackPeriod);
+            break;
+        case REVERSAL_ALERT:
+            timeSeriesName = this.getTimeSeriesName("chart.healthCheck.timeSeriesEventName.reversalAlert",
+                    lookbackPeriod);
+            break;
+        case INSTITUTIONS:
+            timeSeriesName = this.getTimeSeriesName("chart.healthCheck.timeSeriesEventName.institutions",
                     lookbackPeriod);
             break;
         default:
             timeSeriesName = this.getResources().getString("chart.healthCheck.timeSeriesEventName");
             break;
         }
+
+        return timeSeriesName;
+    }
+
+    /**
+     * Gets the name of the time series based on a localization property key and the lookback period.
+     *
+     * @param propertyKey    Localization key of specific time series name.
+     * @param lookbackPeriod The number of days taken into account for health check routines.
+     * @return The name of the time series.
+     */
+    private String getTimeSeriesName(final String propertyKey, final Integer lookbackPeriod) {
+        String timeSeriesName;
+
+        timeSeriesName = MessageFormat.format(this.getResources().getString(propertyKey), lookbackPeriod);
 
         return timeSeriesName;
     }
