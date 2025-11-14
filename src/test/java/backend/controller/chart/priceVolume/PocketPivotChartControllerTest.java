@@ -243,4 +243,20 @@ public class PocketPivotChartControllerTest {
 
         assertFalse(isPocketPivot);
     }
+
+    @Test
+    /**
+     * Tests the check if the current Quotation constitutes a Pocket Pivot. In this test the history contains not enough
+     * quotations to check if a Pocket Pivot is given. Therefore no Pocket Pivot is given.
+     */
+    public void testIsPocketPivotHistoryTooSmall() {
+        List<Quotation> quotationsSortedByDate = this.dmlStock.getQuotationsSortedByDate();
+
+        // Shrink history size, preventing pocket pivot determination.
+        quotationsSortedByDate = quotationsSortedByDate.subList(0, 11);
+
+        boolean isPocketPivot = this.pocketPivotChartController.isPocketPivot(quotationsSortedByDate, 0);
+
+        assertFalse(isPocketPivot);
+    }
 }
