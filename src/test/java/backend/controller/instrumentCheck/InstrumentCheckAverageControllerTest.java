@@ -132,9 +132,9 @@ public class InstrumentCheckAverageControllerTest {
 
     @Test
     /**
-     * Tests the check if the price of an Instrument closed below SMA(50).
+     * Tests the check if the price of an Instrument closed below SMA(50) on above-average volume.
      */
-    public void testCheckCloseBelowSma50() {
+    public void testCheckCloseBelowSma50HighVolume() {
         ProtocolEntry expectedProtocolEntry1 = new ProtocolEntry();
         ProtocolEntry expectedProtocolEntry2 = new ProtocolEntry();
         ProtocolEntry actualProtocolEntry;
@@ -167,6 +167,43 @@ public class InstrumentCheckAverageControllerTest {
 
             actualProtocolEntry = protocolEntries.get(1);
             assertEquals(expectedProtocolEntry2, actualProtocolEntry);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    /**
+     * Tests the check if the price of an Instrument closed below SMA(50) on below-average volume.
+     */
+    public void testCheckCloseBelowSma50LowVolume() {
+        ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
+        ProtocolEntry actualProtocolEntry;
+        List<ProtocolEntry> protocolEntries;
+        Calendar calendar = Calendar.getInstance();
+
+        // Manually set volume to below-average on day of close below SMA(50).
+        this.dmlQuotations.sortQuotationsByDate();
+        this.dmlQuotations.getQuotations().get(0).setVolume(1000000);
+
+        // Define the expected protocol entry.
+        calendar.set(2022, 6, 22); // The day on which the price closed below the SMA(50).
+        expectedProtocolEntry.setDate(DateTools.getDateWithoutIntradayAttributes(calendar.getTime()));
+        expectedProtocolEntry.setCategory(ProtocolEntryCategory.VIOLATION);
+        expectedProtocolEntry.setText(this.resources.getString("protocol.closeBelowSma50LowVolume"));
+
+        // Call controller to perform check.
+        calendar.set(2022, 5, 22); // Begin check on 22.06.22
+        try {
+            protocolEntries = this.instrumentCheckAverageController.checkCloseBelowSma50(calendar.getTime(),
+                    this.dmlQuotations);
+
+            // Verify the check result
+            assertEquals(1, protocolEntries.size());
+
+            // Validate the protocol entry.
+            actualProtocolEntry = protocolEntries.get(0);
+            assertEquals(expectedProtocolEntry, actualProtocolEntry);
         } catch (Exception e) {
             fail(e.getMessage());
         }
