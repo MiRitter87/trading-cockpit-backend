@@ -155,4 +155,25 @@ public class InstrumentCheckControllerTest {
         actualStartDate = this.instrumentCheckController.getStartDate(lookbackPeriod, this.dmlQuotations);
         assertEquals(expectedStartDate, actualStartDate);
     }
+
+    @Test
+    /**
+     * Tests the determination of the start date if the lookback period is longer than the actual number of quotations.
+     */
+    public void testGetStartDateTooFewQuotations() {
+        Calendar calendar = Calendar.getInstance();
+        final int lookbackPeriod = 15;
+        final Date expectedStartDate;
+        final Date actualStartDate;
+
+        // Delete all quotations except the newest 10.
+        this.dmlQuotations.setQuotations(this.dmlQuotations.getQuotations().subList(0, 10));
+
+        // A lookback period of 15 would provide 04.07.22 if enough quotations were available.
+        calendar.set(2022, 6, 11); // 11.07.22, because only 10 quotations are available.
+        expectedStartDate = DateTools.getDateWithoutIntradayAttributes(calendar.getTime());
+
+        actualStartDate = this.instrumentCheckController.getStartDate(lookbackPeriod, this.dmlQuotations);
+        assertEquals(expectedStartDate, actualStartDate);
+    }
 }
