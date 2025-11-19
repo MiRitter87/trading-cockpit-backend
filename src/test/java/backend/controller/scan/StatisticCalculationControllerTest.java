@@ -47,6 +47,11 @@ public class StatisticCalculationControllerTest {
     private static QuotationDAO quotationDAO;
 
     /**
+     * The StatisticCalculationController under test.
+     */
+    private StatisticCalculationController statisticCalculationController;
+
+    /**
      * The stock of Apple.
      */
     private Instrument appleStock;
@@ -116,6 +121,7 @@ public class StatisticCalculationControllerTest {
      * Tasks to be performed before each test is run.
      */
     public void setUp() {
+        this.statisticCalculationController = new StatisticCalculationController();
         this.createTestData();
     }
 
@@ -125,6 +131,7 @@ public class StatisticCalculationControllerTest {
      */
     public void tearDown() {
         this.deleteTestData();
+        this.statisticCalculationController = null;
     }
 
     /**
@@ -337,13 +344,13 @@ public class StatisticCalculationControllerTest {
      */
     public void testCalculateStatistics() {
         StatisticArray calculatedStatistics = new StatisticArray();
-        StatisticCalculationController statisticController = new StatisticCalculationController();
         List<Instrument> instruments;
         Statistic statistic;
 
         try {
             instruments = instrumentDAO.getInstruments(InstrumentType.STOCK);
-            calculatedStatistics.setStatistics(statisticController.calculateStatistics(instruments, null));
+            calculatedStatistics
+                    .setStatistics(this.statisticCalculationController.calculateStatistics(instruments, null));
 
             // Two statistics should exist.
             assertEquals(2, calculatedStatistics.getStatistics().size());
@@ -398,15 +405,14 @@ public class StatisticCalculationControllerTest {
      */
     public void testCalculateOneStatistic() {
         StatisticArray calculatedStatistics = new StatisticArray();
-        StatisticCalculationController statisticController = new StatisticCalculationController();
         List<Instrument> instruments;
         Statistic statistic;
         final int requestedStatistics = 1;
 
         try {
             instruments = instrumentDAO.getInstruments(InstrumentType.STOCK);
-            calculatedStatistics
-                    .setStatistics(statisticController.calculateStatistics(instruments, requestedStatistics));
+            calculatedStatistics.setStatistics(
+                    this.statisticCalculationController.calculateStatistics(instruments, requestedStatistics));
 
             // One statistics should exist.
             assertEquals(1, calculatedStatistics.getStatistics().size());
