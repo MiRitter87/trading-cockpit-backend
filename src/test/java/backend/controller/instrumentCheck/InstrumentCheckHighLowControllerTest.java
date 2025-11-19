@@ -101,9 +101,26 @@ public class InstrumentCheckHighLowControllerTest {
         try {
             this.dmlQuotations = new QuotationArray();
             this.dmlQuotations.setQuotations(quotationProviderYahooDAO.getQuotationHistory(dmlStock, 1));
+            this.addDummyQuotation();
         } catch (Exception e) {
             fail(e.getMessage());
         }
+    }
+
+    /**
+     * Adds a dummy quotation to the list of quotations. The goal is to have a quotation history that spans more than a
+     * year.
+     */
+    private void addDummyQuotation() {
+        Quotation newQuotation;
+        Calendar calendar = Calendar.getInstance();
+
+        newQuotation = this.dmlQuotations.getQuotations().get(this.dmlQuotations.getQuotations().size() - 1);
+        calendar.setTime(newQuotation.getDate());
+        calendar.add(Calendar.WEEK_OF_YEAR, -1);
+        newQuotation.setDate(calendar.getTime());
+
+        this.dmlQuotations.getQuotations().add(newQuotation);
     }
 
     /**
