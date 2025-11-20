@@ -179,7 +179,7 @@ public class QuotationProviderCNBCDAO extends AbstractQuotationProviderDAO imple
      * @param apiCurrency The currency as provided by CNBC.
      * @return The currency as used by the backend.
      */
-    protected Currency getCurrency(final String apiCurrency) {
+    public Currency getCurrency(final String apiCurrency) {
         switch (apiCurrency) {
         case "USD":
             return Currency.USD;

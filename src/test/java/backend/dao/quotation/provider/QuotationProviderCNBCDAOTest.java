@@ -222,4 +222,24 @@ public class QuotationProviderCNBCDAOTest {
             fail(e.getMessage());
         }
     }
+
+    @Test
+    /**
+     * Tests the determination of the currency based on the currency string provided by the CNBC API.
+     */
+    public void testGetCurrency() {
+        String apiCurrency;
+
+        apiCurrency = "USD";
+        assertEquals(Currency.USD, quotationProviderCNBCDAO.getCurrency(apiCurrency));
+
+        apiCurrency = "CAD";
+        assertEquals(Currency.CAD, quotationProviderCNBCDAO.getCurrency(apiCurrency));
+
+        apiCurrency = "GBp";
+        assertEquals(Currency.GBP, quotationProviderCNBCDAO.getCurrency(apiCurrency));
+
+        apiCurrency = "";
+        assertEquals(null, quotationProviderCNBCDAO.getCurrency(apiCurrency));
+    }
 }
