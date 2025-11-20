@@ -1,13 +1,16 @@
 package backend.dao.instrument;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -32,6 +35,11 @@ import backend.model.instrument.Quotation;
  * @author Michael
  */
 public class InstrumentHibernateDAOTest {
+    /**
+     * Access to localized application resources.
+     */
+    private ResourceBundle resources = ResourceBundle.getBundle("backend");
+
     /**
      * DAO to access Instrument data.
      */
@@ -164,6 +172,9 @@ public class InstrumentHibernateDAOTest {
      */
     public void testDeleteInstrumentWithReferencedQuotations() {
         List<Quotation> quotations = new ArrayList<>();
+        String expectedErrorMessage = MessageFormat.format(this.resources.getString("instrument.deleteUsedInQuotation"),
+                this.appleStock.getId());
+        String actualErrorMessage;
 
         quotations.add(this.appleQuotation1);
         quotations.add(this.appleQuotation2);
@@ -174,7 +185,8 @@ public class InstrumentHibernateDAOTest {
             instrumentDAO.deleteInstrument(this.appleStock);
             fail("Delete should have failed because quotations are referenced to the instrument");
         } catch (LocalizedException expected) {
-            // All is well.
+            actualErrorMessage = expected.getLocalizedMessage();
+            assertEquals(expectedErrorMessage, actualErrorMessage);
         } catch (Exception e) {
             fail(e.getMessage());
         } finally {
@@ -192,13 +204,18 @@ public class InstrumentHibernateDAOTest {
      * Instrument.
      */
     public void testDeleteInstrumentWithReferencedHorizontalLines() {
+        String expectedErrorMessage = MessageFormat
+                .format(this.resources.getString("instrument.deleteUsedInHorizontalLine"), this.appleStock.getId());
+        String actualErrorMessage;
+
         try {
             chartObjectDAO.insertHorizontalLine(this.horizontalLine);
 
             instrumentDAO.deleteInstrument(this.appleStock);
             fail("Delete should have failed because a horizontal line is referenced to the instrument");
         } catch (LocalizedException expected) {
-            // All is well.
+            actualErrorMessage = expected.getLocalizedMessage();
+            assertEquals(expectedErrorMessage, actualErrorMessage);
         } catch (Exception e) {
             fail(e.getMessage());
         } finally {
