@@ -154,6 +154,21 @@ public class QuotationProviderGlobeAndMailDAOTest {
     }
 
     /**
+     * Gets an Instrument of the Glencore stock.
+     *
+     * @return Instrument of the Glencore stock.
+     */
+    private Instrument getGlencoreInstrument() {
+        Instrument instrument = new Instrument();
+
+        instrument.setSymbol("GLEN");
+        instrument.setStockExchange(StockExchange.LSE);
+        instrument.setType(InstrumentType.STOCK);
+
+        return instrument;
+    }
+
+    /**
      * Gets a Quotation as expected from the theglobeandmail.com website.
      *
      * @return A Quotation.
@@ -354,6 +369,21 @@ public class QuotationProviderGlobeAndMailDAOTest {
 
     @Test
     /**
+     * Tests the retrieval of the query URL for the current quotation of a stock listed at the LSE.
+     */
+    public void testGetQueryUrlCurrentQuotationLSE() {
+        Instrument glencoreStock = this.getGlencoreInstrument();
+
+        try {
+            quotationProviderGlobeAndMailDAO.getQueryUrlCurrentQuotation(glencoreStock);
+            fail("URL Determination should have failed because exchange LSE is not supported.");
+        } catch (Exception expected) {
+            // All is well.
+        }
+    }
+
+    @Test
+    /**
      * Tests the retrieval of the query URL for historical quotations of a stock listed at the NYSE.
      */
     public void testGetQueryUrlQuotationHistoryNYSE() {
@@ -365,8 +395,12 @@ public class QuotationProviderGlobeAndMailDAOTest {
                 + "symbol=F&data=daily&maxrecords=252&volume=contract&order=asc&dividends=false&backadjust=false";
         String actualUrl = "";
 
-        actualUrl = quotationProviderGlobeAndMailDAO.getQueryUrlQuotationHistory(symbol, stockExchange, years);
-        assertEquals(expectedUrl, actualUrl);
+        try {
+            actualUrl = quotationProviderGlobeAndMailDAO.getQueryUrlQuotationHistory(symbol, stockExchange, years);
+            assertEquals(expectedUrl, actualUrl);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
     }
 
     @Test
@@ -382,8 +416,12 @@ public class QuotationProviderGlobeAndMailDAOTest {
                 + "symbol=AMZN&data=daily&maxrecords=252&volume=contract&order=asc&dividends=false&backadjust=false";
         String actualUrl = "";
 
-        actualUrl = quotationProviderGlobeAndMailDAO.getQueryUrlQuotationHistory(symbol, stockExchange, years);
-        assertEquals(expectedUrl, actualUrl);
+        try {
+            actualUrl = quotationProviderGlobeAndMailDAO.getQueryUrlQuotationHistory(symbol, stockExchange, years);
+            assertEquals(expectedUrl, actualUrl);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
     }
 
     @Test
@@ -399,8 +437,12 @@ public class QuotationProviderGlobeAndMailDAOTest {
                 + "symbol=PRK&data=daily&maxrecords=252&volume=contract&order=asc&dividends=false&backadjust=false";
         String actualUrl = "";
 
-        actualUrl = quotationProviderGlobeAndMailDAO.getQueryUrlQuotationHistory(symbol, stockExchange, years);
-        assertEquals(expectedUrl, actualUrl);
+        try {
+            actualUrl = quotationProviderGlobeAndMailDAO.getQueryUrlQuotationHistory(symbol, stockExchange, years);
+            assertEquals(expectedUrl, actualUrl);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
     }
 
     @Test
@@ -416,8 +458,12 @@ public class QuotationProviderGlobeAndMailDAOTest {
                 + "symbol=BAYRY&data=daily&maxrecords=252&volume=contract&order=asc&dividends=false&backadjust=false";
         String actualUrl = "";
 
-        actualUrl = quotationProviderGlobeAndMailDAO.getQueryUrlQuotationHistory(symbol, stockExchange, years);
-        assertEquals(expectedUrl, actualUrl);
+        try {
+            actualUrl = quotationProviderGlobeAndMailDAO.getQueryUrlQuotationHistory(symbol, stockExchange, years);
+            assertEquals(expectedUrl, actualUrl);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
     }
 
     @Test
@@ -433,8 +479,12 @@ public class QuotationProviderGlobeAndMailDAOTest {
                 + "symbol=DML.TO&data=daily&maxrecords=252&volume=contract&order=asc&dividends=false&backadjust=false";
         String actualUrl = "";
 
-        actualUrl = quotationProviderGlobeAndMailDAO.getQueryUrlQuotationHistory(symbol, stockExchange, years);
-        assertEquals(expectedUrl, actualUrl);
+        try {
+            actualUrl = quotationProviderGlobeAndMailDAO.getQueryUrlQuotationHistory(symbol, stockExchange, years);
+            assertEquals(expectedUrl, actualUrl);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
     }
 
     @Test
@@ -450,8 +500,12 @@ public class QuotationProviderGlobeAndMailDAOTest {
                 + "symbol=RCK.VN&data=daily&maxrecords=252&volume=contract&order=asc&dividends=false&backadjust=false";
         String actualUrl = "";
 
-        actualUrl = quotationProviderGlobeAndMailDAO.getQueryUrlQuotationHistory(symbol, stockExchange, years);
-        assertEquals(expectedUrl, actualUrl);
+        try {
+            actualUrl = quotationProviderGlobeAndMailDAO.getQueryUrlQuotationHistory(symbol, stockExchange, years);
+            assertEquals(expectedUrl, actualUrl);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
     }
 
     @Test
@@ -467,8 +521,29 @@ public class QuotationProviderGlobeAndMailDAOTest {
                 + "symbol=AGN.CN&data=daily&maxrecords=252&volume=contract&order=asc&dividends=false&backadjust=false";
         String actualUrl = "";
 
-        actualUrl = quotationProviderGlobeAndMailDAO.getQueryUrlQuotationHistory(symbol, stockExchange, years);
-        assertEquals(expectedUrl, actualUrl);
+        try {
+            actualUrl = quotationProviderGlobeAndMailDAO.getQueryUrlQuotationHistory(symbol, stockExchange, years);
+            assertEquals(expectedUrl, actualUrl);
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    /**
+     * Tests the retrieval of the query URL for historical quotations of a stock listed at the LSE.
+     */
+    public void testGetQueryUrlQuotationHistoryLSE() {
+        final String symbol = "GLEN";
+        final StockExchange stockExchange = StockExchange.LSE;
+        final Integer years = 1;
+
+        try {
+            quotationProviderGlobeAndMailDAO.getQueryUrlQuotationHistory(symbol, stockExchange, years);
+            fail("URL Determination should have failed because exchange LSE is not supported.");
+        } catch (Exception expected) {
+            // All is well.
+        }
     }
 
     @Test

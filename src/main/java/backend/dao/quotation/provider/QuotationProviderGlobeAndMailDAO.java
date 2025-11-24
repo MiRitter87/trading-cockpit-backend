@@ -202,7 +202,7 @@ public class QuotationProviderGlobeAndMailDAO extends AbstractQuotationProviderD
         String queryUrl = new String(BASE_URL_CURRENT_QUOTATION);
 
         if (instrument.getStockExchange() == StockExchange.LSE) {
-            throw new Error("The DAO for TheGlobeAndMail does not provide current quotations for the exchange: "
+            throw new Exception("The DAO for TheGlobeAndMail does not provide current quotations for the exchange: "
                     + instrument.getStockExchange());
         }
 
@@ -219,14 +219,15 @@ public class QuotationProviderGlobeAndMailDAO extends AbstractQuotationProviderD
      * @param stockExchange The stock exchange where the symbol is listed.
      * @param years         The number of years to be queried.
      * @return The query URL.
+     * @throws Exception URL could not be created.
      */
     protected String getQueryUrlQuotationHistory(final String symbol, final StockExchange stockExchange,
-            final Integer years) {
+            final Integer years) throws Exception {
 
         String queryUrl = new String(BASE_URL_QUOTATION_HISTORY);
 
         if (stockExchange == StockExchange.LSE) {
-            throw new Error("The DAO for TheGlobeAndMail does not provide historical quotations for the exchange: "
+            throw new Exception("The DAO for TheGlobeAndMail does not provide historical quotations for the exchange: "
                     + stockExchange);
         }
 
