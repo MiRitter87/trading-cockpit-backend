@@ -332,9 +332,9 @@ public class QuotationProviderInvestingDAOTest {
 
     @Test
     /**
-     * Tests the retrieval of the query URL if attribute 'investingId' of Instrument is not defined.
+     * Tests the retrieval of the query URL for the current quotation if attribute 'investingId' of Instrument is not defined.
      */
-    public void testGetQueryUrlWithoutInvestingId() {
+    public void testGetQueryUrlCurrentWithoutInvestingId() {
         Instrument amazonStock = this.getAmazonInstrument();
 
         amazonStock.setInvestingId("");
@@ -367,6 +367,23 @@ public class QuotationProviderInvestingDAOTest {
             assertEquals(expectedUrl, actualUrl);
         } catch (Exception e) {
             fail(e.getMessage());
+        }
+    }
+
+    @Test
+    /**
+     * Tests the retrieval of the query URL for the quotation history if attribute 'investingId' of Instrument is not defined.
+     */
+    public void testGetQueryUrlHistoryWithoutInvestingId() {
+        Instrument amazonStock = this.getAmazonInstrument();
+
+        amazonStock.setInvestingId("");
+
+        try {
+            quotationProviderInvestingDAO.getQueryUrlQuotationHistory(amazonStock, 1);
+            fail("Determination of URL should have failed because attribute 'investingId' is not defined.");
+        } catch (Exception expected) {
+            // All is well.
         }
     }
 
