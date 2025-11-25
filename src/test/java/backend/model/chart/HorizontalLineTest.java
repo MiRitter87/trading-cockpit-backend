@@ -59,6 +59,18 @@ public class HorizontalLineTest {
 
     @Test
     /**
+     * Tests successful validation of a HorizontalLine.
+     */
+    public void testValidateSuccess() {
+        try {
+            this.horizontalLine.validate();
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    /**
      * Tests validation of a HorizontalLine whose ID is too low.
      */
     public void testIdTooLow() {
