@@ -461,6 +461,21 @@ public class InstrumentTest {
 
     @Test
     /**
+     * Tests the orderly reference of an Instrument with a sector and an industry group.
+     */
+    public void testSectorAndIGReferenced() {
+        this.instrument.setSector(this.sector);
+        this.instrument.setIndustryGroup(this.industryGroup);
+
+        try {
+            this.instrument.validate();
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    /**
      * Tests if the stock exchange is null, if the instrument type is set to 'RATIO'.
      */
     public void testExchangeNullOnTypeRatio() {
