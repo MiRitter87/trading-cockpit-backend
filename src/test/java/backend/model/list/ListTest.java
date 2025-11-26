@@ -1,6 +1,7 @@
 package backend.model.list;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.AfterEach;
@@ -34,19 +35,8 @@ public class ListTest {
      * Tasks to be performed before each test is run.
      */
     public void setUp() {
-        this.instrument = new Instrument();
-        this.instrument.setId(Integer.valueOf(1));
-        this.instrument.setSymbol("AAPL");
-        this.instrument.setType(InstrumentType.STOCK);
-        this.instrument.setStockExchange(StockExchange.NDQ);
-        this.instrument.setName("Apple");
-
-        this.list = new List();
-        this.list.setId(Integer.valueOf(1));
-        this.list.setName("DJI");
-        this.list.setName("Dow Jones Industrial Average");
-        this.list.setDescription("All stocks of the Dow Jones Industrial Average Index.");
-        this.list.addInstrument(this.instrument);
+        this.instrument = this.getAppleInstrument();
+        this.list = this.getDJIList(this.instrument);
     }
 
     @AfterEach
@@ -56,6 +46,40 @@ public class ListTest {
     public void tearDown() {
         this.list = null;
         this.instrument = null;
+    }
+
+    /**
+     * Gets an Apple Instrument.
+     *
+     * @return An Apple Instrument.
+     */
+    private Instrument getAppleInstrument() {
+        Instrument instrument = new Instrument();
+
+        instrument.setId(Integer.valueOf(1));
+        instrument.setSymbol("AAPL");
+        instrument.setType(InstrumentType.STOCK);
+        instrument.setStockExchange(StockExchange.NDQ);
+        instrument.setName("Apple");
+
+        return instrument;
+    }
+
+    /**
+     * Gets a List.
+     *
+     * @param instrument The Instrument to be added to the list.
+     * @return The List.
+     */
+    private List getDJIList(final Instrument instrument) {
+        List list = new List();
+        list.setId(Integer.valueOf(1));
+        list.setName("DJI");
+        list.setName("Dow Jones Industrial Average");
+        list.setDescription("All stocks of the Dow Jones Industrial Average Index.");
+        list.addInstrument(instrument);
+
+        return list;
     }
 
     @Test
@@ -230,5 +254,15 @@ public class ListTest {
         this.list.addInstrument(duplicateInstrument);
 
         assertEquals(1, this.list.getInstruments().size());
+    }
+
+    @Test
+    /**
+     * Tests if two lists are equal
+     */
+    public void testEquals() {
+        List secondList = this.getDJIList(this.getAppleInstrument());
+
+        assertTrue(this.list.equals(secondList));
     }
 }
