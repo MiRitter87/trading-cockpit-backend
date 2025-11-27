@@ -56,7 +56,8 @@ public class PriceAlertTest {
         this.priceAlert.setAlertType(PriceAlertType.GREATER_OR_EQUAL);
         this.priceAlert.setPrice(BigDecimal.valueOf(185.50));
         this.priceAlert.setCurrency(Currency.USD);
-        this.priceAlert.setSendMail(false);
+        this.priceAlert.setSendMail(true);
+        this.priceAlert.setAlertMailAddress("john.doe@testmail.com");
     }
 
     @AfterEach
@@ -66,6 +67,18 @@ public class PriceAlertTest {
     public void tearDown() {
         this.priceAlert = null;
         this.instrument = null;
+    }
+
+    @Test
+    /**
+     * Tests successful validation of PriceAlert.
+     */
+    public void testValidateSuccess() {
+        try {
+            this.priceAlert.validate();
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
     }
 
     @Test
