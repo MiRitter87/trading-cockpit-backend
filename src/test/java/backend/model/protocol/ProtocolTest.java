@@ -93,4 +93,21 @@ public class ProtocolTest {
             assertEquals(expectedDate, actualDate);
         }
     }
+
+    @Test
+    /**
+     * Tests the calculation of percentage values for confirmations, violations and warnings based on all protocol
+     * entries.
+     */
+    public void testCalculatePercentages() {
+        final int expectedConfirmationPercentage = 50;
+        final int expectedViolationPercentage = 25;
+        final int expectedWarningPercentage = 25;
+
+        this.protocol.calculatePercentages();
+
+        assertEquals(expectedConfirmationPercentage, this.protocol.getConfirmationPercentage());
+        assertEquals(expectedViolationPercentage, this.protocol.getViolationPercentage());
+        assertEquals(expectedWarningPercentage, this.protocol.getWarningPercentage());
+    }
 }
