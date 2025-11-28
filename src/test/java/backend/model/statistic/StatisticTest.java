@@ -37,6 +37,8 @@ public class StatisticTest {
         this.statistic.setNumberAtOrBelowSma50(2);
         this.statistic.setNumberAboveSma200(2);
         this.statistic.setNumberAtOrBelowSma200(3);
+        this.statistic.setNumberAdvance(4);
+        this.statistic.setNumberDecline(1);
     }
 
     @AfterEach
@@ -45,6 +47,16 @@ public class StatisticTest {
      */
     public void tearDown() {
         this.statistic = null;
+    }
+
+    @Test
+    /**
+     * Tests the correct calculation of the advance/decline number.
+     */
+    public void testGetAdvanceDeclineNumber() {
+        final int expectedAdvanceDeclineNumber = 3;
+
+        assertEquals(expectedAdvanceDeclineNumber, this.statistic.getAdvanceDeclineNumber());
     }
 
     @Test
@@ -67,6 +79,18 @@ public class StatisticTest {
         final int expectedPercentAboveSma200 = 40;
 
         assertEquals(expectedPercentAboveSma200, percentAboveSma200);
+    }
+
+    @Test
+    /**
+     * Tests successful validation of a Statistic.
+     */
+    public void testValidateSuccess() {
+        try {
+            this.statistic.validate();
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
     }
 
     @Test
