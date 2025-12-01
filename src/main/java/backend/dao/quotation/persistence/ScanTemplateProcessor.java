@@ -143,7 +143,8 @@ public class ScanTemplateProcessor {
                 industryGroupQuotation = this.getQuotation(quotation.getInstrument().getIndustryGroup().getId(),
                         industryGroupQuotations);
 
-                if (industryGroupQuotation != null && this.areQuotationsOfSameDay(quotation, industryGroupQuotation)) {
+                if (industryGroupQuotation != null && this.areQuotationsOfSameDay(quotation, industryGroupQuotation)
+                        && quotation.getRelativeStrengthData() != null) {
                     quotation.getRelativeStrengthData()
                             .setRsNumberIndustryGroup(industryGroupQuotation.getRelativeStrengthData().getRsNumber());
                 }
