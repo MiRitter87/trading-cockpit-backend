@@ -59,6 +59,16 @@ public class DashboardServiceTest {
     private Instrument copperIndustryGroup;
 
     /**
+     * The Southern Copper stock.
+     */
+    private Instrument southernCopper;
+
+    /**
+     * The Freeport-McMoRan stock.
+     */
+    private Instrument freeportMcMoRan;
+
+    /**
      * The first Quotation of the Copper IG.
      */
     private Quotation copperIgQuotation1;
@@ -67,6 +77,16 @@ public class DashboardServiceTest {
      * The second Quotation of the Copper IG.
      */
     private Quotation copperIgQuotation2;
+
+    /**
+     * A Quotation of Southern Copper.
+     */
+    private Quotation sccoQuotation;
+
+    /**
+     * A Quotation of Freeport-McMoRan.
+     */
+    private Quotation fcxQuotation;
 
     @BeforeAll
     /**
@@ -115,9 +135,13 @@ public class DashboardServiceTest {
      */
     private void createDummyInstruments() {
         this.copperIndustryGroup = this.getCopperIndustryGroup();
+        this.southernCopper = this.getSouthernCopperStock();
+        this.freeportMcMoRan = this.getFreeportStock();
 
         try {
             instrumentDAO.insertInstrument(this.copperIndustryGroup);
+            instrumentDAO.insertInstrument(this.southernCopper);
+            instrumentDAO.insertInstrument(this.freeportMcMoRan);
         } catch (Exception e) {
             fail(e.getMessage());
         }
@@ -128,6 +152,8 @@ public class DashboardServiceTest {
      */
     private void deleteDummyInstruments() {
         try {
+            instrumentDAO.deleteInstrument(this.freeportMcMoRan);
+            instrumentDAO.deleteInstrument(this.southernCopper);
             instrumentDAO.deleteInstrument(this.copperIndustryGroup);
         } catch (Exception e) {
             fail(e.getMessage());
@@ -140,6 +166,18 @@ public class DashboardServiceTest {
     private void createDummyQuotations() {
         List<Quotation> quotations = new ArrayList<>();
         Calendar calendar = Calendar.getInstance();
+
+        this.sccoQuotation = new Quotation();
+        this.sccoQuotation.setInstrument(this.southernCopper);
+        this.sccoQuotation.setDate(calendar.getTime());
+        this.sccoQuotation.setClose(new BigDecimal("134.78"));
+        quotations.add(this.sccoQuotation);
+
+        this.fcxQuotation = new Quotation();
+        this.fcxQuotation.setInstrument(this.freeportMcMoRan);
+        this.fcxQuotation.setDate(calendar.getTime());
+        this.fcxQuotation.setClose(new BigDecimal("42.98"));
+        quotations.add(this.fcxQuotation);
 
         this.copperIgQuotation1 = new Quotation();
         this.copperIgQuotation1.setInstrument(this.copperIndustryGroup);
@@ -156,7 +194,10 @@ public class DashboardServiceTest {
 
         try {
             quotationDAO.insertQuotations(quotations);
-            this.copperIndustryGroup.getQuotations().addAll(quotations);
+            this.copperIndustryGroup.getQuotations().add(this.copperIgQuotation1);
+            this.copperIndustryGroup.getQuotations().add(this.copperIgQuotation2);
+            this.southernCopper.getQuotations().add(this.sccoQuotation);
+            this.freeportMcMoRan.getQuotations().add(this.fcxQuotation);
         } catch (Exception e) {
             fail(e.getMessage());
         }
@@ -168,8 +209,10 @@ public class DashboardServiceTest {
     private void deleteDummyQuotations() {
         List<Quotation> quotations = new ArrayList<>();
 
-        quotations.add(this.copperIgQuotation1);
         quotations.add(this.copperIgQuotation2);
+        quotations.add(this.copperIgQuotation1);
+        quotations.add(this.fcxQuotation);
+        quotations.add(this.sccoQuotation);
 
         try {
             quotationDAO.deleteQuotations(quotations);
@@ -229,7 +272,18 @@ public class DashboardServiceTest {
         try {
             this.copperIgQuotation1.setIndicator(new Indicator());
             this.copperIgQuotation1.getIndicator().setUpDownVolumeRatio(1.33f);
+
+            this.sccoQuotation.setIndicator(new Indicator());
+            this.sccoQuotation.getIndicator().setDistanceTo52WeekHigh(-4.3f);
+            this.sccoQuotation.getIndicator().setDistanceTo52WeekLow(20);
+
+            this.fcxQuotation.setIndicator(new Indicator());
+            this.fcxQuotation.getIndicator().setDistanceTo52WeekHigh(-20);
+            this.fcxQuotation.getIndicator().setDistanceTo52WeekLow(1.4f);
+
             quotations.add(this.copperIgQuotation1);
+            quotations.add(this.sccoQuotation);
+            quotations.add(this.fcxQuotation);
 
             quotationDAO.updateQuotations(quotations);
         } catch (Exception e) {
@@ -249,6 +303,40 @@ public class DashboardServiceTest {
         instrument.setName("Global X Copper Miners ETF");
         instrument.setStockExchange(StockExchange.NYSE);
         instrument.setType(InstrumentType.IND_GROUP);
+
+        return instrument;
+    }
+
+    /**
+     * Gets the Southern Copper Stock.
+     *
+     * @return The Southern Copper Stock.
+     */
+    private Instrument getSouthernCopperStock() {
+        Instrument instrument = new Instrument();
+
+        instrument.setSymbol("SCCO");
+        instrument.setName("Southern Copper");
+        instrument.setStockExchange(StockExchange.NYSE);
+        instrument.setType(InstrumentType.STOCK);
+        instrument.setIndustryGroup(this.copperIndustryGroup);
+
+        return instrument;
+    }
+
+    /**
+     * Gets the Freeport-McMoRan stock.
+     *
+     * @return The Freeport-McMoRan stock.
+     */
+    private Instrument getFreeportStock() {
+        Instrument instrument = new Instrument();
+
+        instrument.setSymbol("FCX");
+        instrument.setName("Freeport-McMoRan");
+        instrument.setStockExchange(StockExchange.NYSE);
+        instrument.setType(InstrumentType.STOCK);
+        instrument.setIndustryGroup(this.copperIndustryGroup);
 
         return instrument;
     }
@@ -277,6 +365,8 @@ public class DashboardServiceTest {
         assertEquals(this.copperIgQuotation1.getIndicator().getUpDownVolumeRatio(),
                 marketHealthStatus.getUpDownVolumeRatio());
         assertEquals(this.copperIgQuotation1.getRelativeStrengthData().getRsNumber(), marketHealthStatus.getRsNumber());
+        assertEquals(1, marketHealthStatus.getNumberNear52wHigh());
+        assertEquals(1, marketHealthStatus.getNumberNear52wLow());
     }
 
     @Test
