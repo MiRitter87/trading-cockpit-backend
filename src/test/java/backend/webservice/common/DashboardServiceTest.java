@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
 import backend.dao.quotation.persistence.QuotationDAO;
+import backend.dao.statistic.StatisticDAO;
 import backend.model.StockExchange;
 import backend.model.dashboard.MarketHealthStatus;
 import backend.model.dashboard.SwingTradingEnvironmentStatus;
@@ -29,6 +30,7 @@ import backend.model.instrument.InstrumentType;
 import backend.model.instrument.MovingAverageData;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.RelativeStrengthData;
+import backend.model.statistic.Statistic;
 import backend.model.webservice.WebServiceResult;
 import backend.tools.WebServiceTools;
 
@@ -52,6 +54,11 @@ public class DashboardServiceTest {
      * DAO to access Quotation data.
      */
     private static QuotationDAO quotationDAO;
+
+    /**
+     * DAO to access Statistic data.
+     */
+    private static StatisticDAO statisticDAO;
 
     /**
      * Industry Group: Copper Miners.
@@ -95,6 +102,7 @@ public class DashboardServiceTest {
     public static void setUpClass() {
         instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
         quotationDAO = DAOManager.getInstance().getQuotationDAO();
+        statisticDAO = DAOManager.getInstance().getStatisticDAO();
     }
 
     @AfterAll
@@ -119,6 +127,7 @@ public class DashboardServiceTest {
         this.createMovingAverageData();
         this.createRelativeStrengthData();
         this.createIndicators();
+        this.createStatistics();
     }
 
     @AfterEach
@@ -126,6 +135,7 @@ public class DashboardServiceTest {
      * Tasks to be performed after each test has been run.
      */
     public void tearDown() {
+        this.deleteStatistics();
         this.deleteDummyQuotations();
         this.deleteDummyInstruments();
     }
@@ -341,6 +351,48 @@ public class DashboardServiceTest {
         return instrument;
     }
 
+    /**
+     * Creates statistics.
+     */
+    private void createStatistics() {
+        Statistic statistic;
+        Calendar calendar = Calendar.getInstance();
+
+        try {
+            for (int i = 0; i < 6; i++) {
+                if (i > 0) {
+                    calendar.add(Calendar.DAY_OF_MONTH, -1);
+                }
+
+                statistic = new Statistic();
+                statistic.setDate(calendar.getTime());
+                statistic.setInstrumentType(InstrumentType.STOCK);
+                statistic.setIndustryGroupId(this.copperIndustryGroup.getId());
+                statistic.setNumberUpOnVolume(0 + i);
+                statistic.setNumberDownOnVolume(1 + i);
+                statisticDAO.insertStatistic(statistic);
+            }
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    /**
+     * Deletes statistics.
+     */
+    private void deleteStatistics() {
+        List<Statistic> statistics;
+        try {
+            statistics = statisticDAO.getStatistics(InstrumentType.STOCK, null, this.copperIndustryGroup.getId());
+
+            for (Statistic statistic : statistics) {
+                statisticDAO.deleteStatistic(statistic);
+            }
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
     @Test
     /**
      * Tests the determination of the MarketHealthStatus.
@@ -349,6 +401,8 @@ public class DashboardServiceTest {
         MarketHealthStatus marketHealthStatus;
         WebServiceResult getMarketHealthStatusResult;
         DashboardService dashboardService = new DashboardService();
+        final int expectedNumberUpOnVolume = 10;
+        final int expectedNumberDownOnVolume = 15;
 
         getMarketHealthStatusResult = dashboardService.getMarketHealthStatus(this.copperIndustryGroup.getId(), null);
 
@@ -367,6 +421,8 @@ public class DashboardServiceTest {
         assertEquals(this.copperIgQuotation1.getRelativeStrengthData().getRsNumber(), marketHealthStatus.getRsNumber());
         assertEquals(1, marketHealthStatus.getNumberNear52wHigh());
         assertEquals(1, marketHealthStatus.getNumberNear52wLow());
+        assertEquals(expectedNumberUpOnVolume, marketHealthStatus.getNumberUpOnVolume());
+        assertEquals(expectedNumberDownOnVolume, marketHealthStatus.getNumberDownOnVolume());
     }
 
     @Test
