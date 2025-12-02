@@ -418,7 +418,7 @@ public class DashboardService {
         final int numberOfDays = 5;
         int numberUpOnVolume = 0;
 
-        if (this.statistics.size() == 0) {
+        if (this.statistics.size() < 5) {
             return 0;
         }
 
@@ -442,7 +442,7 @@ public class DashboardService {
         final int numberOfDays = 5;
         int numberDownOnVolume = 0;
 
-        if (this.statistics.size() == 0) {
+        if (this.statistics.size() < 5) {
             return 0;
         }
 
