@@ -21,7 +21,6 @@ import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
 import backend.dao.quotation.persistence.QuotationDAO;
 import backend.dao.statistic.StatisticDAO;
-import backend.model.StockExchange;
 import backend.model.dashboard.MarketHealthStatus;
 import backend.model.dashboard.SwingTradingEnvironmentStatus;
 import backend.model.instrument.Indicator;
@@ -40,6 +39,11 @@ import backend.tools.WebServiceTools;
  * @author Michael
  */
 public class DashboardServiceTest {
+    /**
+     * Class providing helper methods for fixture.
+     */
+    private DashboardServiceTestFixture fixtureHelper;
+
     /**
      * Access to localized application resources.
      */
@@ -122,6 +126,7 @@ public class DashboardServiceTest {
      * Tasks to be performed before each test is run.
      */
     public void setUp() {
+        this.fixtureHelper = new DashboardServiceTestFixture();
         this.createDummyInstruments();
         this.createDummyQuotations();
         this.createMovingAverageData();
@@ -138,15 +143,16 @@ public class DashboardServiceTest {
         this.deleteStatistics();
         this.deleteDummyQuotations();
         this.deleteDummyInstruments();
+        this.fixtureHelper = null;
     }
 
     /**
      * Initializes the database with dummy instruments.
      */
     private void createDummyInstruments() {
-        this.copperIndustryGroup = this.getCopperIndustryGroup();
-        this.southernCopper = this.getSouthernCopperStock();
-        this.freeportMcMoRan = this.getFreeportStock();
+        this.copperIndustryGroup = this.fixtureHelper.getCopperIndustryGroup();
+        this.southernCopper = this.fixtureHelper.getSouthernCopperStock(this.copperIndustryGroup);
+        this.freeportMcMoRan = this.fixtureHelper.getFreeportStock(this.copperIndustryGroup);
 
         try {
             instrumentDAO.insertInstrument(this.copperIndustryGroup);
@@ -299,56 +305,6 @@ public class DashboardServiceTest {
         } catch (Exception e) {
             fail(e.getMessage());
         }
-    }
-
-    /**
-     * Gets the Instrument of the Copper Miners Industry Group.
-     *
-     * @return The Instrument of the Copper Miners Industry Group.
-     */
-    private Instrument getCopperIndustryGroup() {
-        Instrument instrument = new Instrument();
-
-        instrument.setSymbol("COPX");
-        instrument.setName("Global X Copper Miners ETF");
-        instrument.setStockExchange(StockExchange.NYSE);
-        instrument.setType(InstrumentType.IND_GROUP);
-
-        return instrument;
-    }
-
-    /**
-     * Gets the Southern Copper Stock.
-     *
-     * @return The Southern Copper Stock.
-     */
-    private Instrument getSouthernCopperStock() {
-        Instrument instrument = new Instrument();
-
-        instrument.setSymbol("SCCO");
-        instrument.setName("Southern Copper");
-        instrument.setStockExchange(StockExchange.NYSE);
-        instrument.setType(InstrumentType.STOCK);
-        instrument.setIndustryGroup(this.copperIndustryGroup);
-
-        return instrument;
-    }
-
-    /**
-     * Gets the Freeport-McMoRan stock.
-     *
-     * @return The Freeport-McMoRan stock.
-     */
-    private Instrument getFreeportStock() {
-        Instrument instrument = new Instrument();
-
-        instrument.setSymbol("FCX");
-        instrument.setName("Freeport-McMoRan");
-        instrument.setStockExchange(StockExchange.NYSE);
-        instrument.setType(InstrumentType.STOCK);
-        instrument.setIndustryGroup(this.copperIndustryGroup);
-
-        return instrument;
     }
 
     /**
