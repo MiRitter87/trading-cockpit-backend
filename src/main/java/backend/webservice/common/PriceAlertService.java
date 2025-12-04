@@ -21,6 +21,7 @@ import backend.model.webservice.WebServiceMessage;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
 import backend.tools.WebServiceTools;
+import jakarta.ws.rs.core.Response;
 
 /**
  * Common implementation of the price alert WebService that can be used by multiple service interfaces like SOAP or
@@ -235,6 +236,17 @@ public class PriceAlertService {
         }
 
         return updatePriceAlertResult;
+    }
+
+    /**
+     * Exports all price alerts in a serialized form.
+     *
+     * @return All price alerts.
+     */
+    public Response exportPriceAlerts() {
+        // Call method of separate controller class used for exporting and importing of price alerts.
+
+        return null;
     }
 
     /**

@@ -1,5 +1,10 @@
 package backend.webservice.rest;
 
+import backend.model.priceAlert.ConfirmationStatus;
+import backend.model.priceAlert.PriceAlertWS;
+import backend.model.priceAlert.TriggerStatus;
+import backend.model.webservice.WebServiceResult;
+import backend.webservice.common.PriceAlertService;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -10,12 +15,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
-
-import backend.model.priceAlert.ConfirmationStatus;
-import backend.model.priceAlert.PriceAlertWS;
-import backend.model.priceAlert.TriggerStatus;
-import backend.model.webservice.WebServiceResult;
-import backend.webservice.common.PriceAlertService;
+import jakarta.ws.rs.core.Response;
 
 /**
  * WebService for price alert access using REST technology.
@@ -41,7 +41,7 @@ public class PriceAlertRestService {
     /**
      * Provides a list of all price alerts.
      *
-     * @param triggerStatus The TriggerStatus of the requested price alerts.
+     * @param triggerStatus      The TriggerStatus of the requested price alerts.
      * @param confirmationStatus The ConfirmationStatus of the requested price alerts.
      * @return A list of all price alerts.
      */
@@ -95,5 +95,17 @@ public class PriceAlertRestService {
     public WebServiceResult deletePriceAlert(@PathParam("id") final Integer id) {
         PriceAlertService priceAlertService = new PriceAlertService();
         return priceAlertService.deletePriceAlert(id);
+    }
+
+    /**
+     * Exports all price alerts in a serialized form.
+     *
+     * @return All price alerts.
+     */
+    @GET
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    public Response exportPriceAlerts() {
+        PriceAlertService priceAlertService = new PriceAlertService();
+        return priceAlertService.exportPriceAlerts();
     }
 }
