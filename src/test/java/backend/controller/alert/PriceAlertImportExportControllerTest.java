@@ -1,15 +1,22 @@
 package backend.controller.alert;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
@@ -202,5 +209,35 @@ public class PriceAlertImportExportControllerTest {
         alert.setCurrency(Currency.USD);
 
         return alert;
+    }
+
+    @Test
+    /**
+     * Tests the export of all price alerts.
+     */
+    public void testExportPriceAlerts() {
+        try {
+            String jsonAlerts = this.importExportController.exportPriceAlerts();
+            List<PriceAlert> deserializedAlerts;
+            ObjectMapper mapper = new ObjectMapper();
+
+            // The price alerts are serialized to JSON. The JSON String is then being deserialized back to Java Objects.
+            // The deserialized Java objects are then validated against the original objects.
+            deserializedAlerts = mapper.readValue(jsonAlerts, new TypeReference<List<PriceAlert>>() {
+            });
+            assertTrue(deserializedAlerts.size() == 2);
+
+            for (PriceAlert tempAlert : deserializedAlerts) {
+                if (tempAlert.getId().equals(this.appleAlert1.getId())) {
+                    assertEquals(this.appleAlert1, tempAlert);
+                } else if (tempAlert.getId().equals(this.appleAlert2.getId())) {
+                    assertEquals(this.appleAlert2, tempAlert);
+                } else {
+                    fail("Differences occurred during deserialization of price alerts.");
+                }
+            }
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
     }
 }
