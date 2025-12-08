@@ -103,6 +103,7 @@ public class PriceAlertRestService {
      * @return All price alerts.
      */
     @GET
+    @Path("/export")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     public Response exportPriceAlerts() {
         PriceAlertService priceAlertService = new PriceAlertService();

@@ -1,11 +1,15 @@
 package backend.webservice.common;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import backend.controller.alert.PriceAlertImportExportController;
 import backend.dao.DAOManager;
 import backend.dao.ObjectUnchangedException;
 import backend.dao.instrument.InstrumentDAO;
@@ -21,7 +25,11 @@ import backend.model.webservice.WebServiceMessage;
 import backend.model.webservice.WebServiceMessageType;
 import backend.model.webservice.WebServiceResult;
 import backend.tools.WebServiceTools;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.StreamingOutput;
 
 /**
  * Common implementation of the price alert WebService that can be used by multiple service interfaces like SOAP or
@@ -244,9 +252,27 @@ public class PriceAlertService {
      * @return All price alerts.
      */
     public Response exportPriceAlerts() {
-        // Call method of separate controller class used for exporting and importing of price alerts.
+        PriceAlertImportExportController controller = new PriceAlertImportExportController();
+        StreamingOutput streamingOutput;
+        String jsonAlerts;
 
-        return null;
+        try {
+            jsonAlerts = controller.exportPriceAlerts();
+
+            streamingOutput = new StreamingOutput() {
+                @Override
+                public void write(final OutputStream output) throws IOException, WebApplicationException {
+                    output.write(jsonAlerts.getBytes(Charset.forName("UTF-8")));
+                    output.flush();
+                }
+            };
+
+        } catch (Exception exception) {
+            LOGGER.error(this.resources.getString("priceAlert.exportError"), exception);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+        }
+
+        return Response.ok(streamingOutput, MediaType.APPLICATION_OCTET_STREAM).build();
     }
 
     /**
