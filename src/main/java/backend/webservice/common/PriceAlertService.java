@@ -272,7 +272,8 @@ public class PriceAlertService {
             return Response.status(Status.INTERNAL_SERVER_ERROR).build();
         }
 
-        return Response.ok(streamingOutput, MediaType.APPLICATION_OCTET_STREAM).build();
+        return Response.ok(streamingOutput, MediaType.APPLICATION_OCTET_STREAM)
+                .header("Content-Disposition", "attachment; filename=\"priceAlerts.json\"").build();
     }
 
     /**
