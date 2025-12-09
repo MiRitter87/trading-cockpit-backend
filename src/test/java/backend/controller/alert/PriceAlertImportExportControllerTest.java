@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -34,6 +35,11 @@ import backend.model.priceAlert.PriceAlertType;
  * @author MiRitter87
  */
 public class PriceAlertImportExportControllerTest {
+    /**
+     * Access to localized application resources.
+     */
+    private ResourceBundle resources = ResourceBundle.getBundle("backend");
+
     /**
      * The controller under test.
      */
@@ -240,4 +246,29 @@ public class PriceAlertImportExportControllerTest {
             fail(e.getMessage());
         }
     }
+
+    @Test
+    /**
+     * Tests importing price alerts from an invalid JSON String.
+     */
+    public void testImportPriceAlertsInvalidString() {
+        String invalidJson = "abcde";
+        String expectedErrorMessage = this.resources.getString("priceAlert.importJsonMalformed");
+
+        try {
+            this.importExportController.importPriceAlerts(invalidJson);
+            fail("Import should have failed because String is malformed.");
+        } catch (Exception expected) {
+            assertEquals(expectedErrorMessage, expected.getLocalizedMessage());
+        }
+    }
+
+    /**
+     * TODO Implement necessary tests
+     *
+     *  -import empty List (no price alerts)
+     *  -import price alerts where referenced instrument does not exist
+     *  -import price alerts that already exist
+     *  -import two price alerts successfully
+     */
 }
