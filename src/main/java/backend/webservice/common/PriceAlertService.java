@@ -277,6 +277,16 @@ public class PriceAlertService {
     }
 
     /**
+     * Imports the price alerts provided.
+     *
+     * @param priceAlertsAsJson A JSON String containing all price alerts to be imported.
+     * @return The result of the import function.
+     */
+    public WebServiceResult importPriceAlerts(final String priceAlertsAsJson) {
+        return null;
+    }
+
+    /**
      * Converts the lean PriceAlert representation that is provided by the WebService to the internal data model for
      * further processing.
      *

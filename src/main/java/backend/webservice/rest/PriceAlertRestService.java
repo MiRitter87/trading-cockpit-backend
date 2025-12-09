@@ -109,4 +109,19 @@ public class PriceAlertRestService {
         PriceAlertService priceAlertService = new PriceAlertService();
         return priceAlertService.exportPriceAlerts();
     }
+
+    /**
+     * Imports the price alerts provided.
+     *
+     * @param priceAlertsAsJson A JSON String containing all price alerts to be imported.
+     * @return The result of the import function.
+     */
+    @POST
+    @Path("/import")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public WebServiceResult importPriceAlerts(final String priceAlertsAsJson) {
+        PriceAlertService priceAlertService = new PriceAlertService();
+        return priceAlertService.importPriceAlerts(priceAlertsAsJson);
+    }
 }
