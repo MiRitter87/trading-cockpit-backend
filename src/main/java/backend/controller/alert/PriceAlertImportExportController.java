@@ -11,9 +11,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import backend.dao.DAOManager;
+import backend.dao.instrument.InstrumentDAO;
 import backend.dao.priceAlert.PriceAlertDAO;
 import backend.dao.priceAlert.PriceAlertOrderAttribute;
 import backend.model.LocalizedException;
+import backend.model.instrument.Instrument;
 import backend.model.priceAlert.ConfirmationStatus;
 import backend.model.priceAlert.PriceAlert;
 import backend.model.priceAlert.TriggerStatus;
@@ -32,6 +34,11 @@ public class PriceAlertImportExportController {
     private PriceAlertDAO priceAlertDAO;
 
     /**
+     * DAO for Instrument access.
+     */
+    private InstrumentDAO instrumentDAO;
+
+    /**
      * Access to localized application resources.
      */
     private ResourceBundle resources = ResourceBundle.getBundle("backend");
@@ -46,6 +53,7 @@ public class PriceAlertImportExportController {
      */
     public PriceAlertImportExportController() {
         this.priceAlertDAO = DAOManager.getInstance().getPriceAlertDAO();
+        this.instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
     }
 
     /**
@@ -82,10 +90,43 @@ public class PriceAlertImportExportController {
             if (deserializedAlerts.size() == 0) {
                 throw new LocalizedException("priceAlert.importEmptyList");
             }
+
+            for (PriceAlert priceAlert : deserializedAlerts) {
+                if (!this.isInstrumentExisting(priceAlert.getInstrument())) {
+                    LOGGER.warn("The Instrument with ID " + priceAlert.getInstrument().getId() + " and Symbol "
+                            + priceAlert.getInstrument().getSymbol()
+                            + " was not found on the database. Skipping import of this price alert.");
+                    continue;
+                }
+
+            }
         } catch (JsonParseException parseException) {
             throw new LocalizedException("priceAlert.importJsonMalformed");
         }
 
         return null;
+    }
+
+    /**
+     * Checks if the given Instrument exists on the database.
+     *
+     * @param jsonInstrument The Instrument from the JSON String to be checked.
+     * @return true, if Instrument exists; false, if not.
+     * @throws Exception Failed to check if Instrument exists.
+     */
+    private boolean isInstrumentExisting(final Instrument jsonInstrument) throws Exception {
+        Instrument databaseInstrument = this.instrumentDAO.getInstrument(jsonInstrument.getId());
+
+        if (databaseInstrument == null) {
+            return false;
+        }
+
+        if (databaseInstrument.getId().equals(jsonInstrument.getId())
+                && databaseInstrument.getSymbol().equals(jsonInstrument.getSymbol())
+                && databaseInstrument.getStockExchange().equals(jsonInstrument.getStockExchange())) {
+            return true;
+        }
+
+        return false;
     }
 }

@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -22,13 +24,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
 import backend.dao.priceAlert.PriceAlertDAO;
+import backend.dao.priceAlert.PriceAlertOrderAttribute;
 import backend.model.Currency;
 import backend.model.LocalizedException;
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
+import backend.model.priceAlert.ConfirmationStatus;
 import backend.model.priceAlert.PriceAlert;
 import backend.model.priceAlert.PriceAlertType;
+import backend.model.priceAlert.TriggerStatus;
 
 /**
  * Test the PriceAlertImportExportController.
@@ -218,6 +223,24 @@ public class PriceAlertImportExportControllerTest {
         return alert;
     }
 
+    /**
+     * Gets the Json String for PriceAlert import with the reference to an unknown Instrument.
+     *
+     * @return The Json String.
+     * @throws IOException Failed to read Json String from file.
+     */
+    private String getJsonOfAlertWithUnknownInstrument() throws IOException {
+        String jsonPath = "src/test/resources/PriceAlertImport/priceAlertsUnknownInstrument.json";
+        String jsonAlerts = Files.readString(Paths.get(jsonPath));
+        String oldIdString = "\"instrument\":{\"id\":33944";
+        String newIdString = "\"instrument\":{\"id\":" + this.appleInstrument.getId() + "0";
+
+        // Replace Instrument ID assuring that Instrument does not exist.
+        jsonAlerts = jsonAlerts.replace(oldIdString, newIdString);
+
+        return jsonAlerts;
+    }
+
     @Test
     /**
      * Tests the export of all price alerts.
@@ -282,10 +305,32 @@ public class PriceAlertImportExportControllerTest {
         }
     }
 
+    @Test
+    /**
+     * Tests the import of price alerts where an Instrument with an unknown ID is being referenced. No Price Alert is
+     * being created, if the referenced Instrument is unknown.
+     */
+    public void testImportPriceAlertsUnknownInstrument() {
+        int expectedNumberAlerts = 2;
+        List<PriceAlert> priceAlerts;
+
+        try {
+            String importJson = this.getJsonOfAlertWithUnknownInstrument();
+
+            this.importExportController.importPriceAlerts(importJson);
+
+            // Verify, that no additional Price Alert was created by the import method.
+            priceAlerts = priceAlertDAO.getPriceAlerts(PriceAlertOrderAttribute.ID, TriggerStatus.ALL,
+                    ConfirmationStatus.ALL);
+            assertEquals(expectedNumberAlerts, priceAlerts.size());
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
     /**
      * TODO Implement necessary tests
      *
-     * -import price alerts where referenced instrument does not exist
      * -import price alerts that already exist
      * -import two price alerts successfully
      */
