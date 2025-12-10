@@ -69,7 +69,7 @@ public class PriceAlertImportExportController {
      * @param priceAlertsAsJson A JSON String containing all price alerts to be imported.
      * @return The result of the import function.
      * @throws LocalizedException A specific error the user is notified about.
-     * @throws Exception Import failed.
+     * @throws Exception          Import failed.
      */
     public WebServiceResult importPriceAlerts(final String priceAlertsAsJson) throws LocalizedException, Exception {
         List<PriceAlert> deserializedAlerts;
@@ -78,6 +78,10 @@ public class PriceAlertImportExportController {
         try {
             deserializedAlerts = mapper.readValue(priceAlertsAsJson, new TypeReference<List<PriceAlert>>() {
             });
+
+            if (deserializedAlerts.size() == 0) {
+                throw new LocalizedException("priceAlert.importEmptyList");
+            }
         } catch (JsonParseException parseException) {
             throw new LocalizedException("priceAlert.importJsonMalformed");
         }

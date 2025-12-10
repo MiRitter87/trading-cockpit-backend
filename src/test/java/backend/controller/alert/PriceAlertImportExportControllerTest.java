@@ -23,6 +23,7 @@ import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
 import backend.dao.priceAlert.PriceAlertDAO;
 import backend.model.Currency;
+import backend.model.LocalizedException;
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.InstrumentType;
@@ -263,12 +264,29 @@ public class PriceAlertImportExportControllerTest {
         }
     }
 
+    @Test
+    /**
+     * Tests importing price alerts from a JSON String containing just an empty list.
+     */
+    public void testImportPriceAlertsEmptyList() {
+        String emptyListJson = "[]";
+        String expectedErrorMessage = this.resources.getString("priceAlert.importEmptyList");
+
+        try {
+            this.importExportController.importPriceAlerts(emptyListJson);
+            fail("Import should have failed because empty list has been given.");
+        } catch (LocalizedException e) {
+            assertEquals(expectedErrorMessage, e.getLocalizedMessage());
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
     /**
      * TODO Implement necessary tests
      *
-     *  -import empty List (no price alerts)
-     *  -import price alerts where referenced instrument does not exist
-     *  -import price alerts that already exist
-     *  -import two price alerts successfully
+     * -import price alerts where referenced instrument does not exist
+     * -import price alerts that already exist
+     * -import two price alerts successfully
      */
 }
