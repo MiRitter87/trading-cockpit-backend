@@ -99,6 +99,8 @@ public class PriceAlertImportExportController {
                     continue;
                 }
 
+                //TODO Check if PriceAlert already exists.
+
             }
         } catch (JsonParseException parseException) {
             throw new LocalizedException("priceAlert.importJsonMalformed");

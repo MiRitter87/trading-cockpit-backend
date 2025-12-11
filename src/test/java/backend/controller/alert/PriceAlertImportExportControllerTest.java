@@ -241,6 +241,24 @@ public class PriceAlertImportExportControllerTest {
         return jsonAlerts;
     }
 
+    /**
+     * Gets the Json String for PriceAlert import with an alert that already exists.
+     *
+     * @return The Json String.
+     * @throws IOException Failed to read Json String from file.
+     */
+    private String getJsonOfAlertAlreadyExisting() throws IOException {
+        String jsonPath = "src/test/resources/PriceAlertImport/priceAlertsExisting.json";
+        String jsonAlerts = Files.readString(Paths.get(jsonPath));
+        String oldIdString = "\"instrument\":{\"id\":34547";
+        String newIdString = "\"instrument\":{\"id\":" + this.appleInstrument.getId();
+
+        // Replace Instrument ID from file with actual ID from the database.
+        jsonAlerts = jsonAlerts.replace(oldIdString, newIdString);
+
+        return jsonAlerts;
+    }
+
     @Test
     /**
      * Tests the export of all price alerts.
@@ -316,6 +334,28 @@ public class PriceAlertImportExportControllerTest {
 
         try {
             String importJson = this.getJsonOfAlertWithUnknownInstrument();
+
+            this.importExportController.importPriceAlerts(importJson);
+
+            // Verify, that no additional Price Alert was created by the import method.
+            priceAlerts = priceAlertDAO.getPriceAlerts(PriceAlertOrderAttribute.ID, TriggerStatus.ALL,
+                    ConfirmationStatus.ALL);
+            assertEquals(expectedNumberAlerts, priceAlerts.size());
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    /**
+     * Tests the import of price alerts that already exist.
+     */
+    public void testImportPriceAlertsExisting() {
+        int expectedNumberAlerts = 2;
+        List<PriceAlert> priceAlerts;
+
+        try {
+            String importJson = this.getJsonOfAlertAlreadyExisting();
 
             this.importExportController.importPriceAlerts(importJson);
 
