@@ -305,4 +305,27 @@ public class PriceAlertHibernateDAOTest {
             fail(e.getMessage());
         }
     }
+
+    @Test
+    /**
+     * Test getting all price alerts of a specific instrument, type, price and TriggerStatus combination.
+     */
+    public void testGetPriceAlertsOfInstrument() {
+        List<PriceAlert> priceAlerts;
+        PriceAlert priceAlert;
+
+        try {
+            priceAlerts = priceAlertDAO.getPriceAlerts(this.appleInstrument.getId(), PriceAlertType.GREATER_OR_EQUAL,
+                    BigDecimal.valueOf(185.50), TriggerStatus.NOT_TRIGGERED);
+
+            // Assure correct amount of alerts.
+            assertEquals(1, priceAlerts.size());
+
+            // Assure correct alert is selected.
+            priceAlert = priceAlerts.get(0);
+            assertEquals(this.appleAlert.getId(), priceAlert.getId());
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
 }

@@ -16,6 +16,7 @@ import backend.model.priceAlert.TriggerStatus;
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -152,10 +153,22 @@ public class PriceAlertHibernateDAO implements PriceAlertDAO {
      * PriceAlertType, price and TriggerStatus.
      */
     @Override
+    @SuppressWarnings("unchecked")
     public List<PriceAlert> getPriceAlerts(final Integer instrumentId, final PriceAlertType priceAlertType,
             final BigDecimal price, final TriggerStatus triggerStatus) throws Exception {
-        // TODO Auto-generated method stub
-        return null;
+
+        List<PriceAlert> priceAlerts = null;
+        EntityManager entityManager = this.sessionFactory.createEntityManager();
+        Query query = entityManager
+                .createQuery("SELECT p FROM PriceAlert p INNER JOIN p.instrument i WHERE i.id = :instrumentId "
+                        + "AND p.alertType = :priceAlertType AND p.price = :price AND triggerTime IS NULL");
+
+        query.setParameter("instrumentId", instrumentId);
+        query.setParameter("priceAlertType", priceAlertType);
+        query.setParameter("price", price);
+        priceAlerts = query.getResultList();
+
+        return priceAlerts;
     }
 
     /**
