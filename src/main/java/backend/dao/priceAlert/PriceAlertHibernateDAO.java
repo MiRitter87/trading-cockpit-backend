@@ -1,5 +1,6 @@
 package backend.dao.priceAlert;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +11,7 @@ import backend.dao.ObjectUnchangedException;
 import backend.model.LocalizedException;
 import backend.model.priceAlert.ConfirmationStatus;
 import backend.model.priceAlert.PriceAlert;
+import backend.model.priceAlert.PriceAlertType;
 import backend.model.priceAlert.TriggerStatus;
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
@@ -143,6 +145,17 @@ public class PriceAlertHibernateDAO implements PriceAlertDAO {
         }
 
         return priceAlerts;
+    }
+
+    /**
+     * Gets a List of price alerts. The requested price alerts can be further specified using Instrument ID,
+     * PriceAlertType, price and TriggerStatus.
+     */
+    @Override
+    public List<PriceAlert> getPriceAlerts(final Integer instrumentId, final PriceAlertType priceAlertType,
+            final BigDecimal price, final TriggerStatus triggerStatus) throws Exception {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     /**

@@ -1,11 +1,13 @@
 package backend.dao.priceAlert;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import backend.dao.ObjectUnchangedException;
 import backend.model.LocalizedException;
 import backend.model.priceAlert.ConfirmationStatus;
 import backend.model.priceAlert.PriceAlert;
+import backend.model.priceAlert.PriceAlertType;
 import backend.model.priceAlert.TriggerStatus;
 
 /**
@@ -39,10 +41,23 @@ public interface PriceAlertDAO {
      * @param confirmationStatus       Defines which alerts are selected based on the status of the confirmationTime
      *                                 attribute.
      * @return All price alerts.
-     * @throws Exception Price alert retrieval failed.
+     * @throws Exception PriceAlert retrieval failed.
      */
     List<PriceAlert> getPriceAlerts(PriceAlertOrderAttribute priceAlertOrderAttribute, TriggerStatus triggerStatus,
             ConfirmationStatus confirmationStatus) throws Exception;
+
+    /**
+     * Gets all price alerts.
+     *
+     * @param instrumentId   The ID of the Instrument the PriceAlert is based on.
+     * @param priceAlertType The PriceAlertType.
+     * @param price          The price.
+     * @param triggerStatus  The TriggerStatus.
+     * @return A list of price alerts that match the given criteria.
+     * @throws Exception PriceAlert retrieval failed.
+     */
+    List<PriceAlert> getPriceAlerts(Integer instrumentId, PriceAlertType priceAlertType, BigDecimal price,
+            TriggerStatus triggerStatus) throws Exception;
 
     /**
      * Gets the price alert with the given id.
