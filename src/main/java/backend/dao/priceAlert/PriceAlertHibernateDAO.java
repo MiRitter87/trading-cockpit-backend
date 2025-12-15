@@ -47,8 +47,11 @@ public class PriceAlertHibernateDAO implements PriceAlertDAO {
      * Inserts a PriceAlert.
      */
     @Override
-    public void insertPriceAlert(final PriceAlert priceAlert) throws Exception {
+    public void insertPriceAlert(final PriceAlert priceAlert) throws LocalizedException, Exception {
         EntityManager entityManager = this.sessionFactory.createEntityManager();
+
+        this.checkPriceAlertExistsCreate(priceAlert);
+
         entityManager.getTransaction().begin();
 
         try {
@@ -149,13 +152,13 @@ public class PriceAlertHibernateDAO implements PriceAlertDAO {
     }
 
     /**
-     * Gets a List of price alerts. The requested price alerts can be further specified using Instrument ID,
-     * PriceAlertType, price and TriggerStatus.
+     * Gets a List of active price alerts. The requested price alerts can be further specified using Instrument ID,
+     * PriceAlertType and price.
      */
     @Override
     @SuppressWarnings("unchecked")
     public List<PriceAlert> getPriceAlerts(final Integer instrumentId, final PriceAlertType priceAlertType,
-            final BigDecimal price, final TriggerStatus triggerStatus) throws Exception {
+            final BigDecimal price) throws Exception {
 
         List<PriceAlert> priceAlerts = null;
         EntityManager entityManager = this.sessionFactory.createEntityManager();
@@ -331,5 +334,22 @@ public class PriceAlertHibernateDAO implements PriceAlertDAO {
                 .addAttributeNodes("instruments");
         graph.addSubgraph("instrument").addSubgraph("industryGroup").addSubgraph("dataSourceList")
                 .addAttributeNodes("instruments");
+    }
+
+    /**
+     * Checks if the database already contains an active PriceAlert with the given instrument / price /
+     * {@link PriceAlertType} combination.
+     *
+     * @param priceAlert The PriceAlert to be checked.
+     * @throws LocalizedException A general exception with a localized message.
+     * @throws Exception          Check failed.
+     */
+    private void checkPriceAlertExistsCreate(final PriceAlert priceAlert) throws LocalizedException, Exception {
+        List<PriceAlert> priceAlerts = this.getPriceAlerts(priceAlert.getInstrument().getId(),
+                priceAlert.getAlertType(), priceAlert.getPrice());
+
+        if (priceAlerts.size() > 0) {
+            throw new LocalizedException("priceAlert.addDuplicate");
+        }
     }
 }

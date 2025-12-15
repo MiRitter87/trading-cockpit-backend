@@ -20,9 +20,10 @@ public interface PriceAlertDAO {
      * Inserts a price alert.
      *
      * @param priceAlert The price alert to be inserted.
-     * @throws Exception Insertion failed.
+     * @throws LocalizedException A general exception containing a localized message.
+     * @throws Exception          Insertion failed.
      */
-    void insertPriceAlert(PriceAlert priceAlert) throws Exception;
+    void insertPriceAlert(PriceAlert priceAlert) throws LocalizedException, Exception;
 
     /**
      * Deletes a price alert.
@@ -47,17 +48,16 @@ public interface PriceAlertDAO {
             ConfirmationStatus confirmationStatus) throws Exception;
 
     /**
-     * Gets all price alerts.
+     * Gets all price alerts with the given attributes that are not triggered.
      *
      * @param instrumentId   The ID of the Instrument the PriceAlert is based on.
      * @param priceAlertType The PriceAlertType.
      * @param price          The price.
-     * @param triggerStatus  The TriggerStatus.
      * @return A list of price alerts that match the given criteria.
      * @throws Exception PriceAlert retrieval failed.
      */
-    List<PriceAlert> getPriceAlerts(Integer instrumentId, PriceAlertType priceAlertType, BigDecimal price,
-            TriggerStatus triggerStatus) throws Exception;
+    List<PriceAlert> getPriceAlerts(Integer instrumentId, PriceAlertType priceAlertType, BigDecimal price)
+            throws Exception;
 
     /**
      * Gets the price alert with the given id.

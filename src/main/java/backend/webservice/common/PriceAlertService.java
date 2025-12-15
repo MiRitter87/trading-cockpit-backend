@@ -155,6 +155,9 @@ public class PriceAlertService {
             addPriceAlertResult.addMessage(
                     new WebServiceMessage(WebServiceMessageType.S, this.resources.getString("priceAlert.addSuccess")));
             addPriceAlertResult.setData(convertedPriceAlert.getId());
+        } catch (LocalizedException localizedException) {
+            addPriceAlertResult.addMessage(
+                    new WebServiceMessage(WebServiceMessageType.E, localizedException.getLocalizedMessage()));
         } catch (Exception e) {
             addPriceAlertResult.addMessage(
                     new WebServiceMessage(WebServiceMessageType.E, this.resources.getString("priceAlert.addError")));

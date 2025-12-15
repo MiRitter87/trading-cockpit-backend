@@ -546,7 +546,7 @@ public class PriceAlertServiceTest {
         assertNull(newPriceAlert.getId());
     }
 
-    // @Test
+    @Test
     /**
      * Tests adding a duplicative PriceAlert.
      */
@@ -554,6 +554,8 @@ public class PriceAlertServiceTest {
         PriceAlert newPriceAlert = this.fixtureHelper.getAppleAlert(this.appleInstrument);
         WebServiceResult addPriceAlertResult;
         PriceAlertService service = new PriceAlertService();
+        String expectedErrorMessage;
+        String actualErrorMessage;
 
         // Add a new price alert to the database via WebService
         addPriceAlertResult = service.addPriceAlert(this.fixtureHelper.convertToWsPriceAlert(newPriceAlert));
@@ -561,6 +563,11 @@ public class PriceAlertServiceTest {
         // There should be a return message of type E.
         assertTrue(addPriceAlertResult.getMessages().size() == 1);
         assertTrue(addPriceAlertResult.getMessages().get(0).getType() == WebServiceMessageType.E);
+
+        // A proper message should be provided
+        expectedErrorMessage = this.resources.getString("priceAlert.addDuplicate");
+        actualErrorMessage = addPriceAlertResult.getMessages().get(0).getText();
+        assertEquals(expectedErrorMessage, actualErrorMessage);
 
         // The new price alert should not have been persisted
         assertNull(newPriceAlert.getId());

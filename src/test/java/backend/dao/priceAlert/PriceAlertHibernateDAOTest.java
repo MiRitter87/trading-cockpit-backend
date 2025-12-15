@@ -316,7 +316,7 @@ public class PriceAlertHibernateDAOTest {
 
         try {
             priceAlerts = priceAlertDAO.getPriceAlerts(this.appleInstrument.getId(), PriceAlertType.GREATER_OR_EQUAL,
-                    BigDecimal.valueOf(185.50), TriggerStatus.NOT_TRIGGERED);
+                    BigDecimal.valueOf(185.50));
 
             // Assure correct amount of alerts.
             assertEquals(1, priceAlerts.size());
