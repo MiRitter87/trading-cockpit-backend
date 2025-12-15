@@ -259,6 +259,24 @@ public class PriceAlertImportExportControllerTest {
         return jsonAlerts;
     }
 
+    /**
+     * Gets the Json String for PriceAlert import with an alert that is valid for import.
+     *
+     * @return The Json String.
+     * @throws IOException Failed to read Json String from file.
+     */
+    private String getJsonOfAlertForImport() throws IOException {
+        String jsonPath = "src/test/resources/PriceAlertImport/priceAlertValidImport.json";
+        String jsonAlerts = Files.readString(Paths.get(jsonPath));
+        String oldIdString = "\"instrument\":{\"id\":34547";
+        String newIdString = "\"instrument\":{\"id\":" + this.appleInstrument.getId();
+
+        // Replace Instrument ID from file with actual ID from the database.
+        jsonAlerts = jsonAlerts.replace(oldIdString, newIdString);
+
+        return jsonAlerts;
+    }
+
     @Test
     /**
      * Tests the export of all price alerts.
@@ -348,6 +366,45 @@ public class PriceAlertImportExportControllerTest {
 
     @Test
     /**
+     * Test the import of a valid PriceAlert.
+     */
+    public void testImportPriceAlertsValidImport() {
+        int expectedNumberAlerts = 3;
+        List<PriceAlert> priceAlerts = null;
+        String importJson;
+
+        try {
+            importJson = this.getJsonOfAlertForImport();
+
+            this.importExportController.importPriceAlerts(importJson);
+
+            // Verify, that an additional Price Alert was created by the import method.
+            priceAlerts = priceAlertDAO.getPriceAlerts(PriceAlertOrderAttribute.ID, TriggerStatus.ALL,
+                    ConfirmationStatus.ALL);
+            assertEquals(expectedNumberAlerts, priceAlerts.size());
+        } catch (Exception e) {
+            fail(e.getMessage());
+        } finally {
+            // Delete the imported PriceAlert.
+            if (priceAlerts == null) {
+                return;
+            }
+
+            for (PriceAlert tempAlert : priceAlerts) {
+                if (!tempAlert.getId().equals(this.appleAlert1.getId())
+                        && !tempAlert.getId().equals(this.appleAlert2.getId())) {
+                    try {
+                        priceAlertDAO.deletePriceAlert(tempAlert);
+                    } catch (Exception e) {
+                        fail(e.getMessage());
+                    }
+                }
+            }
+        }
+    }
+
+    // @Test Activate this test after import has been implemented.
+    /**
      * Tests the import of price alerts that already exist.
      */
     public void testImportPriceAlertsExisting() {
@@ -372,6 +429,5 @@ public class PriceAlertImportExportControllerTest {
      * TODO Implement necessary tests
      *
      * -import price alerts that already exist
-     * -import two price alerts successfully
      */
 }

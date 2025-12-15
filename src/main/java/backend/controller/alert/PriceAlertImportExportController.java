@@ -99,12 +99,13 @@ public class PriceAlertImportExportController {
                     continue;
                 }
 
-                //TODO Check if PriceAlert already exists.
-
+                this.insertPriceAlert(priceAlert);
             }
         } catch (JsonParseException parseException) {
             throw new LocalizedException("priceAlert.importJsonMalformed");
         }
+
+        // TODO Return some kind of information message if import was successful or not.
 
         return null;
     }
@@ -130,5 +131,25 @@ public class PriceAlertImportExportController {
         }
 
         return false;
+    }
+
+    /**
+     * Tries to insert the given PriceAlert into the database.
+     *
+     * @param priceAlert The PriceAlert to be inserted.
+     */
+    private void insertPriceAlert(final PriceAlert priceAlert) {
+        Integer currentAlertId;
+
+        currentAlertId = priceAlert.getId();
+        priceAlert.setId(null);
+
+        try {
+            this.priceAlertDAO.insertPriceAlert(priceAlert);
+        } catch (LocalizedException localizedException) {
+            LOGGER.warn(localizedException.getLocalizedMessage());
+        } catch (Exception exception) {
+            LOGGER.error("Failed to import price alert with ID " + currentAlertId.toString(), exception.getMessage());
+        }
     }
 }
