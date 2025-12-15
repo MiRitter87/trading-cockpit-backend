@@ -565,7 +565,8 @@ public class PriceAlertServiceTest {
         assertTrue(addPriceAlertResult.getMessages().get(0).getType() == WebServiceMessageType.E);
 
         // A proper message should be provided
-        expectedErrorMessage = this.resources.getString("priceAlert.addDuplicate");
+        expectedErrorMessage = MessageFormat.format(this.resources.getString("priceAlert.addDuplicate"),
+                newPriceAlert.getInstrument().getId(), newPriceAlert.getPrice());
         actualErrorMessage = addPriceAlertResult.getMessages().get(0).getText();
         assertEquals(expectedErrorMessage, actualErrorMessage);
 

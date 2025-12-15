@@ -349,7 +349,8 @@ public class PriceAlertHibernateDAO implements PriceAlertDAO {
                 priceAlert.getAlertType(), priceAlert.getPrice());
 
         if (priceAlerts.size() > 0) {
-            throw new LocalizedException("priceAlert.addDuplicate");
+            throw new LocalizedException("priceAlert.addDuplicate", priceAlert.getInstrument().getId(),
+                    priceAlert.getPrice());
         }
     }
 }
