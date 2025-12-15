@@ -1,7 +1,6 @@
 package backend.controller.alert;
 
 import java.util.List;
-import java.util.ResourceBundle;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,10 +18,9 @@ import backend.model.instrument.Instrument;
 import backend.model.priceAlert.ConfirmationStatus;
 import backend.model.priceAlert.PriceAlert;
 import backend.model.priceAlert.TriggerStatus;
-import backend.model.webservice.WebServiceResult;
 
 /**
- * This class is used to export price alerts from the database to a json file. Additionally price alerts from a json
+ * This class is used to export price alerts from the database to a JSON file. Additionally price alerts from a JSON
  * file can be imported into the database.
  *
  * @author MiRitter87
@@ -37,11 +35,6 @@ public class PriceAlertImportExportController {
      * DAO for Instrument access.
      */
     private InstrumentDAO instrumentDAO;
-
-    /**
-     * Access to localized application resources.
-     */
-    private ResourceBundle resources = ResourceBundle.getBundle("backend");
 
     /**
      * Application logging.
@@ -75,13 +68,13 @@ public class PriceAlertImportExportController {
      * Imports the price alerts provided.
      *
      * @param priceAlertsAsJson A JSON String containing all price alerts to be imported.
-     * @return The result of the import function.
      * @throws LocalizedException A specific error the user is notified about.
      * @throws Exception          Import failed.
      */
-    public WebServiceResult importPriceAlerts(final String priceAlertsAsJson) throws LocalizedException, Exception {
+    public void importPriceAlerts(final String priceAlertsAsJson) throws LocalizedException, Exception {
         List<PriceAlert> deserializedAlerts;
         ObjectMapper mapper = new ObjectMapper();
+        boolean warningsOccurred = false;
 
         try {
             deserializedAlerts = mapper.readValue(priceAlertsAsJson, new TypeReference<List<PriceAlert>>() {
@@ -93,21 +86,24 @@ public class PriceAlertImportExportController {
 
             for (PriceAlert priceAlert : deserializedAlerts) {
                 if (!this.isInstrumentExisting(priceAlert.getInstrument())) {
+                    warningsOccurred = true;
                     LOGGER.warn("The Instrument with ID " + priceAlert.getInstrument().getId() + " and Symbol "
                             + priceAlert.getInstrument().getSymbol()
                             + " was not found on the database. Skipping import of this price alert.");
                     continue;
                 }
 
-                this.insertPriceAlert(priceAlert);
+                if (!this.insertPriceAlert(priceAlert)) {
+                    warningsOccurred = true;
+                }
             }
         } catch (JsonParseException parseException) {
             throw new LocalizedException("priceAlert.importJsonMalformed");
         }
 
-        // TODO Return some kind of information message if import was successful or not.
-
-        return null;
+        if (warningsOccurred) {
+            throw new LocalizedException("priceAlert.importWithWarnings");
+        }
     }
 
     /**
@@ -137,8 +133,9 @@ public class PriceAlertImportExportController {
      * Tries to insert the given PriceAlert into the database.
      *
      * @param priceAlert The PriceAlert to be inserted.
+     * @return true, if insert succeeded; false, if insert failed.
      */
-    private void insertPriceAlert(final PriceAlert priceAlert) {
+    private boolean insertPriceAlert(final PriceAlert priceAlert) {
         Integer currentAlertId;
 
         currentAlertId = priceAlert.getId();
@@ -146,10 +143,13 @@ public class PriceAlertImportExportController {
 
         try {
             this.priceAlertDAO.insertPriceAlert(priceAlert);
+            return true;
         } catch (LocalizedException localizedException) {
             LOGGER.warn(localizedException.getLocalizedMessage());
         } catch (Exception exception) {
             LOGGER.error("Failed to import price alert with ID " + currentAlertId.toString(), exception.getMessage());
         }
+
+        return false;
     }
 }

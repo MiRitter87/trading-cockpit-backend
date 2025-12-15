@@ -224,10 +224,10 @@ public class PriceAlertImportExportControllerTest {
     }
 
     /**
-     * Gets the Json String for PriceAlert import with the reference to an unknown Instrument.
+     * Gets the JSON String for PriceAlert import with the reference to an unknown Instrument.
      *
-     * @return The Json String.
-     * @throws IOException Failed to read Json String from file.
+     * @return The JSON String.
+     * @throws IOException Failed to read JSON String from file.
      */
     private String getJsonOfAlertWithUnknownInstrument() throws IOException {
         String jsonPath = "src/test/resources/PriceAlertImport/priceAlertsUnknownInstrument.json";
@@ -242,10 +242,10 @@ public class PriceAlertImportExportControllerTest {
     }
 
     /**
-     * Gets the Json String for PriceAlert import with an alert that already exists.
+     * Gets the JSON String for PriceAlert import with an alert that already exists.
      *
-     * @return The Json String.
-     * @throws IOException Failed to read Json String from file.
+     * @return The JSON String.
+     * @throws IOException Failed to read JSON String from file.
      */
     private String getJsonOfAlertAlreadyExisting() throws IOException {
         String jsonPath = "src/test/resources/PriceAlertImport/priceAlertsExisting.json";
@@ -260,10 +260,10 @@ public class PriceAlertImportExportControllerTest {
     }
 
     /**
-     * Gets the Json String for PriceAlert import with an alert that is valid for import.
+     * Gets the JSON String for PriceAlert import with an alert that is valid for import.
      *
-     * @return The Json String.
-     * @throws IOException Failed to read Json String from file.
+     * @return The JSON String.
+     * @throws IOException Failed to read JSON String from file.
      */
     private String getJsonOfAlertForImport() throws IOException {
         String jsonPath = "src/test/resources/PriceAlertImport/priceAlertValidImport.json";
@@ -349,13 +349,21 @@ public class PriceAlertImportExportControllerTest {
     public void testImportPriceAlertsUnknownInstrument() {
         int expectedNumberAlerts = 2;
         List<PriceAlert> priceAlerts;
+        String expectedErrorMessage = this.resources.getString("priceAlert.importWithWarnings");
 
         try {
             String importJson = this.getJsonOfAlertWithUnknownInstrument();
 
             this.importExportController.importPriceAlerts(importJson);
+        } catch (LocalizedException expected) {
+            // Assure proper message is provided.
+            assertEquals(expectedErrorMessage, expected.getLocalizedMessage());
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
 
-            // Verify, that no additional Price Alert was created by the import method.
+        // Verify, that no additional Price Alert was created by the import method.
+        try {
             priceAlerts = priceAlertDAO.getPriceAlerts(PriceAlertOrderAttribute.ID, TriggerStatus.ALL,
                     ConfirmationStatus.ALL);
             assertEquals(expectedNumberAlerts, priceAlerts.size());
@@ -403,20 +411,28 @@ public class PriceAlertImportExportControllerTest {
         }
     }
 
-    // @Test Activate this test after import has been implemented.
+    @Test
     /**
      * Tests the import of price alerts that already exist.
      */
     public void testImportPriceAlertsExisting() {
         int expectedNumberAlerts = 2;
         List<PriceAlert> priceAlerts;
+        String expectedErrorMessage = this.resources.getString("priceAlert.importWithWarnings");
 
         try {
             String importJson = this.getJsonOfAlertAlreadyExisting();
 
             this.importExportController.importPriceAlerts(importJson);
+        } catch (LocalizedException expected) {
+            // Assure proper message is provided.
+            assertEquals(expectedErrorMessage, expected.getLocalizedMessage());
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
 
-            // Verify, that no additional Price Alert was created by the import method.
+        // Verify, that no additional Price Alert was created by the import method.
+        try {
             priceAlerts = priceAlertDAO.getPriceAlerts(PriceAlertOrderAttribute.ID, TriggerStatus.ALL,
                     ConfirmationStatus.ALL);
             assertEquals(expectedNumberAlerts, priceAlerts.size());
@@ -426,8 +442,6 @@ public class PriceAlertImportExportControllerTest {
     }
 
     /**
-     * TODO Implement necessary tests
-     *
-     * -import price alerts that already exist
+     * TODO Test proper return messages during success and failure of import.
      */
 }
