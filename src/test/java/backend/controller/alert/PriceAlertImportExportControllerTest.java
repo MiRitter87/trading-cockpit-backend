@@ -440,8 +440,4 @@ public class PriceAlertImportExportControllerTest {
             fail(e.getMessage());
         }
     }
-
-    /**
-     * TODO Test proper return messages during success and failure of import.
-     */
 }

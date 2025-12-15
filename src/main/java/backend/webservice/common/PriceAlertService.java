@@ -286,7 +286,21 @@ public class PriceAlertService {
      * @return The result of the import function.
      */
     public WebServiceResult importPriceAlerts(final String priceAlertsAsJson) {
-        return null;
+        PriceAlertImportExportController controller = new PriceAlertImportExportController();
+        WebServiceResult importResult = new WebServiceResult();
+
+        try {
+            controller.importPriceAlerts(priceAlertsAsJson);
+            importResult.addMessage(new WebServiceMessage(WebServiceMessageType.S, "priceAlert.importSuccess"));
+        } catch (LocalizedException localizedException) {
+            importResult.addMessage(
+                    new WebServiceMessage(WebServiceMessageType.W, localizedException.getLocalizedMessage()));
+        } catch (Exception exception) {
+            importResult.addMessage(new WebServiceMessage(WebServiceMessageType.E,
+                    this.resources.getString("priceAlert.importWithError")));
+        }
+
+        return importResult;
     }
 
     /**
