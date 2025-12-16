@@ -306,11 +306,10 @@ public class PriceVolumeChartController extends ChartController {
      */
     protected XYPlot getVolumePlot(final Instrument instrument, final ValueAxis timeAxis) throws Exception {
         IntervalXYDataset volumeData = this.getInstrumentVolumeDataset(instrument);
-        XYBarRenderer volumeRenderer = new XYBarRenderer();
+        XYBarRenderer volumeRenderer = new CustomXYBarRenderer();
         NumberAxis volumeAxis = new NumberAxis();
 
         volumeRenderer.setShadowVisible(false); // Volume bars without shadow.
-        volumeRenderer.setSeriesPaint(0, Color.BLUE); // Blue volume bars.
 
         XYPlot volumeSubplot = new XYPlot(volumeData, timeAxis, volumeAxis, volumeRenderer);
         volumeSubplot.setRangeAxisLocation(AxisLocation.TOP_OR_RIGHT);
