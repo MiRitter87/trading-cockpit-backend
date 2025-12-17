@@ -6,6 +6,7 @@ import java.awt.Paint;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.data.xy.IntervalXYDataset;
 
+import backend.calculator.PerformanceCalculator;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
 
@@ -35,7 +36,30 @@ public class CustomXYBarRenderer extends XYBarRenderer {
      */
     @Override
     public Paint getItemPaint(final int row, final int column) {
-        Quotation quotation = this.instrument.getQuotations().get(this.volumeData.getItemCount(0) - column - 1);
+        Quotation currentQuotation = this.instrument.getQuotations().get(this.volumeData.getItemCount(0) - column - 1);
+        Quotation previousQuotation = null;
+
+        if ((this.volumeData.getItemCount(0) - column) < this.volumeData.getItemCount(0)) {
+            previousQuotation = this.instrument.getQuotations().get(this.volumeData.getItemCount(0) - column);
+        }
+
+        if (previousQuotation != null) {
+            return this.getPerformanceBasedColor(currentQuotation, previousQuotation);
+        } else {
+            return getCloseBasedColor(currentQuotation);
+        }
+    }
+
+    /**
+     * Determines the bar color based on the relation of opening and closing price.
+     *
+     * @param quotation The Quotation.
+     * @return The color.
+     */
+    private Color getCloseBasedColor(final Quotation quotation) {
+        if (quotation == null) {
+            return Color.BLUE;
+        }
 
         if (quotation.getClose().floatValue() > quotation.getOpen().floatValue()) {
             return Color.GREEN;
@@ -44,9 +68,32 @@ public class CustomXYBarRenderer extends XYBarRenderer {
         } else {
             return Color.BLUE;
         }
-        /*
-         * TODO Set color depending on performance. green on up-days, red on down-days, blue on neutral days.
-         */
+    }
+
+    /**
+     * Determines the bar color based on the performance.
+     *
+     * @param currentQuotation  The current Quotation.
+     * @param previousQuotation The previous Quotation.
+     * @return The color.
+     */
+    private Color getPerformanceBasedColor(final Quotation currentQuotation, final Quotation previousQuotation) {
+        PerformanceCalculator calculator = new PerformanceCalculator();
+        float performance;
+
+        if (currentQuotation == null || previousQuotation == null) {
+            return Color.BLUE;
+        }
+
+        performance = calculator.getPerformance(currentQuotation, previousQuotation);
+
+        if (performance > 0) {
+            return Color.GREEN;
+        } else if (performance < 0) {
+            return Color.RED;
+        } else {
+            return Color.BLUE;
+        }
     }
 
     /**
