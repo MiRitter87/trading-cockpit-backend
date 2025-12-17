@@ -58,15 +58,15 @@ public class CustomXYBarRenderer extends XYBarRenderer {
      */
     private Color getCloseBasedColor(final Quotation quotation) {
         if (quotation == null) {
-            return Color.BLUE;
+            return this.getNeutralBarColor();
         }
 
         if (quotation.getClose().floatValue() > quotation.getOpen().floatValue()) {
-            return Color.GREEN;
+            return this.getUpBarColor();
         } else if (quotation.getClose().floatValue() < quotation.getOpen().floatValue()) {
-            return Color.RED;
+            return this.getDownBarColor();
         } else {
-            return Color.BLUE;
+            return this.getNeutralBarColor();
         }
     }
 
@@ -82,18 +82,57 @@ public class CustomXYBarRenderer extends XYBarRenderer {
         float performance;
 
         if (currentQuotation == null || previousQuotation == null) {
-            return Color.BLUE;
+            return this.getNeutralBarColor();
         }
 
         performance = calculator.getPerformance(currentQuotation, previousQuotation);
 
         if (performance > 0) {
-            return Color.GREEN;
+            return this.getUpBarColor();
         } else if (performance < 0) {
-            return Color.RED;
+            return this.getDownBarColor();
         } else {
-            return Color.BLUE;
+            return this.getNeutralBarColor();
         }
+    }
+
+    /**
+     * Gets the volume bar color of an up-day.
+     *
+     * @return The Color.
+     */
+    private Color getUpBarColor() {
+        final int rValue = 41;
+        final int gValue = 121;
+        final int bValue = 68;
+
+        return new Color(rValue, gValue, bValue);
+    }
+
+    /**
+     * Gets the volume bar color of a down-day.
+     *
+     * @return The Color.
+     */
+    private Color getDownBarColor() {
+        final int rValue = 140;
+        final int gValue = 45;
+        final int bValue = 51;
+
+        return new Color(rValue, gValue, bValue);
+    }
+
+    /**
+     * Gets the volume bar color of an unchanged day.
+     *
+     * @return The Color.
+     */
+    private Color getNeutralBarColor() {
+        final int rValue = 87;
+        final int gValue = 174;
+        final int bValue = 251;
+
+        return new Color(rValue, gValue, bValue);
     }
 
     /**
