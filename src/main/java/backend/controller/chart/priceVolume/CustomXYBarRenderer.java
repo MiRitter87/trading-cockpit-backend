@@ -102,9 +102,9 @@ public class CustomXYBarRenderer extends XYBarRenderer {
      * @return The Color.
      */
     private Color getUpBarColor() {
-        final int rValue = 41;
-        final int gValue = 121;
-        final int bValue = 68;
+        final int rValue = 0;
+        final int gValue = 128;
+        final int bValue = 0;
 
         return new Color(rValue, gValue, bValue);
     }
@@ -115,9 +115,9 @@ public class CustomXYBarRenderer extends XYBarRenderer {
      * @return The Color.
      */
     private Color getDownBarColor() {
-        final int rValue = 140;
-        final int gValue = 45;
-        final int bValue = 51;
+        final int rValue = 255;
+        final int gValue = 0;
+        final int bValue = 0;
 
         return new Color(rValue, gValue, bValue);
     }

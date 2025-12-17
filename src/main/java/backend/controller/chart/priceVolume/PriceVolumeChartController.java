@@ -18,6 +18,7 @@ import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.CombinedDomainXYPlot;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.CandlestickRenderer;
+import org.jfree.chart.renderer.xy.StandardXYBarPainter;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
@@ -311,6 +312,7 @@ public class PriceVolumeChartController extends ChartController {
         volumeRenderer.setInstrument(instrument);
         volumeRenderer.setVolumeData(volumeData);
         volumeRenderer.setShadowVisible(false); // Volume bars without shadow.
+        volumeRenderer.setBarPainter(new StandardXYBarPainter()); // No gradient on volume bars.
 
         XYPlot volumeSubplot = new XYPlot(volumeData, timeAxis, volumeAxis, volumeRenderer);
         volumeSubplot.setRangeAxisLocation(AxisLocation.TOP_OR_RIGHT);
