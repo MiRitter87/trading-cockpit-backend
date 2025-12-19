@@ -1,5 +1,6 @@
 package backend.controller.chart.priceVolume;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.text.NumberFormat;
 import java.time.DayOfWeek;
@@ -312,6 +313,10 @@ public class PriceVolumeChartController extends ChartController {
         volumeRenderer.setInstrument(instrument);
         volumeRenderer.setVolumeData(volumeData);
         volumeRenderer.setShadowVisible(false); // Volume bars without shadow.
+        volumeRenderer.setSeriesPaint(0, Color.BLACK); // Black icon in legend of chart.
+        volumeRenderer.setDrawBarOutline(true); // Enable outline around bars.
+        volumeRenderer.setSeriesOutlinePaint(0, Color.BLACK); // Black line around each volume bar.
+        volumeRenderer.setSeriesOutlineStroke(0, new BasicStroke(1.0f)); // Line thickness.
         volumeRenderer.setBarPainter(new StandardXYBarPainter()); // No gradient on volume bars.
 
         XYPlot volumeSubplot = new XYPlot(volumeData, timeAxis, volumeAxis, volumeRenderer);
