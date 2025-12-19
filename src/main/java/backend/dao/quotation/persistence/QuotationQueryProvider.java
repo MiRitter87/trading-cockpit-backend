@@ -68,7 +68,7 @@ public class QuotationQueryProvider {
                 + "LEFT JOIN FETCH i.sector LEFT JOIN FETCH i.industryGroup "
                 + "LEFT JOIN FETCH i.dividend LEFT JOIN FETCH i.divisor "
                 + "JOIN q.indicator r WHERE q.id IN :quotationIds AND q.indicator IS NOT NULL "
-                + "AND r.bollingerBandWidth10Weeks < 20 AND r.bollingerBandWidth10Days < 10 "
+                + "AND r.bollingerBandWidth10Weeks < 20 AND r.bollingerBandWidth10Days <= r.bbw10Threshold25Percent "
                 + "AND r.volumeDifferential5Days < 0");
     }
 
@@ -82,7 +82,7 @@ public class QuotationQueryProvider {
                 + "LEFT JOIN FETCH i.sector LEFT JOIN FETCH i.industryGroup "
                 + "LEFT JOIN FETCH i.dividend LEFT JOIN FETCH i.divisor "
                 + "JOIN q.indicator r WHERE q.id IN :quotationIds AND q.indicator IS NOT NULL "
-                + "AND r.volumeDifferential5Days < 0" + "AND r.bollingerBandWidth10Days < 10");
+                + "AND r.volumeDifferential5Days < 0" + "AND r.bollingerBandWidth10Days <= r.bbw10Threshold25Percent");
     }
 
     /**
