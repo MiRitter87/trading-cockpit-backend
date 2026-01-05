@@ -132,9 +132,9 @@ public class RelativeStrengthCalculatorTest {
 
     @Test
     /**
-     * Tests the calculation of RS numbers: rsNumberUpDownVolumeRatio.
+     * Tests the calculation of RS numbers: rsNumberAccDisRatio.
      */
-    public void testCalculateRsNumberUpDownVolumeRatio() {
+    public void testCalculateRsNumberAccDisRatio() {
         List<Quotation> quotations = new ArrayList<>();
 
         // Prepare all quotations on which the RS number is to be calculated.
