@@ -73,19 +73,19 @@ public class RelativeStrengthCalculatorTest {
         this.dmlQuotation1.setIndicator(new Indicator());
         this.dmlQuotation1.getRelativeStrengthData().setRsPercentSum((float) 34.5);
         this.dmlQuotation1.getIndicator().setDistanceTo52WeekHigh((float) -4.56);
-        this.dmlQuotation1.getIndicator().setUpDownVolumeRatio((float) 2.44);
+        this.dmlQuotation1.getIndicator().setAccDisRatio63Days((float) 2.44);
 
         this.dmlQuotation2 = new Quotation(true, false);
         this.dmlQuotation2.setIndicator(new Indicator());
         this.dmlQuotation2.getRelativeStrengthData().setRsPercentSum(-5);
         this.dmlQuotation2.getIndicator().setDistanceTo52WeekHigh((float) -0.56);
-        this.dmlQuotation2.getIndicator().setUpDownVolumeRatio((float) 0.87);
+        this.dmlQuotation2.getIndicator().setAccDisRatio63Days((float) 0.87);
 
         this.dmlQuotation3 = new Quotation(true, false);
         this.dmlQuotation3.setIndicator(new Indicator());
         this.dmlQuotation3.getRelativeStrengthData().setRsPercentSum((float) 12.35);
         this.dmlQuotation3.getIndicator().setDistanceTo52WeekHigh(-7);
-        this.dmlQuotation3.getIndicator().setUpDownVolumeRatio((float) 1.01);
+        this.dmlQuotation3.getIndicator().setAccDisRatio63Days((float) 1.01);
     }
 
     @Test
@@ -143,11 +143,11 @@ public class RelativeStrengthCalculatorTest {
         quotations.add(this.dmlQuotation3);
 
         // Calculate the RS numbers.
-        this.relativeStrengthCalculator.calculateRsNumberUpDownVolumeRatio(quotations);
+        this.relativeStrengthCalculator.calculateRsNumberAccDisRatio(quotations);
 
         // Verify the correct calculation.
-        assertEquals(33, this.dmlQuotation2.getRelativeStrengthData().getRsNumberUpDownVolumeRatio());
-        assertEquals(67, this.dmlQuotation3.getRelativeStrengthData().getRsNumberUpDownVolumeRatio());
-        assertEquals(100, this.dmlQuotation1.getRelativeStrengthData().getRsNumberUpDownVolumeRatio());
+        assertEquals(33, this.dmlQuotation2.getRelativeStrengthData().getRsNumberAccDisRatio());
+        assertEquals(67, this.dmlQuotation3.getRelativeStrengthData().getRsNumberAccDisRatio());
+        assertEquals(100, this.dmlQuotation1.getRelativeStrengthData().getRsNumberAccDisRatio());
     }
 }

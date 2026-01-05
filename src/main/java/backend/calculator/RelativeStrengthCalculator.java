@@ -6,9 +6,9 @@ import java.util.Collections;
 import java.util.List;
 
 import backend.model.instrument.Quotation;
+import backend.model.instrument.QuotationAccDisRatioComparator;
 import backend.model.instrument.QuotationDistanceTo52WeekHighComparator;
 import backend.model.instrument.QuotationRsPercentSumComparator;
-import backend.model.instrument.QuotationUpDownVolumeRatioComparator;
 import backend.model.instrument.RelativeStrengthData;
 
 /**
@@ -75,17 +75,17 @@ public class RelativeStrengthCalculator {
     }
 
     /**
-     * Calculates the RS number that measures the upDownVolumeRatio.
+     * Calculates the RS number that measures the Accumulation/Distribution.
      *
-     * @param quotations The quotations on which the calculation of the rsNumberUpDownVolumeRatio is based.
+     * @param quotations The quotations on which the calculation of the rsNumberAccDisRatio is based.
      */
-    public void calculateRsNumberUpDownVolumeRatio(final List<Quotation> quotations) {
+    public void calculateRsNumberAccDisRatio(final List<Quotation> quotations) {
         RelativeStrengthData rsData;
         BigDecimal rsNumber;
         BigDecimal dividend;
         BigDecimal numberOfElements;
 
-        Collections.sort(quotations, new QuotationUpDownVolumeRatioComparator());
+        Collections.sort(quotations, new QuotationAccDisRatioComparator());
         numberOfElements = BigDecimal.valueOf(quotations.size());
 
         for (int i = 0; i < quotations.size(); i++) {
@@ -95,7 +95,7 @@ public class RelativeStrengthCalculator {
 
             rsData = quotations.get(i).getRelativeStrengthData();
             if (rsData != null) {
-                rsData.setRsNumberUpDownVolumeRatio(rsNumber.intValue());
+                rsData.setRsNumberAccDisRatio(rsNumber.intValue());
             }
         }
     }

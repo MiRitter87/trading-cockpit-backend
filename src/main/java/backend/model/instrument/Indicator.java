@@ -79,6 +79,12 @@ public class Indicator {
     private float accDisRatio30Days;
 
     /**
+     * The ratio of the performance * volume between up-days and down-days. The period is 63 days (3 months).
+     */
+    @Column(name = "ACC_DIS_RATIO_63_DAYS")
+    private float accDisRatio63Days;
+
+    /**
      * The percentage price gain during the last 5 trading days.
      */
     @Column(name = "PERFORMANCE_5_DAYS")
@@ -247,6 +253,20 @@ public class Indicator {
      */
     public void setAccDisRatio30Days(final float accDisRatio30Days) {
         this.accDisRatio30Days = accDisRatio30Days;
+    }
+
+    /**
+     * @return the accDisRatio63Days
+     */
+    public float getAccDisRatio63Days() {
+        return accDisRatio63Days;
+    }
+
+    /**
+     * @param accDisRatio63Days the accDisRatio63Days to set
+     */
+    public void setAccDisRatio63Days(final float accDisRatio63Days) {
+        this.accDisRatio63Days = accDisRatio63Days;
     }
 
     /**

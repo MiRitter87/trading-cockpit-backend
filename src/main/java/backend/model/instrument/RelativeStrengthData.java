@@ -48,10 +48,10 @@ public class RelativeStrengthData {
 
     /**
      * The relative strength percentile of the instrument in relation to a set of other instruments. This is a measure
-     * of the Up/Down Volume Ratio.
+     * of the Accumulation/Distribution Ratio.
      */
-    @Column(name = "RS_NUMBER_UD_VOL_RATIO")
-    private int rsNumberUpDownVolumeRatio;
+    @Column(name = "RS_NUMBER_ACC_DIS_RATIO")
+    private int rsNumberAccDisRatio;
 
     /**
      * The RS number of the corresponding sector.
@@ -147,17 +147,17 @@ public class RelativeStrengthData {
     }
 
     /**
-     * @return the rsNumberUpDownVolumeRatio
+     * @return the rsNumberAccDisRatio
      */
-    public int getRsNumberUpDownVolumeRatio() {
-        return rsNumberUpDownVolumeRatio;
+    public int getRsNumberAccDisRatio() {
+        return rsNumberAccDisRatio;
     }
 
     /**
-     * @param rsNumberUpDownVolumeRatio the rsNumberUpDownVolumeRatio to set
+     * @param rsNumberAccDisRatio the rsNumberAccDisRatio to set
      */
-    public void setRsNumberUpDownVolumeRatio(final int rsNumberUpDownVolumeRatio) {
-        this.rsNumberUpDownVolumeRatio = rsNumberUpDownVolumeRatio;
+    public void setRsNumberAccDisRatio(final int rsNumberAccDisRatio) {
+        this.rsNumberAccDisRatio = rsNumberAccDisRatio;
     }
 
     /**
@@ -236,7 +236,7 @@ public class RelativeStrengthData {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(id, rsNumber, rsNumberDistance52WeekHigh, rsNumberUpDownVolumeRatio, rsPercentSum);
+        return Objects.hash(id, rsNumber, rsNumberDistance52WeekHigh, rsNumberAccDisRatio, rsPercentSum);
     }
 
     /**
@@ -256,7 +256,7 @@ public class RelativeStrengthData {
         RelativeStrengthData other = (RelativeStrengthData) obj;
         return Objects.equals(id, other.id) && rsNumber == other.rsNumber
                 && rsNumberDistance52WeekHigh == other.rsNumberDistance52WeekHigh
-                && rsNumberUpDownVolumeRatio == other.rsNumberUpDownVolumeRatio
+                && rsNumberAccDisRatio == other.rsNumberAccDisRatio
                 && Float.floatToIntBits(rsPercentSum) == Float.floatToIntBits(other.rsPercentSum);
     }
 }

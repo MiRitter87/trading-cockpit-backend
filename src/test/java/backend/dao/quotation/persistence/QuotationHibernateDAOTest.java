@@ -273,7 +273,7 @@ public class QuotationHibernateDAOTest {
             this.appleQuotation2.setRelativeStrengthData(new RelativeStrengthData());
             this.appleQuotation2.getRelativeStrengthData().setRsNumber(24);
             this.appleQuotation2.getRelativeStrengthData().setRsNumberDistance52WeekHigh(87);
-            this.appleQuotation2.getRelativeStrengthData().setRsNumberUpDownVolumeRatio(54);
+            this.appleQuotation2.getRelativeStrengthData().setRsNumberAccDisRatio(54);
             quotations.add(this.appleQuotation2);
 
             this.xliSectorQuotation1.setRelativeStrengthData(new RelativeStrengthData());
@@ -589,8 +589,7 @@ public class QuotationHibernateDAOTest {
             expectedCompositeRsNumberIg += this.copperIndustryGroupQuotation1.getRelativeStrengthData().getRsNumber();
             expectedCompositeRsNumberIg += this.appleQuotation2.getRelativeStrengthData()
                     .getRsNumberDistance52WeekHigh();
-            expectedCompositeRsNumberIg += this.appleQuotation2.getRelativeStrengthData()
-                    .getRsNumberUpDownVolumeRatio();
+            expectedCompositeRsNumberIg += this.appleQuotation2.getRelativeStrengthData().getRsNumberAccDisRatio();
             expectedCompositeRsNumberIg = (int) Math.ceil((double) expectedCompositeRsNumberIg / 5);
 
             assertEquals(expectedCompositeRsNumberIg,

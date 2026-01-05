@@ -82,9 +82,14 @@ public class IndicatorCalculationController {
     private static final int DAYS_UP_DOWN_VOLUME_RATIO = 50;
 
     /**
-     * Number of days used to calculate the Up/Down Performance * Volume Ratio.
+     * Number of days used to calculate the 30-day Accumulation/Distribution Ratio.
      */
-    private static final int DAYS_UP_DOWN_PERFORMANCE_VOLUME_RATIO = 30;
+    private static final int DAYS_ACC_DIS_RATIO_30 = 30;
+
+    /**
+     * Number of days used to calculate the 63-day Accumulation/Distribution Ratio.
+     */
+    private static final int DAYS_ACC_DIS_RATIO_63 = 63;
 
     /**
      * Number of days used to calculate the 5 day price performance.
@@ -189,7 +194,7 @@ public class IndicatorCalculationController {
     public void calculateRsNumbers(final List<Quotation> quotations) {
         this.relativeStrengthCalculator.calculateRsNumber(quotations);
         this.relativeStrengthCalculator.calculateRsNumberDistanceTo52wHigh(quotations);
-        this.relativeStrengthCalculator.calculateRsNumberUpDownVolumeRatio(quotations);
+        this.relativeStrengthCalculator.calculateRsNumberAccDisRatio(quotations);
     }
 
     /**
@@ -221,8 +226,10 @@ public class IndicatorCalculationController {
         indicator.setBaseLengthWeeks(this.indicatorCalculator.getBaseLengthWeeks(quotation, sortedQuotations));
         indicator.setUpDownVolumeRatio(
                 this.indicatorCalculator.getUpDownVolumeRatio(DAYS_UP_DOWN_VOLUME_RATIO, quotation, sortedQuotations));
-        indicator.setAccDisRatio30Days(this.indicatorCalculator
-                .getAccumulationDistributionRatio(DAYS_UP_DOWN_PERFORMANCE_VOLUME_RATIO, quotation, sortedQuotations));
+        indicator.setAccDisRatio30Days(this.indicatorCalculator.getAccumulationDistributionRatio(DAYS_ACC_DIS_RATIO_30,
+                quotation, sortedQuotations));
+        indicator.setAccDisRatio63Days(this.indicatorCalculator.getAccumulationDistributionRatio(DAYS_ACC_DIS_RATIO_63,
+                quotation, sortedQuotations));
         indicator.setPerformance5Days(
                 this.performanceCalculator.getPricePerformanceForDays(DAYS_PERFORMANCE_5, quotation, sortedQuotations));
         indicator.setLiquidity20Days(

@@ -191,7 +191,7 @@ public class ScanTemplateProcessor {
                     rsNumberSum = quotationRsData.getRsNumber() * 2;
                     rsNumberSum += industryGroupQuotation.getRelativeStrengthData().getRsNumber();
                     rsNumberSum += quotationRsData.getRsNumberDistance52WeekHigh();
-                    rsNumberSum += quotationRsData.getRsNumberUpDownVolumeRatio();
+                    rsNumberSum += quotationRsData.getRsNumberAccDisRatio();
                     compositeRsNumber = (int) Math.ceil((double) rsNumberSum / fiveComponents);
                     quotationRsData.setRsNumberCompositeIg(compositeRsNumber);
                 }
