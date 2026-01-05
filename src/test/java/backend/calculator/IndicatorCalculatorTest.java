@@ -224,17 +224,17 @@ public class IndicatorCalculatorTest {
 
     @Test
     /**
-     * Tests the calculation of the Up/Down performance * volume ratio.
+     * Tests the calculation of the accumulation/distribution ratio.
      */
-    public void testGetUpDownPerformanceVolumeRatio() {
+    public void testGetAccumulationDistributionRatio() {
         QuotationArray sortedQuotations = new QuotationArray(this.dmlStock.getQuotationsSortedByDate());
-        float expectedUdPerfVolRatio = (float) 1.04;
-        float actualUdPerfVolRatio;
+        float expectedAccDisRatio = (float) 1.04;
+        float actualAccDisRatio;
 
-        actualUdPerfVolRatio = this.indicatorCalculator.getUpDownPerformanceVolumeRatio(5,
+        actualAccDisRatio = this.indicatorCalculator.getAccumulationDistributionRatio(5,
                 sortedQuotations.getQuotations().get(0), sortedQuotations);
 
-        assertEquals(expectedUdPerfVolRatio, actualUdPerfVolRatio);
+        assertEquals(expectedAccDisRatio, actualAccDisRatio);
     }
 
     @Test

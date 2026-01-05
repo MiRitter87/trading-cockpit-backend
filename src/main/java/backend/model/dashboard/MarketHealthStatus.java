@@ -38,7 +38,7 @@ public class MarketHealthStatus {
     /**
      * The ratio of the performance * volume between up-days and down-days. The period is 30 days.
      */
-    private float upDownPerfVolRatio30Days;
+    private float accDisRatio30Days;
 
     /**
      * The relative strength percentile of the instrument in relation to a set of other instruments. This is a measure
@@ -145,17 +145,17 @@ public class MarketHealthStatus {
     }
 
     /**
-     * @return the upDownPerfVolRatio30Days
+     * @return the accDisRatio30Days
      */
-    public float getUpDownPerfVolRatio30Days() {
-        return upDownPerfVolRatio30Days;
+    public float getAccDisRatio30Days() {
+        return accDisRatio30Days;
     }
 
     /**
-     * @param upDownPerfVolRatio30Days the upDownPerfVolRatio30Days to set
+     * @param accDisRatio30Days the accDisRatio30Days to set
      */
-    public void setUpDownPerfVolRatio30Days(final float upDownPerfVolRatio30Days) {
-        this.upDownPerfVolRatio30Days = upDownPerfVolRatio30Days;
+    public void setAccDisRatio30Days(final float accDisRatio30Days) {
+        this.accDisRatio30Days = accDisRatio30Days;
     }
 
     /**

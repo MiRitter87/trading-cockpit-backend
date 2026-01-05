@@ -172,8 +172,8 @@ public class DashboardService {
 
         if (quotationsSortedByDate.size() > 0) {
             marketHealthStatus.setDate(quotationsSortedByDate.get(0).getDate());
-            marketHealthStatus.setUpDownPerfVolRatio30Days(
-                    quotationsSortedByDate.get(0).getIndicator().getUpDownPerformanceVolumeRatio());
+            marketHealthStatus
+                    .setAccDisRatio30Days(quotationsSortedByDate.get(0).getIndicator().getAccDisRatio30Days());
             marketHealthStatus.setRsNumber(quotationsSortedByDate.get(0).getRelativeStrengthData().getRsNumber());
         }
     }

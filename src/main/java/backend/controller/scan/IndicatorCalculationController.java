@@ -221,8 +221,8 @@ public class IndicatorCalculationController {
         indicator.setBaseLengthWeeks(this.indicatorCalculator.getBaseLengthWeeks(quotation, sortedQuotations));
         indicator.setUpDownVolumeRatio(
                 this.indicatorCalculator.getUpDownVolumeRatio(DAYS_UP_DOWN_VOLUME_RATIO, quotation, sortedQuotations));
-        indicator.setUpDownPerformanceVolumeRatio(this.indicatorCalculator
-                .getUpDownPerformanceVolumeRatio(DAYS_UP_DOWN_PERFORMANCE_VOLUME_RATIO, quotation, sortedQuotations));
+        indicator.setAccDisRatio30Days(this.indicatorCalculator
+                .getAccumulationDistributionRatio(DAYS_UP_DOWN_PERFORMANCE_VOLUME_RATIO, quotation, sortedQuotations));
         indicator.setPerformance5Days(
                 this.performanceCalculator.getPricePerformanceForDays(DAYS_PERFORMANCE_5, quotation, sortedQuotations));
         indicator.setLiquidity20Days(

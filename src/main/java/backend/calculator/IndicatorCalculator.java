@@ -262,15 +262,16 @@ public class IndicatorCalculator {
     }
 
     /**
-     * Calculates the performance * volume ratio between up-days and down-days for the given number of days.
+     * Calculates the accumulation/distribution ratio. That is the performance * volume ratio between up-days and
+     * down-days for the given number of days.
      *
      * @param days             The number of the last trading days that are taken into account for calculation.
      * @param quotation        The Quotation for which the U/D performance * volume Ratio is calculated.
      * @param sortedQuotations A list of quotations sorted by date that build the trading history used for U/D
      *                         performance * volume Ratio calculation.
-     * @return The U/D performance * volume Ratio.
+     * @return The accumulation/distribution Ratio.
      */
-    public float getUpDownPerformanceVolumeRatio(final int days, final Quotation quotation,
+    public float getAccumulationDistributionRatio(final int days, final Quotation quotation,
             final QuotationArray sortedQuotations) {
 
         Quotation currentDayQuotation;
@@ -280,7 +281,7 @@ public class IndicatorCalculator {
         float performanceVolume;
         BigDecimal upPerformanceVolumeSum = new BigDecimal(0);
         BigDecimal downPerformanceVolumeSum = new BigDecimal(0);
-        BigDecimal upDownPerformanceVolumeRatio;
+        BigDecimal accDisRatio;
 
         // Get the starting point of calculation.
         indexOfQuotation = sortedQuotations.getQuotations().indexOf(quotation);
@@ -313,12 +314,12 @@ public class IndicatorCalculator {
         }
 
         // Build the ratio.
-        upDownPerformanceVolumeRatio = upPerformanceVolumeSum.divide(downPerformanceVolumeSum, 2, RoundingMode.HALF_UP);
+        accDisRatio = upPerformanceVolumeSum.divide(downPerformanceVolumeSum, 2, RoundingMode.HALF_UP);
 
         // Multiply by -1 to get a positive ratio value.
-        upDownPerformanceVolumeRatio = upDownPerformanceVolumeRatio.multiply(new BigDecimal("-1"));
+        accDisRatio = accDisRatio.multiply(new BigDecimal("-1"));
 
-        return upDownPerformanceVolumeRatio.floatValue();
+        return accDisRatio.floatValue();
     }
 
     /**

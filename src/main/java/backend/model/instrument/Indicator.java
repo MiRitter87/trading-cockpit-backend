@@ -75,8 +75,8 @@ public class Indicator {
     /**
      * The ratio of the performance * volume between up-days and down-days. The period is 30 days.
      */
-    @Column(name = "UD_PERF_VOL_RATIO")
-    private float upDownPerformanceVolumeRatio;
+    @Column(name = "ACC_DIS_RATIO_30_DAYS")
+    private float accDisRatio30Days;
 
     /**
      * The percentage price gain during the last 5 trading days.
@@ -236,17 +236,17 @@ public class Indicator {
     }
 
     /**
-     * @return the upDownPerformanceVolumeRatio
+     * @return the accDisRatio30Days
      */
-    public float getUpDownPerformanceVolumeRatio() {
-        return upDownPerformanceVolumeRatio;
+    public float getAccDisRatio30Days() {
+        return accDisRatio30Days;
     }
 
     /**
-     * @param upDownPerformanceVolumeRatio the upDownPerformanceVolumeRatio to set
+     * @param accDisRatio30Days the accDisRatio30Days to set
      */
-    public void setUpDownPerformanceVolumeRatio(final float upDownPerformanceVolumeRatio) {
-        this.upDownPerformanceVolumeRatio = upDownPerformanceVolumeRatio;
+    public void setAccDisRatio30Days(final float accDisRatio30Days) {
+        this.accDisRatio30Days = accDisRatio30Days;
     }
 
     /**
@@ -311,9 +311,8 @@ public class Indicator {
     @Override
     public int hashCode() {
         return Objects.hash(bollingerBandWidth10Days, bollingerBandWidth10Weeks, distanceTo52WeekHigh,
-                distanceTo52WeekLow, id, volumeDifferential5Days, baseLengthWeeks, upDownVolumeRatio,
-                upDownPerformanceVolumeRatio, performance5Days, liquidity20Days, averageTrueRangePercent20,
-                bbw10Threshold25Percent);
+                distanceTo52WeekLow, id, volumeDifferential5Days, baseLengthWeeks, upDownVolumeRatio, accDisRatio30Days,
+                performance5Days, liquidity20Days, averageTrueRangePercent20, bbw10Threshold25Percent);
     }
 
     /**
@@ -341,7 +340,7 @@ public class Indicator {
                 && baseLengthWeeks == other.baseLengthWeeks && upDownVolumeRatio == other.upDownVolumeRatio
                 && performance5Days == other.performance5Days && liquidity20Days == other.liquidity20Days
                 && averageTrueRangePercent20 == other.averageTrueRangePercent20
-                && upDownPerformanceVolumeRatio == other.upDownPerformanceVolumeRatio
+                && accDisRatio30Days == other.accDisRatio30Days
                 && bbw10Threshold25Percent == other.bbw10Threshold25Percent;
     }
 }

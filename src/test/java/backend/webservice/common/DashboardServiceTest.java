@@ -372,8 +372,8 @@ public class DashboardServiceTest {
         assertEquals(this.copperIndustryGroup.getName(), marketHealthStatus.getName());
         assertEquals(this.copperIgQuotation1.getDate().getTime(), marketHealthStatus.getDate().getTime());
         assertEquals(SwingTradingEnvironmentStatus.GREEN, marketHealthStatus.getSwingTradingEnvironmentStatus());
-        assertEquals(this.copperIgQuotation1.getIndicator().getUpDownPerformanceVolumeRatio(),
-                marketHealthStatus.getUpDownPerfVolRatio30Days());
+        assertEquals(this.copperIgQuotation1.getIndicator().getAccDisRatio30Days(),
+                marketHealthStatus.getAccDisRatio30Days());
         assertEquals(this.copperIgQuotation1.getRelativeStrengthData().getRsNumber(), marketHealthStatus.getRsNumber());
         assertEquals(1, marketHealthStatus.getNumberNear52wHigh());
         assertEquals(1, marketHealthStatus.getNumberNear52wLow());
