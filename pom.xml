@@ -230,6 +230,26 @@
 					</execution>
 				</executions>
 			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>${maven.checkstyle.version}</version>
+				<executions>
+			    	<execution>
+			      		<phase>verify</phase>
+			      		<goals>
+			        		<goal>checkstyle</goal>
+			      		</goals>
+					    <configuration>
+					    	<includeTestSourceDirectory>true</includeTestSourceDirectory>
+					        <outputFileFormat>xml</outputFileFormat>
+					        <!-- Let the build go through even if there are checkstyle errors.-->
+					        <failsOnError>false</failsOnError>
+					   	</configuration>
+			    	</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 	
