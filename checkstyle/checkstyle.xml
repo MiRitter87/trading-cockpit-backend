@@ -60,6 +60,9 @@
               default="checkstyle-suppressions.xml" />
     <property name="optional" value="true"/>
   </module>
+  
+  <!-- Allows for the usage of SuppressWarnings annotation in Java -->
+  <module name="SuppressWarningsFilter"/>
 
   <!-- Checks that a package-info.java file exists for each package.     -->
   <!-- See https://checkstyle.org/checks/javadoc/javadocpackage.html#JavadocPackage -->
@@ -205,7 +208,9 @@
                 default="checkstyle-xpath-suppressions.xml" />
       <property name="optional" value="true"/>
     </module>
-
+    
+    <!-- Allows for the usage of SuppressWarnings annotation in Java -->
+    <module name="SuppressWarningsHolder"/>
   </module>
 
 </module>
