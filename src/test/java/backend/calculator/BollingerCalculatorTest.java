@@ -41,10 +41,10 @@ public class BollingerCalculatorTest {
      */
     private static QuotationProviderDAO quotationProviderYahooDAO;
 
-    @BeforeAll
     /**
      * Tasks to be performed once at startup of test class.
      */
+    @BeforeAll
     public static void setUpClass() {
         try {
             quotationProviderYahooDAO = new QuotationProviderYahooDAOStub();
@@ -53,18 +53,18 @@ public class BollingerCalculatorTest {
         }
     }
 
-    @AfterAll
     /**
      * Tasks to be performed once at the end of the test class.
      */
+    @AfterAll
     public static void tearDownClass() {
         quotationProviderYahooDAO = null;
     }
 
-    @BeforeEach
     /**
      * Tasks to be performed before each test is run.
      */
+    @BeforeEach
     public void setUp() {
         try {
             this.bollingerCalculator = new BollingerCalculator();
@@ -74,10 +74,10 @@ public class BollingerCalculatorTest {
         }
     }
 
-    @AfterEach
     /**
      * Tasks to be performed after each test has been run.
      */
+    @AfterEach
     public void tearDown() {
         this.bollingerCalculator = null;
 
@@ -104,13 +104,14 @@ public class BollingerCalculatorTest {
         }
     }
 
-    @Test
     /**
      * Tests the calculation of the standard deviation.
      */
+    @Test
     public void testGetStandardDeviation() {
-        float[] inputValues = { 46, 69, 32, 60, 52, 41 };
-        float expectedStandardDeviation = (float) 12.1518;
+        @SuppressWarnings("checkstyle:magicnumber")
+        float[] inputValues = {46, 69, 32, 60, 52, 41};
+        final float expectedStandardDeviation = 12.1518f;
         float actualStandardDeviation;
 
         actualStandardDeviation = this.bollingerCalculator.getStandardDeviation(inputValues);
@@ -118,48 +119,56 @@ public class BollingerCalculatorTest {
         assertEquals(expectedStandardDeviation, actualStandardDeviation);
     }
 
-    @Test
     /**
      * Tests the calculation of the Bollinger BandWidth.
      */
+    @Test
     public void testGetBollingerBandWidth() {
         QuotationArray sortedQuotations = new QuotationArray(this.dmlStock.getQuotationsSortedByDate());
-        float actualBollingerBandWidth, expectedBollingerBandWidth = (float) 24.75;
+        float actualBollingerBandWidth;
+        final float expectedBollingerBandWidth = 24.75f;
+        final int days10 = 10;
 
-        actualBollingerBandWidth = this.bollingerCalculator.getBollingerBandWidth(10, 2,
+        actualBollingerBandWidth = this.bollingerCalculator.getBollingerBandWidth(days10, 2,
                 sortedQuotations.getQuotations().get(0), sortedQuotations);
 
         assertEquals(expectedBollingerBandWidth, actualBollingerBandWidth);
     }
 
-    @Test
     /**
      * Tests the calculation of the Bollinger BandWidth threshold.
      */
+    @Test
     public void testGetBollingerBandWidthThreshold() {
         QuotationArray sortedQuotations = new QuotationArray(this.dmlStock.getQuotationsSortedByDate());
-        float expectedThreshold = (float) 13.86;
+        final float expectedThreshold = 13.86f;
         float actualThreshold;
+        final int days10 = 10;
+        final int threshold = 20;
 
-        actualThreshold = this.bollingerCalculator.getBollingerBandWidthThreshold(10, 2, 20,
+        actualThreshold = this.bollingerCalculator.getBollingerBandWidthThreshold(days10, 2, threshold,
                 sortedQuotations.getQuotations().get(0), sortedQuotations);
 
         assertEquals(expectedThreshold, actualThreshold);
     }
 
-    @Test
     /**
      * Tests the calculation of the Bollinger BandWidth threshold of an instrument that only has a short trading
      * history.
      */
+    @Test
     public void testBBWThresholdShortHistory() {
-        // Reduce trading history to ten days.
-        QuotationArray sortedQuotations = new QuotationArray(this.dmlStock.getQuotationsSortedByDate().subList(0, 10));
+        final int days10 = 10;
+        final int threshold = 20;
 
-        float expectedThreshold = 24.75f;
+        // Reduce trading history to ten days.
+        QuotationArray sortedQuotations = new QuotationArray(
+                this.dmlStock.getQuotationsSortedByDate().subList(0, days10));
+
+        final float expectedThreshold = 24.75f;
         float actualThreshold;
 
-        actualThreshold = this.bollingerCalculator.getBollingerBandWidthThreshold(10, 2, 20,
+        actualThreshold = this.bollingerCalculator.getBollingerBandWidthThreshold(days10, 2, threshold,
                 sortedQuotations.getQuotations().get(0), sortedQuotations);
 
         assertEquals(expectedThreshold, actualThreshold);

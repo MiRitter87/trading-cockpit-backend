@@ -41,10 +41,10 @@ public class AverageTrueRangeCalculatorTest {
      */
     private static QuotationProviderDAO quotationProviderYahooDAO;
 
-    @BeforeAll
     /**
      * Tasks to be performed once at startup of test class.
      */
+    @BeforeAll
     public static void setUpClass() {
         try {
             quotationProviderYahooDAO = new QuotationProviderYahooDAOStub();
@@ -53,18 +53,18 @@ public class AverageTrueRangeCalculatorTest {
         }
     }
 
-    @AfterAll
     /**
      * Tasks to be performed once at the end of the test class.
      */
+    @AfterAll
     public static void tearDownClass() {
         quotationProviderYahooDAO = null;
     }
 
-    @BeforeEach
     /**
      * Tasks to be performed before each test is run.
      */
+    @BeforeEach
     public void setUp() {
         try {
             this.averageTrueRangeCalculator = new AverageTrueRangeCalculator();
@@ -74,10 +74,10 @@ public class AverageTrueRangeCalculatorTest {
         }
     }
 
-    @AfterEach
     /**
      * Tasks to be performed after each test has been run.
      */
+    @AfterEach
     public void tearDown() {
         this.averageTrueRangeCalculator = null;
 
@@ -104,30 +104,31 @@ public class AverageTrueRangeCalculatorTest {
         }
     }
 
-    @Test
     /**
      * Tests the calculation of the 20-day Average True Range Percent indicator.
      */
+    @Test
     public void testGetAverageTrueRangePercent() {
         QuotationArray sortedQuotations = new QuotationArray(this.dmlStock.getQuotationsSortedByDate());
         float actualAtrp;
-        float expectedAtrp = 6.47f;
+        final float expectedAtrp = 6.47f;
+        final int days20 = 20;
 
-        actualAtrp = this.averageTrueRangeCalculator.getAverageTrueRangePercent(20,
+        actualAtrp = this.averageTrueRangeCalculator.getAverageTrueRangePercent(days20,
                 sortedQuotations.getQuotations().get(0), sortedQuotations);
 
         assertEquals(expectedAtrp, actualAtrp);
     }
 
-    @Test
     /**
      * Tests the calculation of the True Range.
      */
+    @Test
     public void testGetTrueRange() {
         Quotation currentQuotation = this.dmlStock.getQuotations().get(0);
         Quotation previousQuotation = this.dmlStock.getQuotations().get(1);
         float actualTrueRange;
-        float expectedTrueRange = 0.13f;
+        final float expectedTrueRange = 0.13f;
 
         actualTrueRange = this.averageTrueRangeCalculator.getTrueRange(currentQuotation, previousQuotation);
 

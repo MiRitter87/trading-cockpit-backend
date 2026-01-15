@@ -31,20 +31,20 @@ public class AggregateIndicatorCalculatorTest {
      */
     private List<Statistic> statistics;
 
-    @BeforeEach
     /**
      * Tasks to be performed before each test is run.
      */
+    @BeforeEach
     public void setUp() {
         this.createUraInstrument();
         this.createUraQuotations();
         this.createStatistics();
     }
 
-    @AfterEach
     /**
      * Tasks to be performed after each test has been run.
      */
+    @AfterEach
     public void tearDown() {
         this.uraIndustryGroup = null;
         this.statistics = null;
@@ -81,45 +81,46 @@ public class AggregateIndicatorCalculatorTest {
         List<Quotation> quotationsSortedByDate = this.uraIndustryGroup.getQuotationsSortedByDate();
         Statistic newStatistic;
         Quotation currentQuotation;
+        final int index10 = 10;
+        final int numInstruments = 20;
 
         this.statistics = new ArrayList<>();
 
         // Create 11 statistics based on the 11 newest quotations of the industry group.
-        for (int i = 0; i <= 10; i++) {
+        for (int i = 0; i <= index10; i++) {
             currentQuotation = quotationsSortedByDate.get(i);
 
             newStatistic = new Statistic();
             newStatistic.setDate(currentQuotation.getDate());
             newStatistic.setIndustryGroupId(this.uraIndustryGroup.getId());
-            newStatistic.setNumberOfInstruments(20);
+            newStatistic.setNumberOfInstruments(numInstruments);
             newStatistic.setNumberAboveSma50(i);
-            newStatistic.setNumberAtOrBelowSma50(20 - i);
+            newStatistic.setNumberAtOrBelowSma50(numInstruments - i);
 
             this.statistics.add(newStatistic);
         }
     }
 
-    @Test
     /**
      * Tests the calculation of the Aggregate Indicator.
      */
+    @Test
     public void testGetAggregateIndicator() {
         AggregateIndicatorCalculator calculator = new AggregateIndicatorCalculator();
-        int expectedAggregateIndicator;
+        final int expectedAIIndex0 = 37;
+        final int expectedAIIndex1 = 45;
         int actualAggregateIndicator;
         List<Quotation> quotations = this.uraIndustryGroup.getQuotationsSortedByDate();
         Quotation currentQuotation;
 
         currentQuotation = quotations.get(0); // 22.07.22
-        expectedAggregateIndicator = 37;
         actualAggregateIndicator = calculator.getAggregateIndicator(quotations, this.statistics, currentQuotation,
                 this.uraIndustryGroup);
-        assertEquals(expectedAggregateIndicator, actualAggregateIndicator);
+        assertEquals(expectedAIIndex0, actualAggregateIndicator);
 
         currentQuotation = quotations.get(1); // 21.07.22
-        expectedAggregateIndicator = 45;
         actualAggregateIndicator = calculator.getAggregateIndicator(quotations, this.statistics, currentQuotation,
                 this.uraIndustryGroup);
-        assertEquals(expectedAggregateIndicator, actualAggregateIndicator);
+        assertEquals(expectedAIIndex1, actualAggregateIndicator);
     }
 }
