@@ -41,10 +41,10 @@ public class PerformanceCalculatorTest {
      */
     private static QuotationProviderDAO quotationProviderYahooDAO;
 
-    @BeforeAll
     /**
      * Tasks to be performed once at startup of test class.
      */
+    @BeforeAll
     public static void setUpClass() {
         try {
             quotationProviderYahooDAO = new QuotationProviderYahooDAOStub();
@@ -53,18 +53,18 @@ public class PerformanceCalculatorTest {
         }
     }
 
-    @AfterAll
     /**
      * Tasks to be performed once at the end of the test class.
      */
+    @AfterAll
     public static void tearDownClass() {
         quotationProviderYahooDAO = null;
     }
 
-    @BeforeEach
     /**
      * Tasks to be performed before each test is run.
      */
+    @BeforeEach
     public void setUp() {
         try {
             this.performanceCalculator = new PerformanceCalculator();
@@ -74,10 +74,10 @@ public class PerformanceCalculatorTest {
         }
     }
 
-    @AfterEach
     /**
      * Tasks to be performed after each test has been run.
      */
+    @AfterEach
     public void tearDown() {
         this.performanceCalculator = null;
 
@@ -104,27 +104,30 @@ public class PerformanceCalculatorTest {
         }
     }
 
-    @Test
     /**
      * Tests the calculation of the price performance of the given daily interval.
      */
+    @Test
     public void testGetPricePerformanceForDays() {
         QuotationArray sortedQuotations = new QuotationArray(this.dmlStock.getQuotationsSortedByDate());
-        float expectedPerformance = (float) 6.25, actualPerformance;
+        final float expectedPerformance = 6.25f;
+        float actualPerformance;
+        final int days20 = 20;
 
-        actualPerformance = this.performanceCalculator.getPricePerformanceForDays(20,
+        actualPerformance = this.performanceCalculator.getPricePerformanceForDays(days20,
                 sortedQuotations.getQuotations().get(0), sortedQuotations);
 
         assertEquals(expectedPerformance, actualPerformance);
     }
 
-    @Test
     /**
      * Tests the calculation of the price performance.
      */
+    @Test
     public void testGetPerformance() {
         QuotationArray sortedQuotations = new QuotationArray(this.dmlStock.getQuotationsSortedByDate());
-        float expectedPerformance = (float) -6.85, actualPerformance;
+        final float expectedPerformance = -6.85f;
+        float actualPerformance;
 
         actualPerformance = this.performanceCalculator.getPerformance(sortedQuotations.getQuotations().get(0),
                 sortedQuotations.getQuotations().get(1));
@@ -132,13 +135,14 @@ public class PerformanceCalculatorTest {
         assertEquals(expectedPerformance, actualPerformance);
     }
 
-    @Test
     /**
      * Tests the calculation of the RS percentage sum.
      */
+    @Test
     public void testGetRSPercentSum() {
         QuotationArray sortedQuotations = new QuotationArray(this.dmlStock.getQuotationsSortedByDate());
-        float expectedRSPercentSum, actualRSPercentSum;
+        final float expectedRSPercentSum = -89.55f;
+        float actualRSPercentSum;
 
         // Actual price: 1,36
         // Three months ago price: 1,75
@@ -147,7 +151,6 @@ public class PerformanceCalculatorTest {
         // Twelve months ago price: 1,30
         // Expected rsPercentSum = 3 month performance + 3 month perf. + 6 month perf. + 9 month perf + 12 month perf.
         // = -22,29% -22,29% -8,72% -40,87% +4,62% = -89,55%
-        expectedRSPercentSum = (float) -89.55;
 
         actualRSPercentSum = this.performanceCalculator.getRSPercentSum(sortedQuotations.getQuotations().get(0),
                 sortedQuotations);
@@ -155,13 +158,14 @@ public class PerformanceCalculatorTest {
         assertEquals(expectedRSPercentSum, actualRSPercentSum);
     }
 
-    @Test
     /**
      * Tests the calculation of the RS percentage sum, if the quotation history is smaller than a year.
      */
+    @Test
     public void testGetRSPercentSumOfIncompleteHistory() {
         QuotationArray sortedQuotations = new QuotationArray(this.dmlStock.getQuotationsSortedByDate());
-        float expectedRSPercentSum, actualRSPercentSum;
+        final float expectedRSPercentSum = -94.17f;
+        float actualRSPercentSum;
 
         // Remove the last quote from the instrument. The 12 month performance can't be calculated then.
         sortedQuotations.getQuotations().remove(sortedQuotations.getQuotations().size() - 1);
@@ -173,7 +177,6 @@ public class PerformanceCalculatorTest {
         // Twelve months ago price: unknown
         // Expected rsPercentSum = 3 month performance + 3 month perf. + 6 month perf. + 9 month perf.
         // = -22,29% -22,29% -8,72% -40,87% = -94,17%
-        expectedRSPercentSum = (float) -94.17;
 
         actualRSPercentSum = this.performanceCalculator.getRSPercentSum(sortedQuotations.getQuotations().get(0),
                 sortedQuotations);
@@ -181,32 +184,36 @@ public class PerformanceCalculatorTest {
         assertEquals(expectedRSPercentSum, actualRSPercentSum);
     }
 
-    @Test
     /**
      * Tests the calculation of the average performance on up-days.
      */
+    @Test
     public void testGetAveragePerformanceOfUpDays() {
         QuotationArray sortedQuotations = new QuotationArray(this.dmlStock.getQuotationsSortedByDate());
-        float expectedPerformance = (float) 4.15;
+        final float expectedPerformance = 4.15f;
         float actualPerformance;
+        final int minDays = 5;
+        final int maxDays = 10;
 
-        actualPerformance = this.performanceCalculator
-                .getAveragePerformanceOfUpDays(sortedQuotations.getQuotations().get(0), sortedQuotations, 5, 10);
+        actualPerformance = this.performanceCalculator.getAveragePerformanceOfUpDays(
+                sortedQuotations.getQuotations().get(0), sortedQuotations, minDays, maxDays);
 
         assertEquals(expectedPerformance, actualPerformance);
     }
 
-    @Test
     /**
      * Tests the calculation of the average performance on down-days.
      */
+    @Test
     public void testGetAveragePerformanceOfDownDays() {
         QuotationArray sortedQuotations = new QuotationArray(this.dmlStock.getQuotationsSortedByDate());
-        float expectedPerformance = (float) -3.79;
+        final float expectedPerformance = -3.79f;
         float actualPerformance;
+        final int minDays = 5;
+        final int maxDays = 10;
 
-        actualPerformance = this.performanceCalculator
-                .getAveragePerformanceOfDownDays(sortedQuotations.getQuotations().get(0), sortedQuotations, 5, 10);
+        actualPerformance = this.performanceCalculator.getAveragePerformanceOfDownDays(
+                sortedQuotations.getQuotations().get(0), sortedQuotations, minDays, maxDays);
 
         assertEquals(expectedPerformance, actualPerformance);
     }
