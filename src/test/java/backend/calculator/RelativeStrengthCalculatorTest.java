@@ -39,10 +39,10 @@ public class RelativeStrengthCalculatorTest {
      */
     private Quotation dmlQuotation3;
 
-    @BeforeEach
     /**
      * Tasks to be performed before each test is run.
      */
+    @BeforeEach
     public void setUp() {
         try {
             this.relativeStrengthCalculator = new RelativeStrengthCalculator();
@@ -53,10 +53,10 @@ public class RelativeStrengthCalculatorTest {
         }
     }
 
-    @AfterEach
     /**
      * Tasks to be performed after each test has been run.
      */
+    @AfterEach
     public void tearDown() {
         this.relativeStrengthCalculator = null;
 
@@ -68,30 +68,32 @@ public class RelativeStrengthCalculatorTest {
     /**
      * Initializes dummy quotations of the DML Instrument.
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     private void initializeDmlQuotations() {
         this.dmlQuotation1 = new Quotation(true, false);
         this.dmlQuotation1.setIndicator(new Indicator());
-        this.dmlQuotation1.getRelativeStrengthData().setRsPercentSum((float) 34.5);
-        this.dmlQuotation1.getIndicator().setDistanceTo52WeekHigh((float) -4.56);
-        this.dmlQuotation1.getIndicator().setAccDisRatio63Days((float) 2.44);
+        this.dmlQuotation1.getRelativeStrengthData().setRsPercentSum(34.5f);
+        this.dmlQuotation1.getIndicator().setDistanceTo52WeekHigh(-4.56f);
+        this.dmlQuotation1.getIndicator().setAccDisRatio63Days(2.44f);
 
         this.dmlQuotation2 = new Quotation(true, false);
         this.dmlQuotation2.setIndicator(new Indicator());
         this.dmlQuotation2.getRelativeStrengthData().setRsPercentSum(-5);
-        this.dmlQuotation2.getIndicator().setDistanceTo52WeekHigh((float) -0.56);
-        this.dmlQuotation2.getIndicator().setAccDisRatio63Days((float) 0.87);
+        this.dmlQuotation2.getIndicator().setDistanceTo52WeekHigh(-0.56f);
+        this.dmlQuotation2.getIndicator().setAccDisRatio63Days(0.87f);
 
         this.dmlQuotation3 = new Quotation(true, false);
         this.dmlQuotation3.setIndicator(new Indicator());
-        this.dmlQuotation3.getRelativeStrengthData().setRsPercentSum((float) 12.35);
+        this.dmlQuotation3.getRelativeStrengthData().setRsPercentSum(12.35f);
         this.dmlQuotation3.getIndicator().setDistanceTo52WeekHigh(-7);
-        this.dmlQuotation3.getIndicator().setAccDisRatio63Days((float) 1.01);
+        this.dmlQuotation3.getIndicator().setAccDisRatio63Days(1.01f);
     }
 
-    @Test
     /**
      * Tests the calculation of RS numbers: rsNumber.
      */
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
     public void testCalculateRsNumber() {
         List<Quotation> quotations = new ArrayList<>();
 
@@ -109,10 +111,11 @@ public class RelativeStrengthCalculatorTest {
         assertEquals(100, this.dmlQuotation1.getRelativeStrengthData().getRsNumber());
     }
 
-    @Test
     /**
      * Tests the calculation of RS numbers: rsNumberDistance52WeekHigh.
      */
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
     public void testCalculateRsNumberDistanceTo52wHigh() {
         List<Quotation> quotations = new ArrayList<>();
 
@@ -130,10 +133,11 @@ public class RelativeStrengthCalculatorTest {
         assertEquals(100, this.dmlQuotation2.getRelativeStrengthData().getRsNumberDistance52WeekHigh());
     }
 
-    @Test
     /**
      * Tests the calculation of RS numbers: rsNumberAccDisRatio.
      */
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
     public void testCalculateRsNumberAccDisRatio() {
         List<Quotation> quotations = new ArrayList<>();
 

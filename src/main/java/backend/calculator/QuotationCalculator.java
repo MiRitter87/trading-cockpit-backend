@@ -93,6 +93,10 @@ public class QuotationCalculator {
     /**
      * Calculates the Quotation for the given date based on the given instruments.
      *
+     * The list of instruments may contain stocks of multiple countries. If one country has a holiday, the next older
+     * quotation of that stock has to be used for calculation. Otherwise the resulting quotations would be skewed on
+     * holidays. The resulting chart would show improper values on holidays.
+     *
      * @param date        The date of the calculated Quotation.
      * @param instruments A List of instruments with their quotations.
      * @return The calculated Quotation.

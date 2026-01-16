@@ -57,19 +57,19 @@ public class RatioCalculatorTest {
      */
     private RatioCalculator ratioCalculator;
 
-    @BeforeEach
     /**
      * Tasks to be performed before each test is run.
      */
+    @BeforeEach
     public void setUp() {
         this.ratioCalculator = new RatioCalculator();
         this.createTestData();
     }
 
-    @AfterEach
     /**
      * Tasks to be performed after each test has been run.
      */
+    @AfterEach
     public void tearDown() {
         this.deleteTestData();
         this.ratioCalculator = null;
@@ -101,27 +101,29 @@ public class RatioCalculatorTest {
      */
     private void initializeDividend() {
         Calendar calendar = Calendar.getInstance();
+        final long volume1 = 21714395;
+        final long volume2 = 30588446;
 
         this.dividendInstrument = new Instrument();
 
         this.dividendQuotation1 = new Quotation();
         this.dividendQuotation1.setDate(calendar.getTime());
-        this.dividendQuotation1.setOpen(new BigDecimal(31.07));
-        this.dividendQuotation1.setHigh(new BigDecimal(31.48));
-        this.dividendQuotation1.setLow(new BigDecimal(30.18));
-        this.dividendQuotation1.setClose(new BigDecimal(31.28));
-        this.dividendQuotation1.setVolume(21714395);
+        this.dividendQuotation1.setOpen(new BigDecimal("31.07"));
+        this.dividendQuotation1.setHigh(new BigDecimal("31.48"));
+        this.dividendQuotation1.setLow(new BigDecimal("30.18"));
+        this.dividendQuotation1.setClose(new BigDecimal("31.28"));
+        this.dividendQuotation1.setVolume(volume1);
         this.dividendQuotation1.setCurrency(Currency.USD);
         this.dividendInstrument.addQuotation(this.dividendQuotation1);
 
         this.dividendQuotation2 = new Quotation();
         calendar.add(Calendar.DAY_OF_MONTH, -1);
         this.dividendQuotation2.setDate(calendar.getTime());
-        this.dividendQuotation2.setOpen(new BigDecimal(33.00));
-        this.dividendQuotation2.setHigh(new BigDecimal(33.19));
-        this.dividendQuotation2.setLow(new BigDecimal(30.71));
-        this.dividendQuotation2.setClose(new BigDecimal(30.89));
-        this.dividendQuotation2.setVolume(30588446);
+        this.dividendQuotation2.setOpen(new BigDecimal("33.00"));
+        this.dividendQuotation2.setHigh(new BigDecimal("33.19"));
+        this.dividendQuotation2.setLow(new BigDecimal("30.71"));
+        this.dividendQuotation2.setClose(new BigDecimal("30.89"));
+        this.dividendQuotation2.setVolume(volume2);
         this.dividendQuotation2.setCurrency(Currency.USD);
         this.dividendInstrument.addQuotation(this.dividendQuotation2);
     }
@@ -131,27 +133,29 @@ public class RatioCalculatorTest {
      */
     private void initializeDivisor() {
         Calendar calendar = Calendar.getInstance();
+        final long volume1 = 27368364;
+        final long volume2 = 27627548;
 
         this.divisorInstrument = new Instrument();
 
         this.divisorQuotation1 = new Quotation();
         this.divisorQuotation1.setDate(calendar.getTime());
-        this.divisorQuotation1.setOpen(new BigDecimal(26.25));
-        this.divisorQuotation1.setHigh(new BigDecimal(26.76));
-        this.divisorQuotation1.setLow(new BigDecimal(26.01));
-        this.divisorQuotation1.setClose(new BigDecimal(26.66));
-        this.divisorQuotation1.setVolume(27368364);
+        this.divisorQuotation1.setOpen(new BigDecimal("26.25"));
+        this.divisorQuotation1.setHigh(new BigDecimal("26.76"));
+        this.divisorQuotation1.setLow(new BigDecimal("26.01"));
+        this.divisorQuotation1.setClose(new BigDecimal("26.66"));
+        this.divisorQuotation1.setVolume(volume1);
         this.divisorQuotation1.setCurrency(Currency.USD);
         this.divisorInstrument.addQuotation(this.divisorQuotation1);
 
         this.divisorQuotation2 = new Quotation();
         calendar.add(Calendar.DAY_OF_MONTH, -1);
         this.divisorQuotation2.setDate(calendar.getTime());
-        this.divisorQuotation2.setOpen(new BigDecimal(26.70));
-        this.divisorQuotation2.setHigh(new BigDecimal(26.74));
-        this.divisorQuotation2.setLow(new BigDecimal(26.06));
-        this.divisorQuotation2.setClose(new BigDecimal(26.16));
-        this.divisorQuotation2.setVolume(27627548);
+        this.divisorQuotation2.setOpen(new BigDecimal("26.70"));
+        this.divisorQuotation2.setHigh(new BigDecimal("26.74"));
+        this.divisorQuotation2.setLow(new BigDecimal("26.06"));
+        this.divisorQuotation2.setClose(new BigDecimal("26.16"));
+        this.divisorQuotation2.setVolume(volume2);
         this.divisorQuotation2.setCurrency(Currency.USD);
         this.divisorInstrument.addQuotation(this.divisorQuotation2);
     }
@@ -192,10 +196,10 @@ public class RatioCalculatorTest {
         return quotation;
     }
 
-    @Test
     /**
      * Tests the calculation of ratio quotations between two instruments.
      */
+    @Test
     public void testGetRatios() {
         List<Quotation> ratioQuotations;
         Quotation expectedQuotation1 = this.getExpectedRatioQuotation1();
@@ -217,10 +221,10 @@ public class RatioCalculatorTest {
         }
     }
 
-    @Test
     /**
      * Tests the calculation of ratio quotations if dividend quotations are missing.
      */
+    @Test
     public void testGetRatiosWithoutQuotationsDividend() {
         this.dividendInstrument.setQuotations(new ArrayList<>());
 
@@ -232,10 +236,10 @@ public class RatioCalculatorTest {
         }
     }
 
-    @Test
     /**
      * Tests the calculation of ratio quotations if dividend quotations are missing.
      */
+    @Test
     public void testGetRatiosWithoutQuotationsDivisor() {
         this.divisorInstrument.setQuotations(new ArrayList<>());
 

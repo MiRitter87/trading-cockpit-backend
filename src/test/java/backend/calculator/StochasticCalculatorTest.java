@@ -41,10 +41,10 @@ public class StochasticCalculatorTest {
      */
     private static QuotationProviderDAO quotationProviderYahooDAO;
 
-    @BeforeAll
     /**
      * Tasks to be performed once at startup of test class.
      */
+    @BeforeAll
     public static void setUpClass() {
         try {
             quotationProviderYahooDAO = new QuotationProviderYahooDAOStub();
@@ -53,18 +53,18 @@ public class StochasticCalculatorTest {
         }
     }
 
-    @AfterAll
     /**
      * Tasks to be performed once at the end of the test class.
      */
+    @AfterAll
     public static void tearDownClass() {
         quotationProviderYahooDAO = null;
     }
 
-    @BeforeEach
     /**
      * Tasks to be performed before each test is run.
      */
+    @BeforeEach
     public void setUp() {
         try {
             this.stochasticCalculator = new StochasticCalculator();
@@ -74,10 +74,10 @@ public class StochasticCalculatorTest {
         }
     }
 
-    @AfterEach
     /**
      * Tasks to be performed after each test has been run.
      */
+    @AfterEach
     public void tearDown() {
         this.stochasticCalculator = null;
 
@@ -104,27 +104,30 @@ public class StochasticCalculatorTest {
         }
     }
 
-    @Test
     /**
      * Tests the calculation of the Stochastic.
      */
+    @Test
     public void testGetStochastic() {
         QuotationArray sortedQuotations = new QuotationArray(this.dmlStock.getQuotationsSortedByDate());
-        float expectedStochastic = 48.57f, actualStochastic;
+        final float expectedStochastic = 48.57f;
+        float actualStochastic;
+        final int days14 = 14;
 
-        actualStochastic = this.stochasticCalculator.getStochastic(14, sortedQuotations.getQuotations().get(0),
+        actualStochastic = this.stochasticCalculator.getStochastic(days14, sortedQuotations.getQuotations().get(0),
                 sortedQuotations);
 
         assertEquals(expectedStochastic, actualStochastic);
     }
 
-    @Test
     /**
      * Tests the calculation of the Slow Stochastic.
      */
+    @Test
     public void testGetSlowStochastic() {
         QuotationArray sortedQuotations = new QuotationArray(this.dmlStock.getQuotationsSortedByDate());
-        float expectedSlowStochastic = 74.28f, actualSlowStochastic;
+        final float expectedSlowStochastic = 74.28f;
+        float actualSlowStochastic;
         final int periodDays = 14;
         final int smoothingPeriod = 3;
 
