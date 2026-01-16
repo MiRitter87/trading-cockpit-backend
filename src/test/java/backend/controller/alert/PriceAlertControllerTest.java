@@ -14,7 +14,7 @@ import backend.controller.DataProvider;
 import backend.model.StockExchange;
 
 /**
- * Tests the functionality of the PriceAlertController
+ * Tests the functionality of the PriceAlertController.
  *
  * @author Michael
  */
@@ -24,10 +24,10 @@ public class PriceAlertControllerTest {
      */
     private PriceAlertController priceAlertController;
 
-    @BeforeEach
     /**
      * Tasks to be performed before each test is run.
      */
+    @BeforeEach
     public void setUp() {
         try {
             this.priceAlertController = new PriceAlertController();
@@ -36,18 +36,18 @@ public class PriceAlertControllerTest {
         }
     }
 
-    @AfterEach
     /**
      * Tasks to be performed after each test has been run.
      */
+    @AfterEach
     public void tearDown() {
         this.priceAlertController = null;
     }
 
-    @Test
     /**
      * Tests getting the query interval.
      */
+    @Test
     public void testGetQueryInterval() {
         final int expectedQueryInterval = 30;
         final int actualQueryInterval = this.priceAlertController.getQueryInterval();
@@ -55,10 +55,10 @@ public class PriceAlertControllerTest {
         assertEquals(expectedQueryInterval, actualQueryInterval);
     }
 
-    @Test
     /**
      * Tests getting the start time.
      */
+    @Test
     public void testGetStartTime() {
         final LocalTime expectedStartTime = LocalTime.of(15, 30);
         final LocalTime actualStartTime = this.priceAlertController.getStartTime();
@@ -66,10 +66,10 @@ public class PriceAlertControllerTest {
         assertEquals(expectedStartTime, actualStartTime);
     }
 
-    @Test
     /**
      * Tests getting the end time.
      */
+    @Test
     public void testGetEndTime() {
         final LocalTime expectedEndTime = LocalTime.of(22, 0);
         final LocalTime actualEndTime = this.priceAlertController.getEndTime();
@@ -77,10 +77,10 @@ public class PriceAlertControllerTest {
         assertEquals(expectedEndTime, actualEndTime);
     }
 
-    @Test
     /**
      * Tests getting the data providers.
      */
+    @Test
     public void testGetDataProviders() {
         final Map<StockExchange, DataProvider> dataProviders = this.priceAlertController.getDataProviders();
         DataProvider dataProvider;

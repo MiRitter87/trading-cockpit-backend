@@ -76,19 +76,19 @@ public class PriceAlertImportExportControllerTest {
      */
     private PriceAlert appleAlert2;
 
-    @BeforeAll
     /**
      * Tasks to be performed once at startup of test class.
      */
+    @BeforeAll
     public static void setUpClass() {
         instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
         priceAlertDAO = DAOManager.getInstance().getPriceAlertDAO();
     }
 
-    @AfterAll
     /**
      * Tasks to be performed once at end of test class.
      */
+    @AfterAll
     public static void tearDownClass() {
         try {
             DAOManager.getInstance().close();
@@ -97,20 +97,20 @@ public class PriceAlertImportExportControllerTest {
         }
     }
 
-    @BeforeEach
     /**
      * Tasks to be performed before each test is run.
      */
+    @BeforeEach
     public void setUp() {
         this.importExportController = new PriceAlertImportExportController();
         this.createDummyInstruments();
         this.createDummyPriceAlerts();
     }
 
-    @AfterEach
     /**
      * Tasks to be performed after each test has been run.
      */
+    @AfterEach
     public void tearDown() {
         this.deleteDummyPriceAlerts();
         this.deleteDummyInstruments();
@@ -191,13 +191,14 @@ public class PriceAlertImportExportControllerTest {
      */
     public PriceAlert getAppleAlert1() {
         PriceAlert alert = new PriceAlert();
+        final float triggerDistance = 0.1f;
 
         alert.setInstrument(this.appleInstrument);
         alert.setAlertType(PriceAlertType.LESS_OR_EQUAL);
-        alert.setPrice(BigDecimal.valueOf(280.70));
+        alert.setPrice(new BigDecimal("280.70"));
         alert.setCurrency(Currency.USD);
         alert.setTriggerTime(new Date());
-        alert.setTriggerDistancePercent(0.1f);
+        alert.setTriggerDistancePercent(triggerDistance);
         alert.setConfirmationTime(new Date());
         alert.setSendMail(true);
         alert.setAlertMailAddress("test@mail.com");
@@ -217,7 +218,7 @@ public class PriceAlertImportExportControllerTest {
 
         alert.setInstrument(this.appleInstrument);
         alert.setAlertType(PriceAlertType.GREATER_OR_EQUAL);
-        alert.setPrice(BigDecimal.valueOf(300));
+        alert.setPrice(new BigDecimal("300"));
         alert.setCurrency(Currency.USD);
 
         return alert;
@@ -277,10 +278,10 @@ public class PriceAlertImportExportControllerTest {
         return jsonAlerts;
     }
 
-    @Test
     /**
      * Tests the export of all price alerts.
      */
+    @Test
     public void testExportPriceAlerts() {
         try {
             String jsonAlerts = this.importExportController.exportPriceAlerts();
@@ -307,10 +308,10 @@ public class PriceAlertImportExportControllerTest {
         }
     }
 
-    @Test
     /**
      * Tests importing price alerts from an invalid JSON String.
      */
+    @Test
     public void testImportPriceAlertsInvalidString() {
         String invalidJson = "abcde";
         String expectedErrorMessage = this.resources.getString("priceAlert.importJsonMalformed");
@@ -323,10 +324,10 @@ public class PriceAlertImportExportControllerTest {
         }
     }
 
-    @Test
     /**
      * Tests importing price alerts from a JSON String containing just an empty list.
      */
+    @Test
     public void testImportPriceAlertsEmptyList() {
         String emptyListJson = "[]";
         String expectedErrorMessage = this.resources.getString("priceAlert.importEmptyList");
@@ -341,13 +342,13 @@ public class PriceAlertImportExportControllerTest {
         }
     }
 
-    @Test
     /**
      * Tests the import of price alerts where an Instrument with an unknown ID is being referenced. No Price Alert is
      * being created, if the referenced Instrument is unknown.
      */
+    @Test
     public void testImportPriceAlertsUnknownInstrument() {
-        int expectedNumberAlerts = 2;
+        final int expectedNumberAlerts = 2;
         List<PriceAlert> priceAlerts;
         String expectedErrorMessage = this.resources.getString("priceAlert.importWithWarnings");
 
@@ -372,12 +373,12 @@ public class PriceAlertImportExportControllerTest {
         }
     }
 
-    @Test
     /**
      * Test the import of a valid PriceAlert.
      */
+    @Test
     public void testImportPriceAlertsValidImport() {
-        int expectedNumberAlerts = 3;
+        final int expectedNumberAlerts = 3;
         List<PriceAlert> priceAlerts = null;
         String importJson;
 
@@ -411,12 +412,12 @@ public class PriceAlertImportExportControllerTest {
         }
     }
 
-    @Test
     /**
      * Tests the import of price alerts that already exist.
      */
+    @Test
     public void testImportPriceAlertsExisting() {
-        int expectedNumberAlerts = 2;
+        final int expectedNumberAlerts = 2;
         List<PriceAlert> priceAlerts;
         String expectedErrorMessage = this.resources.getString("priceAlert.importWithWarnings");
 
