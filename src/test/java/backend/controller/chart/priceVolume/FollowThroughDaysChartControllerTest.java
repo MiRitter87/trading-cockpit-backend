@@ -45,10 +45,10 @@ public class FollowThroughDaysChartControllerTest {
      */
     private static QuotationProviderDAO quotationProviderYahooDAO;
 
-    @BeforeAll
     /**
      * Tasks to be performed once at startup of test class.
      */
+    @BeforeAll
     public static void setUpClass() {
         try {
             quotationProviderYahooDAO = new QuotationProviderYahooDAOStub();
@@ -57,10 +57,10 @@ public class FollowThroughDaysChartControllerTest {
         }
     }
 
-    @AfterAll
     /**
      * Tasks to be performed once at the end of the test class.
      */
+    @AfterAll
     public static void tearDownClass() {
         quotationProviderYahooDAO = null;
 
@@ -71,10 +71,10 @@ public class FollowThroughDaysChartControllerTest {
         }
     }
 
-    @BeforeEach
     /**
      * Tasks to be performed before each test is run.
      */
+    @BeforeEach
     public void setUp() {
         try {
             this.followThroughDaysChartController = new FollowThroughDaysChartController();
@@ -84,10 +84,10 @@ public class FollowThroughDaysChartControllerTest {
         }
     }
 
-    @AfterEach
     /**
      * Tasks to be performed after each test has been run.
      */
+    @AfterEach
     public void tearDown() {
         this.followThroughDaysChartController = null;
         this.dmlStock = null;
@@ -113,15 +113,17 @@ public class FollowThroughDaysChartControllerTest {
         }
     }
 
-    @Test
     /**
      * Tests the check if the current Quotation constitutes a Follow-Through Day. In this test the necessary
      * requirements for a Follow-Through Day are met.
      */
+    @Test
     public void testIsFollowThroughDay() {
+        final int index6 = 6;
+        final int index7 = 7;
         List<Quotation> quotationsSortedByDate = this.dmlStock.getQuotationsSortedByDate();
-        Quotation currentQuotation = quotationsSortedByDate.get(6);
-        Quotation previousQuotation = quotationsSortedByDate.get(7);
+        Quotation currentQuotation = quotationsSortedByDate.get(index6);
+        Quotation previousQuotation = quotationsSortedByDate.get(index7);
 
         boolean isFollowThroughDay = this.followThroughDaysChartController.isFollowThroughDay(currentQuotation,
                 previousQuotation, quotationsSortedByDate);
@@ -129,15 +131,17 @@ public class FollowThroughDaysChartControllerTest {
         assertTrue(isFollowThroughDay);
     }
 
-    @Test
     /**
      * Tests the check if the current Quotation constitutes a Follow-Through Day. In this test the volume is not higher
      * than the previous days volume. Therefore no Follow-Through Day is given.
      */
+    @Test
     public void testNoFTDVolumeTooLow() {
+        final int index6 = 6;
+        final int index7 = 7;
         List<Quotation> quotationsSortedByDate = this.dmlStock.getQuotationsSortedByDate();
-        Quotation currentQuotation = quotationsSortedByDate.get(6);
-        Quotation previousQuotation = quotationsSortedByDate.get(7);
+        Quotation currentQuotation = quotationsSortedByDate.get(index6);
+        Quotation previousQuotation = quotationsSortedByDate.get(index7);
 
         currentQuotation.setVolume(previousQuotation.getVolume() - 1);
 
@@ -147,15 +151,17 @@ public class FollowThroughDaysChartControllerTest {
         assertFalse(isFollowThroughDay);
     }
 
-    @Test
     /**
      * Tests the check if the current Quotation constitutes a Follow-Through Day. In this test the performance is not
      * high enough to constitute a Follow-Through Day.
      */
+    @Test
     public void testNoFTDPerformanceTooLow() {
+        final int index6 = 6;
+        final int index7 = 7;
         List<Quotation> quotationsSortedByDate = this.dmlStock.getQuotationsSortedByDate();
-        Quotation currentQuotation = quotationsSortedByDate.get(6);
-        Quotation previousQuotation = quotationsSortedByDate.get(7);
+        Quotation currentQuotation = quotationsSortedByDate.get(index6);
+        Quotation previousQuotation = quotationsSortedByDate.get(index7);
 
         currentQuotation.setClose(previousQuotation.getClose());
 
@@ -165,13 +171,14 @@ public class FollowThroughDaysChartControllerTest {
         assertFalse(isFollowThroughDay);
     }
 
-    @Test
     /**
      * Tests determination of the low price of the past number of days.
      */
+    @Test
     public void testGetLowPricePast() {
+        final int index9 = 9;
         List<Quotation> quotationsSortedByDate = this.dmlStock.getQuotationsSortedByDate();
-        Quotation currentQuotation = quotationsSortedByDate.get(9);
+        Quotation currentQuotation = quotationsSortedByDate.get(index9);
         final int daysBefore = -5;
         BigDecimal actualLowPrice;
         BigDecimal expectedLowPrice = new BigDecimal("1.19");
@@ -181,14 +188,15 @@ public class FollowThroughDaysChartControllerTest {
         assertEquals(expectedLowPrice, actualLowPrice);
     }
 
-    @Test
     /**
      * Tests determination of the low price of the future number of days.
      */
+    @Test
     public void testGetLowPriceFuture() {
-        List<Quotation> quotationsSortedByDate = this.dmlStock.getQuotationsSortedByDate();
-        Quotation currentQuotation = quotationsSortedByDate.get(9);
+        final int index9 = 9;
         final int daysAfter = 5;
+        List<Quotation> quotationsSortedByDate = this.dmlStock.getQuotationsSortedByDate();
+        Quotation currentQuotation = quotationsSortedByDate.get(index9);
         BigDecimal actualLowPrice;
         BigDecimal expectedLowPrice = new BigDecimal("1.24");
 
@@ -197,13 +205,15 @@ public class FollowThroughDaysChartControllerTest {
         assertEquals(expectedLowPrice, actualLowPrice);
     }
 
-    @Test
     /**
      * Tests the check if the low before the FTD has been undercut after the FTD occurred.
      */
+    @Test
     public void testIsLowBeforeFTDUndercutYes() {
+        final int index6 = 6;
+        final int days10 = 10;
         List<Quotation> quotationsSortedByDate = this.dmlStock.getQuotationsSortedByDate();
-        Quotation ftdQuotation = quotationsSortedByDate.get(6);
+        Quotation ftdQuotation = quotationsSortedByDate.get(index6);
         Quotation undercutQuotation;
         boolean isLowUndercut;
 
@@ -212,45 +222,51 @@ public class FollowThroughDaysChartControllerTest {
         undercutQuotation.setLow(new BigDecimal("1.18"));
 
         isLowUndercut = this.followThroughDaysChartController.isLowBeforeFTDUndercut(ftdQuotation,
-                quotationsSortedByDate, 10, 10);
+                quotationsSortedByDate, days10, days10);
         assertTrue(isLowUndercut);
     }
 
-    @Test
     /**
      * Tests the check if the low before the FTD has been undercut after the FTD occurred.
      */
+    @Test
     public void testIsLowBeforeFTDUndercutNo() {
+        final int index6 = 6;
+        final int days10 = 10;
         List<Quotation> quotationsSortedByDate = this.dmlStock.getQuotationsSortedByDate();
-        Quotation ftdQuotation = quotationsSortedByDate.get(6);
+        Quotation ftdQuotation = quotationsSortedByDate.get(index6);
         boolean isLowUndercut;
 
         isLowUndercut = this.followThroughDaysChartController.isLowBeforeFTDUndercut(ftdQuotation,
-                quotationsSortedByDate, 10, 10);
+                quotationsSortedByDate, days10, days10);
         assertFalse(isLowUndercut);
     }
 
-    @Test
     /**
      * Tests the check if a Distribution Day is following after the FTD.
      */
+    @Test
     public void testIsDistributionDayFollowingYes() {
+        final int index6 = 6;
+        final int days10 = 10;
         List<Quotation> quotationsSortedByDate = this.dmlStock.getQuotationsSortedByDate();
-        Quotation ftdQuotation = quotationsSortedByDate.get(6);
+        Quotation ftdQuotation = quotationsSortedByDate.get(index6);
         boolean isDistributionDayFollowing;
 
         isDistributionDayFollowing = this.followThroughDaysChartController.isDistributionDayFollowing(ftdQuotation,
-                quotationsSortedByDate, 10);
+                quotationsSortedByDate, days10);
         assertTrue(isDistributionDayFollowing);
     }
 
-    @Test
     /**
      * Tests the check if a Distribution Day is following after the FTD.
      */
+    @Test
     public void testIsDistributionDayFollowingNo() {
+        final int index6 = 6;
+        final int days10 = 10;
         List<Quotation> quotationsSortedByDate = this.dmlStock.getQuotationsSortedByDate();
-        Quotation ftdQuotation = quotationsSortedByDate.get(6);
+        Quotation ftdQuotation = quotationsSortedByDate.get(index6);
         Quotation distributionQuotation;
         boolean isDistributionDayFollowing;
 
@@ -259,7 +275,7 @@ public class FollowThroughDaysChartControllerTest {
         distributionQuotation.setClose(distributionQuotation.getOpen());
 
         isDistributionDayFollowing = this.followThroughDaysChartController.isDistributionDayFollowing(ftdQuotation,
-                quotationsSortedByDate, 10);
+                quotationsSortedByDate, days10);
         assertFalse(isDistributionDayFollowing);
     }
 }

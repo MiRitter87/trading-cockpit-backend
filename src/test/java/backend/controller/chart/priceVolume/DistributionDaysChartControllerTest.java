@@ -45,10 +45,10 @@ public class DistributionDaysChartControllerTest {
      */
     private static QuotationProviderDAO quotationProviderYahooDAO;
 
-    @BeforeAll
     /**
      * Tasks to be performed once at startup of test class.
      */
+    @BeforeAll
     public static void setUpClass() {
         try {
             quotationProviderYahooDAO = new QuotationProviderYahooDAOStub();
@@ -57,10 +57,10 @@ public class DistributionDaysChartControllerTest {
         }
     }
 
-    @AfterAll
     /**
      * Tasks to be performed once at the end of the test class.
      */
+    @AfterAll
     public static void tearDownClass() {
         quotationProviderYahooDAO = null;
 
@@ -71,10 +71,10 @@ public class DistributionDaysChartControllerTest {
         }
     }
 
-    @BeforeEach
     /**
      * Tasks to be performed before each test is run.
      */
+    @BeforeEach
     public void setUp() {
         try {
             this.distributionDaysChartController = new DistributionDaysChartController();
@@ -85,10 +85,10 @@ public class DistributionDaysChartControllerTest {
         }
     }
 
-    @AfterEach
     /**
      * Tasks to be performed after each test has been run.
      */
+    @AfterEach
     public void tearDown() {
         this.distributionDaysChartController = null;
         this.dmlStock = null;
@@ -126,19 +126,20 @@ public class DistributionDaysChartControllerTest {
             quotation = sortedQuotations.get(i);
 
             // Calculate all Indicators only for most recent Quotation like in the ScanThread.
-            if (i == 0)
+            if (i == 0) {
                 quotation = indicatorCalculator.calculateIndicators(this.dmlStock, quotation, true);
-            else
+            } else {
                 quotation = indicatorCalculator.calculateIndicators(this.dmlStock, quotation, false);
+            }
         }
     }
 
-    @Test
     /**
      * Tests the determination of the 25-day rolling sum of Distribution Days.
      */
+    @Test
     public void testGetDistributionDaysSum() {
-        int expectedDDSum = 1;
+        final int expectedDDSum = 1;
         int actualDDSum;
         Quotation latestQuotation = this.dmlStock.getQuotationsSortedByDate().get(0);
 
@@ -148,11 +149,11 @@ public class DistributionDaysChartControllerTest {
         assertEquals(expectedDDSum, actualDDSum);
     }
 
-    @Test
     /**
      * Tests the check if the current Quotation constitutes a Distribution Day. In this test the necessary requirements
      * for a Distribution Day are met.
      */
+    @Test
     public void testIsDistributionDay() {
         List<Quotation> quotationsSortedByDate = this.dmlStock.getQuotationsSortedByDate();
         Quotation currentQuotation = quotationsSortedByDate.get(0);
@@ -164,11 +165,11 @@ public class DistributionDaysChartControllerTest {
         assertTrue(isDistributionDay);
     }
 
-    @Test
     /**
      * Tests the check if the current Quotation constitutes a Distribution Day. In this test the volume is not higher
      * than the previous days volume. Therefore no Distribution Day is given.
      */
+    @Test
     public void testNoDDVolumeTooLow() {
         List<Quotation> quotationsSortedByDate = this.dmlStock.getQuotationsSortedByDate();
         Quotation currentQuotation = quotationsSortedByDate.get(0);
@@ -182,11 +183,11 @@ public class DistributionDaysChartControllerTest {
         assertFalse(isDistributionDay);
     }
 
-    @Test
     /**
      * Tests the check if the current Quotation constitutes a Distribution Day. In this test the performance is not low
      * enough to constitute a Distribution Day.
      */
+    @Test
     public void testNoDDPerformanceTooHigh() {
         List<Quotation> quotationsSortedByDate = this.dmlStock.getQuotationsSortedByDate();
         Quotation currentQuotation = quotationsSortedByDate.get(0);

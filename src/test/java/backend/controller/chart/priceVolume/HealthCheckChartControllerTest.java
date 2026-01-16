@@ -34,10 +34,10 @@ public class HealthCheckChartControllerTest {
      */
     private Protocol protocol;
 
-    @AfterAll
     /**
      * Tasks to be performed once at the end of the test class.
      */
+    @AfterAll
     public static void tearDownClass() {
         try {
             DAOManager.getInstance().close();
@@ -46,10 +46,10 @@ public class HealthCheckChartControllerTest {
         }
     }
 
-    @BeforeEach
     /**
      * Tasks to be performed before each test is run.
      */
+    @BeforeEach
     public void setUp() {
         try {
             this.healthCheckChartController = new HealthCheckChartController();
@@ -60,10 +60,10 @@ public class HealthCheckChartControllerTest {
         }
     }
 
-    @AfterEach
     /**
      * Tasks to be performed after each test has been run.
      */
+    @AfterEach
     public void tearDown() {
         this.healthCheckChartController = null;
         this.protocol = null;
@@ -112,10 +112,10 @@ public class HealthCheckChartControllerTest {
         this.protocol.getProtocolEntries().add(protocolEntry);
     }
 
-    @Test
     /**
      * Tests the determination of the event number using all entries.
      */
+    @Test
     public void testGetEventNumberAll() {
         int actualEventNumber;
         final int expectedEventNumer = 1;
@@ -126,11 +126,11 @@ public class HealthCheckChartControllerTest {
         assertEquals(expectedEventNumer, actualEventNumber);
     }
 
-    @Test
     /**
      * Tests the determination of the event number using all entries. The calculation is performed for the previous day
      * using a different constellation of protocol entries.
      */
+    @Test
     public void testGetEventNumberAllPreviousDay() {
         int actualEventNumber;
         final int expectedEventNumer = -1;

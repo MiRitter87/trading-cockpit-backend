@@ -45,10 +45,10 @@ public class PocketPivotChartControllerTest {
      */
     private static QuotationProviderDAO quotationProviderYahooDAO;
 
-    @BeforeAll
     /**
      * Tasks to be performed once at startup of test class.
      */
+    @BeforeAll
     public static void setUpClass() {
         try {
             quotationProviderYahooDAO = new QuotationProviderYahooDAOStub();
@@ -57,10 +57,10 @@ public class PocketPivotChartControllerTest {
         }
     }
 
-    @AfterAll
     /**
      * Tasks to be performed once at the end of the test class.
      */
+    @AfterAll
     public static void tearDownClass() {
         quotationProviderYahooDAO = null;
 
@@ -71,10 +71,10 @@ public class PocketPivotChartControllerTest {
         }
     }
 
-    @BeforeEach
     /**
      * Tasks to be performed before each test is run.
      */
+    @BeforeEach
     public void setUp() {
         try {
             this.pocketPivotChartController = new PocketPivotChartController();
@@ -85,10 +85,10 @@ public class PocketPivotChartControllerTest {
         }
     }
 
-    @AfterEach
     /**
      * Tasks to be performed after each test has been run.
      */
+    @AfterEach
     public void tearDown() {
         this.pocketPivotChartController = null;
         this.dmlStock = null;
@@ -126,21 +126,22 @@ public class PocketPivotChartControllerTest {
             quotation = sortedQuotations.get(i);
 
             // Calculate all Indicators only for most recent Quotation like in the ScanThread.
-            if (i == 0)
+            if (i == 0) {
                 quotation = indicatorCalculator.calculateIndicators(this.dmlStock, quotation, true);
-            else
+            } else {
                 quotation = indicatorCalculator.calculateIndicators(this.dmlStock, quotation, false);
+            }
         }
     }
 
-    @Test
     /**
      * Tests the check if the current Quotation constitutes a Pocket Pivot. In this test the necessary requirements for
      * a Pocket Pivot are met.
      */
+    @Test
     public void testIsPocketPivot() {
         List<Quotation> quotationsSortedByDate = this.dmlStock.getQuotationsSortedByDate();
-        int indexOfPocketPivot = 73;
+        final int indexOfPocketPivot = 73;
 
         boolean isPocketPivot = this.pocketPivotChartController.isPocketPivot(quotationsSortedByDate,
                 indexOfPocketPivot);
@@ -148,14 +149,14 @@ public class PocketPivotChartControllerTest {
         assertTrue(isPocketPivot);
     }
 
-    @Test
     /**
      * Tests the check if the current Quotation constitutes a Pocket Pivot. In this test the Quotation is not an up-day.
      * Therefore no Pocket Pivot is given.
      */
+    @Test
     public void testIsPocketPivotNoUpDay() {
         List<Quotation> quotationsSortedByDate = this.dmlStock.getQuotationsSortedByDate();
-        int indexOfPocketPivot = 73;
+        final int indexOfPocketPivot = 73;
         Quotation currentQuotation = quotationsSortedByDate.get(indexOfPocketPivot);
         Quotation previousQuotation = quotationsSortedByDate.get(indexOfPocketPivot + 1);
 
@@ -167,14 +168,14 @@ public class PocketPivotChartControllerTest {
         assertFalse(isPocketPivot);
     }
 
-    @Test
     /**
      * Tests the check if the current Quotation constitutes a Pocket Pivot. In this test the closing price of the
      * Quotation is below the SMA(50). Therefore no Pocket Pivot is given.
      */
+    @Test
     public void testIsPocketPivotCloseBelowSma50() {
         List<Quotation> quotationsSortedByDate = this.dmlStock.getQuotationsSortedByDate();
-        int indexOfPocketPivot = 73;
+        final int indexOfPocketPivot = 73;
         Quotation currentQuotation = quotationsSortedByDate.get(indexOfPocketPivot);
 
         currentQuotation.getMovingAverageData().setSma50(currentQuotation.getClose().floatValue() + 1);
@@ -185,15 +186,15 @@ public class PocketPivotChartControllerTest {
         assertFalse(isPocketPivot);
     }
 
-    @Test
     /**
      * Tests the check if the current Quotation constitutes a Pocket Pivot. In this test the volume of the Quotation is
      * not high enough. Therefore no Pocket Pivot is given.
      */
+    @Test
     public void testIsPocketPivotVolumeTooLow() {
         List<Quotation> quotationsSortedByDate = this.dmlStock.getQuotationsSortedByDate();
-        int indexOfPocketPivot = 73;
-        int indexOfPreviousDownDay = 75;
+        final int indexOfPocketPivot = 73;
+        final int indexOfPreviousDownDay = 75;
         Quotation currentQuotation = quotationsSortedByDate.get(indexOfPocketPivot);
         Quotation previousDownQuotation = quotationsSortedByDate.get(indexOfPreviousDownDay);
 
@@ -205,14 +206,14 @@ public class PocketPivotChartControllerTest {
         assertFalse(isPocketPivot);
     }
 
-    @Test
     /**
      * Tests the check if the current Quotation constitutes a Pocket Pivot. In this test the closing price of the
      * Quotation is below the SMA(10). Therefore no Pocket Pivot is given.
      */
+    @Test
     public void testIsPocketPivotCloseBelowSma10() {
         List<Quotation> quotationsSortedByDate = this.dmlStock.getQuotationsSortedByDate();
-        int indexOfPocketPivot = 73;
+        final int indexOfPocketPivot = 73;
         Quotation currentQuotation = quotationsSortedByDate.get(indexOfPocketPivot);
 
         currentQuotation.getMovingAverageData().setSma10(currentQuotation.getClose().floatValue() + 1);
@@ -223,15 +224,15 @@ public class PocketPivotChartControllerTest {
         assertFalse(isPocketPivot);
     }
 
-    @Test
     /**
      * Tests the check if the current Quotation constitutes a Pocket Pivot. In this test the low price of the Quotation
      * is extended above the SMA(10). Therefore no Pocket Pivot is given.
      */
+    @Test
     public void testIsPocketPivotExtendedAboveSma10() {
         List<Quotation> quotationsSortedByDate = this.dmlStock.getQuotationsSortedByDate();
-        int indexOfPocketPivot = 73;
-        float threePercent = 1.03f;
+        final int indexOfPocketPivot = 73;
+        final float threePercent = 1.03f;
         Quotation currentQuotation = quotationsSortedByDate.get(indexOfPocketPivot);
         BigDecimal extendedLowPrice;
 
@@ -244,16 +245,17 @@ public class PocketPivotChartControllerTest {
         assertFalse(isPocketPivot);
     }
 
-    @Test
     /**
      * Tests the check if the current Quotation constitutes a Pocket Pivot. In this test the history contains not enough
      * quotations to check if a Pocket Pivot is given. Therefore no Pocket Pivot is given.
      */
+    @Test
     public void testIsPocketPivotHistoryTooSmall() {
         List<Quotation> quotationsSortedByDate = this.dmlStock.getQuotationsSortedByDate();
+        final int index11 = 11;
 
         // Shrink history size, preventing pocket pivot determination.
-        quotationsSortedByDate = quotationsSortedByDate.subList(0, 11);
+        quotationsSortedByDate = quotationsSortedByDate.subList(0, index11);
 
         boolean isPocketPivot = this.pocketPivotChartController.isPocketPivot(quotationsSortedByDate, 0);
 
