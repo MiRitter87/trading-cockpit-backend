@@ -59,18 +59,18 @@ public class ExcelExportControllerTest {
      */
     private Quotation microsoftQuotation;
 
-    @BeforeEach
     /**
      * Tasks to be performed before each test is run.
      */
+    @BeforeEach
     public void setUp() {
         this.createTestData();
     }
 
-    @AfterEach
     /**
      * Tasks to be performed after each test has been run.
      */
+    @AfterEach
     public void tearDown() {
         this.deleteTestData();
     }
@@ -117,21 +117,23 @@ public class ExcelExportControllerTest {
      */
     private void initializeQuotations() {
         Calendar calendar = Calendar.getInstance();
+        final long volume1 = 20200000;
+        final long volume2 = 6784544;
 
         calendar.setTime(new Date());
         this.microsoftQuotation = new Quotation();
         this.microsoftQuotation.setDate(calendar.getTime());
-        this.microsoftQuotation.setClose(BigDecimal.valueOf(246.79));
+        this.microsoftQuotation.setClose(new BigDecimal("246.79"));
         this.microsoftQuotation.setCurrency(Currency.USD);
-        this.microsoftQuotation.setVolume(20200000);
+        this.microsoftQuotation.setVolume(volume1);
         this.microsoftQuotation.setInstrument(this.microsoftStock);
 
         calendar.setTime(new Date());
         this.appleQuotation = new Quotation();
         this.appleQuotation.setDate(calendar.getTime());
-        this.appleQuotation.setClose(BigDecimal.valueOf(78.54));
+        this.appleQuotation.setClose(new BigDecimal("78.54"));
         this.appleQuotation.setCurrency(Currency.USD);
-        this.appleQuotation.setVolume(6784544);
+        this.appleQuotation.setVolume(volume2);
         this.appleQuotation.setInstrument(this.appleStock);
 
         this.quotations = new ArrayList<>();
@@ -142,6 +144,7 @@ public class ExcelExportControllerTest {
     /**
      * Initializes indicators.
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     private void initializeIndicators() {
         this.microsoftQuotation.setRelativeStrengthData(new RelativeStrengthData());
         this.microsoftQuotation.getRelativeStrengthData().setRsNumber(78);
@@ -154,15 +157,17 @@ public class ExcelExportControllerTest {
         this.appleQuotation.getIndicator().setAverageTrueRangePercent20(2.01f);
     }
 
-    @Test
     /**
      * Tests the retrieval of an Excel Workbook that contains the following quotation data for given List: Symbol, Date,
      * Price, RS Number, ATR%.
      */
+    @Test
     public void testGetPriceDataOfQuotations() {
         ExcelExportController excelExportController = new ExcelExportController();
         Map<Integer, List<String>> workbookContent;
         List<String> tableRowAttributes;
+        final int row3 = 3;
+        final int row4 = 4;
 
         // Construct an Excel workbook for the given quotations.
         Workbook workbook = excelExportController.getQuotationDataWorkbook(this.quotations);
@@ -175,8 +180,8 @@ public class ExcelExportControllerTest {
         assertEquals(this.resources.getString("instrument.attribute.symbol"), tableRowAttributes.get(0));
         assertEquals(this.resources.getString("quotation.attribute.date"), tableRowAttributes.get(1));
         assertEquals(this.resources.getString("quotation.attribute.price"), tableRowAttributes.get(2));
-        assertEquals(this.resources.getString("quotation.attribute.rsNumber"), tableRowAttributes.get(3));
-        assertEquals(this.resources.getString("quotation.attribute.atrp"), tableRowAttributes.get(4));
+        assertEquals(this.resources.getString("quotation.attribute.rsNumber"), tableRowAttributes.get(row3));
+        assertEquals(this.resources.getString("quotation.attribute.atrp"), tableRowAttributes.get(row4));
 
         // Data of the first Quotation.
         tableRowAttributes = workbookContent.get(1);
@@ -185,9 +190,9 @@ public class ExcelExportControllerTest {
                 tableRowAttributes.get(1));
         assertEquals(this.appleQuotation.getClose().toString(), tableRowAttributes.get(2));
         assertEquals(Double.valueOf(this.appleQuotation.getRelativeStrengthData().getRsNumber()),
-                Double.valueOf(tableRowAttributes.get(3)));
+                Double.valueOf(tableRowAttributes.get(row3)));
         assertEquals(this.appleQuotation.getIndicator().getAverageTrueRangePercent20(),
-                Double.valueOf(tableRowAttributes.get(4)));
+                Double.valueOf(tableRowAttributes.get(row4)));
 
         // Data of the second Quotation.
         tableRowAttributes = workbookContent.get(2);
@@ -196,8 +201,8 @@ public class ExcelExportControllerTest {
                 tableRowAttributes.get(1));
         assertEquals(this.microsoftQuotation.getClose().toString(), tableRowAttributes.get(2));
         assertEquals(Double.valueOf(this.microsoftQuotation.getRelativeStrengthData().getRsNumber()),
-                Double.valueOf(tableRowAttributes.get(3)));
+                Double.valueOf(tableRowAttributes.get(row3)));
         assertEquals(this.microsoftQuotation.getIndicator().getAverageTrueRangePercent20(),
-                Double.valueOf(tableRowAttributes.get(4)));
+                Double.valueOf(tableRowAttributes.get(row4)));
     }
 }
