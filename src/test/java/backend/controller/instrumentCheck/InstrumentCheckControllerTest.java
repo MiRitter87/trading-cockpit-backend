@@ -45,26 +45,26 @@ public class InstrumentCheckControllerTest {
      */
     private InstrumentCheckController instrumentCheckController;
 
-    @BeforeAll
     /**
      * Tasks to be performed once at startup of test class.
      */
+    @BeforeAll
     public static void setUpClass() {
         quotationProviderYahooDAO = new QuotationProviderYahooDAOStub();
     }
 
-    @AfterAll
     /**
      * Tasks to be performed once at end of test class.
      */
+    @AfterAll
     public static void tearDownClass() {
         quotationProviderYahooDAO = null;
     }
 
-    @BeforeEach
     /**
      * Tasks to be performed before each test is run.
      */
+    @BeforeEach
     public void setUp() {
         this.instrumentCheckController = new InstrumentCheckController();
 
@@ -72,10 +72,10 @@ public class InstrumentCheckControllerTest {
         this.initializeDMLIndicators();
     }
 
-    @AfterEach
     /**
      * Tasks to be performed after each test has been run.
      */
+    @AfterEach
     public void tearDown() {
         this.instrumentCheckController = null;
         this.dmlQuotations = null;
@@ -115,17 +115,19 @@ public class InstrumentCheckControllerTest {
             quotation = sortedQuotations.get(i);
 
             // Calculate all Indicators only for most recent Quotation like in the ScanThread.
-            if (i == 0)
+            if (i == 0) {
                 quotation = indicatorCalculator.calculateIndicators(instrument, quotation, true);
-            else
+            } else {
                 quotation = indicatorCalculator.calculateIndicators(instrument, quotation, false);
+            }
         }
     }
 
-    @Test
     /**
      * Checks if a proper Exception is thrown if no quotations exist at or after the given start date.
      */
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
     public void testCheckQuotationsExistAfterStartDate() {
         Calendar calendar = Calendar.getInstance();
 
@@ -139,10 +141,11 @@ public class InstrumentCheckControllerTest {
         }
     }
 
-    @Test
     /**
      * Checks if the start date is properly determined based on a lookback period and a list of quotations.
      */
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
     public void testGetStartDate() {
         Calendar calendar = Calendar.getInstance();
         final int lookbackPeriod = 15;
@@ -156,18 +159,20 @@ public class InstrumentCheckControllerTest {
         assertEquals(expectedStartDate, actualStartDate);
     }
 
-    @Test
     /**
      * Tests the determination of the start date if the lookback period is longer than the actual number of quotations.
      */
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
     public void testGetStartDateTooFewQuotations() {
         Calendar calendar = Calendar.getInstance();
         final int lookbackPeriod = 15;
+        final int toIndex = 10;
         final Date expectedStartDate;
         final Date actualStartDate;
 
         // Delete all quotations except the newest 10.
-        this.dmlQuotations.setQuotations(this.dmlQuotations.getQuotations().subList(0, 10));
+        this.dmlQuotations.setQuotations(this.dmlQuotations.getQuotations().subList(0, toIndex));
 
         // A lookback period of 15 would provide 04.07.22 if enough quotations were available.
         calendar.set(2022, 6, 11); // 11.07.22, because only 10 quotations are available.

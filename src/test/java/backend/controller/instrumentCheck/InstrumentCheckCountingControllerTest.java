@@ -52,26 +52,26 @@ public class InstrumentCheckCountingControllerTest {
      */
     private InstrumentCheckCountingController instrumentCheckCountingController;
 
-    @BeforeAll
     /**
      * Tasks to be performed once at startup of test class.
      */
+    @BeforeAll
     public static void setUpClass() {
         quotationProviderYahooDAO = new QuotationProviderYahooDAOStub();
     }
 
-    @AfterAll
     /**
      * Tasks to be performed once at end of test class.
      */
+    @AfterAll
     public static void tearDownClass() {
         quotationProviderYahooDAO = null;
     }
 
-    @BeforeEach
     /**
      * Tasks to be performed before each test is run.
      */
+    @BeforeEach
     public void setUp() {
         this.instrumentCheckCountingController = new InstrumentCheckCountingController();
 
@@ -79,10 +79,10 @@ public class InstrumentCheckCountingControllerTest {
         this.initializeDMLIndicators();
     }
 
-    @AfterEach
     /**
      * Tasks to be performed after each test has been run.
      */
+    @AfterEach
     public void tearDown() {
         this.instrumentCheckCountingController = null;
         this.dmlQuotations = null;
@@ -130,10 +130,11 @@ public class InstrumentCheckCountingControllerTest {
         }
     }
 
-    @Test
     /**
      * Tests the check if there are more bad closes than good closes.
      */
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
     public void testCheckMoreBadThanGoodCloses() {
         ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
         ProtocolEntry actualProtocolEntry;
@@ -164,10 +165,11 @@ public class InstrumentCheckCountingControllerTest {
         }
     }
 
-    @Test
     /**
      * Tests the check if there are more down-days than up-days.
      */
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
     public void testCheckMoreDownThanUpDays() {
         ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
         ProtocolEntry actualProtocolEntry;
@@ -198,12 +200,14 @@ public class InstrumentCheckCountingControllerTest {
         }
     }
 
-    @Test
     /**
      * Tests the check if there are more up-days than down-days.
      */
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
     public void testCheckMoreUpThanDownDays() {
-        ProtocolEntry expectedProtocolEntry1, expectedProtocolEntry2;
+        ProtocolEntry expectedProtocolEntry1;
+        ProtocolEntry expectedProtocolEntry2;
         List<ProtocolEntry> protocolEntries;
         Calendar calendar = Calendar.getInstance();
 
@@ -231,22 +235,24 @@ public class InstrumentCheckCountingControllerTest {
 
             // Validate the protocol entries.
             for (ProtocolEntry actualProtocolEntry : protocolEntries) {
-                if (actualProtocolEntry.getDate().getTime() == expectedProtocolEntry1.getDate().getTime())
+                if (actualProtocolEntry.getDate().getTime() == expectedProtocolEntry1.getDate().getTime()) {
                     assertEquals(expectedProtocolEntry1, actualProtocolEntry);
-                else if (actualProtocolEntry.getDate().getTime() == expectedProtocolEntry2.getDate().getTime())
+                } else if (actualProtocolEntry.getDate().getTime() == expectedProtocolEntry2.getDate().getTime()) {
                     assertEquals(expectedProtocolEntry2, actualProtocolEntry);
-                else
+                } else {
                     fail("The result of the check contains an unexpected protocol entry.");
+                }
             }
         } catch (Exception e) {
             fail(e.getMessage());
         }
     }
 
-    @Test
     /**
      * Tests the check if there are good closes than bad closes.
      */
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
     public void testCheckMoreGoodThanBadCloses() {
         ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
         ProtocolEntry actualProtocolEntry;
@@ -277,10 +283,11 @@ public class InstrumentCheckCountingControllerTest {
         }
     }
 
-    @Test
     /**
      * Tests the check if three lower closes have occurred.
      */
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
     public void testCheckThreeLowerCloses() {
         ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
         ProtocolEntry actualProtocolEntry;
@@ -310,10 +317,11 @@ public class InstrumentCheckCountingControllerTest {
         }
     }
 
-    @Test
     /**
      * Tests the check if three higher closes have occurred.
      */
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
     public void testCheckThreeHigherCloses() {
         ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
         ProtocolEntry actualProtocolEntry;

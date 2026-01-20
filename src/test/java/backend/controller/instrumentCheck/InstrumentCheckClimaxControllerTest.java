@@ -52,26 +52,26 @@ public class InstrumentCheckClimaxControllerTest {
      */
     private InstrumentCheckClimaxController instrumentCheckClimaxController;
 
-    @BeforeAll
     /**
      * Tasks to be performed once at startup of test class.
      */
+    @BeforeAll
     public static void setUpClass() {
         quotationProviderYahooDAO = new QuotationProviderYahooDAOStub();
     }
 
-    @AfterAll
     /**
      * Tasks to be performed once at end of test class.
      */
+    @AfterAll
     public static void tearDownClass() {
         quotationProviderYahooDAO = null;
     }
 
-    @BeforeEach
     /**
      * Tasks to be performed before each test is run.
      */
+    @BeforeEach
     public void setUp() {
         this.instrumentCheckClimaxController = new InstrumentCheckClimaxController();
 
@@ -79,10 +79,10 @@ public class InstrumentCheckClimaxControllerTest {
         this.initializeDMLIndicators();
     }
 
-    @AfterEach
     /**
      * Tasks to be performed after each test has been run.
      */
+    @AfterEach
     public void tearDown() {
         this.instrumentCheckClimaxController = null;
         this.dmlQuotations = null;
@@ -122,17 +122,19 @@ public class InstrumentCheckClimaxControllerTest {
             quotation = sortedQuotations.get(i);
 
             // Calculate all Indicators only for most recent Quotation like in the ScanThread.
-            if (i == 0)
+            if (i == 0) {
                 quotation = indicatorCalculator.calculateIndicators(instrument, quotation, true);
-            else
+            } else {
                 quotation = indicatorCalculator.calculateIndicators(instrument, quotation, false);
+            }
         }
     }
 
-    @Test
     /**
      * Tests the check if Instrument has a climax movement within a week.
      */
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
     public void testCheckClimaxMoveOneWeek() {
         ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
         ProtocolEntry actualProtocolEntry;
@@ -163,10 +165,11 @@ public class InstrumentCheckClimaxControllerTest {
         }
     }
 
-    @Test
     /**
      * Tests the check if Instrument has a climax movement within three weeks.
      */
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
     public void testCheckClimaxMoveThreeWeeks() {
         ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
         ProtocolEntry actualProtocolEntry;
@@ -197,11 +200,12 @@ public class InstrumentCheckClimaxControllerTest {
         }
     }
 
-    @Test
     /**
      * Tests the check if there is a climax movement time-wise. A time-wise climax move is given, if at least 7 of the
      * last 10 trading days are up-days.
      */
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
     public void testCheckTimeClimax() {
         ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
         ProtocolEntry actualProtocolEntry;

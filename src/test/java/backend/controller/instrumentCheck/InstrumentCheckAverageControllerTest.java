@@ -53,26 +53,26 @@ public class InstrumentCheckAverageControllerTest {
      */
     private InstrumentCheckAverageController instrumentCheckAverageController;
 
-    @BeforeAll
     /**
      * Tasks to be performed once at startup of test class.
      */
+    @BeforeAll
     public static void setUpClass() {
         quotationProviderYahooDAO = new QuotationProviderYahooDAOStub();
     }
 
-    @AfterAll
     /**
      * Tasks to be performed once at end of test class.
      */
+    @AfterAll
     public static void tearDownClass() {
         quotationProviderYahooDAO = null;
     }
 
-    @BeforeEach
     /**
      * Tasks to be performed before each test is run.
      */
+    @BeforeEach
     public void setUp() {
         this.instrumentCheckAverageController = new InstrumentCheckAverageController();
 
@@ -80,10 +80,10 @@ public class InstrumentCheckAverageControllerTest {
         this.initializeDMLIndicators();
     }
 
-    @AfterEach
     /**
      * Tasks to be performed after each test has been run.
      */
+    @AfterEach
     public void tearDown() {
         this.instrumentCheckAverageController = null;
         this.dmlQuotations = null;
@@ -123,17 +123,19 @@ public class InstrumentCheckAverageControllerTest {
             quotation = sortedQuotations.get(i);
 
             // Calculate all Indicators only for most recent Quotation like in the ScanThread.
-            if (i == 0)
+            if (i == 0) {
                 quotation = indicatorCalculator.calculateIndicators(instrument, quotation, true);
-            else
+            } else {
                 quotation = indicatorCalculator.calculateIndicators(instrument, quotation, false);
+            }
         }
     }
 
-    @Test
     /**
      * Tests the check if the price of an Instrument closed below SMA(50) on above-average volume.
      */
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
     public void testCheckCloseBelowSma50HighVolume() {
         ProtocolEntry expectedProtocolEntry1 = new ProtocolEntry();
         ProtocolEntry expectedProtocolEntry2 = new ProtocolEntry();
@@ -172,10 +174,11 @@ public class InstrumentCheckAverageControllerTest {
         }
     }
 
-    @Test
     /**
      * Tests the check if the price of an Instrument closed below SMA(50) on below-average volume.
      */
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
     public void testCheckCloseBelowSma50LowVolume() {
         ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
         ProtocolEntry actualProtocolEntry;
@@ -209,10 +212,11 @@ public class InstrumentCheckAverageControllerTest {
         }
     }
 
-    @Test
     /**
      * Tests the check if the price of an Instrument closed below EMA(21).
      */
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
     public void testCheckCloseBelowEma21() {
         ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
         ProtocolEntry actualProtocolEntry;
@@ -242,10 +246,11 @@ public class InstrumentCheckAverageControllerTest {
         }
     }
 
-    @Test
     /**
      * Tests the check if the price of an Instrument closed above SMA(50).
      */
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
     public void testCheckCloseAboveSma50() {
         ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
         ProtocolEntry actualProtocolEntry;
@@ -275,16 +280,17 @@ public class InstrumentCheckAverageControllerTest {
         }
     }
 
-    @Test
     /**
      * Tests the check if the price of an Instrument is extended above the SMA(200).
      */
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
     public void testCheckExtendedAboveSma200() {
         ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
         ProtocolEntry actualProtocolEntry;
         List<ProtocolEntry> protocolEntries;
         Calendar calendar = Calendar.getInstance();
-        float percentAboveSma200 = (float) 123.71;
+        final float percentAboveSma200 = 123.71f;
 
         // Modify quotation of test data. Closing price has to be at least 100% above the SMA(200).
         this.dmlQuotations.sortQuotationsByDate();
@@ -314,10 +320,11 @@ public class InstrumentCheckAverageControllerTest {
         }
     }
 
-    @Test
     /**
      * Tests the check if the price is extended on a one year basis.
      */
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
     public void testCheckExtendedOneYear() {
         ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
         ProtocolEntry actualProtocolEntry;

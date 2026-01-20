@@ -43,26 +43,26 @@ public class CountingControllerHelperTest {
      */
     private CountingControllerHelper countingControllerHelper;
 
-    @BeforeAll
     /**
      * Tasks to be performed once at startup of test class.
      */
+    @BeforeAll
     public static void setUpClass() {
         quotationProviderYahooDAO = new QuotationProviderYahooDAOStub();
     }
 
-    @AfterAll
     /**
      * Tasks to be performed once at end of test class.
      */
+    @AfterAll
     public static void tearDownClass() {
         quotationProviderYahooDAO = null;
     }
 
-    @BeforeEach
     /**
      * Tasks to be performed before each test is run.
      */
+    @BeforeEach
     public void setUp() {
         this.countingControllerHelper = new CountingControllerHelper();
 
@@ -70,10 +70,10 @@ public class CountingControllerHelperTest {
         this.initializeDMLIndicators();
     }
 
-    @AfterEach
     /**
      * Tasks to be performed after each test has been run.
      */
+    @AfterEach
     public void tearDown() {
         this.countingControllerHelper = null;
         this.dmlQuotations = null;
@@ -121,23 +121,25 @@ public class CountingControllerHelperTest {
         }
     }
 
-    @Test
     /**
      * Tests getting the number of good and bad closes in a range of the trading history.
      */
+    @Test
     public void testGetNumberOfGoodAndBadCloses() {
-        int expectedNumberOfGoodCloses, actualNumberOfGoodCloses, expectedNumberOfBadCloses, actualNumberOfBadCloses;
-        int expectedDaysTotal, actualDaysTotal;
+        final int expectedNumberOfGoodCloses = 3;
+        final int expectedNumberOfBadCloses = 3;
+        final int expectedDaysTotal = 6;
+        final int startIndex = 5;
+        int actualNumberOfGoodCloses;
+        int actualNumberOfBadCloses;
+        int actualDaysTotal;
         Map<String, Integer> resultMap;
 
         this.dmlQuotations.sortQuotationsByDate();
 
-        expectedNumberOfGoodCloses = 3;
-        expectedNumberOfBadCloses = 3;
-        expectedDaysTotal = 6;
-
-        resultMap = this.countingControllerHelper.getNumberOfGoodAndBadCloses(this.dmlQuotations.getQuotations().get(5),
-                this.dmlQuotations.getQuotations().get(0), this.dmlQuotations);
+        resultMap = this.countingControllerHelper.getNumberOfGoodAndBadCloses(
+                this.dmlQuotations.getQuotations().get(startIndex), this.dmlQuotations.getQuotations().get(0),
+                this.dmlQuotations);
         assertNotNull(resultMap);
 
         actualNumberOfGoodCloses = resultMap.get(CountingControllerHelper.MAP_ENTRY_GOOD_CLOSES);
@@ -149,20 +151,20 @@ public class CountingControllerHelperTest {
         assertEquals(expectedDaysTotal, actualDaysTotal);
     }
 
-    @Test
     /**
      * Tests getting the number of up- and down-days in a range of the trading history.
      */
+    @Test
     public void testGetNumberOfUpAndDownDays() {
-        int expectedNumberOfUpDays, actualNumberOfUpDays, expectedNumberOfDownDays, actualNumberOfDownDays,
-                expectedDaysTotal, actualDaysTotal;
+        final int expectedNumberOfUpDays = 1;
+        final int expectedNumberOfDownDays = 2;
+        final int expectedDaysTotal = 3;
+        int actualNumberOfUpDays;
+        int actualNumberOfDownDays;
+        int actualDaysTotal;
         Map<String, Integer> resultMap;
 
         this.dmlQuotations.sortQuotationsByDate();
-
-        expectedNumberOfUpDays = 1;
-        expectedNumberOfDownDays = 2;
-        expectedDaysTotal = 3;
 
         resultMap = this.countingControllerHelper.getNumberOfUpAndDownDays(this.dmlQuotations.getQuotations().get(2),
                 this.dmlQuotations.getQuotations().get(0), this.dmlQuotations);
