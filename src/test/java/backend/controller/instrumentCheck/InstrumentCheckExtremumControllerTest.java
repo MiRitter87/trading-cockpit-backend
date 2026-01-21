@@ -52,26 +52,26 @@ public class InstrumentCheckExtremumControllerTest {
      */
     private InstrumentCheckExtremumController instrumentCheckExtremumController;
 
-    @BeforeAll
     /**
      * Tasks to be performed once at startup of test class.
      */
+    @BeforeAll
     public static void setUpClass() {
         quotationProviderYahooDAO = new QuotationProviderYahooDAOStub();
     }
 
-    @AfterAll
     /**
      * Tasks to be performed once at end of test class.
      */
+    @AfterAll
     public static void tearDownClass() {
         quotationProviderYahooDAO = null;
     }
 
-    @BeforeEach
     /**
      * Tasks to be performed before each test is run.
      */
+    @BeforeEach
     public void setUp() {
         this.instrumentCheckExtremumController = new InstrumentCheckExtremumController();
 
@@ -79,10 +79,10 @@ public class InstrumentCheckExtremumControllerTest {
         this.initializeDMLIndicators();
     }
 
-    @AfterEach
     /**
      * Tasks to be performed after each test has been run.
      */
+    @AfterEach
     public void tearDown() {
         this.instrumentCheckExtremumController = null;
         this.dmlQuotations = null;
@@ -139,17 +139,19 @@ public class InstrumentCheckExtremumControllerTest {
             quotation = sortedQuotations.get(i);
 
             // Calculate all Indicators only for most recent Quotation like in the ScanThread.
-            if (i == 0)
+            if (i == 0) {
                 quotation = indicatorCalculator.calculateIndicators(instrument, quotation, true);
-            else
+            } else {
                 quotation = indicatorCalculator.calculateIndicators(instrument, quotation, false);
+            }
         }
     }
 
-    @Test
     /**
      * Tests the check if Instrument had largest down-day of the year.
      */
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
     public void testCheckLargestDownDay() {
         ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
         ProtocolEntry actualProtocolEntry;
@@ -180,10 +182,11 @@ public class InstrumentCheckExtremumControllerTest {
         }
     }
 
-    @Test
     /**
      * Tests the check if Instrument had largest up-day of the year.
      */
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
     public void testCheckLargestUpDay() {
         ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
         ProtocolEntry actualProtocolEntry;
@@ -213,18 +216,19 @@ public class InstrumentCheckExtremumControllerTest {
         }
     }
 
-    @Test
     /**
      * Tests the check if Instrument had largest daily high/low-spread of the year.
      */
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
     public void testCheckLargestDailySpread() {
         List<ProtocolEntry> protocolEntries;
         Calendar calendar = Calendar.getInstance();
         ProtocolEntry expectedProtocolEntry1 = new ProtocolEntry();
         ProtocolEntry expectedProtocolEntry2 = new ProtocolEntry();
         ProtocolEntry actualProtocolEntry;
-        float expectedPercentage1 = 15.08f;
-        float expectedPercentage2 = 17.34f;
+        final float expectedPercentage1 = 15.08f;
+        final float expectedPercentage2 = 17.34f;
 
         // Define the expected protocol entries.
         calendar.set(2021, 8, 10); // Largest daily high/low-spread occurred on 10.09.21
@@ -259,10 +263,11 @@ public class InstrumentCheckExtremumControllerTest {
         }
     }
 
-    @Test
     /**
      * Tests the check if Instrument had largest daily volume of the year.
      */
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
     public void testCheckLargestDailyVolume() {
         ProtocolEntry expectedProtocolEntry1 = new ProtocolEntry();
         ProtocolEntry expectedProtocolEntry2 = new ProtocolEntry();
@@ -301,11 +306,12 @@ public class InstrumentCheckExtremumControllerTest {
         }
     }
 
-    @Test
     /**
      * Tests the check if Instrument had largest down-day of the year. Set starting date before begin of trading
      * history.
      */
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
     public void testCheckLargestDownDayStartBeforeHistory() {
         ProtocolEntry expectedProtocolEntry1 = new ProtocolEntry();
         ProtocolEntry expectedProtocolEntry2 = new ProtocolEntry();
@@ -357,10 +363,11 @@ public class InstrumentCheckExtremumControllerTest {
         }
     }
 
-    @Test
     /**
      * Tests the check if Instrument had largest up-day of the year. Set starting date before begin of trading history.
      */
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
     public void testCheckLargestUpDayStartBeforeHistory() {
         ProtocolEntry expectedProtocolEntry1 = new ProtocolEntry();
         ProtocolEntry expectedProtocolEntry2 = new ProtocolEntry();

@@ -52,26 +52,26 @@ public class InstrumentCheckPatternControllerTest {
      */
     private InstrumentCheckPatternController instrumentCheckPatternController;
 
-    @BeforeAll
     /**
      * Tasks to be performed once at startup of test class.
      */
+    @BeforeAll
     public static void setUpClass() {
         quotationProviderYahooDAO = new QuotationProviderYahooDAOStub();
     }
 
-    @AfterAll
     /**
      * Tasks to be performed once at end of test class.
      */
+    @AfterAll
     public static void tearDownClass() {
         quotationProviderYahooDAO = null;
     }
 
-    @BeforeEach
     /**
      * Tasks to be performed before each test is run.
      */
+    @BeforeEach
     public void setUp() {
         this.instrumentCheckPatternController = new InstrumentCheckPatternController();
 
@@ -79,10 +79,10 @@ public class InstrumentCheckPatternControllerTest {
         this.initializeDMLIndicators();
     }
 
-    @AfterEach
     /**
      * Tasks to be performed after each test has been run.
      */
+    @AfterEach
     public void tearDown() {
         this.instrumentCheckPatternController = null;
         this.dmlQuotations = null;
@@ -122,17 +122,19 @@ public class InstrumentCheckPatternControllerTest {
             quotation = sortedQuotations.get(i);
 
             // Calculate all Indicators only for most recent Quotation like in the ScanThread.
-            if (i == 0)
+            if (i == 0) {
                 quotation = indicatorCalculator.calculateIndicators(instrument, quotation, true);
-            else
+            } else {
                 quotation = indicatorCalculator.calculateIndicators(instrument, quotation, false);
+            }
         }
     }
 
-    @Test
     /**
      * Tests the check if Instrument has advanced a certain amount on above-average volume.
      */
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
     public void testCheckUpOnVolume() {
         ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
         ProtocolEntry actualProtocolEntry;
@@ -162,10 +164,11 @@ public class InstrumentCheckPatternControllerTest {
         }
     }
 
-    @Test
     /**
      * Tests the check if Instrument has declined a certain amount on above-average volume.
      */
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
     public void testCheckDownOnVolume() {
         ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
         ProtocolEntry actualProtocolEntry;
@@ -195,10 +198,11 @@ public class InstrumentCheckPatternControllerTest {
         }
     }
 
-    @Test
     /**
      * Tests the check if Instrument is churning (price stalling on increased volume).
      */
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
     public void testCheckChurning() {
         ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
         ProtocolEntry actualProtocolEntry;
@@ -228,10 +232,11 @@ public class InstrumentCheckPatternControllerTest {
         }
     }
 
-    @Test
     /**
      * Tests the check if Instrument is reversing (open and close in lower third of candle on above-average volume).
      */
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
     public void testCheckHighVolumeReversal() {
         ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
         ProtocolEntry actualProtocolEntry;
@@ -261,16 +266,17 @@ public class InstrumentCheckPatternControllerTest {
         }
     }
 
-    @Test
     /**
      * Tests the check if Instrument made an exhaustion gap up.
      */
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
     public void testCheckExhaustionGapUp() {
         ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
         ProtocolEntry actualProtocolEntry;
         List<ProtocolEntry> protocolEntries;
         Calendar calendar = Calendar.getInstance();
-        float gapSizePercent = (float) 1.14;
+        final float gapSizePercent = 1.14f;
 
         // Define the expected protocol entry.
         calendar.set(2022, 1, 28); // Gap up on 28.02.22
@@ -296,16 +302,17 @@ public class InstrumentCheckPatternControllerTest {
         }
     }
 
-    @Test
     /**
      * Tests the check if Instrument made a bullish gap up.
      */
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
     public void testCheckBullishGapUp() {
         ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
         ProtocolEntry actualProtocolEntry;
         List<ProtocolEntry> protocolEntries;
         Calendar calendar = Calendar.getInstance();
-        float gapSizePercent = (float) 1.14;
+        final float gapSizePercent = 1.14f;
 
         // Define the expected protocol entry.
         calendar.set(2022, 1, 28); // Gap up on 28.02.22
@@ -331,10 +338,11 @@ public class InstrumentCheckPatternControllerTest {
         }
     }
 
-    @Test
     /**
      * Tests the check if Instrument made a Distribution Day.
      */
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
     public void testCheckDistributionDay() {
         ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
         ProtocolEntry actualProtocolEntry;
@@ -364,10 +372,11 @@ public class InstrumentCheckPatternControllerTest {
         }
     }
 
-    @Test
     /**
      * Test the check if Instrument made a Pocket Pivot.
      */
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
     public void testCheckPocketPivot() {
         ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
         ProtocolEntry actualProtocolEntry;

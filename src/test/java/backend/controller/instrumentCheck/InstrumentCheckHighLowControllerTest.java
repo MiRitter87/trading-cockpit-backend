@@ -52,26 +52,26 @@ public class InstrumentCheckHighLowControllerTest {
      */
     private QuotationArray dmlQuotations;
 
-    @BeforeAll
     /**
      * Tasks to be performed once at startup of test class.
      */
+    @BeforeAll
     public static void setUpClass() {
         quotationProviderYahooDAO = new QuotationProviderYahooDAOStub();
     }
 
-    @AfterAll
     /**
      * Tasks to be performed once at end of test class.
      */
+    @AfterAll
     public static void tearDownClass() {
         quotationProviderYahooDAO = null;
     }
 
-    @BeforeEach
     /**
      * Tasks to be performed before each test is run.
      */
+    @BeforeEach
     public void setUp() {
         this.instrumentCheckHighLowController = new InstrumentCheckHighLowController();
 
@@ -79,10 +79,10 @@ public class InstrumentCheckHighLowControllerTest {
         this.initializeDummyRsLinePrices();
     }
 
-    @AfterEach
     /**
      * Tasks to be performed after each test has been run.
      */
+    @AfterEach
     public void tearDown() {
         this.instrumentCheckHighLowController = null;
         this.dmlQuotations = null;
@@ -127,7 +127,7 @@ public class InstrumentCheckHighLowControllerTest {
      * Initializes dummy values of the RS-line prices.
      */
     private void initializeDummyRsLinePrices() {
-        BigDecimal rsLinePrice = new BigDecimal(30);
+        BigDecimal rsLinePrice = new BigDecimal("30");
 
         for (Quotation quotation : this.dmlQuotations.getQuotations()) {
             if (quotation.getRelativeStrengthData() == null) {
@@ -137,17 +137,18 @@ public class InstrumentCheckHighLowControllerTest {
             if (this.dmlQuotations.getQuotations().indexOf(quotation) > 1) {
                 quotation.getRelativeStrengthData().setRsLinePrice(rsLinePrice);
             } else {
-                quotation.getRelativeStrengthData().setRsLinePrice(new BigDecimal(0.1));
+                quotation.getRelativeStrengthData().setRsLinePrice(new BigDecimal("0.1"));
             }
 
-            rsLinePrice = rsLinePrice.subtract(new BigDecimal(0.1));
+            rsLinePrice = rsLinePrice.subtract(new BigDecimal("0.1"));
         }
     }
 
-    @Test
     /**
      * Tests the check if Instrument closed near its daily high price.
      */
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
     public void testCheckCloseNearHigh() {
         ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
         ProtocolEntry actualProtocolEntry;
@@ -177,10 +178,11 @@ public class InstrumentCheckHighLowControllerTest {
         }
     }
 
-    @Test
     /**
      * Tests the check if Instrument closed near its daily low price.
      */
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
     public void testCheckCloseNearLow() {
         ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
         ProtocolEntry actualProtocolEntry;
@@ -210,10 +212,11 @@ public class InstrumentCheckHighLowControllerTest {
         }
     }
 
-    @Test
     /**
      * Tests the check if Instrument made a new 52-week high.
      */
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
     public void testCheckNew52WeekHigh() {
         ProtocolEntry expectedProtocolEntry1;
         ProtocolEntry expectedProtocolEntry2;
@@ -257,10 +260,11 @@ public class InstrumentCheckHighLowControllerTest {
         }
     }
 
-    @Test
     /**
      * Tests the check if the RS-line of an Instrument made a new 52-week high.
      */
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
     public void testCheckRsLineNew52WeekHigh() {
         ProtocolEntry expectedProtocolEntry = new ProtocolEntry();
         ProtocolEntry actualProtocolEntry;

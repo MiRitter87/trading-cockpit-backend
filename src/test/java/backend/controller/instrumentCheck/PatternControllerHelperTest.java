@@ -43,26 +43,26 @@ public class PatternControllerHelperTest {
      */
     private PatternControllerHelper patternControllerHelper;
 
-    @BeforeAll
     /**
      * Tasks to be performed once at startup of test class.
      */
+    @BeforeAll
     public static void setUpClass() {
         quotationProviderYahooDAO = new QuotationProviderYahooDAOStub();
     }
 
-    @AfterAll
     /**
      * Tasks to be performed once at end of test class.
      */
+    @AfterAll
     public static void tearDownClass() {
         quotationProviderYahooDAO = null;
     }
 
-    @BeforeEach
     /**
      * Tasks to be performed before each test is run.
      */
+    @BeforeEach
     public void setUp() {
         this.patternControllerHelper = new PatternControllerHelper();
 
@@ -70,10 +70,10 @@ public class PatternControllerHelperTest {
         this.initializeDMLIndicators();
     }
 
-    @AfterEach
     /**
      * Tasks to be performed after each test has been run.
      */
+    @AfterEach
     public void tearDown() {
         this.patternControllerHelper = null;
         this.dmlQuotations = null;
@@ -113,23 +113,26 @@ public class PatternControllerHelperTest {
             quotation = sortedQuotations.get(i);
 
             // Calculate all Indicators only for most recent Quotation like in the ScanThread.
-            if (i == 0)
+            if (i == 0) {
                 quotation = indicatorCalculator.calculateIndicators(instrument, quotation, true);
-            else
+            } else {
                 quotation = indicatorCalculator.calculateIndicators(instrument, quotation, false);
+            }
         }
     }
 
-    @Test
     /**
      * Tests the check if a Quotation constitutes a bullish reversal (open and close in upper third of candle on
      * above-average volume).
      */
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
     public void testIsBullishHighVolumeReversal() {
         Calendar calendar = Calendar.getInstance();
         int indexOfBullishReversal;
         Quotation quotation;
-        boolean actualIsBullishReversal, expectedIsBullishReversal = true;
+        boolean actualIsBullishReversal;
+        final boolean expectedIsBullishReversal = true;
 
         calendar.set(2021, 10, 9); // Bullish reversal occurred on 09.11.21
         indexOfBullishReversal = this.dmlQuotations.getIndexOfQuotationWithDate(calendar.getTime());

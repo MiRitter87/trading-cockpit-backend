@@ -34,18 +34,18 @@ public class ProtocolConverterTest {
      */
     private ProtocolConverter protocolConverter;
 
-    @BeforeEach
     /**
      * Tasks to be performed before each test is run.
      */
+    @BeforeEach
     public void setUp() {
         this.protocolConverter = new ProtocolConverter();
     }
 
-    @AfterEach
     /**
      * Tasks to be performed after each test has been run.
      */
+    @AfterEach
     public void tearDown() {
         this.protocolConverter = null;
     }
@@ -55,6 +55,7 @@ public class ProtocolConverterTest {
      *
      * @return A health check protocol with several entries.
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     private Protocol getProtocolForTest() {
         Protocol protocol = new Protocol();
         ProtocolEntry protocolEntry;
@@ -91,10 +92,11 @@ public class ProtocolConverterTest {
         return protocol;
     }
 
-    @Test
     /**
      * Tests the conversion of a Protocol to a DateBasedProtocolArray. The entries are verified.
      */
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
     public void testConvertToDateBasedProtocolArrayEntries() {
         DateBasedProtocolArray actualDateBasedProtocolArray = this.protocolConverter
                 .convertToDateBasedProtocolArray(this.getProtocolForTest());
@@ -137,10 +139,11 @@ public class ProtocolConverterTest {
         assertEquals(expectedSimpleEntry, actualDateBasedEntry.getSimpleProtocolEntries().get(0));
     }
 
-    @Test
     /**
      * Tests the conversion of a Protocol to a DateBasedProtocolArray. The correct sorting of the entries is verified.
      */
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
     public void testConvertToDateBasedProtocolArraySorting() {
         DateBasedProtocolArray actualDateBasedProtocolArray = this.protocolConverter
                 .convertToDateBasedProtocolArray(this.getProtocolForTest());
@@ -157,11 +160,11 @@ public class ProtocolConverterTest {
         assertEquals(expectedEntry2Date, actualDateBasedProtocolArray.getDateBasedProtocolEntries().get(1).getDate());
     }
 
-    @Test
     /**
      * Tests the conversion of a Protocol to a DateBasedProtocolArray. The correct percentage calculation of events for
      * each category is verified.
      */
+    @Test
     public void testConvertToDateBasedProtocolArrayCounting() {
         DateBasedProtocolArray dateBasedProtocolArray = this.protocolConverter
                 .convertToDateBasedProtocolArray(this.getProtocolForTest());
