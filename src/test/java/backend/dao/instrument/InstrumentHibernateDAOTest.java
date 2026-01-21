@@ -75,20 +75,20 @@ public class InstrumentHibernateDAOTest {
      */
     private HorizontalLine horizontalLine;
 
-    @BeforeAll
     /**
      * Tasks to be performed once at startup of test class.
      */
+    @BeforeAll
     public static void setUpClass() {
         instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
         quotationDAO = DAOManager.getInstance().getQuotationDAO();
         chartObjectDAO = DAOManager.getInstance().getChartObjectDAO();
     }
 
-    @AfterAll
     /**
      * Tasks to be performed once at end of test class.
      */
+    @AfterAll
     public static void tearDownClass() {
         try {
             DAOManager.getInstance().close();
@@ -97,18 +97,18 @@ public class InstrumentHibernateDAOTest {
         }
     }
 
-    @BeforeEach
     /**
      * Tasks to be performed before each test is run.
      */
+    @BeforeEach
     public void setUp() {
         this.createTestData();
     }
 
-    @AfterEach
     /**
      * Tasks to be performed after each test has been run.
      */
+    @AfterEach
     public void tearDown() {
         this.deleteTestData();
     }
@@ -118,6 +118,8 @@ public class InstrumentHibernateDAOTest {
      */
     private void createTestData() {
         Calendar calendar = Calendar.getInstance();
+        final long volume1 = 6784544;
+        final long volume2 = 4584544;
 
         this.appleStock = new Instrument();
         this.horizontalLine = new HorizontalLine();
@@ -132,17 +134,17 @@ public class InstrumentHibernateDAOTest {
             calendar.setTime(new Date());
             this.appleQuotation1 = new Quotation();
             this.appleQuotation1.setDate(calendar.getTime());
-            this.appleQuotation1.setClose(BigDecimal.valueOf(78.54));
+            this.appleQuotation1.setClose(new BigDecimal("78.54"));
             this.appleQuotation1.setCurrency(Currency.USD);
-            this.appleQuotation1.setVolume(6784544);
+            this.appleQuotation1.setVolume(volume1);
             this.appleQuotation1.setInstrument(this.appleStock);
 
             calendar.add(Calendar.DAY_OF_YEAR, 1);
             this.appleQuotation2 = new Quotation();
             this.appleQuotation2.setDate(calendar.getTime());
-            this.appleQuotation2.setClose(BigDecimal.valueOf(79.14));
+            this.appleQuotation2.setClose(new BigDecimal("79.14"));
             this.appleQuotation2.setCurrency(Currency.USD);
-            this.appleQuotation2.setVolume(4584544);
+            this.appleQuotation2.setVolume(volume2);
             this.appleQuotation2.setInstrument(this.appleStock);
 
             this.horizontalLine.setInstrument(this.appleStock);
@@ -165,11 +167,11 @@ public class InstrumentHibernateDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests deletion of an Instrument. An Instrument can't be deleted as long as quotations are referenced to the
      * Instrument.
      */
+    @Test
     public void testDeleteInstrumentWithReferencedQuotations() {
         List<Quotation> quotations = new ArrayList<>();
         String expectedErrorMessage = MessageFormat.format(this.resources.getString("instrument.deleteUsedInQuotation"),
@@ -198,11 +200,11 @@ public class InstrumentHibernateDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests deletion of an Instrument. An Instrument can't be deleted as long as horizontal lines are referenced to the
      * Instrument.
      */
+    @Test
     public void testDeleteInstrumentWithReferencedHorizontalLines() {
         String expectedErrorMessage = MessageFormat
                 .format(this.resources.getString("instrument.deleteUsedInHorizontalLine"), this.appleStock.getId());

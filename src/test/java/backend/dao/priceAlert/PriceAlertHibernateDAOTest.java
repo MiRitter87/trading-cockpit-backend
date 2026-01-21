@@ -82,19 +82,19 @@ public class PriceAlertHibernateDAOTest {
      */
     private Instrument nvidiaInstrument;
 
-    @BeforeAll
     /**
      * Tasks to be performed once at startup of test class.
      */
+    @BeforeAll
     public static void setUpClass() {
         instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
         priceAlertDAO = DAOManager.getInstance().getPriceAlertDAO();
     }
 
-    @AfterAll
     /**
      * Tasks to be performed once at end of test class.
      */
+    @AfterAll
     public static void tearDownClass() {
         try {
             DAOManager.getInstance().close();
@@ -103,19 +103,19 @@ public class PriceAlertHibernateDAOTest {
         }
     }
 
-    @BeforeEach
     /**
      * Tasks to be performed before each test is run.
      */
+    @BeforeEach
     public void setUp() {
         this.createDummyInstruments();
         this.createDummyPriceAlerts();
     }
 
-    @AfterEach
     /**
      * Tasks to be performed after each test has been run.
      */
+    @AfterEach
     public void tearDown() {
         this.deleteDummyPriceAlerts();
         this.deleteDummyInstruments();
@@ -126,18 +126,19 @@ public class PriceAlertHibernateDAOTest {
      */
     private void createDummyPriceAlerts() {
         Calendar lastStockQuote = Calendar.getInstance();
+        final int days2 = 2;
 
         this.appleAlert = new PriceAlert();
         this.appleAlert.setInstrument(this.appleInstrument);
         this.appleAlert.setAlertType(PriceAlertType.GREATER_OR_EQUAL);
-        this.appleAlert.setPrice(BigDecimal.valueOf(185.50));
+        this.appleAlert.setPrice(new BigDecimal("185.50"));
         this.appleAlert.setCurrency(Currency.USD);
         this.appleAlert.setLastStockQuoteTime(null);
 
         this.microsoftAlert = new PriceAlert();
         this.microsoftAlert.setInstrument(this.microsoftInstrument);
         this.microsoftAlert.setAlertType(PriceAlertType.LESS_OR_EQUAL);
-        this.microsoftAlert.setPrice(BigDecimal.valueOf(250.00));
+        this.microsoftAlert.setPrice(new BigDecimal("250.00"));
         this.microsoftAlert.setCurrency(Currency.USD);
         lastStockQuote.add(Calendar.MINUTE, -1);
         this.microsoftAlert.setLastStockQuoteTime(lastStockQuote.getTime());
@@ -145,15 +146,15 @@ public class PriceAlertHibernateDAOTest {
         this.nvidiaAlert = new PriceAlert();
         this.nvidiaAlert.setInstrument(this.nvidiaInstrument);
         this.nvidiaAlert.setAlertType(PriceAlertType.LESS_OR_EQUAL);
-        this.nvidiaAlert.setPrice(BigDecimal.valueOf(180.00));
+        this.nvidiaAlert.setPrice(new BigDecimal("180.00"));
         this.nvidiaAlert.setCurrency(Currency.USD);
-        lastStockQuote.add(Calendar.MINUTE, -2);
+        lastStockQuote.add(Calendar.MINUTE, -days2);
         this.nvidiaAlert.setLastStockQuoteTime(lastStockQuote.getTime());
 
         this.netflixAlert = new PriceAlert();
         this.netflixAlert.setInstrument(this.netflixInstrument);
         this.netflixAlert.setAlertType(PriceAlertType.LESS_OR_EQUAL);
-        this.netflixAlert.setPrice(BigDecimal.valueOf(199.99));
+        this.netflixAlert.setPrice(new BigDecimal("199.99"));
         this.netflixAlert.setCurrency(Currency.USD);
         this.netflixAlert.setLastStockQuoteTime(null);
         this.netflixAlert.setTriggerTime(new Date());
@@ -279,20 +280,21 @@ public class PriceAlertHibernateDAOTest {
         return instrument;
     }
 
-    @Test
     /**
      * Tests getting all price alerts that have not been triggered, sorted by lastStockQuoteTime.
      */
+    @Test
     public void testGetPriceAlertsNotTriggered() {
         List<PriceAlert> priceAlerts;
         PriceAlert priceAlert;
+        final int expectedAlerts = 3;
 
         try {
             priceAlerts = priceAlertDAO.getPriceAlerts(PriceAlertOrderAttribute.LAST_STOCK_QUOTE_TIME,
                     TriggerStatus.NOT_TRIGGERED, ConfirmationStatus.ALL);
 
             // 3 price alerts have not been triggered and therefore should be returned.
-            assertEquals(3, priceAlerts.size());
+            assertEquals(expectedAlerts, priceAlerts.size());
 
             // Assure correct sorting
             priceAlert = priceAlerts.get(0);
@@ -306,17 +308,17 @@ public class PriceAlertHibernateDAOTest {
         }
     }
 
-    @Test
     /**
      * Test getting all price alerts of a specific instrument, type, price and TriggerStatus combination.
      */
+    @Test
     public void testGetPriceAlertsOfInstrument() {
         List<PriceAlert> priceAlerts;
         PriceAlert priceAlert;
 
         try {
             priceAlerts = priceAlertDAO.getPriceAlerts(this.appleInstrument.getId(), PriceAlertType.GREATER_OR_EQUAL,
-                    BigDecimal.valueOf(185.50));
+                    new BigDecimal("185.50"));
 
             // Assure correct amount of alerts.
             assertEquals(1, priceAlerts.size());
