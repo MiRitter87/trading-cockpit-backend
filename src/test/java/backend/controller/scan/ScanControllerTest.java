@@ -13,7 +13,7 @@ import backend.controller.DataProvider;
 import backend.model.StockExchange;
 
 /**
- * Tests the functionality of the ScanController
+ * Tests the functionality of the ScanController.
  *
  * @author Michael
  */
@@ -23,10 +23,10 @@ public class ScanControllerTest {
      */
     private ScanController scanController;
 
-    @BeforeEach
     /**
      * Tasks to be performed before each test is run.
      */
+    @BeforeEach
     public void setUp() {
         try {
             this.scanController = new ScanController();
@@ -35,18 +35,18 @@ public class ScanControllerTest {
         }
     }
 
-    @AfterEach
     /**
      * Tasks to be performed after each test has been run.
      */
+    @AfterEach
     public void tearDown() {
         this.scanController = null;
     }
 
-    @Test
     /**
      * Tests getting the query interval.
      */
+    @Test
     public void testGetQueryInterval() {
         final int expectedQueryInterval = 5;
         final int actualQueryInterval = this.scanController.getQueryInterval();
@@ -54,10 +54,10 @@ public class ScanControllerTest {
         assertEquals(expectedQueryInterval, actualQueryInterval);
     }
 
-    @Test
     /**
      * Tests getting the data providers.
      */
+    @Test
     public void testGetDataProviders() {
         final Map<StockExchange, DataProvider> dataProviders = this.scanController.getDataProviders();
         DataProvider dataProvider;
