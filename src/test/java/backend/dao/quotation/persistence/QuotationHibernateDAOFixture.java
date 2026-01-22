@@ -106,12 +106,13 @@ public class QuotationHibernateDAOFixture {
     public Quotation getMicrosoftQuotation1(final Instrument instrument) {
         Calendar calendar = Calendar.getInstance();
         Quotation quotation = new Quotation();
+        final long volume = 20200000;
 
         calendar.setTime(new Date());
         quotation.setDate(calendar.getTime());
-        quotation.setClose(BigDecimal.valueOf(246.79));
+        quotation.setClose(new BigDecimal("246.79"));
         quotation.setCurrency(Currency.USD);
-        quotation.setVolume(20200000);
+        quotation.setVolume(volume);
         quotation.setInstrument(instrument);
 
         return quotation;
@@ -126,14 +127,15 @@ public class QuotationHibernateDAOFixture {
     public Quotation getAppleQuotation1(final Instrument instrument) {
         Calendar calendar = Calendar.getInstance();
         Quotation quotation = new Quotation();
+        final long volume = 6784544;
 
         calendar.setTime(new Date());
         calendar.add(Calendar.DAY_OF_YEAR, -1);
         quotation = new Quotation();
         quotation.setDate(calendar.getTime());
-        quotation.setClose(BigDecimal.valueOf(78.54));
+        quotation.setClose(new BigDecimal("78.54"));
         quotation.setCurrency(Currency.USD);
-        quotation.setVolume(6784544);
+        quotation.setVolume(volume);
         quotation.setInstrument(instrument);
 
         return quotation;
@@ -148,13 +150,14 @@ public class QuotationHibernateDAOFixture {
     public Quotation getAppleQuotation2(final Instrument instrument) {
         Calendar calendar = Calendar.getInstance();
         Quotation quotation = new Quotation();
+        final long volume = 4584544;
 
         calendar.setTime(new Date());
         quotation = new Quotation();
         quotation.setDate(calendar.getTime());
-        quotation.setClose(BigDecimal.valueOf(79.14));
+        quotation.setClose(new BigDecimal("79.14"));
         quotation.setCurrency(Currency.USD);
-        quotation.setVolume(4584544);
+        quotation.setVolume(volume);
         quotation.setInstrument(instrument);
 
         return quotation;
@@ -169,13 +172,14 @@ public class QuotationHibernateDAOFixture {
     public Quotation getXliSectorQuotation1(final Instrument instrument) {
         Calendar calendar = Calendar.getInstance();
         Quotation quotation = new Quotation();
+        final long volume = 13884800;
 
         calendar.setTime(new Date());
         quotation = new Quotation();
         quotation.setDate(calendar.getTime());
-        quotation.setClose(BigDecimal.valueOf(92.60));
+        quotation.setClose(new BigDecimal("92.60"));
         quotation.setCurrency(Currency.USD);
-        quotation.setVolume(13884800);
+        quotation.setVolume(volume);
         quotation.setInstrument(instrument);
 
         return quotation;
@@ -190,13 +194,14 @@ public class QuotationHibernateDAOFixture {
     public Quotation getXleQuotation1(final Instrument instrument) {
         Calendar calendar = Calendar.getInstance();
         Quotation quotation = new Quotation();
+        final long volume = 18994000;
 
         calendar.setTime(new Date());
         quotation = new Quotation();
         quotation.setDate(calendar.getTime());
-        quotation.setClose(BigDecimal.valueOf(81.28));
+        quotation.setClose(new BigDecimal("81.28"));
         quotation.setCurrency(Currency.USD);
-        quotation.setVolume(18994000);
+        quotation.setVolume(volume);
         quotation.setInstrument(instrument);
 
         return quotation;
@@ -211,13 +216,14 @@ public class QuotationHibernateDAOFixture {
     public Quotation getCopperIndustryGroupQuotation1(final Instrument instrument) {
         Calendar calendar = Calendar.getInstance();
         Quotation quotation = new Quotation();
+        final long volume = 401200;
 
         calendar.setTime(new Date());
         quotation = new Quotation();
         quotation.setDate(calendar.getTime());
-        quotation.setClose(BigDecimal.valueOf(29.04));
+        quotation.setClose(new BigDecimal("29.04"));
         quotation.setCurrency(Currency.USD);
-        quotation.setVolume(401200);
+        quotation.setVolume(volume);
         quotation.setInstrument(instrument);
 
         return quotation;
@@ -230,8 +236,9 @@ public class QuotationHibernateDAOFixture {
      */
     public Indicator getAppleQuotation2Indicator() {
         Indicator indicator = new Indicator();
+        final int numWeeks = 3;
 
-        indicator.setBaseLengthWeeks(3);
+        indicator.setBaseLengthWeeks(numWeeks);
 
         return indicator;
     }
@@ -269,8 +276,9 @@ public class QuotationHibernateDAOFixture {
      */
     public Indicator getCopperIndustryGroupQuotation1Indicator() {
         Indicator indicator = new Indicator();
+        final int numWeeks = 4;
 
-        indicator.setBaseLengthWeeks(4);
+        indicator.setBaseLengthWeeks(numWeeks);
 
         return indicator;
     }
