@@ -56,9 +56,8 @@
 
   <!-- https://checkstyle.org/filters/suppressionfilter.html -->
   <module name="SuppressionFilter">
-    <property name="file" value="${org.checkstyle.sun.suppressionfilter.config}"
-              default="checkstyle-suppressions.xml" />
-    <property name="optional" value="true"/>
+        <property name="file" value="checkstyle/checkstyle-suppressions.xml"/>
+        <property name="optional" value="false"/>
   </module>
   
   <!-- Allows for the usage of SuppressWarnings annotation in Java -->
