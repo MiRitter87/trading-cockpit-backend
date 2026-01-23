@@ -984,4 +984,31 @@ public class QuotationServiceTest {
         // Verify that no Quotation is returned.
         assertEquals(0, quotations.getQuotations().size());
     }
+
+    /**
+     * Tests the retrieval of the most recent quotations that match the "MA & Price Convergence" template. Only those quotations
+     * should be returned that have an Indicator associated with them. Only instruments of InstrumentType 'ETF' are
+     * requested.
+     */
+    //@Test
+    public void testGetQuotationsMAPriceConvergence() {
+        Quotation quotation;
+        QuotationArray quotations;
+        WebServiceResult getQuotationsResult;
+
+        // Get the quotations.
+        QuotationService service = new QuotationService();
+        getQuotationsResult = service.getQuotations(ScanTemplate.MA_PRICE_CONVERGENCE, InstrumentType.ETF, null, null, null);
+        quotations = (QuotationArray) getQuotationsResult.getData();
+
+        // Assure no error message exists
+        assertTrue(WebServiceTools.resultContainsErrorMessage(getQuotationsResult) == false);
+
+        // Check if one Quotation is returned.
+        assertEquals(1, quotations.getQuotations().size());
+
+        // Check if the correct Quotation is returned.
+        quotation = quotations.getQuotations().get(0);
+        assertEquals(this.xleQuotation2, quotation);
+    }
 }

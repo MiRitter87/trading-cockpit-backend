@@ -455,6 +455,7 @@ public class QuotationServiceFixture {
         indicator.setBollingerBandWidth10Weeks((float) 17.89);
         indicator.setVolumeDifferential5Days((float) -12.12);
         indicator.setBaseLengthWeeks(32);
+        indicator.setAverageTrueRangePercent20(2.5f);
 
         return indicator;
     }

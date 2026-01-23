@@ -82,5 +82,10 @@ public enum ScanTemplate {
      * Instruments whose price and volume characteristics provide a Buyable Base. In contrast to the
      * "BREAKOUT_CANDIDATES" template the Buyable Base does not have to be near the 52-week high.
      */
-    BUYABLE_BASE
+    BUYABLE_BASE,
+
+    /**
+     * Instruments whose price, SMA(50) and EMA(21) trade near each other.
+     */
+    MA_PRICE_CONVERGENCE
 }
