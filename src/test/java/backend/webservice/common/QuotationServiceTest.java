@@ -990,7 +990,7 @@ public class QuotationServiceTest {
      * should be returned that have an Indicator associated with them. Only instruments of InstrumentType 'ETF' are
      * requested.
      */
-    //@Test
+    @Test
     public void testGetQuotationsMAPriceConvergence() {
         Quotation quotation;
         QuotationArray quotations;

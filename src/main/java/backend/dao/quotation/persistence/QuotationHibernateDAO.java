@@ -416,6 +416,7 @@ public class QuotationHibernateDAO implements QuotationDAO {
         case RS_SINCE_DATE:
         case THREE_WEEKS_TIGHT:
         case RS_NEAR_HIGH_IG:
+        case MA_PRICE_CONVERGENCE:
             query = quotationQueryProvider.getQueryForQuotationsWithInstrument(true);
             break;
         default:

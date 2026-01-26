@@ -59,6 +59,11 @@ public class ScanTemplateProcessor {
     private TemplateBuyableBaseProcessor buyableBaseProcessor;
 
     /**
+     * Performs manual tasks for the "MA_PRICE_CONVERGENCE" ScanTemplate.
+     */
+    private TemplateMaPriceConvergenceProcessor maPriceConvergenceProcessor;
+
+    /**
      * Constructor.
      *
      * @param quotationHibernateDAO DAO to access Quotation data.
@@ -71,6 +76,7 @@ public class ScanTemplateProcessor {
         this.threeWeeksTightProcessor = new TemplateThreeWeeksTightProcessor(quotationHibernateDAO);
         this.rsSinceDateProcessor = new TemplateRsSinceDateProcessor(quotationHibernateDAO);
         this.buyableBaseProcessor = new TemplateBuyableBaseProcessor();
+        this.maPriceConvergenceProcessor = new TemplateMaPriceConvergenceProcessor();
     }
 
     /**
@@ -245,6 +251,8 @@ public class ScanTemplateProcessor {
             this.rsNearHighProcessor.postProcessingRsNearHigh(scanTemplate, quotations);
         } else if (scanTemplate == ScanTemplate.BUYABLE_BASE) {
             this.buyableBaseProcessor.postProcessingBuyableBase(quotations);
+        } else if (scanTemplate == ScanTemplate.MA_PRICE_CONVERGENCE) {
+            this.maPriceConvergenceProcessor.postProcessingMaPriceConvergence(quotations);
         }
     }
 
