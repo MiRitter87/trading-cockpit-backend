@@ -179,6 +179,19 @@ public class QuotationQueryProvider {
     }
 
     /**
+     * Provides the Query for the "MA & Price Convergence" Template.
+     *
+     * @return The Query.
+     */
+    public Query getQueryForMaPriceConvergenceTemplate() {
+        return this.entityManager.createQuery("SELECT q FROM Quotation q JOIN FETCH q.instrument i "
+                + "LEFT JOIN FETCH i.sector LEFT JOIN FETCH i.industryGroup "
+                + "LEFT JOIN FETCH i.dividend LEFT JOIN FETCH i.divisor "
+                + "JOIN q.indicator r WHERE q.id IN :quotationIds AND q.indicator IS NOT NULL "
+                + "AND r.bollingerBandWidth10Days <= r.bbw10Threshold25Percent");
+    }
+
+    /**
      * Provides a Query that determines all quotations with their referenced Instrument (and Indicator) based on the
      * given Quotation IDs.
      *

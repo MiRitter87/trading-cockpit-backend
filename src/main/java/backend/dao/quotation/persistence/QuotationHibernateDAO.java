@@ -376,53 +376,39 @@ public class QuotationHibernateDAO implements QuotationDAO {
      */
     private Query getQueryForScanTemplate(final ScanTemplate scanTemplate,
             final QuotationQueryProvider quotationQueryProvider) {
-        Query query;
 
         switch (scanTemplate) {
         case MINERVINI_TREND_TEMPLATE:
-            query = quotationQueryProvider.getQueryForMinerviniTrendTemplate();
-            break;
+            return quotationQueryProvider.getQueryForMinerviniTrendTemplate();
         case BREAKOUT_CANDIDATES:
-            query = quotationQueryProvider.getQueryForBreakoutCandidatesTemplate();
-            break;
+            return quotationQueryProvider.getQueryForBreakoutCandidatesTemplate();
         case CONSOLIDATION_10_WEEKS:
-            query = quotationQueryProvider.getQueryForConsolidation10WeeksTemplate();
-            break;
+            return quotationQueryProvider.getQueryForConsolidation10WeeksTemplate();
         case CONSOLIDATION_10_DAYS:
-            query = quotationQueryProvider.getQueryForConsolidation10DaysTemplate();
-            break;
+            return quotationQueryProvider.getQueryForConsolidation10DaysTemplate();
         case UP_ON_VOLUME:
-            query = quotationQueryProvider.getQueryForUpOnVolumeTemplate();
-            break;
+            return quotationQueryProvider.getQueryForUpOnVolumeTemplate();
         case DOWN_ON_VOLUME:
-            query = quotationQueryProvider.getQueryForDownOnVolumeTemplate();
-            break;
+            return quotationQueryProvider.getQueryForDownOnVolumeTemplate();
         case NEAR_52_WEEK_HIGH:
-            query = quotationQueryProvider.getQueryForNear52WeekHighTemplate();
-            break;
+            return quotationQueryProvider.getQueryForNear52WeekHighTemplate();
         case NEAR_52_WEEK_LOW:
-            query = quotationQueryProvider.getQueryForNear52WeekLowTemplate();
-            break;
+            return quotationQueryProvider.getQueryForNear52WeekLowTemplate();
         case HIGH_TIGHT_FLAG:
-            query = quotationQueryProvider.getQueryForHighTightFlagTemplate();
-            break;
+            return quotationQueryProvider.getQueryForHighTightFlagTemplate();
         case SWING_TRADING_ENVIRONMENT:
-            query = quotationQueryProvider.getQueryForSwingTradingEnvironmentTemplate();
-            break;
+            return quotationQueryProvider.getQueryForSwingTradingEnvironmentTemplate();
         case BUYABLE_BASE:
-            query = quotationQueryProvider.getQueryForBuyableBaseTemplate();
-            break;
+            return quotationQueryProvider.getQueryForBuyableBaseTemplate();
+        case MA_PRICE_CONVERGENCE:
+            return quotationQueryProvider.getQueryForMaPriceConvergenceTemplate();
         case ALL:
         case RS_SINCE_DATE:
         case THREE_WEEKS_TIGHT:
         case RS_NEAR_HIGH_IG:
-        case MA_PRICE_CONVERGENCE:
-            query = quotationQueryProvider.getQueryForQuotationsWithInstrument(true);
-            break;
+            return quotationQueryProvider.getQueryForQuotationsWithInstrument(true);
         default:
-            query = null;
+            return null;
         }
-
-        return query;
     }
 }
