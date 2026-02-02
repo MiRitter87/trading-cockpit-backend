@@ -23,6 +23,12 @@ public class MovingAverageData {
     private Integer id;
 
     /**
+     * The exponential moving average price of the last 10 trading days.
+     */
+    @Column(name = "EMA10")
+    private float ema10;
+
+    /**
      * The exponential moving average price of the last 21 trading days.
      */
     @Column(name = "EMA21")
@@ -184,11 +190,25 @@ public class MovingAverageData {
     }
 
     /**
+     * @return the ema10
+     */
+    public float getEma10() {
+        return ema10;
+    }
+
+    /**
+     * @param ema10 the ema10 to set
+     */
+    public void setEma10(final float ema10) {
+        this.ema10 = ema10;
+    }
+
+    /**
      * Calculates the hashCode of MovingAverageData.
      */
     @Override
     public int hashCode() {
-        return Objects.hash(ema21, id, sma10, sma150, sma20, sma200, sma30Volume, sma50);
+        return Objects.hash(ema10, ema21, id, sma10, sma150, sma20, sma200, sma30Volume, sma50);
     }
 
     /**
@@ -207,6 +227,7 @@ public class MovingAverageData {
         }
         MovingAverageData other = (MovingAverageData) obj;
         return Float.floatToIntBits(ema21) == Float.floatToIntBits(other.ema21) && Objects.equals(id, other.id)
+                && Float.floatToIntBits(ema10) == Float.floatToIntBits(other.ema10)
                 && Float.floatToIntBits(sma10) == Float.floatToIntBits(other.sma10)
                 && Float.floatToIntBits(sma150) == Float.floatToIntBits(other.sma150)
                 && Float.floatToIntBits(sma20) == Float.floatToIntBits(other.sma20)

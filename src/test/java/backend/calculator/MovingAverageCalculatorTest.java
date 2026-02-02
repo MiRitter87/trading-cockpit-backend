@@ -201,6 +201,22 @@ public class MovingAverageCalculatorTest {
     }
 
     /**
+     * Tests the calculation of the 10-day Exponential Moving Average for the most recent Quotation.
+     */
+    @Test
+    public void testGetExponentialMovingAverage10Days() {
+        QuotationArray sortedQuotations = new QuotationArray(this.dmlStock.getQuotationsSortedByDate());
+        float actualEma10;
+        final float expectedEma10 = 1.395f;
+        final int days10 = 10;
+
+        actualEma10 = this.movingAverageCalculator.getExponentialMovingAverage(days10,
+                sortedQuotations.getQuotations().get(0), sortedQuotations);
+
+        assertEquals(expectedEma10, actualEma10);
+    }
+
+    /**
      * Tests the calculation of the 21-day Exponential Moving Average for the most recent Quotation.
      */
     @Test

@@ -22,6 +22,11 @@ import backend.model.instrument.RelativeStrengthData;
  */
 public class IndicatorCalculationController {
     /**
+     * Number of days used to calculate the EMA(10).
+     */
+    private static final int DAYS_EMA10 = 10;
+
+    /**
      * Number of days used to calculate the EMA(21).
      */
     private static final int DAYS_EMA21 = 21;
@@ -256,6 +261,8 @@ public class IndicatorCalculationController {
         maData.setSma50(this.movingAverageCalculator.getSimpleMovingAverage(DAYS_SMA50, quotation, sortedQuotations));
         maData.setSma150(this.movingAverageCalculator.getSimpleMovingAverage(DAYS_SMA150, quotation, sortedQuotations));
         maData.setSma200(this.movingAverageCalculator.getSimpleMovingAverage(DAYS_SMA200, quotation, sortedQuotations));
+        maData.setEma10(
+                this.movingAverageCalculator.getExponentialMovingAverage(DAYS_EMA10, quotation, sortedQuotations));
         maData.setEma21(
                 this.movingAverageCalculator.getExponentialMovingAverage(DAYS_EMA21, quotation, sortedQuotations));
         maData.setSma30Volume(this.movingAverageCalculator.getSimpleMovingAverageVolume(DAYS_SMA_VOLUME_30, quotation,
