@@ -37,11 +37,6 @@ public class IndicatorCalculationController {
     private static final int DAYS_SMA10 = 10;
 
     /**
-     * Number of days used to calculate the SMA(20).
-     */
-    private static final int DAYS_SMA20 = 20;
-
-    /**
      * Number of days used to calculate the SMA(50).
      */
     private static final int DAYS_SMA50 = 50;
@@ -257,7 +252,6 @@ public class IndicatorCalculationController {
         }
 
         maData.setSma10(this.movingAverageCalculator.getSimpleMovingAverage(DAYS_SMA10, quotation, sortedQuotations));
-        maData.setSma20(this.movingAverageCalculator.getSimpleMovingAverage(DAYS_SMA20, quotation, sortedQuotations));
         maData.setSma50(this.movingAverageCalculator.getSimpleMovingAverage(DAYS_SMA50, quotation, sortedQuotations));
         maData.setSma150(this.movingAverageCalculator.getSimpleMovingAverage(DAYS_SMA150, quotation, sortedQuotations));
         maData.setSma200(this.movingAverageCalculator.getSimpleMovingAverage(DAYS_SMA200, quotation, sortedQuotations));

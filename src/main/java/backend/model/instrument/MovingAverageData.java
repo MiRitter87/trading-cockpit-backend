@@ -41,12 +41,6 @@ public class MovingAverageData {
     private float sma10;
 
     /**
-     * The simple moving average price of the last 20 trading days.
-     */
-    @Column(name = "SMA20")
-    private float sma20;
-
-    /**
      * The simple moving average price of the last 50 trading days.
      */
     @Column(name = "SMA50")
@@ -103,20 +97,6 @@ public class MovingAverageData {
      */
     public void setSma10(final float sma10) {
         this.sma10 = sma10;
-    }
-
-    /**
-     * @return the sma20
-     */
-    public float getSma20() {
-        return sma20;
-    }
-
-    /**
-     * @param sma20 the sma20 to set
-     */
-    public void setSma20(final float sma20) {
-        this.sma20 = sma20;
     }
 
     /**
@@ -208,7 +188,7 @@ public class MovingAverageData {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(ema10, ema21, id, sma10, sma150, sma20, sma200, sma30Volume, sma50);
+        return Objects.hash(id, ema10, ema21, sma10, sma50, sma150, sma200, sma30Volume);
     }
 
     /**
@@ -230,7 +210,6 @@ public class MovingAverageData {
                 && Float.floatToIntBits(ema10) == Float.floatToIntBits(other.ema10)
                 && Float.floatToIntBits(sma10) == Float.floatToIntBits(other.sma10)
                 && Float.floatToIntBits(sma150) == Float.floatToIntBits(other.sma150)
-                && Float.floatToIntBits(sma20) == Float.floatToIntBits(other.sma20)
                 && Float.floatToIntBits(sma200) == Float.floatToIntBits(other.sma200)
                 && sma30Volume == other.sma30Volume && Float.floatToIntBits(sma50) == Float.floatToIntBits(other.sma50);
     }

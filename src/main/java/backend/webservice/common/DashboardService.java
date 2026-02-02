@@ -237,19 +237,15 @@ public class DashboardService {
             return false;
         }
 
-        if (actualMa.getSma10() <= actualMa.getSma20()) {
+        if (actualQuotation.getClose().floatValue() <= actualMa.getEma10()) {
             return false;
         }
 
-        if (actualMa.getSma10() <= previousMa.getSma10()) {
+        if (actualMa.getEma10() <= actualMa.getEma21()) {
             return false;
         }
 
-        if (actualMa.getSma20() <= previousMa.getSma20()) {
-            return false;
-        }
-
-        if (actualQuotation.getClose().floatValue() <= actualMa.getSma20()) {
+        if (actualMa.getEma21() <= previousMa.getEma21()) {
             return false;
         }
 
@@ -280,15 +276,13 @@ public class DashboardService {
             return false;
         }
 
-        if (actualMa.getSma10() <= actualMa.getSma20()) {
-            return false;
+        if (actualQuotation.getClose().floatValue() < actualMa.getEma10()
+                && actualQuotation.getClose().floatValue() > actualMa.getEma21()
+                && actualMa.getEma10() > actualMa.getEma21()) {
+            return true;
         }
 
-        if (actualQuotation.getClose().floatValue() <= actualMa.getSma20()) {
-            return false;
-        }
-
-        return true;
+        return false;
     }
 
     /**
@@ -315,8 +309,8 @@ public class DashboardService {
             return false;
         }
 
-        if (actualQuotation.getClose().floatValue() <= actualMa.getSma20()
-                || actualMa.getSma10() <= actualMa.getSma20()) {
+        if (actualQuotation.getClose().floatValue() <= actualMa.getEma21()
+                || actualMa.getEma10() <= actualMa.getEma21()) {
             return true;
         }
 

@@ -30,8 +30,8 @@ public class TemplateSwingTradingProcessor {
 
     /**
      * Performs post processing tasks for the given quotations based on the ScanTemplate "SWING_TRADING_ENVIRONMENT".
-     * The method checks for each Instrument of the given quotations if the SMA(10) as well as the SMA(20) is rising.
-     * Those quotations that do not match the template are removed from the List of quotations.
+     * The method checks for each Instrument of the given quotations if the EMA(21) is rising. Those quotations that do
+     * not match the template are removed from the List of quotations.
      *
      * @param quotations The quotations on which the post processing is performed.
      * @throws Exception Post processing failed.
@@ -78,8 +78,7 @@ public class TemplateSwingTradingProcessor {
             return false;
         }
 
-        if ((currentMaData.getSma10() > previousMaData.getSma10())
-                && (currentMaData.getSma20() > previousMaData.getSma20())) {
+        if (currentMaData.getEma21() > previousMaData.getEma21()) {
             return true;
         }
 

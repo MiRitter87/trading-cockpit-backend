@@ -246,13 +246,13 @@ public class DashboardServiceTest {
         MovingAverageData maData2 = new MovingAverageData();
 
         try {
-            maData1.setSma10(95);
-            maData1.setSma20(90);
+            maData1.setEma10(95);
+            maData1.setEma21(90);
             this.copperIgQuotation1.setMovingAverageData(maData1);
             quotations.add(this.copperIgQuotation1);
 
-            maData2.setSma10(94);
-            maData2.setSma20(89);
+            maData2.setEma10(94);
+            maData2.setEma21(89);
             this.copperIgQuotation2.setMovingAverageData(maData2);
             quotations.add(this.copperIgQuotation2);
 
@@ -432,8 +432,8 @@ public class DashboardServiceTest {
         SwingTradingEnvironmentStatus actualStatus;
         SwingTradingEnvironmentStatus expectedStatus = SwingTradingEnvironmentStatus.YELLOW;
 
-        // Modify Quotation data to assure status 'YELLOW' is given. SMA(10) is falling.
-        this.copperIgQuotation1.getMovingAverageData().setSma10(93);
+        // Modify Quotation data to assure status 'YELLOW' is given. Price below EMA(10).
+        this.copperIgQuotation1.setClose(new BigDecimal(this.copperIgQuotation1.getMovingAverageData().getEma10() - 1));
 
         actualStatus = dashboardService.getSwingTradingEnvironmentStatus(this.copperIndustryGroup);
         assertEquals(expectedStatus, actualStatus);
@@ -448,8 +448,8 @@ public class DashboardServiceTest {
         SwingTradingEnvironmentStatus actualStatus;
         SwingTradingEnvironmentStatus expectedStatus = SwingTradingEnvironmentStatus.RED;
 
-        // Modify Quotation data to assure status 'RED' is given. Price below SMA(20).
-        this.copperIgQuotation1.setClose(new BigDecimal(this.copperIgQuotation1.getMovingAverageData().getSma20() - 1));
+        // Modify Quotation data to assure status 'RED' is given. Price below EMA(21).
+        this.copperIgQuotation1.setClose(new BigDecimal(this.copperIgQuotation1.getMovingAverageData().getEma21() - 1));
 
         actualStatus = dashboardService.getSwingTradingEnvironmentStatus(this.copperIndustryGroup);
         assertEquals(expectedStatus, actualStatus);

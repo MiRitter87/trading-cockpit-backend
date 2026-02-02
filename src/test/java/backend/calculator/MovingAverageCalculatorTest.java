@@ -121,22 +121,6 @@ public class MovingAverageCalculatorTest {
     }
 
     /**
-     * Tests the calculation of the 20-day Simple Moving Average for the most recent Quotation.
-     */
-    @Test
-    public void testGetSimpleMovingAverage20Days() {
-        QuotationArray sortedQuotations = new QuotationArray(this.dmlStock.getQuotationsSortedByDate());
-        float actualSma20;
-        final float expectedSma20 = 1.349f;
-        final int days20 = 20;
-
-        actualSma20 = this.movingAverageCalculator.getSimpleMovingAverage(days20,
-                sortedQuotations.getQuotations().get(0), sortedQuotations);
-
-        assertEquals(expectedSma20, actualSma20);
-    }
-
-    /**
      * Tests the calculation of the 50-day Simple Moving Average for the most recent Quotation.
      */
     @Test

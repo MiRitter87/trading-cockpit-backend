@@ -795,16 +795,15 @@ public class QuotationServiceTest {
         quotations = new QuotationArray(this.denisonMinesQuotations);
         quotations.sortQuotationsByDate();
 
-        // Assure SMA(10) > SMA(20) and price above SMA(20)
+        // Assure EMA(10) > EMA(21) and price above EMA(10)
         quotation = quotations.getQuotations().get(0);
-        quotation.getMovingAverageData().setSma10(1.33f);
-        quotation.getMovingAverageData().setSma20(1.32f);
+        quotation.getMovingAverageData().setEma10(1.33f);
+        quotation.getMovingAverageData().setEma21(1.32f);
         modifiedQuotations.add(quotation);
 
-        // Assure SMA(10) and SMA(20) are rising
+        // Assure EMA(21) is rising
         quotation = quotations.getQuotations().get(1);
-        quotation.getMovingAverageData().setSma10(1.32f);
-        quotation.getMovingAverageData().setSma20(1.31f);
+        quotation.getMovingAverageData().setEma21(1.31f);
         modifiedQuotations.add(quotation);
 
         // Persist the changes.
@@ -986,9 +985,9 @@ public class QuotationServiceTest {
     }
 
     /**
-     * Tests the retrieval of the most recent quotations that match the "MA & Price Convergence" template. Only those quotations
-     * should be returned that have an Indicator associated with them. Only instruments of InstrumentType 'ETF' are
-     * requested.
+     * Tests the retrieval of the most recent quotations that match the "MA & Price Convergence" template. Only those
+     * quotations should be returned that have an Indicator associated with them. Only instruments of InstrumentType
+     * 'ETF' are requested.
      */
     @Test
     public void testGetQuotationsMAPriceConvergence() {
@@ -998,7 +997,8 @@ public class QuotationServiceTest {
 
         // Get the quotations.
         QuotationService service = new QuotationService();
-        getQuotationsResult = service.getQuotations(ScanTemplate.MA_PRICE_CONVERGENCE, InstrumentType.ETF, null, null, null);
+        getQuotationsResult = service.getQuotations(ScanTemplate.MA_PRICE_CONVERGENCE, InstrumentType.ETF, null, null,
+                null);
         quotations = (QuotationArray) getQuotationsResult.getData();
 
         // Assure no error message exists
