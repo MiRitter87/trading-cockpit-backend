@@ -7,6 +7,11 @@ package backend.controller.chart.priceVolume;
  */
 public enum ChartOverlay {
     /**
+     * Exponential Moving Average - Period 10.
+     */
+    EMA_10,
+
+    /**
      * Exponential Moving Average - Period 21.
      */
     EMA_21,

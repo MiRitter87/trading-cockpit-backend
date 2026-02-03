@@ -31,6 +31,40 @@ public class ChartOverlayProvider {
     private ResourceBundle resources = ResourceBundle.getBundle("backend");
 
     /**
+     * Adds the EMA(10) to the chart.
+     *
+     * @param instrument         The Instrument whose price and volume data are displayed.
+     * @param candleStickSubplot The Plot to which the EMA(10) is added.
+     */
+    public void addEma10(final Instrument instrument, final XYPlot candleStickSubplot) {
+        List<Quotation> quotationsSortedByDate = instrument.getQuotationsSortedByDate();
+        TimeSeriesCollection timeSeriesCollection = new TimeSeriesCollection();
+        TimeSeries ema10TimeSeries = new TimeSeries(this.resources.getString("chart.priceVolume.timeSeriesEma10Name"));
+        int index = candleStickSubplot.getDatasetCount();
+        MovingAverageData maData;
+
+        for (Quotation tempQuotation : quotationsSortedByDate) {
+            maData = tempQuotation.getMovingAverageData();
+
+            if (maData == null || maData.getEma10() == 0) {
+                continue;
+            }
+
+            ema10TimeSeries.add(new Day(tempQuotation.getDate()), maData.getEma10());
+        }
+
+        timeSeriesCollection.addSeries(ema10TimeSeries);
+
+        candleStickSubplot.setDataset(index, timeSeriesCollection);
+        candleStickSubplot.mapDatasetToRangeAxis(index, 0);
+
+        XYItemRenderer smaRenderer = new XYLineAndShapeRenderer(true, false);
+        smaRenderer.setSeriesPaint(0, Color.BLACK);
+        candleStickSubplot.setRenderer(index, smaRenderer);
+        candleStickSubplot.setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
+    }
+
+    /**
      * Adds the EMA(21) to the chart.
      *
      * @param instrument         The Instrument whose price and volume data are displayed.
@@ -205,8 +239,8 @@ public class ChartOverlayProvider {
     /**
      * Adds the SMA(30) of the volume to the chart.
      *
-     * @param instrument      The Instrument whose price and volume data are displayed.
-     * @param volumeSubplot   The Plot to which the SMA(30) of the volume is added.
+     * @param instrument    The Instrument whose price and volume data are displayed.
+     * @param volumeSubplot The Plot to which the SMA(30) of the volume is added.
      */
     public void addMovingAverageVolume(final Instrument instrument, final XYPlot volumeSubplot) {
         List<Quotation> quotationsSortedByDate = instrument.getQuotationsSortedByDate();

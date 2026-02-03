@@ -405,6 +405,10 @@ public class PriceVolumeChartController extends ChartController {
             return;
         }
 
+        if (overlays.contains(ChartOverlay.EMA_10.toString())) {
+            this.chartOverlayProvider.addEma10(instrument, candleStickSubplot);
+        }
+
         if (overlays.contains(ChartOverlay.EMA_21.toString())) {
             this.chartOverlayProvider.addEma21(instrument, candleStickSubplot);
         }
