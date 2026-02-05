@@ -19,6 +19,7 @@ import org.jfree.data.xy.XYDataset;
 import backend.calculator.BollingerCalculator;
 import backend.calculator.RatioCalculator;
 import backend.calculator.StochasticCalculator;
+import backend.controller.scan.IndicatorCalculationController;
 import backend.dao.quotation.persistence.QuotationDAO;
 import backend.model.instrument.Instrument;
 import backend.model.instrument.Quotation;
@@ -92,6 +93,8 @@ public class ChartIndicatorProvider {
         rsLinePlot.setRenderer(rsLineRenderer);
         rsLinePlot.setRangeAxisLocation(AxisLocation.TOP_OR_RIGHT);
 
+        this.addEma21(rsLinePlot, rsInstrumentId, instrument);
+
         return rsLinePlot;
     }
 
@@ -104,15 +107,10 @@ public class ChartIndicatorProvider {
      * @throws Exception Failed to construct dataset of RS line.
      */
     private XYDataset getRsLineDataset(final Integer rsInstrumentId, final Instrument instrument) throws Exception {
-        List<Quotation> ratioQuotations;
-        RatioCalculator ratioCalculator = new RatioCalculator();
-        Instrument divisorInstrument = new Instrument();
+        List<Quotation> ratioQuotations = this.getRatioQuotations(rsInstrumentId, instrument);
         TimeSeries timeSeries = new TimeSeries(this.resources.getString("chart.priceVolume.timeSeriesRsLineName"));
         TimeZone timeZone = TimeZone.getDefault();
         TimeSeriesCollection timeSeriesCollection = new TimeSeriesCollection(timeZone);
-
-        divisorInstrument.setQuotations(this.quotationDAO.getQuotationsOfInstrument(rsInstrumentId));
-        ratioQuotations = ratioCalculator.getRatios(instrument, divisorInstrument);
 
         for (Quotation quotation : ratioQuotations) {
             timeSeries.add(new Day(quotation.getDate()), quotation.getClose());
@@ -294,5 +292,58 @@ public class ChartIndicatorProvider {
         // Add value marker depicting a trigger line.
         valueMarker = new ValueMarker(triggerLineValue);
         bollingerBandWidthPlot.addRangeMarker(valueMarker);
+    }
+
+    /**
+     * Adds the EMA(21) to the RS-Line.
+     *
+     * @param rsLinePlot     The RS-Line plot.
+     * @param rsInstrumentId The ID of the Instrument building the ratio divisor.
+     * @param instrument     The Instrument for which the RS-Line is being calculated.
+     * @throws Exception Failed to add EMA(21).
+     */
+    private void addEma21(final XYPlot rsLinePlot, final Integer rsInstrumentId, final Instrument instrument)
+            throws Exception {
+        ChartOverlayProvider overlayProvider = new ChartOverlayProvider();
+        IndicatorCalculationController indicatorCalculator = new IndicatorCalculationController();
+        Instrument rsLineInstrument = new Instrument();
+        QuotationArray rsLineQuotations = new QuotationArray(this.getRatioQuotations(rsInstrumentId, instrument));
+        Quotation quotation;
+
+        // Initialize new Instrument with RS-line values as closing prices.
+        rsLineQuotations.sortQuotationsByDate();
+        rsLineInstrument.setQuotations(rsLineQuotations.getQuotations());
+
+        // Calculate the EMA(21) for the Instrument. This later becomes the EMA(21) of the RS-line.
+        for (int i = 0; i < rsLineQuotations.getQuotations().size(); i++) {
+            quotation = rsLineQuotations.getQuotations().get(i);
+
+            // Calculate moving averages.
+            indicatorCalculator.calculateIndicators(rsLineInstrument, quotation, false);
+        }
+
+        // Add EMA(21) overlay to RS-line plot
+        overlayProvider.addEma21(rsLineInstrument, rsLinePlot);
+    }
+
+    /**
+     * Determines a List of quotations that build the ratio between the given Instrument as the dividend and Instrument
+     * of the given rsInstrumentId.
+     *
+     * @param rsInstrumentId The ID of the ratio divisor.
+     * @param instrument     The dividend instrument.
+     * @return A List of ratio prices.
+     * @throws Exception Ratio calculation failed.
+     */
+    private List<Quotation> getRatioQuotations(final Integer rsInstrumentId, final Instrument instrument)
+            throws Exception {
+        List<Quotation> ratioQuotations;
+        RatioCalculator ratioCalculator = new RatioCalculator();
+        Instrument divisorInstrument = new Instrument();
+
+        divisorInstrument.setQuotations(this.quotationDAO.getQuotationsOfInstrument(rsInstrumentId));
+        ratioQuotations = ratioCalculator.getRatios(instrument, divisorInstrument);
+
+        return ratioQuotations;
     }
 }
