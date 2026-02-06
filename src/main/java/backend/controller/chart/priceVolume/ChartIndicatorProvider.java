@@ -1,5 +1,6 @@
 package backend.controller.chart.priceVolume;
 
+import java.awt.Color;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.TimeZone;
@@ -85,6 +86,7 @@ public class ChartIndicatorProvider {
         XYLineAndShapeRenderer rsLineRenderer = new XYLineAndShapeRenderer(true, false);
 
         dataset = this.getRsLineDataset(rsInstrumentId, instrument);
+        rsLineRenderer.setSeriesPaint(0, Color.BLACK);
 
         // Do not begin y-Axis at zero. Use lowest value of provided dataset instead.
         valueAxis.setAutoRangeIncludesZero(false);
@@ -142,6 +144,7 @@ public class ChartIndicatorProvider {
         float threshold;
 
         dataset = this.getBollingerBandWidthDataset(instrument, requestedValues);
+        bbwRenderer.setSeriesPaint(0, Color.BLACK);
 
         // Do not begin y-Axis at zero. Use lowest value of provided dataset instead.
         valueAxis.setAutoRangeIncludesZero(false);
@@ -213,6 +216,7 @@ public class ChartIndicatorProvider {
         final int smoothingPeriodDays = 3;
 
         dataset = this.getSlowStochasticDataset(instrument, slowStochasticPeriodDays, smoothingPeriodDays);
+        slowStochasticRenderer.setSeriesPaint(0, Color.BLACK);
 
         slowStochasticPlot = new XYPlot(dataset, timeAxis, valueAxis, null);
         slowStochasticPlot.setRenderer(slowStochasticRenderer);
