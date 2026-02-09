@@ -5,6 +5,7 @@ import java.util.List;
 import backend.calculator.BollingerCalculator;
 import backend.calculator.RatioCalculator;
 import backend.calculator.StochasticCalculator;
+import backend.controller.scan.IndicatorCalculationController;
 import backend.dao.DAOManager;
 import backend.dao.quotation.persistence.QuotationDAO;
 import backend.model.instrument.Indicator;
@@ -40,11 +41,13 @@ public class PriceVolumeDataController {
      */
     public QuotationArray getPriceVolumeData(final Integer instrumentId) throws Exception {
         QuotationArray quotations = new QuotationArray(this.quotationDAO.getQuotationsOfInstrument(instrumentId));
+        final int rsLineEmaPeriod = 21;
 
         quotations.sortQuotationsByDate();
         this.calculateBBWData(quotations);
         this.calculateSlowStochasticData(quotations);
         this.calculateRsLineData(quotations);
+        this.calculateRsLineEma(quotations, rsLineEmaPeriod);
 
         return quotations;
     }
@@ -144,6 +147,56 @@ public class PriceVolumeDataController {
             }
 
             targetQuotation.getRelativeStrengthData().setRsLinePrice(quotation.getClose());
+        }
+    }
+
+    /**
+     * Calculates the EMA(21) of the RS-line for the given quotations.
+     *
+     * @param quotations The quotations.
+     * @param period     Them EMA period.
+     */
+    private void calculateRsLineEma(final QuotationArray quotations, final int period) {
+        IndicatorCalculationController indicatorCalculator = new IndicatorCalculationController();
+        Instrument rsLineInstrument = new Instrument();
+        QuotationArray rsLineQuotations = new QuotationArray();
+        Quotation quotation;
+        Quotation srcQuotation;
+        Quotation targetQuotation;
+
+        // Move RS-line price to closing price attribute for following EMA(21) calculation.
+        for (int i = 0; i < quotations.getQuotations().size(); i++) {
+            srcQuotation = quotations.getQuotations().get(i);
+
+            if (srcQuotation.getRelativeStrengthData() != null) {
+                targetQuotation = new Quotation();
+                targetQuotation.setDate(srcQuotation.getDate());
+                targetQuotation.setClose(srcQuotation.getRelativeStrengthData().getRsLinePrice());
+                rsLineQuotations.getQuotations().add(targetQuotation);
+            }
+        }
+
+        // Initialize new Instrument with RS-line values as closing prices.
+        rsLineQuotations.sortQuotationsByDate();
+        rsLineInstrument.setQuotations(rsLineQuotations.getQuotations());
+
+        // Calculate the EMA(21) for the Instrument. This later becomes the EMA(21) of the RS-line.
+        for (int i = 0; i < rsLineQuotations.getQuotations().size(); i++) {
+            quotation = rsLineQuotations.getQuotations().get(i);
+
+            // Calculate moving averages.
+            indicatorCalculator.calculateIndicators(rsLineInstrument, quotation, false);
+        }
+
+        // Write calculated EMA(21) of RS-line to target attribute.
+        for (int i = 0; i < quotations.getQuotations().size(); i++) {
+            srcQuotation = rsLineQuotations.getQuotations().get(i);
+            targetQuotation = quotations.getQuotations().get(i);
+
+            if (srcQuotation.getMovingAverageData() != null && targetQuotation.getRelativeStrengthData() != null) {
+                targetQuotation.getRelativeStrengthData()
+                        .setRsLineEma21(srcQuotation.getMovingAverageData().getEma21());
+            }
         }
     }
 }

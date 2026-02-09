@@ -78,6 +78,12 @@ public class RelativeStrengthData {
     private BigDecimal rsLinePrice;
 
     /**
+     * The EMA(21) of the relative strength line.
+     */
+    @Transient
+    private float rsLineEma21;
+
+    /**
      * The Indicator this data belong to.
      */
     @Transient
@@ -214,6 +220,20 @@ public class RelativeStrengthData {
      */
     public void setRsLinePrice(final BigDecimal rsLinePrice) {
         this.rsLinePrice = rsLinePrice;
+    }
+
+    /**
+     * @return the rsLineEma21
+     */
+    public float getRsLineEma21() {
+        return rsLineEma21;
+    }
+
+    /**
+     * @param rsLineEma21 the rsLineEma21 to set
+     */
+    public void setRsLineEma21(final float rsLineEma21) {
+        this.rsLineEma21 = rsLineEma21;
     }
 
     /**
