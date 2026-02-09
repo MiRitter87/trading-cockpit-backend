@@ -190,10 +190,11 @@ public class PriceVolumeDataController {
 
         // Write calculated EMA(21) of RS-line to target attribute.
         for (int i = 0; i < quotations.getQuotations().size(); i++) {
-            srcQuotation = rsLineQuotations.getQuotations().get(i);
             targetQuotation = quotations.getQuotations().get(i);
+            srcQuotation = rsLineQuotations.getNewestQuotationOfDate(targetQuotation.getDate());
 
-            if (srcQuotation.getMovingAverageData() != null && targetQuotation.getRelativeStrengthData() != null) {
+            if (srcQuotation != null && srcQuotation.getMovingAverageData() != null
+                    && targetQuotation.getRelativeStrengthData() != null) {
                 targetQuotation.getRelativeStrengthData()
                         .setRsLineEma21(srcQuotation.getMovingAverageData().getEma21());
             }
