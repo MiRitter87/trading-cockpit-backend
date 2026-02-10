@@ -54,12 +54,12 @@ public class MovingAverageCalculator {
     /**
      * Returns the Exponential Moving Average.
      *
-     * @param days             The number of days on which the Exponential Moving Average is based.
+     * @param period           The number of quotations on which the Exponential Moving Average is based.
      * @param quotation        The Quotation for which the Exponential Moving Average is calculated.
      * @param sortedQuotations A list of quotations sorted by date that build the trading history.
      * @return The Exponential Moving Average.
      */
-    public float getExponentialMovingAverage(final int days, final Quotation quotation,
+    public float getExponentialMovingAverage(final int period, final Quotation quotation,
             final QuotationArray sortedQuotations) {
         int indexOfQuotation = 0;
         int indexForSmaCalculation;
@@ -73,22 +73,20 @@ public class MovingAverageCalculator {
         // Get the index of the Quotation for which the EMA has to be calculated.
         indexOfQuotation = sortedQuotations.getQuotations().indexOf(quotation);
 
-        // Check if enough historical quotations exist for EMA calculation.
-        // days*2 is used because the SMA has to be calculated first as starting point for EMA calculation.
-        // Additional days are needed afterwards for the EMA approximation based on the SMA; therefore days*2 is used.
-        if ((sortedQuotations.getQuotations().size() - days * 2 - indexOfQuotation) < 0) {
+        // Check if enough quotations exist for moving average calculation.
+        if ((sortedQuotations.getQuotations().size() - period - indexOfQuotation) < 0) {
             return 0;
         }
 
-        smoothingMultiplier = 2.0f / (days + 1);
+        smoothingMultiplier = 2.0f / (period + 1);
+        indexForSmaCalculation = this.getIndexForSmaCalculation(sortedQuotations, indexOfQuotation, period);
 
-        // Calculate the SMA as starting point for EMA calculation.
-        indexForSmaCalculation = indexOfQuotation + days;
-        sma = this.getSimpleMovingAverage(days, sortedQuotations.getQuotations().get(indexForSmaCalculation),
+        sma = this.getSimpleMovingAverage(period, sortedQuotations.getQuotations().get(indexForSmaCalculation),
                 sortedQuotations);
 
         // The initial EMA is initialized with the SMA.
         previousEma = sma;
+        currentEma = sma;
 
         // Calculate the EMA approximation for the number of days after the starting point as defined by the SMA.
         // Start the day after the one for which the SMA has been calculated.
@@ -137,5 +135,35 @@ public class MovingAverageCalculator {
         average = (new BigDecimal(sum)).divide(BigDecimal.valueOf(days), 0, RoundingMode.HALF_UP);
 
         return average.longValue();
+    }
+
+    /**
+     * Determines the index within the array of sorted quotations that is used for calculation of SMA. This SMA later
+     * serves as a starting point for calculation of the EMA.
+     *
+     * @param sortedQuotations A list of quotations sorted by date that build the trading history
+     * @param indexOfQuotation The index of the Quotation for which the EMA has to be calculated.
+     * @param period           The number of quotations on which the Exponential Moving Average is based.
+     * @return The starting index for SMA calculation.
+     */
+    private int getIndexForSmaCalculation(final QuotationArray sortedQuotations, final int indexOfQuotation,
+            final int period) {
+        int indexForSmaCalculation;
+
+        // Check if enough historical quotations exist for EMA calculation.
+        // days*2 is used because the SMA has to be calculated first as starting point for EMA calculation.
+        // Additional days are needed afterwards for the EMA approximation based on the SMA; therefore days*2 is used.
+        if ((sortedQuotations.getQuotations().size() - period * 2 - indexOfQuotation) >= 0) {
+            indexForSmaCalculation = indexOfQuotation + period;
+        } else if ((indexOfQuotation + period) == sortedQuotations.getQuotations().size()) {
+            // EMA = SMA, if the history only provides enough quotations to calculate the SMA.
+            indexForSmaCalculation = indexOfQuotation;
+        } else {
+            // If the history does not contain enough quotations for a whole additional period, use as many as there are
+            // available.
+            indexForSmaCalculation = sortedQuotations.getQuotations().size() - indexOfQuotation - period;
+        }
+
+        return indexForSmaCalculation;
     }
 }

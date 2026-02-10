@@ -260,9 +260,9 @@ public class MovingAverageCalculatorTest {
         final float expectedEma10 = 0;
         float actualEma10;
         final int days10 = 10;
-        final int numRemainingQuotations = 19;
+        final int numRemainingQuotations = 9;
 
-        // Remove all quotations except of 19.
+        // Remove all quotations except of 9.
         sortedQuotations = new QuotationArray(
                 this.dmlStock.getQuotationsSortedByDate().subList(0, numRemainingQuotations));
 
@@ -289,5 +289,51 @@ public class MovingAverageCalculatorTest {
                 sortedQuotations.getQuotations().get(0), sortedQuotations);
 
         assertEquals(expectedVolume, actualVolume);
+    }
+
+    /**
+     * Tests if the EMA equals the SMA if the history provides just enough quotations to calculate the SMA.
+     */
+    @Test
+    public void testEmaEqualsSmaOn10Quotations() {
+        QuotationArray sortedQuotations;
+        float actualSma10;
+        float actualEma10;
+        final int days10 = 10;
+        final int numRemainingQuotations = 10;
+
+        // Remove all quotations except of 10.
+        sortedQuotations = new QuotationArray(
+                this.dmlStock.getQuotationsSortedByDate().subList(0, numRemainingQuotations));
+
+        actualSma10 = this.movingAverageCalculator.getSimpleMovingAverage(days10,
+                sortedQuotations.getQuotations().get(0), sortedQuotations);
+
+        actualEma10 = this.movingAverageCalculator.getExponentialMovingAverage(days10,
+                sortedQuotations.getQuotations().get(0), sortedQuotations);
+
+        assertEquals(actualSma10, actualEma10);
+    }
+
+    /**
+     * Tests determination of EMA, if the history of quotations contains only a few additional quotations for EMA
+     * approximation instead of an additional whole extra period.
+     */
+    @Test
+    public void testGetEmaOnPartialApproximation() {
+        QuotationArray sortedQuotations;
+        float actualEma10;
+        final float expectedEma10 = 1.373f;
+        final int days10 = 10;
+        final int numRemainingQuotations = 11;
+
+        // Remove all quotations except of 11.
+        sortedQuotations = new QuotationArray(
+                this.dmlStock.getQuotationsSortedByDate().subList(0, numRemainingQuotations));
+
+        actualEma10 = this.movingAverageCalculator.getExponentialMovingAverage(days10,
+                sortedQuotations.getQuotations().get(0), sortedQuotations);
+
+        assertEquals(expectedEma10, actualEma10);
     }
 }
