@@ -207,7 +207,7 @@ public class MovingAverageCalculatorTest {
     public void testGetExponentialMovingAverage21Days() {
         QuotationArray sortedQuotations = new QuotationArray(this.dmlStock.getQuotationsSortedByDate());
         float actualEma21;
-        final float expectedEma21 = 1.385f;
+        final float expectedEma21 = 1.38f;
         final int days21 = 21;
 
         actualEma21 = this.movingAverageCalculator.getExponentialMovingAverage(days21,
