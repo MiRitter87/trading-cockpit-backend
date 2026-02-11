@@ -11,7 +11,7 @@ import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
-import org.jfree.data.time.Day;
+import org.jfree.data.time.Millisecond;
 import org.jfree.data.time.TimePeriodAnchor;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
@@ -115,7 +115,7 @@ public class ChartIndicatorProvider {
         TimeSeriesCollection timeSeriesCollection = new TimeSeriesCollection(timeZone);
 
         for (Quotation quotation : ratioQuotations) {
-            timeSeries.add(new Day(quotation.getDate()), quotation.getClose());
+            timeSeries.add(new Millisecond(quotation.getDate()), quotation.getClose());
         }
 
         timeSeriesCollection.addSeries(timeSeries);
@@ -184,7 +184,7 @@ public class ChartIndicatorProvider {
                     quotation, quotationArray);
 
             if (bollingerBandWidth > 0) {
-                timeSeries.add(new Day(quotation.getDate()), bollingerBandWidth);
+                timeSeries.add(new Millisecond(quotation.getDate()), bollingerBandWidth);
                 addedValues++;
             }
 
@@ -252,7 +252,7 @@ public class ChartIndicatorProvider {
                     quotationArray);
 
             if (slowStochastic > 0) {
-                timeSeries.add(new Day(quotation.getDate()), slowStochastic);
+                timeSeries.add(new Millisecond(quotation.getDate()), slowStochastic);
             }
         }
 

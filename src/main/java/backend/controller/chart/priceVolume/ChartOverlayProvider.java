@@ -10,7 +10,7 @@ import org.jfree.chart.plot.DatasetRenderingOrder;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
-import org.jfree.data.time.Day;
+import org.jfree.data.time.Millisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 
@@ -50,7 +50,7 @@ public class ChartOverlayProvider {
                 continue;
             }
 
-            ema10TimeSeries.add(new Day(tempQuotation.getDate()), maData.getEma10());
+            ema10TimeSeries.add(new Millisecond(tempQuotation.getDate()), maData.getEma10());
         }
 
         timeSeriesCollection.addSeries(ema10TimeSeries);
@@ -84,7 +84,7 @@ public class ChartOverlayProvider {
                 continue;
             }
 
-            ema21TimeSeries.add(new Day(tempQuotation.getDate()), maData.getEma21());
+            ema21TimeSeries.add(new Millisecond(tempQuotation.getDate()), maData.getEma21());
         }
 
         timeSeriesCollection.addSeries(ema21TimeSeries);
@@ -118,7 +118,7 @@ public class ChartOverlayProvider {
                 continue;
             }
 
-            sma10TimeSeries.add(new Day(tempQuotation.getDate()), maData.getSma10());
+            sma10TimeSeries.add(new Millisecond(tempQuotation.getDate()), maData.getSma10());
         }
 
         timeSeriesCollection.addSeries(sma10TimeSeries);
@@ -152,7 +152,7 @@ public class ChartOverlayProvider {
                 continue;
             }
 
-            sma50TimeSeries.add(new Day(tempQuotation.getDate()), maData.getSma50());
+            sma50TimeSeries.add(new Millisecond(tempQuotation.getDate()), maData.getSma50());
         }
 
         timeSeriesCollection.addSeries(sma50TimeSeries);
@@ -187,7 +187,7 @@ public class ChartOverlayProvider {
                 continue;
             }
 
-            sma150TimeSeries.add(new Day(tempQuotation.getDate()), maData.getSma150());
+            sma150TimeSeries.add(new Millisecond(tempQuotation.getDate()), maData.getSma150());
         }
 
         timeSeriesCollection.addSeries(sma150TimeSeries);
@@ -222,7 +222,7 @@ public class ChartOverlayProvider {
                 continue;
             }
 
-            sma200TimeSeries.add(new Day(tempQuotation.getDate()), maData.getSma200());
+            sma200TimeSeries.add(new Millisecond(tempQuotation.getDate()), maData.getSma200());
         }
 
         timeSeriesCollection.addSeries(sma200TimeSeries);
@@ -257,7 +257,7 @@ public class ChartOverlayProvider {
                 continue;
             }
 
-            sma30VolumeTimeSeries.add(new Day(tempQuotation.getDate()), maData.getSma30Volume());
+            sma30VolumeTimeSeries.add(new Millisecond(tempQuotation.getDate()), maData.getSma30Volume());
         }
 
         timeSeriesCollection.addSeries(sma30VolumeTimeSeries);
