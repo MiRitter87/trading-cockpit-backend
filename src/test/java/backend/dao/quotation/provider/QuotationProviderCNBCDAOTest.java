@@ -26,18 +26,18 @@ public class QuotationProviderCNBCDAOTest {
      */
     private static QuotationProviderCNBCDAO quotationProviderCNBCDAO;
 
-    @BeforeAll
     /**
      * Tasks to be performed once at startup of test class.
      */
+    @BeforeAll
     public static void setUpClass() {
         quotationProviderCNBCDAO = new QuotationProviderCNBCDAOStub();
     }
 
-    @AfterAll
     /**
      * Tasks to be performed once at end of test class.
      */
+    @AfterAll
     public static void tearDownClass() {
         quotationProviderCNBCDAO = null;
     }
@@ -50,21 +50,22 @@ public class QuotationProviderCNBCDAOTest {
     private Quotation getRioTintoQuotation() {
         Quotation quotation = new Quotation();
 
-        quotation.setClose(BigDecimal.valueOf(5965));
+        quotation.setClose(new BigDecimal("5965"));
         quotation.setCurrency(Currency.GBP);
 
         return quotation;
     }
 
-    @Test
     /**
      * Tests the retrieval of the query URL for the current quotation of a stock listed at the LSE.
      */
+    @Test
     public void testGetQueryUrlCurrentQuotationLSE() {
         final String symbol = "RIO";
         final StockExchange stockExchange = StockExchange.LSE;
-        final String expectedURL = "https://quote.cnbc.com/quote-html-webservice/restQuote/symbolType/symbol?symbols=RIO-GB"
-                + "&requestMethod=itv&noform=1&partnerId=2&fund=1&exthrs=1&output=json&events=1";
+        final String expectedURL = "https://quote.cnbc.com/quote-html-webservice/restQuote/symbolType/"
+                + "symbol?symbols=RIO-GB&requestMethod=itv&noform=1&partnerId=2&fund=1&exthrs=1"
+                + "&output=json&events=1";
         String actualURL = "";
 
         try {
@@ -75,15 +76,15 @@ public class QuotationProviderCNBCDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests the retrieval of the query URL for the current quotation of a stock listed at the NYSE.
      */
+    @Test
     public void testGetQueryUrlCurrentQuotationNYSE() {
         final String symbol = "F";
         final StockExchange stockExchange = StockExchange.NYSE;
-        final String expectedURL = "https://quote.cnbc.com/quote-html-webservice/restQuote/symbolType/symbol?symbols=F"
-                + "&requestMethod=itv&noform=1&partnerId=2&fund=1&exthrs=1&output=json&events=1";
+        final String expectedURL = "https://quote.cnbc.com/quote-html-webservice/restQuote/symbolType/"
+                + "symbol?symbols=F&requestMethod=itv&noform=1&partnerId=2&fund=1&exthrs=1" + "&output=json&events=1";
         String actualURL = "";
 
         try {
@@ -94,15 +95,16 @@ public class QuotationProviderCNBCDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests the retrieval of the query URL for the current quotation of a stock listed at the Nasdaq.
      */
+    @Test
     public void testGetQueryUrlCurrentQuotationNasdaq() {
         final String symbol = "AAPL";
         final StockExchange stockExchange = StockExchange.NDQ;
-        final String expectedURL = "https://quote.cnbc.com/quote-html-webservice/restQuote/symbolType/symbol?symbols=AAPL"
-                + "&requestMethod=itv&noform=1&partnerId=2&fund=1&exthrs=1&output=json&events=1";
+        final String expectedURL = "https://quote.cnbc.com/quote-html-webservice/restQuote/symbolType/"
+                + "symbol?symbols=AAPL&requestMethod=itv&noform=1&partnerId=2&fund=1&exthrs=1"
+                + "&output=json&events=1";
         String actualURL = "";
 
         try {
@@ -113,15 +115,16 @@ public class QuotationProviderCNBCDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests the retrieval of the query URL for the current quotation of a stock listed at the AMEX.
      */
+    @Test
     public void testGetQueryUrlCurrentQuotationAmex() {
         final String symbol = "ARKK";
         final StockExchange stockExchange = StockExchange.AMEX;
-        final String expectedURL = "https://quote.cnbc.com/quote-html-webservice/restQuote/symbolType/symbol?symbols=ARKK"
-                + "&requestMethod=itv&noform=1&partnerId=2&fund=1&exthrs=1&output=json&events=1";
+        final String expectedURL = "https://quote.cnbc.com/quote-html-webservice/restQuote/symbolType/"
+                + "symbol?symbols=ARKK&requestMethod=itv&noform=1&partnerId=2&fund=1&exthrs=1"
+                + "&output=json&events=1";
         String actualURL = "";
 
         try {
@@ -132,15 +135,16 @@ public class QuotationProviderCNBCDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests the retrieval of the query URL for the current quotation of a stock listed at the US OTC.
      */
+    @Test
     public void testGetQueryUrlCurrentQuotationOTC() {
         final String symbol = "BAYRY";
         final StockExchange stockExchange = StockExchange.OTC;
-        final String expectedURL = "https://quote.cnbc.com/quote-html-webservice/restQuote/symbolType/symbol?symbols=BAYRY"
-                + "&requestMethod=itv&noform=1&partnerId=2&fund=1&exthrs=1&output=json&events=1";
+        final String expectedURL = "https://quote.cnbc.com/quote-html-webservice/restQuote/symbolType/"
+                + "symbol?symbols=BAYRY&requestMethod=itv&noform=1&partnerId=2&fund=1&exthrs=1"
+                + "&output=json&events=1";
         String actualURL = "";
 
         try {
@@ -151,15 +155,16 @@ public class QuotationProviderCNBCDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests the retrieval of the query URL for the current quotation of a stock listed at the TSX.
      */
+    @Test
     public void testGetQueryUrlCurrentQuotationTSX() {
         final String symbol = "DML";
         final StockExchange stockExchange = StockExchange.TSX;
-        final String expectedURL = "https://quote.cnbc.com/quote-html-webservice/restQuote/symbolType/symbol?symbols=DML-CA"
-                + "&requestMethod=itv&noform=1&partnerId=2&fund=1&exthrs=1&output=json&events=1";
+        final String expectedURL = "https://quote.cnbc.com/quote-html-webservice/restQuote/symbolType/"
+                + "symbol?symbols=DML-CA&requestMethod=itv&noform=1&partnerId=2&fund=1&exthrs=1"
+                + "&output=json&events=1";
         String actualURL = "";
 
         try {
@@ -170,15 +175,16 @@ public class QuotationProviderCNBCDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests the retrieval of the query URL for the current quotation of a stock listed at the TSX/V.
      */
+    @Test
     public void testGetQueryUrlCurrentQuotationTSXV() {
         final String symbol = "RCK";
         final StockExchange stockExchange = StockExchange.TSXV;
-        final String expectedURL = "https://quote.cnbc.com/quote-html-webservice/restQuote/symbolType/symbol?symbols=RCK-V"
-                + "&requestMethod=itv&noform=1&partnerId=2&fund=1&exthrs=1&output=json&events=1";
+        final String expectedURL = "https://quote.cnbc.com/quote-html-webservice/restQuote/symbolType/"
+                + "symbol?symbols=RCK-V&requestMethod=itv&noform=1&partnerId=2&fund=1&exthrs=1"
+                + "&output=json&events=1";
         String actualURL = "";
 
         try {
@@ -189,10 +195,10 @@ public class QuotationProviderCNBCDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests the retrieval of the query URL for the current quotation of a stock listed at the CSE.
      */
+    @Test
     public void testGetQueryUrlCurrentQuotationCSE() {
         final String symbol = "AGN";
         final StockExchange stockExchange = StockExchange.CSE;
@@ -205,12 +211,13 @@ public class QuotationProviderCNBCDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests getting current Quotation data from a stock listed at the LSE.
      */
+    @Test
     public void testGetCurrentQuotationLSE() {
-        Quotation actualQuotation, expectedQuotation;
+        Quotation actualQuotation;
+        Quotation expectedQuotation;
 
         try {
             actualQuotation = quotationProviderCNBCDAO.getCurrentQuotation(new Instrument("RIO", StockExchange.LSE));
@@ -223,10 +230,10 @@ public class QuotationProviderCNBCDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests the determination of the currency based on the currency string provided by the CNBC API.
      */
+    @Test
     public void testGetCurrency() {
         String apiCurrency;
 

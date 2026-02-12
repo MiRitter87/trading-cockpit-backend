@@ -21,6 +21,9 @@ import backend.model.instrument.Quotation;
  * @author Michael
  */
 public class QuotationProviderGlobeAndMailDAOStub extends QuotationProviderGlobeAndMailDAO {
+    /**
+     * Gets the current Quotation of the given Instrument.
+     */
     @Override
     public Quotation getCurrentQuotation(final Instrument instrument) throws Exception {
         String userPath = System.getProperty("user.dir");
@@ -31,8 +34,9 @@ public class QuotationProviderGlobeAndMailDAOStub extends QuotationProviderGlobe
 
         this.disableHtmlUnitLogging();
 
-        if (instrument.getSymbol().equals("PMET") && instrument.getStockExchange().equals(StockExchange.TSXV))
+        if (instrument.getSymbol().equals("PMET") && instrument.getStockExchange().equals(StockExchange.TSXV)) {
             htmlPath = htmlPath + "//src//test//resources//GlobeAndMail//GlobeAndMailTSXVQuotePMET.htm";
+        }
 
         try {
             webClient.getOptions().setUseInsecureSSL(true);
@@ -49,8 +53,11 @@ public class QuotationProviderGlobeAndMailDAOStub extends QuotationProviderGlobe
         return quotation;
     }
 
+    /**
+     * Gets the Quotation history.
+     */
     @Override
-    public List<Quotation> getQuotationHistory(Instrument instrument, Integer years) throws Exception {
+    public List<Quotation> getQuotationHistory(final Instrument instrument, final Integer years) throws Exception {
         String csvPath = "";
 
         if (instrument.getSymbol().equals("DML") && instrument.getStockExchange().equals(StockExchange.TSX)) {

@@ -5,19 +5,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import backend.model.Currency;
 import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
-import backend.model.instrument.InstrumentType;
 import backend.model.instrument.Quotation;
 import backend.model.instrument.QuotationArray;
 
@@ -32,140 +30,41 @@ public class QuotationProviderGlobeAndMailDAOTest {
      */
     private static QuotationProviderGlobeAndMailDAO quotationProviderGlobeAndMailDAO;
 
-    @BeforeAll
+    /**
+     * Class providing helper methods for fixture.
+     */
+    private QuotationProviderGlobeAndMailDAOFixture fixtureHelper;
+
     /**
      * Tasks to be performed once at startup of test class.
      */
+    @BeforeAll
     public static void setUpClass() {
         quotationProviderGlobeAndMailDAO = new QuotationProviderGlobeAndMailDAOStub();
     }
 
-    @AfterAll
     /**
      * Tasks to be performed once at end of test class.
      */
+    @AfterAll
     public static void tearDownClass() {
         quotationProviderGlobeAndMailDAO = null;
     }
 
     /**
-     * Gets an Instrument of the Patriot Battery Metals stock.
-     *
-     * @return Instrument of the Patriot Battery Metals stock.
+     * Tasks to be performed before each test is run.
      */
-    private Instrument getPatriotBatteryMetalsInstrument() {
-        Instrument instrument = new Instrument();
-
-        instrument.setSymbol("PMET");
-        instrument.setStockExchange(StockExchange.TSXV);
-        instrument.setType(InstrumentType.STOCK);
-
-        return instrument;
+    @BeforeEach
+    public void setUp() {
+        this.fixtureHelper = new QuotationProviderGlobeAndMailDAOFixture();
     }
 
     /**
-     * Gets an Instrument of the Denison Mines stock.
-     *
-     * @return Instrument of the Denison Mines stock.
+     * Tasks to be performed after each test has been run.
      */
-    private Instrument getDenisonMinesInstrument() {
-        Instrument instrument = new Instrument();
-
-        instrument.setSymbol("DML");
-        instrument.setStockExchange(StockExchange.TSX);
-        instrument.setType(InstrumentType.STOCK);
-
-        return instrument;
-    }
-
-    /**
-     * Gets an Instrument of the Algernon stock.
-     *
-     * @return Instrument of the Algernon stock.
-     */
-    private Instrument getAlgernonInstrument() {
-        Instrument instrument = new Instrument();
-
-        instrument.setSymbol("AGN");
-        instrument.setStockExchange(StockExchange.CSE);
-        instrument.setType(InstrumentType.STOCK);
-
-        return instrument;
-    }
-
-    /**
-     * Gets an Instrument of the Ford Motor Co. stock.
-     *
-     * @return Instrument of the Ford Motor Co. stock.
-     */
-    private Instrument getFordInstrument() {
-        Instrument instrument = new Instrument();
-
-        instrument.setSymbol("F");
-        instrument.setStockExchange(StockExchange.NYSE);
-        instrument.setType(InstrumentType.STOCK);
-
-        return instrument;
-    }
-
-    /**
-     * Gets an Instrument of the Apple stock.
-     *
-     * @return Instrument of the Apple stock.
-     */
-    private Instrument getAppleInstrument() {
-        Instrument instrument = new Instrument();
-
-        instrument.setSymbol("AAPL");
-        instrument.setStockExchange(StockExchange.NDQ);
-        instrument.setType(InstrumentType.STOCK);
-
-        return instrument;
-    }
-
-    /**
-     * Gets an Instrument of the Imperial Oil stock.
-     *
-     * @return Instrument of the Imperial Oil stock.
-     */
-    private Instrument getImperialOilInstrument() {
-        Instrument instrument = new Instrument();
-
-        instrument.setSymbol("IMO");
-        instrument.setStockExchange(StockExchange.AMEX);
-        instrument.setType(InstrumentType.STOCK);
-
-        return instrument;
-    }
-
-    /**
-     * Gets an Instrument of the Bayer stock.
-     *
-     * @return Instrument of the Bayer stock.
-     */
-    private Instrument getBayerInstrument() {
-        Instrument instrument = new Instrument();
-
-        instrument.setSymbol("BAYRY");
-        instrument.setStockExchange(StockExchange.OTC);
-        instrument.setType(InstrumentType.STOCK);
-
-        return instrument;
-    }
-
-    /**
-     * Gets an Instrument of the Glencore stock.
-     *
-     * @return Instrument of the Glencore stock.
-     */
-    private Instrument getGlencoreInstrument() {
-        Instrument instrument = new Instrument();
-
-        instrument.setSymbol("GLEN");
-        instrument.setStockExchange(StockExchange.LSE);
-        instrument.setType(InstrumentType.STOCK);
-
-        return instrument;
+    @AfterEach
+    public void tearDown() {
+        this.fixtureHelper = null;
     }
 
     /**
@@ -176,69 +75,23 @@ public class QuotationProviderGlobeAndMailDAOTest {
     private Quotation getPatriotBatteryMetalsQuotation() {
         Quotation quotation = new Quotation();
 
-        quotation.setClose(BigDecimal.valueOf(17.17));
+        quotation.setClose(new BigDecimal("17.17"));
         quotation.setCurrency(Currency.CAD);
 
         return quotation;
     }
 
     /**
-     * Gets historical quotations of Denison Mines stock. The quotations of the three most recent trading days are
-     * provided.
-     *
-     * @return Historical quotations of Denison Mines stock
-     */
-    private List<Quotation> getDenisonMinesQuotationHistory() {
-        List<Quotation> historicalQuotations = new ArrayList<>();
-        Quotation quotation = new Quotation();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
-
-        try {
-            quotation.setDate(dateFormat.parse("08/17/2023"));
-            quotation.setOpen(BigDecimal.valueOf(1.80));
-            quotation.setHigh(BigDecimal.valueOf(1.81));
-            quotation.setLow(BigDecimal.valueOf(1.74));
-            quotation.setClose(BigDecimal.valueOf(1.76));
-            quotation.setCurrency(Currency.CAD);
-            quotation.setVolume(949015);
-            historicalQuotations.add(quotation);
-
-            quotation = new Quotation();
-            quotation.setDate(dateFormat.parse("08/16/2023"));
-            quotation.setOpen(BigDecimal.valueOf(1.79));
-            quotation.setHigh(BigDecimal.valueOf(1.83));
-            quotation.setLow(BigDecimal.valueOf(1.78));
-            quotation.setClose(BigDecimal.valueOf(1.80));
-            quotation.setCurrency(Currency.CAD);
-            quotation.setVolume(831450);
-            historicalQuotations.add(quotation);
-
-            quotation = new Quotation();
-            quotation.setDate(dateFormat.parse("08/15/2023"));
-            quotation.setOpen(BigDecimal.valueOf(1.82));
-            quotation.setHigh(BigDecimal.valueOf(1.84));
-            quotation.setLow(BigDecimal.valueOf(1.78));
-            quotation.setClose(BigDecimal.valueOf(1.79));
-            quotation.setCurrency(Currency.CAD);
-            quotation.setVolume(1264235);
-            historicalQuotations.add(quotation);
-        } catch (ParseException e) {
-            fail(e.getMessage());
-        }
-
-        return historicalQuotations;
-    }
-
-    @Test
-    /**
      * Tests getting current Quotation data from a stock listed at the TSX/V.
      */
+    @Test
     public void testGetCurrentQuotationTSXV() {
-        Quotation actualQuotation, expectedQuotation;
+        Quotation actualQuotation;
+        Quotation expectedQuotation;
 
         try {
             actualQuotation = quotationProviderGlobeAndMailDAO
-                    .getCurrentQuotation(this.getPatriotBatteryMetalsInstrument());
+                    .getCurrentQuotation(this.fixtureHelper.getPatriotBatteryMetalsInstrument());
             expectedQuotation = this.getPatriotBatteryMetalsQuotation();
 
             assertTrue(expectedQuotation.getClose().compareTo(actualQuotation.getClose()) == 0);
@@ -248,12 +101,12 @@ public class QuotationProviderGlobeAndMailDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests the retrieval of the query URL for the current quotation of a stock listed at the TSX/V.
      */
+    @Test
     public void testGetQueryUrlCurrentQuotationTSXV() {
-        Instrument patriotBatteryMetalsStock = this.getPatriotBatteryMetalsInstrument();
+        Instrument patriotBatteryMetalsStock = this.fixtureHelper.getPatriotBatteryMetalsInstrument();
         final String expectedURL = "https://www.theglobeandmail.com/investing/markets/stocks/PMET-X/";
         String actualURL = "";
 
@@ -265,12 +118,12 @@ public class QuotationProviderGlobeAndMailDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests the retrieval of the query URL for the current quotation of a stock listed at the TSX.
      */
+    @Test
     public void testGetQueryUrlCurrentQuotationTSX() {
-        Instrument denisonMinesStock = this.getDenisonMinesInstrument();
+        Instrument denisonMinesStock = this.fixtureHelper.getDenisonMinesInstrument();
         final String expectedURL = "https://www.theglobeandmail.com/investing/markets/stocks/DML-T/";
         String actualURL = "";
 
@@ -282,12 +135,12 @@ public class QuotationProviderGlobeAndMailDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests the retrieval of the query URL for the current quotation of a stock listed at the CSE.
      */
+    @Test
     public void testGetQueryUrlCurrentQuotationCSE() {
-        Instrument algernonStock = this.getAlgernonInstrument();
+        Instrument algernonStock = this.fixtureHelper.getAlgernonInstrument();
         final String expectedURL = "https://www.theglobeandmail.com/investing/markets/stocks/AGN-CN/";
         String actualURL = "";
 
@@ -299,12 +152,12 @@ public class QuotationProviderGlobeAndMailDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests the retrieval of the query URL for the current quotation of a stock listed at the NYSE.
      */
+    @Test
     public void testGetQueryUrlCurrentQuotationNYSE() {
-        Instrument fordStock = this.getFordInstrument();
+        Instrument fordStock = this.fixtureHelper.getFordInstrument();
         final String expectedURL = "https://www.theglobeandmail.com/investing/markets/stocks/F-N/";
         String actualURL = "";
 
@@ -316,12 +169,12 @@ public class QuotationProviderGlobeAndMailDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests the retrieval of the query URL for the current quotation of a stock listed at the Nasdaq.
      */
+    @Test
     public void testGetQueryUrlCurrentQuotationNasdaq() {
-        Instrument appleStock = this.getAppleInstrument();
+        Instrument appleStock = this.fixtureHelper.getAppleInstrument();
         final String expectedURL = "https://www.theglobeandmail.com/investing/markets/stocks/AAPL-Q/";
         String actualURL = "";
 
@@ -333,12 +186,12 @@ public class QuotationProviderGlobeAndMailDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests the retrieval of the query URL for the current quotation of a stock listed at the AMEX.
      */
+    @Test
     public void testGetQueryUrlCurrentQuotationAMEX() {
-        Instrument imperialOilStock = this.getImperialOilInstrument();
+        Instrument imperialOilStock = this.fixtureHelper.getImperialOilInstrument();
         final String expectedURL = "https://www.theglobeandmail.com/investing/markets/stocks/IMO-A/";
         String actualURL = "";
 
@@ -350,12 +203,12 @@ public class QuotationProviderGlobeAndMailDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests the retrieval of the query URL for the current quotation of a stock listed at the US OTC.
      */
+    @Test
     public void testGetQueryUrlCurrentQuotationOTC() {
-        Instrument bayerStock = this.getBayerInstrument();
+        Instrument bayerStock = this.fixtureHelper.getBayerInstrument();
         final String expectedURL = "https://www.theglobeandmail.com/investing/markets/stocks/BAYRY/";
         String actualURL = "";
 
@@ -367,12 +220,12 @@ public class QuotationProviderGlobeAndMailDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests the retrieval of the query URL for the current quotation of a stock listed at the LSE.
      */
+    @Test
     public void testGetQueryUrlCurrentQuotationLSE() {
-        Instrument glencoreStock = this.getGlencoreInstrument();
+        Instrument glencoreStock = this.fixtureHelper.getGlencoreInstrument();
 
         try {
             quotationProviderGlobeAndMailDAO.getQueryUrlCurrentQuotation(glencoreStock);
@@ -382,10 +235,10 @@ public class QuotationProviderGlobeAndMailDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests the retrieval of the query URL for historical quotations of a stock listed at the NYSE.
      */
+    @Test
     public void testGetQueryUrlQuotationHistoryNYSE() {
         final String symbol = "F";
         final StockExchange stockExchange = StockExchange.NYSE;
@@ -403,10 +256,10 @@ public class QuotationProviderGlobeAndMailDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests the retrieval of the query URL for historical quotations of a stock listed at the Nasdaq.
      */
+    @Test
     public void testGetQueryUrlQuotationHistoryNasdaq() {
         final String symbol = "AMZN";
         final StockExchange stockExchange = StockExchange.NDQ;
@@ -424,10 +277,10 @@ public class QuotationProviderGlobeAndMailDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests the retrieval of the query URL for historical quotations of a stock listed at the AMEX.
      */
+    @Test
     public void testGetQueryUrlQuotationHistoryAMEX() {
         final String symbol = "PRK";
         final StockExchange stockExchange = StockExchange.AMEX;
@@ -445,10 +298,10 @@ public class QuotationProviderGlobeAndMailDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests the retrieval of the query URL for historical quotations of a stock listed at the US OTC.
      */
+    @Test
     public void testGetQueryUrlQuotationHistoryOTC() {
         final String symbol = "BAYRY";
         final StockExchange stockExchange = StockExchange.OTC;
@@ -466,10 +319,10 @@ public class QuotationProviderGlobeAndMailDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests the retrieval of the query URL for historical quotations of a stock listed at the TSX.
      */
+    @Test
     public void testGetQueryUrlQuotationHistoryTSX() {
         final String symbol = "DML";
         final StockExchange stockExchange = StockExchange.TSX;
@@ -487,10 +340,10 @@ public class QuotationProviderGlobeAndMailDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests the retrieval of the query URL for historical quotations of a stock listed at the TSX/V.
      */
+    @Test
     public void testGetQueryUrlQuotationHistoryTSXV() {
         final String symbol = "RCK";
         final StockExchange stockExchange = StockExchange.TSXV;
@@ -508,10 +361,10 @@ public class QuotationProviderGlobeAndMailDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests the retrieval of the query URL for historical quotations of a stock listed at the CSE.
      */
+    @Test
     public void testGetQueryUrlQuotationHistoryCSE() {
         final String symbol = "AGN";
         final StockExchange stockExchange = StockExchange.CSE;
@@ -529,10 +382,10 @@ public class QuotationProviderGlobeAndMailDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests the retrieval of the query URL for historical quotations of a stock listed at the LSE.
      */
+    @Test
     public void testGetQueryUrlQuotationHistoryLSE() {
         final String symbol = "GLEN";
         final StockExchange stockExchange = StockExchange.LSE;
@@ -546,25 +399,26 @@ public class QuotationProviderGlobeAndMailDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests the retrieval of the quotation history of a stock traded at the TSX.
      */
+    @Test
     public void testGetQuotationHistoryTSX() {
         QuotationArray actualQuotationHistory = new QuotationArray();
         List<Quotation> expectedQuotationHistory;
         Quotation actualQuotation;
         Quotation expectedQuotation;
+        final int daysOfYear = 252;
 
         try {
-            actualQuotationHistory.setQuotations(
-                    quotationProviderGlobeAndMailDAO.getQuotationHistory(this.getDenisonMinesInstrument(), 1));
-            expectedQuotationHistory = this.getDenisonMinesQuotationHistory();
+            actualQuotationHistory.setQuotations(quotationProviderGlobeAndMailDAO
+                    .getQuotationHistory(this.fixtureHelper.getDenisonMinesInstrument(), 1));
+            expectedQuotationHistory = this.fixtureHelper.getDenisonMinesQuotationHistory();
 
             actualQuotationHistory.sortQuotationsByDate();
 
             // 252 Trading days of a full year.
-            assertEquals(252, actualQuotationHistory.getQuotations().size());
+            assertEquals(daysOfYear, actualQuotationHistory.getQuotations().size());
 
             // Check the three most recent quotations.
             actualQuotation = actualQuotationHistory.getQuotations().get(0);
