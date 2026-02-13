@@ -15,6 +15,9 @@ import backend.model.instrument.Quotation;
  * @author Michael
  */
 public class QuotationProviderInvestingDAOStub extends QuotationProviderInvestingDAO {
+    /**
+     * Gets the current Quotation of the given Instrument.
+     */
     @Override
     public Quotation getCurrentQuotation(final Instrument instrument) throws Exception {
         String jsonPath;
@@ -31,8 +34,11 @@ public class QuotationProviderInvestingDAOStub extends QuotationProviderInvestin
         return this.convertJSONToCurrentQuotation(quotationHistoryJSON, instrument);
     }
 
+    /**
+     * Gets the Quotation history.
+     */
     @Override
-    public List<Quotation> getQuotationHistory(Instrument instrument, Integer years) throws Exception {
+    public List<Quotation> getQuotationHistory(final Instrument instrument, final Integer years) throws Exception {
         String jsonPath = "";
         String quotationHistoryJSON;
 

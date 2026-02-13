@@ -15,8 +15,11 @@ import backend.model.instrument.Quotation;
  * @author Michael
  */
 public class QuotationProviderMarketWatchDAOStub extends QuotationProviderMarketWatchDAO {
+    /**
+     * Gets the Quotation history.
+     */
     @Override
-    public List<Quotation> getQuotationHistory(Instrument instrument, Integer years) throws Exception {
+    public List<Quotation> getQuotationHistory(final Instrument instrument, final Integer years) throws Exception {
         String csvPath = "";
 
         if (instrument.getSymbol().equals("DML") && instrument.getStockExchange().equals(StockExchange.TSX)) {

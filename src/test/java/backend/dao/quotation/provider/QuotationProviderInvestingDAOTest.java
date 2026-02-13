@@ -33,18 +33,18 @@ public class QuotationProviderInvestingDAOTest {
      */
     private static QuotationProviderInvestingDAO quotationProviderInvestingDAO;
 
-    @BeforeAll
     /**
      * Tasks to be performed once at startup of test class.
      */
+    @BeforeAll
     public static void setUpClass() {
         quotationProviderInvestingDAO = new QuotationProviderInvestingDAOStub();
     }
 
-    @AfterAll
     /**
      * Tasks to be performed once at end of test class.
      */
+    @AfterAll
     public static void tearDownClass() {
         quotationProviderInvestingDAO = null;
     }
@@ -56,14 +56,16 @@ public class QuotationProviderInvestingDAOTest {
      */
     private Quotation getAmazonQuotation() {
         Quotation quotation = new Quotation();
+        final long timestamp = 1731542400000L;
+        final long volume = 44923940;
 
-        quotation.setDate(new Date(1731542400000L));
+        quotation.setDate(new Date(timestamp));
         quotation.setOpen(new BigDecimal("225.02"));
         quotation.setHigh(new BigDecimal("228.87"));
         quotation.setLow(new BigDecimal("225"));
         quotation.setClose(new BigDecimal("228.22"));
         quotation.setCurrency(Currency.USD);
-        quotation.setVolume(44923940);
+        quotation.setVolume(volume);
 
         return quotation;
     }
@@ -109,49 +111,52 @@ public class QuotationProviderInvestingDAOTest {
     private List<Quotation> getDenisonMinesQuotationHistory() {
         List<Quotation> historicalQuotations = new ArrayList<>();
         Quotation quotation = new Quotation();
-        long secondsSince1970;
+        final long date1 = 1732492800000L;
+        final long date2 = 1732233600000L;
+        final long date3 = 1732147200000L;
+        final long volume1 = 2827091;
+        final long volume2 = 1835032;
+        final long volume3 = 2075737;
 
-        secondsSince1970 = 1732492800000L;
-        quotation.setDate(new Date(secondsSince1970));
+        quotation.setDate(new Date(date1));
         quotation.setOpen(new BigDecimal("3.36"));
         quotation.setHigh(new BigDecimal("3.40"));
         quotation.setLow(new BigDecimal("3.18"));
         quotation.setClose(new BigDecimal("3.24"));
         quotation.setCurrency(Currency.CAD);
-        quotation.setVolume(2827091);
+        quotation.setVolume(volume1);
         historicalQuotations.add(quotation);
 
         quotation = new Quotation();
-        secondsSince1970 = 1732233600000L;
-        quotation.setDate(new Date(secondsSince1970));
+        quotation.setDate(new Date(date2));
         quotation.setOpen(new BigDecimal("3.33"));
         quotation.setHigh(new BigDecimal("3.34"));
         quotation.setLow(new BigDecimal("3.25"));
         quotation.setClose(new BigDecimal("3.32"));
         quotation.setCurrency(Currency.CAD);
-        quotation.setVolume(1835032);
+        quotation.setVolume(volume2);
         historicalQuotations.add(quotation);
 
         quotation = new Quotation();
-        secondsSince1970 = 1732147200000L;
-        quotation.setDate(new Date(secondsSince1970));
+        quotation.setDate(new Date(date3));
         quotation.setOpen(new BigDecimal("3.18"));
         quotation.setHigh(new BigDecimal("3.34"));
         quotation.setLow(new BigDecimal("3.17"));
         quotation.setClose(new BigDecimal("3.34"));
         quotation.setCurrency(Currency.CAD);
-        quotation.setVolume(2075737);
+        quotation.setVolume(volume3);
         historicalQuotations.add(quotation);
 
         return historicalQuotations;
     }
 
-    @Test
     /**
      * Tests getting current Quotation data from a stock listed at the NYSE.
      */
+    @Test
     public void testGetCurrentQuotationNYSE() {
-        Quotation actualQuotation, expectedQuotation;
+        Quotation actualQuotation;
+        Quotation expectedQuotation;
 
         try {
             actualQuotation = quotationProviderInvestingDAO.getCurrentQuotation(this.getAmazonInstrument());
@@ -163,13 +168,14 @@ public class QuotationProviderInvestingDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests the retrieval of the query URL for the current quotation of a stock listed at the NYSE.
      */
+    @Test
     public void testGetQueryUrlCurrentQuotationNYSE() {
         Instrument amazonStock = this.getAmazonInstrument();
-        final String expectedURL = "https://api.investing.com/api/financialdata/6435/historical/chart/?interval=PT1M&pointscount=60";
+        final String expectedURL = "https://api.investing.com/api/financialdata/"
+                + "6435/historical/chart/?interval=PT1M&pointscount=60";
         String actualURL = "";
 
         amazonStock.setStockExchange(StockExchange.NYSE);
@@ -182,13 +188,14 @@ public class QuotationProviderInvestingDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests the retrieval of the query URL for the current quotation of a stock listed at the Nasdaq.
      */
+    @Test
     public void testGetQueryUrlCurrentQuotationNasdaq() {
         Instrument amazonStock = this.getAmazonInstrument();
-        final String expectedURL = "https://api.investing.com/api/financialdata/6435/historical/chart/?interval=PT1M&pointscount=60";
+        final String expectedURL = "https://api.investing.com/api/financialdata/"
+                + "6435/historical/chart/?interval=PT1M&pointscount=60";
         String actualURL = "";
 
         try {
@@ -199,13 +206,14 @@ public class QuotationProviderInvestingDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests the retrieval of the query URL for the current quotation of a stock listed at the AMEX.
      */
+    @Test
     public void testGetQueryUrlCurrentQuotationAMEX() {
         Instrument amazonStock = this.getAmazonInstrument();
-        final String expectedURL = "https://api.investing.com/api/financialdata/6435/historical/chart/?interval=PT1M&pointscount=60";
+        final String expectedURL = "https://api.investing.com/api/financialdata/"
+                + "6435/historical/chart/?interval=PT1M&pointscount=60";
         String actualURL = "";
 
         amazonStock.setStockExchange(StockExchange.AMEX);
@@ -218,13 +226,14 @@ public class QuotationProviderInvestingDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests the retrieval of the query URL for the current quotation of a stock listed at the US OTC.
      */
+    @Test
     public void testGetQueryUrlCurrentQuotationOTC() {
         Instrument amazonStock = this.getAmazonInstrument();
-        final String expectedURL = "https://api.investing.com/api/financialdata/6435/historical/chart/?interval=PT5M&pointscount=60";
+        final String expectedURL = "https://api.investing.com/api/financialdata/"
+                + "6435/historical/chart/?interval=PT5M&pointscount=60";
         String actualURL = "";
 
         amazonStock.setStockExchange(StockExchange.OTC);
@@ -237,13 +246,14 @@ public class QuotationProviderInvestingDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests the retrieval of the query URL for the current quotation of a stock listed at the TSX.
      */
+    @Test
     public void testGetQueryUrlCurrentQuotationTSX() {
         Instrument amazonStock = this.getAmazonInstrument();
-        final String expectedURL = "https://api.investing.com/api/financialdata/6435/historical/chart/?interval=PT1M&pointscount=60";
+        final String expectedURL = "https://api.investing.com/api/financialdata/"
+                + "6435/historical/chart/?interval=PT1M&pointscount=60";
         String actualURL = "";
 
         amazonStock.setStockExchange(StockExchange.TSX);
@@ -256,13 +266,14 @@ public class QuotationProviderInvestingDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests the retrieval of the query URL for the current quotation of a stock listed at the TSX/V.
      */
+    @Test
     public void testGetQueryUrlCurrentQuotationTSXV() {
         Instrument amazonStock = this.getAmazonInstrument();
-        final String expectedURL = "https://api.investing.com/api/financialdata/6435/historical/chart/?interval=PT5M&pointscount=60";
+        final String expectedURL = "https://api.investing.com/api/financialdata/"
+                + "6435/historical/chart/?interval=PT5M&pointscount=60";
         String actualURL = "";
 
         amazonStock.setStockExchange(StockExchange.TSXV);
@@ -275,13 +286,14 @@ public class QuotationProviderInvestingDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests the retrieval of the query URL for the current quotation of a stock listed at the CSE.
      */
+    @Test
     public void testGetQueryUrlCurrentQuotationCSE() {
         Instrument amazonStock = this.getAmazonInstrument();
-        final String expectedURL = "https://api.investing.com/api/financialdata/6435/historical/chart/?interval=PT5M&pointscount=60";
+        final String expectedURL = "https://api.investing.com/api/financialdata/"
+                + "6435/historical/chart/?interval=PT5M&pointscount=60";
         String actualURL = "";
 
         amazonStock.setStockExchange(StockExchange.CSE);
@@ -294,13 +306,14 @@ public class QuotationProviderInvestingDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests the retrieval of the query URL for the current quotation of a stock listed at the LSE.
      */
+    @Test
     public void testGetQueryUrlCurrentQuotationLSE() {
         Instrument amazonStock = this.getAmazonInstrument();
-        final String expectedURL = "https://api.investing.com/api/financialdata/6435/historical/chart/?interval=PT1M&pointscount=60";
+        final String expectedURL = "https://api.investing.com/api/financialdata/"
+                + "6435/historical/chart/?interval=PT1M&pointscount=60";
         String actualURL = "";
 
         amazonStock.setStockExchange(StockExchange.LSE);
@@ -313,13 +326,14 @@ public class QuotationProviderInvestingDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests the retrieval of the query URL for the current quotation of an ETF.
      */
+    @Test
     public void testGetQueryUrlCurrentQuotationETF() {
         Instrument diaETF = this.getDowJonesIndustrialETF();
-        final String expectedURL = "https://api.investing.com/api/financialdata/504/historical/chart/?interval=PT1M&pointscount=60";
+        final String expectedURL = "https://api.investing.com/api/financialdata/"
+                + "504/historical/chart/?interval=PT1M&pointscount=60";
         String actualURL = "";
 
         try {
@@ -330,10 +344,11 @@ public class QuotationProviderInvestingDAOTest {
         }
     }
 
-    @Test
     /**
-     * Tests the retrieval of the query URL for the current quotation if attribute 'investingId' of Instrument is not defined.
+     * Tests the retrieval of the query URL for the current quotation if attribute 'investingId' of Instrument is not
+     * defined.
      */
+    @Test
     public void testGetQueryUrlCurrentWithoutInvestingId() {
         Instrument amazonStock = this.getAmazonInstrument();
 
@@ -347,10 +362,10 @@ public class QuotationProviderInvestingDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests the retrieval of the query URL for the Quotation history.
      */
+    @Test
     public void testGetQueryUrlQuotationHistory() {
         Instrument amazonStock = this.getAmazonInstrument();
         final Integer years = 1;
@@ -370,10 +385,11 @@ public class QuotationProviderInvestingDAOTest {
         }
     }
 
-    @Test
     /**
-     * Tests the retrieval of the query URL for the quotation history if attribute 'investingId' of Instrument is not defined.
+     * Tests the retrieval of the query URL for the quotation history if attribute 'investingId' of Instrument is not
+     * defined.
      */
+    @Test
     public void testGetQueryUrlHistoryWithoutInvestingId() {
         Instrument amazonStock = this.getAmazonInstrument();
 
@@ -387,14 +403,17 @@ public class QuotationProviderInvestingDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests the retrieval of the quotation history of a stock traded at the TSX.
      */
+    @Test
     public void testGetQuotationHistoryTSX() {
-        List<Quotation> actualQuotationHistory, expectedQuotationHistory;
-        Quotation actualQuotation, expectedQuotation;
+        List<Quotation> actualQuotationHistory;
+        List<Quotation> expectedQuotationHistory;
+        Quotation actualQuotation;
+        Quotation expectedQuotation;
         Instrument dmlStock = new Instrument();
+        final int expectedTradingDays = 251;
 
         dmlStock.setSymbol("DML");
         dmlStock.setStockExchange(StockExchange.TSX);
@@ -405,7 +424,7 @@ public class QuotationProviderInvestingDAOTest {
             expectedQuotationHistory = this.getDenisonMinesQuotationHistory();
 
             // 251 Trading days of a full year (holiday may be included).
-            assertEquals(251, actualQuotationHistory.size());
+            assertEquals(expectedTradingDays, actualQuotationHistory.size());
 
             // Check the three most recent quotations.
             actualQuotation = actualQuotationHistory.get(0);
@@ -432,11 +451,14 @@ public class QuotationProviderInvestingDAOTest {
         Process process = null;
         final InputStream resultStream;
         String result;
-        final String command = "curl \"https://api.investing.com/api/financialdata/6435/historical/chart/?interval=PT1M&pointscount=60\" "
-                + "--compressed -H \"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0\" "
-                + "-H \"Accept: */*\" -H \"Accept-Language: de,en-US;q=0.7,en;q=0.3\" -H \"Accept-Encoding: gzip, deflate\" "
-                + "-H \"Referer: https://www.investing.com/\" -H \"content-type: application/json\" -H \"domain-id: www\" "
-                + "-H \"Origin: https://www.investing.com\" -H \"DNT: 1\" -H \"Sec-GPC: 1\" -H \"Connection: keep-alive\" "
+        final String command = "curl \"https://api.investing.com/api/financialdata/6435/historical/"
+                + "chart/?interval=PT1M&pointscount=60\" --compressed "
+                + "-H \"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0\" "
+                + "-H \"Accept: */*\" -H \"Accept-Language: de,en-US;q=0.7,en;q=0.3\" "
+                + "-H \"Accept-Encoding: gzip, deflate\" "
+                + "-H \"Referer: https://www.investing.com/\" -H \"content-type: application/json\" "
+                + "-H \"domain-id: www\" -H \\\"Origin: https://www.investing.com\\\""
+                + "-H \"DNT: 1\" -H \"Sec-GPC: 1\" -H \"Connection: keep-alive\" "
                 + "-H \"Sec-Fetch-Dest: empty\" -H \"Sec-Fetch-Mode: cors\" -H \"Sec-Fetch-Site: same-site\" "
                 + "-H \"Priority: u=4\" -H \"TE: trailers";
 
