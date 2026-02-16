@@ -22,6 +22,8 @@ import backend.model.instrument.Quotation;
 /**
  * Provides access to quotation data using the investing.com website.
  *
+ * As of February 2026 this API is not functioning due to Cloudflare protection.
+ *
  * @author Michael
  */
 public class QuotationProviderInvestingDAO extends AbstractQuotationProviderDAO implements QuotationProviderDAO {

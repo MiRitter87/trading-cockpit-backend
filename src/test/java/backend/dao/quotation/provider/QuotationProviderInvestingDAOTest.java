@@ -445,7 +445,7 @@ public class QuotationProviderInvestingDAOTest {
 
     // @Test
     /**
-     * An explorative test that tries to retrieve Quotation data of the Amazon stock using a cURL command.
+     * An explorative test that tries to retrieve current Quotation data of the Amazon stock using a cURL command.
      */
     public void testGetCurrentQuotationCurl() {
         Process process = null;
@@ -461,6 +461,42 @@ public class QuotationProviderInvestingDAOTest {
                 + "-H \"DNT: 1\" -H \"Sec-GPC: 1\" -H \"Connection: keep-alive\" "
                 + "-H \"Sec-Fetch-Dest: empty\" -H \"Sec-Fetch-Mode: cors\" -H \"Sec-Fetch-Site: same-site\" "
                 + "-H \"Priority: u=4\" -H \"TE: trailers";
+
+        try {
+            process = Runtime.getRuntime().exec(command);
+            resultStream = process.getInputStream();
+
+            result = IOUtils.toString(resultStream, StandardCharsets.UTF_8);
+            assertTrue(result.length() > 0);
+            // System.out.println(result); // Prints retrieved price and volume data to the console
+        } catch (Exception exception) {
+            fail(exception.getMessage());
+        } finally {
+            if (process != null) {
+                process.destroy();
+            }
+        }
+    }
+
+    // @Test
+    /**
+     * An explorative test that tries to retrieve historical Quotation data of the Amazon stock using a cURL command.
+     *
+     * As of February 2026 the site seems to use Cloudflare; previous requests don't work any longer.
+     */
+    public void testGetQuotationHistoryCurl() {
+        Process process = null;
+        final InputStream resultStream;
+        String result;
+        final String command = "curl 'https://api.investing.com/api/financialdata/historical/13928"
+                + "?start-date=2025-02-16&end-date=2026-02-16&time-frame=Daily&add-missing-rows=false'"
+                + " --compressed"
+                + " -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:147.0) Gecko/20100101 Firefox/147.0'"
+                + " -H 'Accept: */*'" + " -H 'Accept-Language: de,en-US;q=0.9,en;q=0.8'"
+                + " -H 'Accept-Encoding: gzip, deflate, br, zstd'" + " -H 'Referer: https://www.investing.com/'"
+                + " -H 'domain-id: www'" + " -H 'Origin: https://www.investing.com'" + " -H 'Sec-GPC: 1'"
+                + " -H 'Connection: keep-alive'" + " -H 'Sec-Fetch-Dest: empty'" + " -H 'Sec-Fetch-Mode: cors'"
+                + " -H 'Sec-Fetch-Site: same-site'" + " -H 'Priority: u=0'n" + " -H 'TE: trailers'";
 
         try {
             process = Runtime.getRuntime().exec(command);
