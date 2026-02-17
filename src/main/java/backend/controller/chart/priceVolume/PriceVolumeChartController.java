@@ -198,6 +198,10 @@ public class PriceVolumeChartController extends ChartController {
 
         dateAxis.setTimeline(timeline);
 
+        // Use a 1% margin to the left and right border of the chart.
+        dateAxis.setLowerMargin(0.01);
+        dateAxis.setUpperMargin(0.01);
+
         return dateAxis;
     }
 
