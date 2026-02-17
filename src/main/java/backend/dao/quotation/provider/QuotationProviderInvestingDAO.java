@@ -88,6 +88,7 @@ public class QuotationProviderInvestingDAO extends AbstractQuotationProviderDAO 
      * Gets the current Quotation of the given Instrument.
      */
     @Override
+    @Deprecated
     public Quotation getCurrentQuotation(final Instrument instrument) throws Exception {
         String command = this.getCurlCommandCurrentQuotation(instrument);
         Quotation quotation;
@@ -114,6 +115,7 @@ public class QuotationProviderInvestingDAO extends AbstractQuotationProviderDAO 
      * Gets the Quotation history.
      */
     @Override
+    @Deprecated
     public List<Quotation> getQuotationHistory(final Instrument instrument, final Integer years) throws Exception {
         String command = this.getCurlCommandQuotationHistory(instrument, years);
         List<Quotation> quotations;
