@@ -6,10 +6,12 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import org.jfree.chart.annotations.XYTextAnnotation;
+import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.DatasetRenderingOrder;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.chart.ui.TextAnchor;
 import org.jfree.data.time.Millisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
@@ -282,10 +284,10 @@ public class ChartOverlayProvider {
         String datePattern = "dd.MM.yyyy";
         String formattedDate = "";
         SimpleDateFormat dateFormat = new SimpleDateFormat(datePattern);
-        Quotation oldestQuotation;
         Quotation newestQuotation;
-        double priceHigh;
         XYTextAnnotation dateAnnotation;
+        ValueAxis domainAxis = plot.getDomainAxis();
+        ValueAxis rangeAxis = plot.getRangeAxis();
 
         if (instrument.getQuotations().size() == 0) {
             return;
@@ -294,10 +296,9 @@ public class ChartOverlayProvider {
         newestQuotation = quotationArray.getQuotations().get(0);
         formattedDate = dateFormat.format(newestQuotation.getDate());
 
-        oldestQuotation = quotationArray.getQuotations().get(quotationArray.getQuotations().size() - 1);
-        priceHigh = quotationArray.getPriceHigh().doubleValue();
+        dateAnnotation = new XYTextAnnotation(formattedDate, domainAxis.getLowerBound(), rangeAxis.getUpperBound());
+        dateAnnotation.setTextAnchor(TextAnchor.TOP_LEFT);
 
-        dateAnnotation = new XYTextAnnotation(formattedDate, oldestQuotation.getDate().getTime(), priceHigh);
         plot.addAnnotation(dateAnnotation);
     }
 }
