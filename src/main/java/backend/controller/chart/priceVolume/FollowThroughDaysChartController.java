@@ -1,5 +1,7 @@
 package backend.controller.chart.priceVolume;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +14,7 @@ import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.CombinedDomainXYPlot;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.StandardXYBarPainter;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.TimeSeries;
@@ -181,13 +184,17 @@ public class FollowThroughDaysChartController extends PriceVolumeChartController
     private XYPlot getFailedFTDPlot(final Instrument instrument, final ValueAxis timeAxis) throws Exception {
         IntervalXYDataset distributionDaySumData = this.getFailedFTDDataset(instrument);
         NumberAxis failedFTDAxis = new NumberAxis();
+        XYBarRenderer failedFTDRenderer = new XYBarRenderer();
 
         // Only use integers as tick units. Otherwise values like 0.2 Follow-Through Days would be generated which is
         // useless.
         failedFTDAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
 
-        XYBarRenderer failedFTDRenderer = new XYBarRenderer();
         failedFTDRenderer.setShadowVisible(false);
+        failedFTDRenderer.setDrawBarOutline(true); // Enable outline around bars.
+        failedFTDRenderer.setSeriesOutlinePaint(0, Color.BLACK); // Black line around each bar.
+        failedFTDRenderer.setSeriesOutlineStroke(0, new BasicStroke(1.0f)); // Line thickness.
+        failedFTDRenderer.setBarPainter(new StandardXYBarPainter()); // No gradient on bars.
 
         XYPlot failedFTDSubplot = new XYPlot(distributionDaySumData, timeAxis, failedFTDAxis, failedFTDRenderer);
         failedFTDSubplot.setRangeAxisLocation(AxisLocation.TOP_OR_RIGHT);
