@@ -1,5 +1,6 @@
 package backend.controller.chart.priceVolume;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.CombinedDomainXYPlot;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.StandardXYBarPainter;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.TimeSeries;
@@ -92,9 +94,13 @@ public class HealthCheckChartController extends PriceVolumeChartController {
         IntervalXYDataset healthEventData = this.getHealthEventDataset(instrument, healthProtocol, profile,
                 lookbackPeriod);
         NumberAxis healthEventAxis = new NumberAxis();
-
         XYBarRenderer healthEventRenderer = new XYBarRenderer();
+
         healthEventRenderer.setShadowVisible(false);
+        healthEventRenderer.setDrawBarOutline(true); // Enable outline around bars.
+        healthEventRenderer.setSeriesOutlinePaint(0, Color.BLACK); // Black line around each bar.
+        healthEventRenderer.setSeriesOutlineStroke(0, new BasicStroke(1.0f)); // Line thickness.
+        healthEventRenderer.setBarPainter(new StandardXYBarPainter()); // No gradient on bars.
         this.setHealthEventBarColor(healthEventRenderer, profile);
 
         XYPlot healthEventSubplot = new XYPlot(healthEventData, timeAxis, healthEventAxis, healthEventRenderer);
