@@ -96,6 +96,9 @@ public class HealthCheckChartController extends PriceVolumeChartController {
         NumberAxis healthEventAxis = new NumberAxis();
         XYBarRenderer healthEventRenderer = new XYBarRenderer();
 
+        // Only use integers as tick units. Otherwise values like 0.2 event would be generated which is useless.
+        healthEventAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+
         healthEventRenderer.setShadowVisible(false);
         healthEventRenderer.setDrawBarOutline(true); // Enable outline around bars.
         healthEventRenderer.setSeriesOutlinePaint(0, Color.BLACK); // Black line around each bar.
