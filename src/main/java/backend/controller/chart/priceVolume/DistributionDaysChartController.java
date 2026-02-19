@@ -1,5 +1,7 @@
 package backend.controller.chart.priceVolume;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +13,7 @@ import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.CombinedDomainXYPlot;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.StandardXYBarPainter;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.TimeSeries;
@@ -129,9 +132,13 @@ public class DistributionDaysChartController extends PriceVolumeChartController 
     private XYPlot getDistributionDaySumPlot(final Instrument instrument, final ValueAxis timeAxis) throws Exception {
         IntervalXYDataset distributionDaySumData = this.getDistributionDaySumDataset(instrument);
         NumberAxis distributionDaySumAxis = new NumberAxis();
-
         XYBarRenderer distributionDaySumRenderer = new XYBarRenderer();
+
         distributionDaySumRenderer.setShadowVisible(false);
+        distributionDaySumRenderer.setDrawBarOutline(true); // Enable outline around bars.
+        distributionDaySumRenderer.setSeriesOutlinePaint(0, Color.BLACK); // Black line around each bar.
+        distributionDaySumRenderer.setSeriesOutlineStroke(0, new BasicStroke(1.0f)); // Line thickness.
+        distributionDaySumRenderer.setBarPainter(new StandardXYBarPainter()); // No gradient on bars.
 
         XYPlot distributionDaySumSubplot = new XYPlot(distributionDaySumData, timeAxis, distributionDaySumAxis,
                 distributionDaySumRenderer);
