@@ -22,18 +22,6 @@ import backend.model.instrument.Quotation;
  */
 public class PocketPivotChartController extends PriceVolumeChartController {
     /**
-     * Provider of chart overlays.
-     */
-    private ChartOverlayProvider chartOverlayProvider;
-
-    /**
-     * Initializes the PocketPivotChartController.
-     */
-    public PocketPivotChartController() {
-        this.chartOverlayProvider = new ChartOverlayProvider();
-    }
-
-    /**
      * Gets a chart of an Instrument marked with Pocket Pivots.
      *
      * @param instrumentId The ID of the Instrument used for chart creation.
@@ -50,9 +38,11 @@ public class PocketPivotChartController extends PriceVolumeChartController {
         XYPlot candleStickSubplot = this.getCandlestickPlot(instrument, dateAxis);
         XYPlot volumeSubplot = this.getVolumePlot(instrument, dateAxis);
 
-        this.chartOverlayProvider.addSma10(instrument, candleStickSubplot);
-        this.chartOverlayProvider.addSma50(instrument, candleStickSubplot);
         this.addAnnotationsToCandlestickPlot(candleStickSubplot, instrument);
+        this.getChartOverlayProvider().addSma10(instrument, candleStickSubplot);
+        this.getChartOverlayProvider().addSma50(instrument, candleStickSubplot);
+        this.getChartOverlayProvider().addMovingAverageVolume(instrument, volumeSubplot);
+        this.clipVolumeAt2TimesAverage(volumeSubplot, instrument);
 
         // Build combined plot based on subplots.
         CombinedDomainXYPlot combinedPlot = new CombinedDomainXYPlot();

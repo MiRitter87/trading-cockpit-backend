@@ -57,6 +57,8 @@ public class DistributionDaysChartController extends PriceVolumeChartController 
         XYPlot distributionDaySumSubplot = this.getDistributionDaySumPlot(instrument, dateAxis);
 
         this.addAnnotationsToCandlestickPlot(candleStickSubplot, instrument);
+        this.getChartOverlayProvider().addMovingAverageVolume(instrument, volumeSubplot);
+        this.clipVolumeAt2TimesAverage(volumeSubplot, instrument);
 
         // Build combined plot based on subplots.
         CombinedDomainXYPlot combinedPlot = new CombinedDomainXYPlot();
