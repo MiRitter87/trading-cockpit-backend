@@ -198,15 +198,12 @@ public class DashboardService {
      * @return The SwingTradingEnvironmentStatus.
      */
     public SwingTradingEnvironmentStatus getSwingTradingEnvironmentStatus(final Instrument instrumentWithQuotations) {
+        // Status Yellow is currently omitted to make trading decisions as simple as possible.
         if (this.isStatusGreen(instrumentWithQuotations)) {
             return SwingTradingEnvironmentStatus.GREEN;
-        } else if (this.isStatusYellow(instrumentWithQuotations)) {
-            return SwingTradingEnvironmentStatus.YELLOW;
-        } else if (this.isStatusRed(instrumentWithQuotations)) {
+        } else {
             return SwingTradingEnvironmentStatus.RED;
         }
-
-        return null;
     }
 
     /**
@@ -215,12 +212,10 @@ public class DashboardService {
      * @param instrumentWithQuotations The Instrument with the Quotation history.
      * @return true, if status is 'GREEN'; false, if not.
      */
-    private boolean isStatusGreen(final Instrument instrumentWithQuotations) {
+    public boolean isStatusGreen(final Instrument instrumentWithQuotations) {
         List<Quotation> quotations;
         Quotation actualQuotation;
-        Quotation previousQuotation;
         MovingAverageData actualMa;
-        MovingAverageData previousMa;
 
         if (instrumentWithQuotations == null || instrumentWithQuotations.getQuotations() == null
                 || instrumentWithQuotations.getQuotations().size() < 2) {
@@ -229,27 +224,19 @@ public class DashboardService {
 
         quotations = instrumentWithQuotations.getQuotationsSortedByDate();
         actualQuotation = quotations.get(0);
-        previousQuotation = quotations.get(1);
         actualMa = actualQuotation.getMovingAverageData();
-        previousMa = previousQuotation.getMovingAverageData();
 
-        if (actualMa == null || previousMa == null) {
+        if (actualMa == null) {
             return false;
         }
 
-        if (actualQuotation.getClose().floatValue() <= actualMa.getEma10()) {
-            return false;
+        if (actualMa.getEma10() > actualMa.getEma21() && actualQuotation.getClose().floatValue() > actualMa.getEma21()
+                && actualQuotation.getClose().floatValue() > actualMa.getSma50()) {
+
+            return true;
         }
 
-        if (actualMa.getEma10() <= actualMa.getEma21()) {
-            return false;
-        }
-
-        if (actualMa.getEma21() <= previousMa.getEma21()) {
-            return false;
-        }
-
-        return true;
+        return false;
     }
 
     /**
@@ -258,7 +245,7 @@ public class DashboardService {
      * @param instrumentWithQuotations The Instrument with the Quotation history.
      * @return true, if status is 'YELLOW'; false, if not.
      */
-    private boolean isStatusYellow(final Instrument instrumentWithQuotations) {
+    public boolean isStatusYellow(final Instrument instrumentWithQuotations) {
         List<Quotation> quotations;
         Quotation actualQuotation;
         MovingAverageData actualMa;
@@ -291,7 +278,7 @@ public class DashboardService {
      * @param instrumentWithQuotations The Instrument with the Quotation history.
      * @return true, if status is 'RED'; false, if not.
      */
-    private boolean isStatusRed(final Instrument instrumentWithQuotations) {
+    public boolean isStatusRed(final Instrument instrumentWithQuotations) {
         List<Quotation> quotations;
         Quotation actualQuotation;
         MovingAverageData actualMa;
@@ -309,8 +296,9 @@ public class DashboardService {
             return false;
         }
 
-        if (actualQuotation.getClose().floatValue() <= actualMa.getEma21()
-                || actualMa.getEma10() <= actualMa.getEma21()) {
+        if (actualMa.getEma10() <= actualMa.getEma21() || actualQuotation.getClose().floatValue() <= actualMa.getEma21()
+                || actualQuotation.getClose().floatValue() <= actualMa.getSma50()) {
+
             return true;
         }
 
