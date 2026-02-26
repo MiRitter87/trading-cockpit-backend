@@ -16,8 +16,11 @@ import backend.model.instrument.Quotation;
  *
  */
 public class QuotationProviderYahooDAOStub extends QuotationProviderYahooDAO {
+    /**
+     * Gets the Quotation history.
+     */
     @Override
-    public List<Quotation> getQuotationHistory(Instrument instrument, Integer years) throws Exception {
+    public List<Quotation> getQuotationHistory(final Instrument instrument, final Integer years) throws Exception {
         String jsonPath = "";
 
         if (instrument.getSymbol().equals("DML") && instrument.getStockExchange().equals(StockExchange.TSX)) {
@@ -35,6 +38,9 @@ public class QuotationProviderYahooDAOStub extends QuotationProviderYahooDAO {
         return this.convertJSONToQuotations(quotationHistoryJSON);
     }
 
+    /**
+     * Gets the current Quotation of the given Instrument.
+     */
     @Override
     public Quotation getCurrentQuotation(final Instrument instrument) throws Exception {
         String jsonPath = this.getJsonPathChart(instrument);
@@ -54,12 +60,13 @@ public class QuotationProviderYahooDAOStub extends QuotationProviderYahooDAO {
      */
     @SuppressWarnings("unused")
     private String getJsonPathQuote(final Instrument instrument) {
-        if (instrument.getSymbol().equals("DML") && instrument.getStockExchange().equals(StockExchange.TSX))
+        if (instrument.getSymbol().equals("DML") && instrument.getStockExchange().equals(StockExchange.TSX)) {
             return "src/test/resources/Yahoo/yahooTSEQuoteDML.json";
-        else if (instrument.getSymbol().equals("RIO") && instrument.getStockExchange().equals(StockExchange.LSE))
+        } else if (instrument.getSymbol().equals("RIO") && instrument.getStockExchange().equals(StockExchange.LSE)) {
             return "src/test/resources/Yahoo/yahooLSEQuoteRIO.json";
-        else
+        } else {
             return null;
+        }
     }
 
     /**
@@ -69,11 +76,12 @@ public class QuotationProviderYahooDAOStub extends QuotationProviderYahooDAO {
      * @return The path.
      */
     private String getJsonPathChart(final Instrument instrument) {
-        if (instrument.getSymbol().equals("DML") && instrument.getStockExchange().equals(StockExchange.TSX))
+        if (instrument.getSymbol().equals("DML") && instrument.getStockExchange().equals(StockExchange.TSX)) {
             return "src/test/resources/Yahoo/yahooTSEChartDML.json";
-        else if (instrument.getSymbol().equals("RIO") && instrument.getStockExchange().equals(StockExchange.LSE))
+        } else if (instrument.getSymbol().equals("RIO") && instrument.getStockExchange().equals(StockExchange.LSE)) {
             return "src/test/resources/Yahoo/yahooLSEChartRIO.json";
-        else
+        } else {
             return null;
+        }
     }
 }

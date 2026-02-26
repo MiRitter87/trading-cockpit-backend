@@ -15,6 +15,11 @@ import backend.model.instrument.Quotation;
  */
 public class QuotationProviderYahooDAOFixture {
     /**
+     * Milliseconds per second.
+     */
+    private final int millisPerSecond = 1000;
+
+    /**
      * Gets historical quotations of Denison Mines stock. The quotations of the three most recent trading days are
      * provided.
      *
@@ -23,38 +28,40 @@ public class QuotationProviderYahooDAOFixture {
     public List<Quotation> getDenisonMinesQuotationHistory() {
         List<Quotation> historicalQuotations = new ArrayList<>();
         Quotation quotation = new Quotation();
-        long secondsSince1970;
+        final long seconds1 = 1658496600;
+        final long seconds2 = 1658410200;
+        final long seconds3 = 1658323800;
+        final long volume1 = 1793300;
+        final long volume2 = 1450900;
+        final long volume3 = 1534800;
 
-        secondsSince1970 = 1658496600;
-        quotation.setDate(new Date(secondsSince1970 * 1000));
-        quotation.setOpen(BigDecimal.valueOf(1.45));
-        quotation.setHigh(BigDecimal.valueOf(1.48));
-        quotation.setLow(BigDecimal.valueOf(1.35));
-        quotation.setClose(BigDecimal.valueOf(1.36));
+        quotation.setDate(new Date(seconds1 * millisPerSecond));
+        quotation.setOpen(new BigDecimal("1.45"));
+        quotation.setHigh(new BigDecimal("1.48"));
+        quotation.setLow(new BigDecimal("1.35"));
+        quotation.setClose(new BigDecimal("1.36"));
         quotation.setCurrency(Currency.CAD);
-        quotation.setVolume(1793300);
+        quotation.setVolume(volume1);
         historicalQuotations.add(quotation);
 
         quotation = new Quotation();
-        secondsSince1970 = 1658410200;
-        quotation.setDate(new Date(secondsSince1970 * 1000));
-        quotation.setOpen(BigDecimal.valueOf(1.50));
-        quotation.setHigh(BigDecimal.valueOf(1.52));
-        quotation.setLow(BigDecimal.valueOf(1.44));
-        quotation.setClose(BigDecimal.valueOf(1.46));
+        quotation.setDate(new Date(seconds2 * millisPerSecond));
+        quotation.setOpen(new BigDecimal("1.50"));
+        quotation.setHigh(new BigDecimal("1.52"));
+        quotation.setLow(new BigDecimal("1.44"));
+        quotation.setClose(new BigDecimal("1.46"));
         quotation.setCurrency(Currency.CAD);
-        quotation.setVolume(1450900);
+        quotation.setVolume(volume2);
         historicalQuotations.add(quotation);
 
         quotation = new Quotation();
-        secondsSince1970 = 1658323800;
-        quotation.setDate(new Date(secondsSince1970 * 1000));
-        quotation.setOpen(BigDecimal.valueOf(1.49));
-        quotation.setHigh(BigDecimal.valueOf(1.54));
-        quotation.setLow(BigDecimal.valueOf(1.46));
-        quotation.setClose(BigDecimal.valueOf(1.53));
+        quotation.setDate(new Date(seconds3 * millisPerSecond));
+        quotation.setOpen(new BigDecimal("1.49"));
+        quotation.setHigh(new BigDecimal("1.54"));
+        quotation.setLow(new BigDecimal("1.46"));
+        quotation.setClose(new BigDecimal("1.53"));
         quotation.setCurrency(Currency.CAD);
-        quotation.setVolume(1534800);
+        quotation.setVolume(volume3);
         historicalQuotations.add(quotation);
 
         return historicalQuotations;
@@ -68,38 +75,40 @@ public class QuotationProviderYahooDAOFixture {
     public List<Quotation> getRioTintoQuotationHistory() {
         List<Quotation> historicalQuotations = new ArrayList<>();
         Quotation quotation = new Quotation();
-        long secondsSince1970;
+        final long seconds1 = 1672823859;
+        final long seconds2 = 1672732800;
+        final long seconds3 = 1672387200;
+        final long volume1 = 243671;
+        final long volume2 = 2112533;
+        final long volume3 = 588428;
 
-        secondsSince1970 = 1672823859;
-        quotation.setDate(new Date(secondsSince1970 * 1000));
-        quotation.setOpen(BigDecimal.valueOf(5910));
-        quotation.setHigh(BigDecimal.valueOf(5941));
-        quotation.setLow(BigDecimal.valueOf(5834));
-        quotation.setClose(BigDecimal.valueOf(5835));
+        quotation.setDate(new Date(seconds1 * millisPerSecond));
+        quotation.setOpen(new BigDecimal("5910"));
+        quotation.setHigh(new BigDecimal("5941"));
+        quotation.setLow(new BigDecimal("5834"));
+        quotation.setClose(new BigDecimal("5835"));
         quotation.setCurrency(Currency.GBP);
-        quotation.setVolume(243671);
+        quotation.setVolume(volume1);
         historicalQuotations.add(quotation);
 
         quotation = new Quotation();
-        secondsSince1970 = 1672732800;
-        quotation.setDate(new Date(secondsSince1970 * 1000));
-        quotation.setOpen(BigDecimal.valueOf(5818));
-        quotation.setHigh(BigDecimal.valueOf(5905));
-        quotation.setLow(BigDecimal.valueOf(5810));
-        quotation.setClose(BigDecimal.valueOf(5839));
+        quotation.setDate(new Date(seconds2 * millisPerSecond));
+        quotation.setOpen(new BigDecimal("5818"));
+        quotation.setHigh(new BigDecimal("5905"));
+        quotation.setLow(new BigDecimal("5810"));
+        quotation.setClose(new BigDecimal("5839"));
         quotation.setCurrency(Currency.GBP);
-        quotation.setVolume(2112533);
+        quotation.setVolume(volume2);
         historicalQuotations.add(quotation);
 
         quotation = new Quotation();
-        secondsSince1970 = 1672387200;
-        quotation.setDate(new Date(secondsSince1970 * 1000));
-        quotation.setOpen(BigDecimal.valueOf(5803));
-        quotation.setHigh(BigDecimal.valueOf(5846));
-        quotation.setLow(BigDecimal.valueOf(5787));
-        quotation.setClose(BigDecimal.valueOf(5798));
+        quotation.setDate(new Date(seconds3 * millisPerSecond));
+        quotation.setOpen(new BigDecimal("5803"));
+        quotation.setHigh(new BigDecimal("5846"));
+        quotation.setLow(new BigDecimal("5787"));
+        quotation.setClose(new BigDecimal("5798"));
         quotation.setCurrency(Currency.GBP);
-        quotation.setVolume(588428);
+        quotation.setVolume(volume3);
         historicalQuotations.add(quotation);
 
         return historicalQuotations;
@@ -113,7 +122,7 @@ public class QuotationProviderYahooDAOFixture {
     public Quotation getDenisonMinesQuotation() {
         Quotation quotation = new Quotation();
 
-        quotation.setClose(BigDecimal.valueOf(1.39));
+        quotation.setClose(new BigDecimal("1.39"));
         quotation.setCurrency(Currency.CAD);
 
         return quotation;
@@ -127,7 +136,7 @@ public class QuotationProviderYahooDAOFixture {
     public Quotation getRioTintoQuotation() {
         Quotation quotation = new Quotation();
 
-        quotation.setClose(BigDecimal.valueOf(4821.5));
+        quotation.setClose(new BigDecimal("4821.5"));
         quotation.setCurrency(Currency.GBP);
 
         return quotation;
