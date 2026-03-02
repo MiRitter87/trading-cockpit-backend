@@ -30,10 +30,10 @@ public class HorizontalLineTest {
      */
     private Instrument instrument;
 
-    @BeforeEach
     /**
      * Tasks to be performed before each test is run.
      */
+    @BeforeEach
     public void setUp() {
         this.instrument = new Instrument();
         this.instrument.setId(Integer.valueOf(1));
@@ -48,19 +48,19 @@ public class HorizontalLineTest {
         this.horizontalLine.setInstrument(this.instrument);
     }
 
-    @AfterEach
     /**
      * Tasks to be performed after each test has been run.
      */
+    @AfterEach
     public void tearDown() {
         this.horizontalLine = null;
         this.instrument = null;
     }
 
-    @Test
     /**
      * Tests successful validation of a HorizontalLine.
      */
+    @Test
     public void testValidateSuccess() {
         try {
             this.horizontalLine.validate();
@@ -69,10 +69,10 @@ public class HorizontalLineTest {
         }
     }
 
-    @Test
     /**
      * Tests validation of a HorizontalLine whose ID is too low.
      */
+    @Test
     public void testIdTooLow() {
         ValidationMessageProvider messageProvider = new ValidationMessageProvider();
         this.horizontalLine.setId(0);
@@ -90,10 +90,10 @@ public class HorizontalLineTest {
         assertEquals(expectedErrorMessage, errorMessage);
     }
 
-    @Test
     /**
      * Tests validation of a HorizontalLine that has no Instrument defined.
      */
+    @Test
     public void testNoInstrumentDefined() {
         ValidationMessageProvider messageProvider = new ValidationMessageProvider();
         String expectedErrorMessage = messageProvider.getNotNullValidationMessage("horizontalLine", "instrument");
@@ -111,10 +111,10 @@ public class HorizontalLineTest {
         assertEquals(expectedErrorMessage, actualErrorMessage);
     }
 
-    @Test
     /**
      * Tests validation of a HorizontalLine whose price is null.
      */
+    @Test
     public void testPriceIsNull() {
         ValidationMessageProvider messageProvider = new ValidationMessageProvider();
         this.horizontalLine.setPrice(null);
@@ -132,13 +132,13 @@ public class HorizontalLineTest {
         assertEquals(expectedErrorMessage, errorMessage);
     }
 
-    @Test
     /**
      * Tests validation of a price alert whose price is too low.
      */
+    @Test
     public void testPriceTooLow() {
         ValidationMessageProvider messageProvider = new ValidationMessageProvider();
-        this.horizontalLine.setPrice(BigDecimal.valueOf(Double.valueOf(0.009)));
+        this.horizontalLine.setPrice(new BigDecimal("0.009"));
 
         String expectedErrorMessage = messageProvider.getDecimalMinValidationMessage("horizontalLine", "price", "0.01");
         String errorMessage = "";
@@ -153,13 +153,13 @@ public class HorizontalLineTest {
         assertEquals(expectedErrorMessage, errorMessage);
     }
 
-    @Test
     /**
      * Tests validation of a HorizontalLine whose price is too high.
      */
+    @Test
     public void testPriceTooHigh() {
         ValidationMessageProvider messageProvider = new ValidationMessageProvider();
-        this.horizontalLine.setPrice(BigDecimal.valueOf(Double.valueOf(100000.01)));
+        this.horizontalLine.setPrice(new BigDecimal("100000.01"));
 
         String expectedErrorMessage = messageProvider.getMaxValidationMessage("horizontalLine", "price", "100000");
         String errorMessage = "";
