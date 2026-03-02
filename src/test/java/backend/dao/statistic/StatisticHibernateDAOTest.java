@@ -63,18 +63,18 @@ public class StatisticHibernateDAOTest {
      */
     private Statistic statisticTodayETF;
 
-    @BeforeAll
     /**
      * Tasks to be performed once at startup of test class.
      */
+    @BeforeAll
     public static void setUpClass() {
         statisticDAO = DAOManager.getInstance().getStatisticDAO();
     }
 
-    @AfterAll
     /**
      * Tasks to be performed once at end of test class.
      */
+    @AfterAll
     public static void tearDownClass() {
         try {
             DAOManager.getInstance().close();
@@ -83,18 +83,18 @@ public class StatisticHibernateDAOTest {
         }
     }
 
-    @BeforeEach
     /**
      * Tasks to be performed before each test is run.
      */
+    @BeforeEach
     public void setUp() {
         this.createTestData();
     }
 
-    @AfterEach
     /**
      * Tasks to be performed after each test has been run.
      */
+    @AfterEach
     public void tearDown() {
         this.deleteTestData();
     }
@@ -141,11 +141,11 @@ public class StatisticHibernateDAOTest {
      *
      * @return The Statistic 'Today'.
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     public Statistic getStatisticTodayStock() {
-        Statistic statistic;
+        Statistic statistic = new Statistic();
         Calendar calendar = this.getCalendarNow();
 
-        statistic = new Statistic();
         statistic.setInstrumentType(InstrumentType.STOCK);
         statistic.setDate(calendar.getTime());
         statistic.setNumberAdvance(34);
@@ -159,13 +159,13 @@ public class StatisticHibernateDAOTest {
      *
      * @return The Statistic 'Yesterday'.
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     public Statistic getStatisticYesterdayStock() {
-        Statistic statistic;
+        Statistic statistic = new Statistic();
         Calendar calendar = this.getCalendarNow();
 
         calendar.add(Calendar.DAY_OF_MONTH, -1);
 
-        statistic = new Statistic();
         statistic.setInstrumentType(InstrumentType.STOCK);
         statistic.setDate(calendar.getTime());
         statistic.setNumberAdvance(101);
@@ -179,11 +179,12 @@ public class StatisticHibernateDAOTest {
      *
      * @return The Statistic 'Today'.
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     public Statistic getStatisticTodayETF() {
-        Statistic statistic;
+        Statistic statistic = new Statistic();
+
         Calendar calendar = this.getCalendarNow();
 
-        statistic = new Statistic();
         statistic.setInstrumentType(InstrumentType.ETF);
         statistic.setDate(calendar.getTime());
         statistic.setNumberAdvance(3);
@@ -197,11 +198,12 @@ public class StatisticHibernateDAOTest {
      *
      * @return The Statistic 'Today'.
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     public Statistic getStatisticWithIgRelation() {
-        Statistic statistic;
+        Statistic statistic = new Statistic();
+
         Calendar calendar = this.getCalendarNow();
 
-        statistic = new Statistic();
         statistic.setInstrumentType(InstrumentType.STOCK);
         statistic.setDate(calendar.getTime());
         statistic.setIndustryGroupId(1);
@@ -216,11 +218,12 @@ public class StatisticHibernateDAOTest {
      *
      * @return The Statistic 'Today'.
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     public Statistic getStatisticWithSectorRelation() {
-        Statistic statistic;
+        Statistic statistic = new Statistic();
+
         Calendar calendar = this.getCalendarNow();
 
-        statistic = new Statistic();
         statistic.setInstrumentType(InstrumentType.STOCK);
         statistic.setDate(calendar.getTime());
         statistic.setSectorId(2);
@@ -247,10 +250,10 @@ public class StatisticHibernateDAOTest {
         return calendar;
     }
 
-    @Test
     /**
      * Tests the retrieval of a Statistic with a given ID.
      */
+    @Test
     public void testGetStatistic() {
         Statistic databaseStatistic;
 
@@ -264,10 +267,11 @@ public class StatisticHibernateDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests insertion of a Statistic.
      */
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
     public void testInsertStatistic() {
         Calendar calendar = this.getCalendarNow();
         Statistic newStatistic = new Statistic();
@@ -298,30 +302,32 @@ public class StatisticHibernateDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests the retrieval of all statistics of type STOCK.
      */
+    @Test
     public void testGetAllStatisticsTypeStock() {
         List<Statistic> statistics;
+        final int expectedStatistics = 4;
+        final int index3 = 3;
 
         try {
             statistics = statisticDAO.getStatisticsOfInstrumentType(InstrumentType.STOCK);
 
             // Assure four statistics are returned.
-            assertEquals(4, statistics.size());
+            assertEquals(expectedStatistics, statistics.size());
 
             // Assure that the correct statistics are returned in the correct order (newest Statistic first).
-            assertEquals(this.statisticYesterdayStock, statistics.get(3));
+            assertEquals(this.statisticYesterdayStock, statistics.get(index3));
         } catch (Exception e) {
             fail(e.getMessage());
         }
     }
 
-    @Test
     /**
      * Tests the retrieval of all general statistics of type STOCK.
      */
+    @Test
     public void testGetStatisticsStockGeneral() {
         List<Statistic> statistics;
 
@@ -339,10 +345,10 @@ public class StatisticHibernateDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests the retrieval of all industry group related statistics of type STOCK.
      */
+    @Test
     public void testGetStatisticsStockIndustryGroup() {
         List<Statistic> statistics;
 
@@ -359,10 +365,10 @@ public class StatisticHibernateDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests the retrieval of all sector-related statistics of type STOCK.
      */
+    @Test
     public void testGetStatisticsStockSector() {
         List<Statistic> statistics;
 
@@ -379,11 +385,11 @@ public class StatisticHibernateDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests the retrieval of all statistics using the ids of both sector and industry group. An Exception is expected
      * because a statistic can either be related to a sector, industry group or none of both.
      */
+    @Test
     public void testGetStatisticsWithBothIds() {
         String expectedMessage = this.resources.getString("statistic.errorOnSectorAndIgRequested");
         String actualMessage = "";
@@ -399,10 +405,11 @@ public class StatisticHibernateDAOTest {
         }
     }
 
-    @Test
     /**
      * Tries to insert a Statistic of a certain type and date for which a Statistic already exists.
      */
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
     public void testInsertDuplicateStatistic() {
         Calendar calendar = this.getCalendarNow();
         Statistic newStatistic = new Statistic();
@@ -422,10 +429,10 @@ public class StatisticHibernateDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests deletion of a Statistic.
      */
+    @Test
     public void testDeleteStatistic() {
         Statistic deletedStatistic;
 
@@ -451,10 +458,10 @@ public class StatisticHibernateDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests updating of a Statistic.
      */
+    @Test
     public void testUpdateStatistic() {
         Statistic databaseStatistic;
 
@@ -475,10 +482,10 @@ public class StatisticHibernateDAOTest {
         }
     }
 
-    @Test
     /**
      * Tests updating of a Statistic without changing any data.
      */
+    @Test
     public void testUpdateUnchangedStatistic() {
         try {
             statisticDAO.updateStatistic(this.statisticTodayStock);
