@@ -42,7 +42,6 @@ public class InstrumentTest {
      */
     private Quotation quotation3;
 
-
     /**
      * Tasks to be performed before each test is run.
      */

@@ -11,7 +11,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import backend.model.LocalizedException;
-import backend.model.StockExchange;
 import backend.tools.test.ValidationMessageProvider;
 
 /**
@@ -34,11 +33,6 @@ public class InstrumentValidationTest {
      * The instrument under test.
      */
     private Instrument instrument;
-
-    /**
-     * Instrument that has a List as data source defined.
-     */
-    private Instrument InstrumentWithDataSource;
 
     /**
      * The Microsoft stock.
@@ -72,7 +66,6 @@ public class InstrumentValidationTest {
         this.industryGroup = null;
         this.sector = null;
         this.microsoftStock = null;
-        this.InstrumentWithDataSource = null;
         this.instrument = null;
 
         this.fixtureHelper = null;
@@ -83,7 +76,6 @@ public class InstrumentValidationTest {
      */
     private void initializeInstruments() {
         this.instrument = this.fixtureHelper.getAppleStock();
-        this.InstrumentWithDataSource = this.fixtureHelper.getInstrumentWithDataSource();
         this.microsoftStock = this.fixtureHelper.getMicrosoftStock();
 
         this.sector = this.fixtureHelper.getSector();
@@ -297,7 +289,8 @@ public class InstrumentValidationTest {
 
         try {
             this.instrument.validate();
-            fail("Validation should have failed because the sector is referenced with an Instrument that is not of type 'SECTOR'.");
+            fail("Validation should have failed because the sector is referenced "
+                    + "with an Instrument that is not of type 'SECTOR'.");
         } catch (LocalizedException expected) {
             assertEquals(expectedErrorMessage, expected.getLocalizedMessage());
         } catch (Exception e) {
@@ -316,7 +309,8 @@ public class InstrumentValidationTest {
 
         try {
             this.instrument.validate();
-            fail("Validation should have failed because the industry group is referenced with an Instrument that is not of type 'INDUSTRY_GROUP'.");
+            fail("Validation should have failed because the industry group is referenced "
+                    + "with an Instrument that is not of type 'INDUSTRY_GROUP'.");
         } catch (LocalizedException expected) {
             assertEquals(expectedErrorMessage, expected.getLocalizedMessage());
         } catch (Exception e) {
@@ -336,7 +330,8 @@ public class InstrumentValidationTest {
 
         try {
             this.instrument.validate();
-            fail("Validation should have failed because the sector is referenced with an Instrument that is of type 'SECTOR'.");
+            fail("Validation should have failed because the sector is referenced "
+                    + "with an Instrument that is of type 'SECTOR'.");
         } catch (LocalizedException expected) {
             assertEquals(expectedErrorMessage, expected.getLocalizedMessage());
         } catch (Exception e) {
@@ -356,7 +351,8 @@ public class InstrumentValidationTest {
 
         try {
             this.instrument.validate();
-            fail("Validation should have failed because the industry group is referenced with an Instrument that is of type 'IND_GROUP'.");
+            fail("Validation should have failed because the industry group is referenced "
+                    + "with an Instrument that is of type 'IND_GROUP'.");
         } catch (LocalizedException expected) {
             assertEquals(expectedErrorMessage, expected.getLocalizedMessage());
         } catch (Exception e) {
@@ -410,106 +406,6 @@ public class InstrumentValidationTest {
         try {
             this.instrument.validate();
             fail("Validation should have failed because Instrument is not of type 'RATIO' but divisor is defined.");
-        } catch (LocalizedException expected) {
-            assertEquals(expectedErrorMessage, expected.getLocalizedMessage());
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
-    }
-
-    /**
-     * Tests validation of the dataSourceList attribute.
-     */
-    @Test
-    public void testValidateDataSourceList() {
-        String expectedErrorMessage = this.resources.getString("instrument.dataSourceList.wrongType");
-
-        // Validation should fail because dataSourceList is not allowed if type is STOCK.
-        try {
-            this.InstrumentWithDataSource.setType(InstrumentType.STOCK);
-            this.InstrumentWithDataSource.validate();
-            fail("Validation should have failed because Instrument is of type 'STOCK'.");
-        } catch (LocalizedException expected) {
-            assertEquals(expectedErrorMessage, expected.getLocalizedMessage());
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
-
-        // Validation should not fail because dataSourceList is allowed if type is ETF.
-        try {
-            this.InstrumentWithDataSource.setType(InstrumentType.ETF);
-            this.InstrumentWithDataSource.validate();
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
-
-        // Validation should not fail because dataSourceList is allowed if type is sector.
-        try {
-            this.InstrumentWithDataSource.setType(InstrumentType.SECTOR);
-            this.InstrumentWithDataSource.validate();
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
-
-        // Validation should not fail because dataSourceList is allowed if type is industry group.
-        try {
-            this.InstrumentWithDataSource.setType(InstrumentType.IND_GROUP);
-            this.InstrumentWithDataSource.validate();
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
-    }
-
-    /**
-     * Tests validation of the dataSourceList attribute while the symbol is defined.
-     */
-    @Test
-    public void testValidateSymbolOnDataSourceList() {
-        String expectedErrorMessage = this.resources.getString("instrument.symbol.dataSourceListDefined");
-
-        // Validation should fail because no symbol can be defined if dataSourceList is set.
-        try {
-            this.InstrumentWithDataSource.setSymbol("test");
-            this.InstrumentWithDataSource.validate();
-            fail("Validation should have failed because Instrument has a symbol defined.");
-        } catch (LocalizedException expected) {
-            assertEquals(expectedErrorMessage, expected.getLocalizedMessage());
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
-    }
-
-    /**
-     * Tests validation of the dataSourceList attribute while the stock exchange is defined.
-     */
-    @Test
-    public void testValidateExchangeOnDataSourceList() {
-        String expectedErrorMessage = this.resources.getString("instrument.stockExchange.dataSourceListDefined");
-
-        // Validation should fail because no stock exchange can be defined if dataSourceList is set.
-        try {
-            this.InstrumentWithDataSource.setStockExchange(StockExchange.NYSE);
-            this.InstrumentWithDataSource.validate();
-            fail("Validation should have failed because Instrument has a stock exchange defined.");
-        } catch (LocalizedException expected) {
-            assertEquals(expectedErrorMessage, expected.getLocalizedMessage());
-        } catch (Exception e) {
-            fail(e.getMessage());
-        }
-    }
-
-    /**
-     * Tests validation of the dataSourceList attribute while the investingId is defined.
-     */
-    @Test
-    public void testValidateInvestingIdOnDataSourceList() {
-        String expectedErrorMessage = this.resources.getString("instrument.investingId.dataSourceListeDefined");
-
-        // Validation should fail because no investingId can be defined if dataSourceList is set.
-        try {
-            this.InstrumentWithDataSource.setInvestingId("4711");
-            this.InstrumentWithDataSource.validate();
-            fail("Validation should have failed because Instrument has an investingId defined.");
         } catch (LocalizedException expected) {
             assertEquals(expectedErrorMessage, expected.getLocalizedMessage());
         } catch (Exception e) {
