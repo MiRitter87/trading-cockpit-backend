@@ -20,8 +20,9 @@ public class InstrumentFixture {
      */
     public Instrument getAppleStock() {
         Instrument instrument = new Instrument();
+        final int instrumentId = 1;
 
-        instrument.setId(Integer.valueOf(1));
+        instrument.setId(instrumentId);
         instrument.setSymbol("AAPL");
         instrument.setType(InstrumentType.STOCK);
         instrument.setStockExchange(StockExchange.NDQ);
@@ -37,8 +38,9 @@ public class InstrumentFixture {
      */
     public Instrument getMicrosoftStock() {
         Instrument instrument = new Instrument();
+        final int instrumentId = 2;
 
-        instrument.setId(Integer.valueOf(2));
+        instrument.setId(instrumentId);
         instrument.setSymbol("MSFT");
         instrument.setType(InstrumentType.STOCK);
         instrument.setStockExchange(StockExchange.NDQ);
@@ -54,8 +56,9 @@ public class InstrumentFixture {
      */
     public Instrument getSector() {
         Instrument instrument = new Instrument();
+        final int instrumentId = 3;
 
-        instrument.setId(Integer.valueOf(3));
+        instrument.setId(instrumentId);
         instrument.setSymbol("XLE");
         instrument.setType(InstrumentType.SECTOR);
         instrument.setStockExchange(StockExchange.NYSE);
@@ -71,8 +74,9 @@ public class InstrumentFixture {
      */
     public Instrument getIndustryGroup() {
         Instrument instrument = new Instrument();
+        final int instrumentId = 4;
 
-        instrument.setId(Integer.valueOf(4));
+        instrument.setId(instrumentId);
         instrument.setSymbol("COPX");
         instrument.setType(InstrumentType.IND_GROUP);
         instrument.setStockExchange(StockExchange.NYSE);
@@ -90,8 +94,9 @@ public class InstrumentFixture {
      */
     public Instrument getSectorIgRatio(final Instrument dividend, final Instrument divisor) {
         Instrument instrument = new Instrument();
+        final int instrumentId = 5;
 
-        instrument.setId(Integer.valueOf(5));
+        instrument.setId(instrumentId);
         instrument.setType(InstrumentType.RATIO);
         instrument.setName("Sector/Industry Group");
         instrument.setDividend(dividend);
@@ -107,8 +112,9 @@ public class InstrumentFixture {
      */
     public Instrument getInstrumentWithDataSource() {
         Instrument instrument = new Instrument();
+        final int instrumentId = 6;
 
-        instrument.setId(Integer.valueOf(6));
+        instrument.setId(instrumentId);
         instrument.setType(InstrumentType.ETF);
         instrument.setName("Instrument with data source");
         instrument.setDataSourceList(new List());
@@ -121,6 +127,7 @@ public class InstrumentFixture {
      *
      * @return The quotation1.
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     public Quotation getQuotation1() {
         Calendar calendar = Calendar.getInstance();
         Quotation quotation = new Quotation();
@@ -140,6 +147,7 @@ public class InstrumentFixture {
      *
      * @return The quotation2.
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     public Quotation getQuotation2() {
         Calendar calendar = Calendar.getInstance();
         Quotation quotation = new Quotation();
@@ -159,6 +167,7 @@ public class InstrumentFixture {
      *
      * @return The quotation3.
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     public Quotation getQuotation3() {
         Calendar calendar = Calendar.getInstance();
         Quotation quotation = new Quotation();
