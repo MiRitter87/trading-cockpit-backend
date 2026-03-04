@@ -17,19 +17,15 @@ public class ChartObjectServiceFixture {
     /**
      * Gets the Instrument of the Apple stock.
      *
-     * @param sector        The sector Instrument.
-     * @param industryGroup The industry group Instrument.
      * @return The Instrument of the Apple stock.
      */
-    public Instrument getAppleInstrument(final Instrument sector, final Instrument industryGroup) {
+    public Instrument getAppleInstrument() {
         Instrument instrument = new Instrument();
 
         instrument.setSymbol("AAPL");
         instrument.setName("Apple");
         instrument.setStockExchange(StockExchange.NDQ);
         instrument.setType(InstrumentType.STOCK);
-        instrument.setSector(sector);
-        instrument.setIndustryGroup(industryGroup);
 
         return instrument;
     }
@@ -37,35 +33,15 @@ public class ChartObjectServiceFixture {
     /**
      * Gets the Instrument of the Microsoft stock.
      *
-     * @param sector        The sector Instrument.
-     * @param industryGroup The industry group Instrument.
      * @return The Instrument of the Microsoft stock.
      */
-    public Instrument getMicrosoftInstrument(final Instrument sector, final Instrument industryGroup) {
+    public Instrument getMicrosoftInstrument() {
         Instrument instrument = new Instrument();
 
         instrument.setSymbol("MSFT");
         instrument.setName("Microsoft");
         instrument.setStockExchange(StockExchange.NDQ);
         instrument.setType(InstrumentType.STOCK);
-        instrument.setSector(sector);
-        instrument.setIndustryGroup(industryGroup);
-
-        return instrument;
-    }
-
-    /**
-     * Gets the Instrument of the technology sector.
-     *
-     * @param sector The sector Instrument.
-     */
-    public Instrument getTechnologySector() {
-        Instrument instrument = new Instrument();
-
-        instrument.setSymbol("XLK");
-        instrument.setName("Technology Select Sector SPDR Fund");
-        instrument.setStockExchange(StockExchange.NYSE);
-        instrument.setType(InstrumentType.SECTOR);
 
         return instrument;
     }
@@ -129,8 +105,9 @@ public class ChartObjectServiceFixture {
         horizontalLineWS.setPrice(horizontalLine.getPrice());
 
         // Object references.
-        if (horizontalLine.getInstrument() != null)
+        if (horizontalLine.getInstrument() != null) {
             horizontalLineWS.setInstrumentId(horizontalLine.getInstrument().getId());
+        }
 
         return horizontalLineWS;
     }
