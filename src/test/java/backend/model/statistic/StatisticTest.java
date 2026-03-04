@@ -27,10 +27,11 @@ public class StatisticTest {
      */
     private Statistic statistic;
 
-    @BeforeEach
     /**
      * Tasks to be performed before each test is run.
      */
+    @BeforeEach
+    @SuppressWarnings("checkstyle:magicnumber")
     public void setUp() {
         this.statistic = new Statistic();
         this.statistic.setNumberAboveSma50(3);
@@ -41,28 +42,28 @@ public class StatisticTest {
         this.statistic.setNumberDecline(1);
     }
 
-    @AfterEach
     /**
      * Tasks to be performed after each test has been run.
      */
+    @AfterEach
     public void tearDown() {
         this.statistic = null;
     }
 
-    @Test
     /**
      * Tests the correct calculation of the advance/decline number.
      */
+    @Test
     public void testGetAdvanceDeclineNumber() {
         final int expectedAdvanceDeclineNumber = 3;
 
         assertEquals(expectedAdvanceDeclineNumber, this.statistic.getAdvanceDeclineNumber());
     }
 
-    @Test
     /**
      * Tests correct calculation of the percentage above SMA(50).
      */
+    @Test
     public void testGetPercentAboveSma50() {
         float percentAboveSma50 = this.statistic.getPercentAboveSma50();
         final int expectedPercentAboveSma50 = 60;
@@ -70,10 +71,10 @@ public class StatisticTest {
         assertEquals(expectedPercentAboveSma50, percentAboveSma50);
     }
 
-    @Test
     /**
      * Tests correct calculation of the percentage above SMA(200).
      */
+    @Test
     public void testGetPercentAboveSma200() {
         float percentAboveSma200 = this.statistic.getPercentAboveSma200();
         final int expectedPercentAboveSma200 = 40;
@@ -81,10 +82,10 @@ public class StatisticTest {
         assertEquals(expectedPercentAboveSma200, percentAboveSma200);
     }
 
-    @Test
     /**
      * Tests successful validation of a Statistic.
      */
+    @Test
     public void testValidateSuccess() {
         try {
             this.statistic.validate();
@@ -93,10 +94,10 @@ public class StatisticTest {
         }
     }
 
-    @Test
     /**
      * Tests validation of a Statistic where both the id of sector and industry group are defined.
      */
+    @Test
     public void testValidateSectorAndIgDefined() {
         String expectedErrorMessage = this.resources.getString("statistic.sectorAndIgDefined");
         String actualErrorMessage;

@@ -35,10 +35,10 @@ public class ScanTest {
      */
     private Instrument instrument;
 
-    @BeforeEach
     /**
      * Tasks to be performed before each test is run.
      */
+    @BeforeEach
     public void setUp() {
         this.instrument = new Instrument();
         this.instrument.setId(Integer.valueOf(1));
@@ -60,20 +60,20 @@ public class ScanTest {
         this.scan.addList(this.list);
     }
 
-    @AfterEach
     /**
      * Tasks to be performed after each test has been run.
      */
+    @AfterEach
     public void tearDown() {
         this.scan = null;
         this.list = null;
         this.instrument = null;
     }
 
-    @Test
     /**
      * Tests validation of a scan whose ID is too low.
      */
+    @Test
     public void testIdTooLow() {
         ValidationMessageProvider messageProvider = new ValidationMessageProvider();
         this.scan.setId(0);
@@ -91,10 +91,10 @@ public class ScanTest {
         assertEquals(expectedErrorMessage, errorMessage);
     }
 
-    @Test
     /**
      * Tests validation of a scan whose name is not given.
      */
+    @Test
     public void testNameNotGiven() {
         ValidationMessageProvider messageProvider = new ValidationMessageProvider();
         this.scan.setName("");
@@ -113,10 +113,10 @@ public class ScanTest {
         assertEquals(expectedErrorMessage, errorMessage);
     }
 
-    @Test
     /**
      * Tests validation of a scan whose name is too long.
      */
+    @Test
     public void testNameTooLong() {
         ValidationMessageProvider messageProvider = new ValidationMessageProvider();
         this.scan.setName("This is a scan name that is way too long to be of use");
@@ -135,10 +135,10 @@ public class ScanTest {
         assertEquals(expectedErrorMessage, errorMessage);
     }
 
-    @Test
     /**
      * Tests validation of a scan whose name is null.
      */
+    @Test
     public void testNameIsNull() {
         ValidationMessageProvider messageProvider = new ValidationMessageProvider();
         this.scan.setName(null);
@@ -156,10 +156,10 @@ public class ScanTest {
         assertEquals(expectedErrorMessage, errorMessage);
     }
 
-    @Test
     /**
      * Tests validation of a scan whose description is not given.
      */
+    @Test
     public void testDescriptionNotGiven() {
         this.scan.setDescription("");
 
@@ -170,17 +170,18 @@ public class ScanTest {
         }
     }
 
-    @Test
     /**
      * Tests validation of a scan whose description is too long.
      */
+    @Test
     public void testDescriptionTooLong() {
         ValidationMessageProvider messageProvider = new ValidationMessageProvider();
 
         this.scan.setDescription(
                 "Das ist ein Beschreibungstext. Das ist ein Beschreibungstext. Das ist ein Beschreibungstext. "
-                        + "Das ist ein Beschreibungstext. Das ist ein Beschreibungstext. Das ist ein Beschreibungstext. "
-                        + "Das ist ein Beschreibungstext. Das ist ein Beschreibungstext. Das");
+                        + "Das ist ein Beschreibungstext. Das ist ein Beschreibungstext. "
+                        + "Das ist ein Beschreibungstext. Das ist ein Beschreibungstext. "
+                        + "Das ist ein Beschreibungstext. Das");
 
         String expectedErrorMessage = messageProvider.getSizeValidationMessage("scan", "description",
                 String.valueOf(this.scan.getDescription().length()), "0", "250");
@@ -196,10 +197,10 @@ public class ScanTest {
         assertEquals(expectedErrorMessage, errorMessage);
     }
 
-    @Test
     /**
      * Tests validation of a scan whose description is null.
      */
+    @Test
     public void testDescriptionIsNull() {
         this.scan.setDescription(null);
 
@@ -210,10 +211,10 @@ public class ScanTest {
         }
     }
 
-    @Test
     /**
      * Tests validation of a scan whose execution status is null.
      */
+    @Test
     public void testExecutionStatusIsNull() {
         ValidationMessageProvider messageProvider = new ValidationMessageProvider();
         this.scan.setExecutionStatus(null);
@@ -231,10 +232,10 @@ public class ScanTest {
         assertEquals(expectedErrorMessage, errorMessage);
     }
 
-    @Test
     /**
      * Tests validation of a scan whose completion status is null.
      */
+    @Test
     public void testCompletionStatusIsNull() {
         ValidationMessageProvider messageProvider = new ValidationMessageProvider();
         this.scan.setCompletionStatus(null);
@@ -252,10 +253,10 @@ public class ScanTest {
         assertEquals(expectedErrorMessage, errorMessage);
     }
 
-    @Test
     /**
      * Tests validation of a scan that has no lists given.
      */
+    @Test
     public void testNoListsGiven() {
         this.scan.getLists().clear();
 
@@ -269,10 +270,10 @@ public class ScanTest {
         }
     }
 
-    @Test
     /**
      * Tests validation of a scan where duplicate lists have been added.
      */
+    @Test
     public void testScanContainsDuplicateLists() {
         List duplicateList = new List();
 
@@ -287,10 +288,10 @@ public class ScanTest {
         assertEquals(1, this.list.getInstruments().size());
     }
 
-    @Test
     /**
      * Tests validation of a scan whose progress attribute is too low.
      */
+    @Test
     public void testProgressTooLow() {
         ValidationMessageProvider messageProvider = new ValidationMessageProvider();
         this.scan.setProgress(-1);
@@ -308,13 +309,15 @@ public class ScanTest {
         assertEquals(expectedErrorMessage, errorMessage);
     }
 
-    @Test
     /**
      * Tests validation of a scan whose progress attribute is too high.
      */
+    @Test
     public void testProgressTooHigh() {
         ValidationMessageProvider messageProvider = new ValidationMessageProvider();
-        this.scan.setProgress(101);
+        final int progress = 101;
+
+        this.scan.setProgress(progress);
 
         String expectedErrorMessage = messageProvider.getMaxValidationMessage("scan", "progress", "100");
         String errorMessage = "";
@@ -329,10 +332,10 @@ public class ScanTest {
         assertEquals(expectedErrorMessage, errorMessage);
     }
 
-    @Test
     /**
      * Tests validation of a scan whose progress attribute is null.
      */
+    @Test
     public void testProgressIsNull() {
         ValidationMessageProvider messageProvider = new ValidationMessageProvider();
         this.scan.setProgress(null);
