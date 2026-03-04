@@ -23,10 +23,11 @@ public class ProtocolTest {
      */
     private Protocol protocol;
 
-    @BeforeEach
     /**
      * Tasks to be performed before each test is run.
      */
+    @BeforeEach
+    @SuppressWarnings("checkstyle:magicnumber")
     public void setUp() {
         ProtocolEntry entry;
         Calendar calendar = Calendar.getInstance();
@@ -62,18 +63,19 @@ public class ProtocolTest {
         this.protocol.getProtocolEntries().add(entry);
     }
 
-    @AfterEach
     /**
      * Tasks to be performed after each test has been run.
      */
+    @AfterEach
     public void tearDown() {
         this.protocol = null;
     }
 
-    @Test
     /**
      * Tests the retrieval of protocol entries by a given date.
      */
+    @Test
+    @SuppressWarnings("checkstyle:magicnumber")
     public void testGetEntriesOfDate() {
         Calendar calendar = Calendar.getInstance();
         List<ProtocolEntry> protocolEntries;
@@ -94,11 +96,11 @@ public class ProtocolTest {
         }
     }
 
-    @Test
     /**
      * Tests the calculation of percentage values for confirmations, violations and warnings based on all protocol
      * entries.
      */
+    @Test
     public void testCalculatePercentages() {
         final int expectedConfirmationPercentage = 50;
         final int expectedViolationPercentage = 25;

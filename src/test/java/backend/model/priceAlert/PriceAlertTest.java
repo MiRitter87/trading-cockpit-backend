@@ -38,10 +38,10 @@ public class PriceAlertTest {
      */
     private Instrument instrument;
 
-    @BeforeEach
     /**
      * Tasks to be performed before each test is run.
      */
+    @BeforeEach
     public void setUp() {
         this.instrument = new Instrument();
         this.instrument.setId(Integer.valueOf(1));
@@ -54,25 +54,25 @@ public class PriceAlertTest {
         this.priceAlert.setId(Integer.valueOf(1));
         this.priceAlert.setInstrument(this.instrument);
         this.priceAlert.setAlertType(PriceAlertType.GREATER_OR_EQUAL);
-        this.priceAlert.setPrice(BigDecimal.valueOf(185.50));
+        this.priceAlert.setPrice(new BigDecimal("185.50"));
         this.priceAlert.setCurrency(Currency.USD);
         this.priceAlert.setSendMail(true);
         this.priceAlert.setAlertMailAddress("john.doe@testmail.com");
     }
 
-    @AfterEach
     /**
      * Tasks to be performed after each test has been run.
      */
+    @AfterEach
     public void tearDown() {
         this.priceAlert = null;
         this.instrument = null;
     }
 
-    @Test
     /**
      * Tests successful validation of PriceAlert.
      */
+    @Test
     public void testValidateSuccess() {
         try {
             this.priceAlert.validate();
@@ -81,10 +81,10 @@ public class PriceAlertTest {
         }
     }
 
-    @Test
     /**
      * Tests validation of a price alert whose ID is too low.
      */
+    @Test
     public void testIdTooLow() {
         ValidationMessageProvider messageProvider = new ValidationMessageProvider();
         this.priceAlert.setId(0);
@@ -102,10 +102,10 @@ public class PriceAlertTest {
         assertEquals(expectedErrorMessage, errorMessage);
     }
 
-    @Test
     /**
      * Tests validation of a PriceAlert that has no Instrument defined.
      */
+    @Test
     public void testNoInstrumentDefined() {
         ValidationMessageProvider messageProvider = new ValidationMessageProvider();
         String expectedErrorMessage = messageProvider.getNotNullValidationMessage("priceAlert", "instrument");
@@ -123,10 +123,10 @@ public class PriceAlertTest {
         assertEquals(expectedErrorMessage, actualErrorMessage);
     }
 
-    @Test
     /**
      * Tests validation of a price alert whose alert type is null.
      */
+    @Test
     public void testAlertTypeIsNull() {
         ValidationMessageProvider messageProvider = new ValidationMessageProvider();
         this.priceAlert.setAlertType(null);
@@ -144,10 +144,10 @@ public class PriceAlertTest {
         assertEquals(expectedErrorMessage, errorMessage);
     }
 
-    @Test
     /**
      * Tests validation of a price alert whose price is null.
      */
+    @Test
     public void testPriceIsNull() {
         ValidationMessageProvider messageProvider = new ValidationMessageProvider();
         this.priceAlert.setPrice(null);
@@ -165,13 +165,13 @@ public class PriceAlertTest {
         assertEquals(expectedErrorMessage, errorMessage);
     }
 
-    @Test
     /**
      * Tests validation of a price alert whose price is too low.
      */
+    @Test
     public void testPriceTooLow() {
         ValidationMessageProvider messageProvider = new ValidationMessageProvider();
-        this.priceAlert.setPrice(BigDecimal.valueOf(Double.valueOf(0.009)));
+        this.priceAlert.setPrice(new BigDecimal("0.009"));
 
         String expectedErrorMessage = messageProvider.getDecimalMinValidationMessage("priceAlert", "price", "0.01");
         String errorMessage = "";
@@ -186,13 +186,13 @@ public class PriceAlertTest {
         assertEquals(expectedErrorMessage, errorMessage);
     }
 
-    @Test
     /**
      * Tests validation of a price alert whose price is too high.
      */
+    @Test
     public void testPriceTooHigh() {
         ValidationMessageProvider messageProvider = new ValidationMessageProvider();
-        this.priceAlert.setPrice(BigDecimal.valueOf(Double.valueOf(100000.01)));
+        this.priceAlert.setPrice(new BigDecimal("100000.01"));
 
         String expectedErrorMessage = messageProvider.getMaxValidationMessage("priceAlert", "price", "100000");
         String errorMessage = "";
@@ -207,10 +207,10 @@ public class PriceAlertTest {
         assertEquals(expectedErrorMessage, errorMessage);
     }
 
-    @Test
     /**
      * Tests validation of a price alert whose currency is null.
      */
+    @Test
     public void testCurencyIsNull() {
         ValidationMessageProvider messageProvider = new ValidationMessageProvider();
         this.priceAlert.setCurrency(null);
@@ -228,10 +228,10 @@ public class PriceAlertTest {
         assertEquals(expectedErrorMessage, errorMessage);
     }
 
-    @Test
     /**
      * Tests validation of a price alert if mail should be send but mail address is null.
      */
+    @Test
     public void testMailAddressNullIfSendMailTrue() {
         this.priceAlert.setSendMail(true);
         this.priceAlert.setAlertMailAddress(null);
@@ -249,10 +249,10 @@ public class PriceAlertTest {
         assertEquals(expectedErrorMessage, errorMessage);
     }
 
-    @Test
     /**
      * Tests validation of a price alert if the mail address has the wrong length.
      */
+    @Test
     public void testMailAddressWrongLength() {
         this.priceAlert.setSendMail(true);
         this.priceAlert.setAlertMailAddress("a@bc");

@@ -28,24 +28,24 @@ public class ListTest {
     /**
      * The instrument under test.
      */
-    private Instrument instrument;
+    private Instrument appleStock;
 
-    @BeforeEach
     /**
      * Tasks to be performed before each test is run.
      */
+    @BeforeEach
     public void setUp() {
-        this.instrument = this.getAppleInstrument();
-        this.list = this.getDJIList(this.instrument);
+        this.appleStock = this.getAppleInstrument();
+        this.list = this.getDJIList(this.appleStock);
     }
 
-    @AfterEach
     /**
      * Tasks to be performed after each test has been run.
      */
+    @AfterEach
     public void tearDown() {
         this.list = null;
-        this.instrument = null;
+        this.appleStock = null;
     }
 
     /**
@@ -72,20 +72,20 @@ public class ListTest {
      * @return The List.
      */
     private List getDJIList(final Instrument instrument) {
-        List list = new List();
-        list.setId(Integer.valueOf(1));
-        list.setName("DJI");
-        list.setName("Dow Jones Industrial Average");
-        list.setDescription("All stocks of the Dow Jones Industrial Average Index.");
-        list.addInstrument(instrument);
+        List dji = new List();
+        dji.setId(Integer.valueOf(1));
+        dji.setName("DJI");
+        dji.setName("Dow Jones Industrial Average");
+        dji.setDescription("All stocks of the Dow Jones Industrial Average Index.");
+        dji.addInstrument(instrument);
 
-        return list;
+        return dji;
     }
 
-    @Test
     /**
      * Tests validation of a list whose ID is too low.
      */
+    @Test
     public void testIdTooLow() {
         ValidationMessageProvider messageProvider = new ValidationMessageProvider();
         this.list.setId(0);
@@ -103,10 +103,10 @@ public class ListTest {
         assertEquals(expectedErrorMessage, errorMessage);
     }
 
-    @Test
     /**
      * Tests validation of a list whose name is not given.
      */
+    @Test
     public void testNameNotGiven() {
         ValidationMessageProvider messageProvider = new ValidationMessageProvider();
         this.list.setName("");
@@ -125,10 +125,10 @@ public class ListTest {
         assertEquals(expectedErrorMessage, errorMessage);
     }
 
-    @Test
     /**
      * Tests validation of a list whose name is too long.
      */
+    @Test
     public void testNameTooLong() {
         ValidationMessageProvider messageProvider = new ValidationMessageProvider();
         this.list.setName("This is a list name that is way too long to be of use");
@@ -147,10 +147,10 @@ public class ListTest {
         assertEquals(expectedErrorMessage, errorMessage);
     }
 
-    @Test
     /**
      * Tests validation of a list whose name is null.
      */
+    @Test
     public void testNameIsNull() {
         ValidationMessageProvider messageProvider = new ValidationMessageProvider();
         this.list.setName(null);
@@ -168,10 +168,10 @@ public class ListTest {
         assertEquals(expectedErrorMessage, errorMessage);
     }
 
-    @Test
     /**
      * Tests validation of a list whose description is not given.
      */
+    @Test
     public void testDescriptionNotGiven() {
         this.list.setDescription("");
 
@@ -182,17 +182,18 @@ public class ListTest {
         }
     }
 
-    @Test
     /**
      * Tests validation of a list whose description is too long.
      */
+    @Test
     public void testDescriptionTooLong() {
         ValidationMessageProvider messageProvider = new ValidationMessageProvider();
 
         this.list.setDescription(
                 "Das ist ein Beschreibungstext. Das ist ein Beschreibungstext. Das ist ein Beschreibungstext. "
-                        + "Das ist ein Beschreibungstext. Das ist ein Beschreibungstext. Das ist ein Beschreibungstext. "
-                        + "Das ist ein Beschreibungstext. Das ist ein Beschreibungstext. Das");
+                        + "Das ist ein Beschreibungstext. Das ist ein Beschreibungstext. "
+                        + "Das ist ein Beschreibungstext. Das ist ein Beschreibungstext. "
+                        + "Das ist ein Beschreibungstext. Das");
 
         String expectedErrorMessage = messageProvider.getSizeValidationMessage("list", "description",
                 String.valueOf(this.list.getDescription().length()), "0", "250");
@@ -208,10 +209,10 @@ public class ListTest {
         assertEquals(expectedErrorMessage, errorMessage);
     }
 
-    @Test
     /**
      * Tests validation of a list whose description is null.
      */
+    @Test
     public void testDescriptionIsNull() {
         this.list.setDescription(null);
 
@@ -222,10 +223,10 @@ public class ListTest {
         }
     }
 
-    @Test
     /**
      * Tests validation of a list that has no items given.
      */
+    @Test
     public void testNoItemsGiven() {
         this.list.getInstruments().clear();
 
@@ -239,10 +240,10 @@ public class ListTest {
         }
     }
 
-    @Test
     /**
      * Tests validation of a list where duplicate instruments have been added.
      */
+    @Test
     public void testListContainsDuplicateInstrument() {
         Instrument duplicateInstrument = new Instrument();
         duplicateInstrument.setId(Integer.valueOf(1));
@@ -256,10 +257,10 @@ public class ListTest {
         assertEquals(1, this.list.getInstruments().size());
     }
 
-    @Test
     /**
-     * Tests if two lists are equal
+     * Tests if two lists are equal.
      */
+    @Test
     public void testEquals() {
         List secondList = this.getDJIList(this.getAppleInstrument());
 
