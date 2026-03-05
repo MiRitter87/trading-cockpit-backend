@@ -1,6 +1,7 @@
 package backend.webservice.common;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -99,20 +100,20 @@ public class DashboardServiceTest {
      */
     private Quotation fcxQuotation;
 
-    @BeforeAll
     /**
      * Tasks to be performed once at startup of test class.
      */
+    @BeforeAll
     public static void setUpClass() {
         instrumentDAO = DAOManager.getInstance().getInstrumentDAO();
         quotationDAO = DAOManager.getInstance().getQuotationDAO();
         statisticDAO = DAOManager.getInstance().getStatisticDAO();
     }
 
-    @AfterAll
     /**
      * Tasks to be performed once at end of test class.
      */
+    @AfterAll
     public static void tearDownClass() {
         try {
             DAOManager.getInstance().close();
@@ -121,10 +122,10 @@ public class DashboardServiceTest {
         }
     }
 
-    @BeforeEach
     /**
      * Tasks to be performed before each test is run.
      */
+    @BeforeEach
     public void setUp() {
         this.fixtureHelper = new DashboardServiceTestFixture();
         this.createDummyInstruments();
@@ -135,10 +136,10 @@ public class DashboardServiceTest {
         this.createStatistics();
     }
 
-    @AfterEach
     /**
      * Tasks to be performed after each test has been run.
      */
+    @AfterEach
     public void tearDown() {
         this.deleteStatistics();
         this.deleteDummyQuotations();
@@ -198,14 +199,14 @@ public class DashboardServiceTest {
         this.copperIgQuotation1 = new Quotation();
         this.copperIgQuotation1.setInstrument(this.copperIndustryGroup);
         this.copperIgQuotation1.setDate(calendar.getTime());
-        this.copperIgQuotation1.setClose(new BigDecimal(100));
+        this.copperIgQuotation1.setClose(new BigDecimal("100"));
         quotations.add(this.copperIgQuotation1);
 
         this.copperIgQuotation2 = new Quotation();
         this.copperIgQuotation2.setInstrument(this.copperIndustryGroup);
         calendar.add(Calendar.DAY_OF_MONTH, -1);
         this.copperIgQuotation2.setDate(calendar.getTime());
-        this.copperIgQuotation2.setClose(new BigDecimal(99));
+        this.copperIgQuotation2.setClose(new BigDecimal("99"));
         quotations.add(this.copperIgQuotation2);
 
         try {
@@ -240,6 +241,7 @@ public class DashboardServiceTest {
     /**
      * Creates MovingAverageData.
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     private void createMovingAverageData() {
         List<Quotation> quotations = new ArrayList<>();
         MovingAverageData maData1 = new MovingAverageData();
@@ -270,9 +272,10 @@ public class DashboardServiceTest {
     private void createRelativeStrengthData() {
         List<Quotation> quotations = new ArrayList<>();
         RelativeStrengthData rsData1 = new RelativeStrengthData();
+        final int rsNumber = 50;
 
         try {
-            rsData1.setRsNumber(50);
+            rsData1.setRsNumber(rsNumber);
             this.copperIgQuotation1.setRelativeStrengthData(rsData1);
             quotations.add(this.copperIgQuotation1);
 
@@ -285,6 +288,7 @@ public class DashboardServiceTest {
     /**
      * Creates Indicator data.
      */
+    @SuppressWarnings("checkstyle:magicnumber")
     private void createIndicators() {
         List<Quotation> quotations = new ArrayList<>();
         try {
@@ -315,9 +319,10 @@ public class DashboardServiceTest {
     private void createStatistics() {
         Statistic statistic;
         Calendar calendar = Calendar.getInstance();
+        final int numStatistics = 6;
 
         try {
-            for (int i = 0; i < 6; i++) {
+            for (int i = 0; i < numStatistics; i++) {
                 if (i > 0) {
                     calendar.add(Calendar.DAY_OF_MONTH, -1);
                 }
@@ -351,10 +356,10 @@ public class DashboardServiceTest {
         }
     }
 
-    @Test
     /**
      * Tests the determination of the MarketHealthStatus.
      */
+    @Test
     public void testGetMarketHealthStatus() {
         MarketHealthStatus marketHealthStatus;
         WebServiceResult getMarketHealthStatusResult;
@@ -365,7 +370,7 @@ public class DashboardServiceTest {
         getMarketHealthStatusResult = dashboardService.getMarketHealthStatus(this.copperIndustryGroup.getId(), null);
 
         // Assure no error message exists
-        assertTrue(WebServiceTools.resultContainsErrorMessage(getMarketHealthStatusResult) == false);
+        assertFalse(WebServiceTools.resultContainsErrorMessage(getMarketHealthStatusResult));
 
         // Check attributes of the provided MarketHealthStatus object.
         marketHealthStatus = (MarketHealthStatus) getMarketHealthStatusResult.getData();
@@ -383,11 +388,11 @@ public class DashboardServiceTest {
         assertEquals(expectedNumberDownOnVolume, marketHealthStatus.getNumberDownOnVolume());
     }
 
-    @Test
     /**
      * Tests the determination of the MarketHealthStatus. Checks if a correct error is provided if an Instrument of the
      * wrong type is being given.
      */
+    @Test
     public void testGetMarketHealthStatusWrongType() {
         WebServiceResult getMarketHealthStatusResult;
         DashboardService dashboardService = new DashboardService();
@@ -405,27 +410,27 @@ public class DashboardServiceTest {
         getMarketHealthStatusResult = dashboardService.getMarketHealthStatus(this.copperIndustryGroup.getId(), null);
 
         // Assure an error message exists
-        assertTrue(WebServiceTools.resultContainsErrorMessage(getMarketHealthStatusResult) == true);
+        assertTrue(WebServiceTools.resultContainsErrorMessage(getMarketHealthStatusResult));
 
         // Verify the given error message.
         actualErrorMessage = getMarketHealthStatusResult.getMessages().get(0).getText();
         assertEquals(expectedErrorMessage, actualErrorMessage);
     }
 
-    @Test
     /**
      * Tests determination of the SwingTradingEnvironmentStatus 'GREEN'.
      */
+    @Test
     public void testIsStatusGreen() {
         DashboardService dashboardService = new DashboardService();
 
         assertTrue(dashboardService.isStatusGreen(this.copperIndustryGroup));
     }
 
-    @Test
     /**
      * Tests determination of the SwingTradingEnvironmentStatus 'YELLOW'.
      */
+    @Test
     public void testIsStatusYellow() {
         DashboardService dashboardService = new DashboardService();
 
@@ -435,10 +440,10 @@ public class DashboardServiceTest {
         assertTrue(dashboardService.isStatusYellow(this.copperIndustryGroup));
     }
 
-    @Test
     /**
      * Tests determination of the SwingTradingEnvironmentStatus 'RED'.
      */
+    @Test
     public void testIsStatusRed() {
         DashboardService dashboardService = new DashboardService();
 
