@@ -144,11 +144,12 @@ public class InstrumentServiceFixture {
      */
     public Quotation getMicrosoftQuotation(final Instrument instrument) {
         Quotation quotation = new Quotation();
+        final long volume = 17540000;
 
         quotation.setDate(new Date());
-        quotation.setClose(BigDecimal.valueOf(332.88));
+        quotation.setClose(new BigDecimal("332.88"));
         quotation.setCurrency(Currency.USD);
-        quotation.setVolume(17540000);
+        quotation.setVolume(volume);
         quotation.setInstrument(instrument);
 
         return quotation;
@@ -179,7 +180,7 @@ public class InstrumentServiceFixture {
 
         alert.setInstrument(instrument);
         alert.setAlertType(PriceAlertType.LESS_OR_EQUAL);
-        alert.setPrice(BigDecimal.valueOf(120.00));
+        alert.setPrice(new BigDecimal("120.00"));
         alert.setCurrency(Currency.USD);
 
         return alert;
@@ -203,17 +204,21 @@ public class InstrumentServiceFixture {
         instrumentWS.setInvestingId(instrument.getInvestingId());
 
         // Object references.
-        if (instrument.getSector() != null)
+        if (instrument.getSector() != null) {
             instrumentWS.setSectorId(instrument.getSector().getId());
+        }
 
-        if (instrument.getIndustryGroup() != null)
+        if (instrument.getIndustryGroup() != null) {
             instrumentWS.setIndustryGroupId(instrument.getIndustryGroup().getId());
+        }
 
-        if (instrument.getDividend() != null)
+        if (instrument.getDividend() != null) {
             instrumentWS.setDividendId(instrument.getDividend().getId());
+        }
 
-        if (instrument.getDivisor() != null)
+        if (instrument.getDivisor() != null) {
             instrumentWS.setDivisorId(instrument.getDivisor().getId());
+        }
 
         return instrumentWS;
     }
