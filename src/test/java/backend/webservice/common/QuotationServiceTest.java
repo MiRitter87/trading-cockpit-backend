@@ -795,15 +795,10 @@ public class QuotationServiceTest {
         quotations = new QuotationArray(this.denisonMinesQuotations);
         quotations.sortQuotationsByDate();
 
-        // Assure EMA(10) > EMA(21) and price above EMA(10)
+        // Assure EMA(10) > EMA(21), close above EMA(21) and close above SMA(50)
         quotation = quotations.getQuotations().get(0);
-        quotation.getMovingAverageData().setEma10(1.33f);
-        quotation.getMovingAverageData().setEma21(1.32f);
-        modifiedQuotations.add(quotation);
-
-        // Assure EMA(21) is rising
-        quotation = quotations.getQuotations().get(1);
-        quotation.getMovingAverageData().setEma21(1.31f);
+        quotation.setClose(new BigDecimal("1.39"));
+        quotation.getMovingAverageData().setSma50(1.37f);
         modifiedQuotations.add(quotation);
 
         // Persist the changes.

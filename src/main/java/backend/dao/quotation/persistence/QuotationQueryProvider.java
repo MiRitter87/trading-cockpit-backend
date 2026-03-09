@@ -160,7 +160,7 @@ public class QuotationQueryProvider {
                 + "LEFT JOIN FETCH i.sector LEFT JOIN FETCH i.industryGroup JOIN q.movingAverageData m "
                 + "LEFT JOIN FETCH i.dividend LEFT JOIN FETCH i.divisor "
                 + "WHERE q.id IN :quotationIds AND q.movingAverageData IS NOT NULL "
-                + "AND q.close > m.ema10 AND m.ema10 > m.ema21 ");
+                + "AND q.close > m.ema21 AND q.close > m.sma50 AND m.ema10 > m.ema21 ");
     }
 
     /**

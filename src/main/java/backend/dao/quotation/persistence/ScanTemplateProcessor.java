@@ -34,11 +34,6 @@ public class ScanTemplateProcessor {
     private TemplateRsNearHighProcessor rsNearHighProcessor;
 
     /**
-     * Performs manual tasks for the "SWING_TRADING_ENVIRONMENT" ScanTemplate.
-     */
-    private TemplateSwingTradingProcessor swingTradingProcessor;
-
-    /**
      * Performs manual tasks for the "HIGH_TIGHT_FLAG" ScanTemplate.
      */
     private TemplateHighTightFlagProcessor highTightFlagProcessor;
@@ -71,7 +66,6 @@ public class ScanTemplateProcessor {
     public ScanTemplateProcessor(final QuotationHibernateDAO quotationHibernateDAO) {
         this.quotationHibernateDAO = quotationHibernateDAO;
         this.rsNearHighProcessor = new TemplateRsNearHighProcessor(quotationHibernateDAO);
-        this.swingTradingProcessor = new TemplateSwingTradingProcessor(quotationHibernateDAO);
         this.highTightFlagProcessor = new TemplateHighTightFlagProcessor(quotationHibernateDAO);
         this.threeWeeksTightProcessor = new TemplateThreeWeeksTightProcessor(quotationHibernateDAO);
         this.rsSinceDateProcessor = new TemplateRsSinceDateProcessor(quotationHibernateDAO);
@@ -245,8 +239,6 @@ public class ScanTemplateProcessor {
             this.threeWeeksTightProcessor.postProcessingThreeWeeksTight(quotations);
         } else if (scanTemplate == ScanTemplate.HIGH_TIGHT_FLAG) {
             this.highTightFlagProcessor.postProcessingHighTightFlag(quotations);
-        } else if (scanTemplate == ScanTemplate.SWING_TRADING_ENVIRONMENT) {
-            this.swingTradingProcessor.postProcessingSwingTradingEnvironment(quotations);
         } else if (scanTemplate == ScanTemplate.RS_NEAR_HIGH_IG) {
             this.rsNearHighProcessor.postProcessingRsNearHigh(scanTemplate, quotations);
         } else if (scanTemplate == ScanTemplate.BUYABLE_BASE) {
