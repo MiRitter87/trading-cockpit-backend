@@ -87,5 +87,10 @@ public enum ScanTemplate {
     /**
      * Instruments whose price, SMA(50) and EMA(21) trade near each other.
      */
-    MA_PRICE_CONVERGENCE
+    MA_PRICE_CONVERGENCE,
+
+    /**
+     * Instruments that are in a downtrend, trading below the SMA(50) and SMA(200).
+     */
+    DOWN_TREND
 }

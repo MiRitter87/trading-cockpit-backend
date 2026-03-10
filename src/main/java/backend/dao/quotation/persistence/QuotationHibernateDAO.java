@@ -402,6 +402,8 @@ public class QuotationHibernateDAO implements QuotationDAO {
             return quotationQueryProvider.getQueryForBuyableBaseTemplate();
         case MA_PRICE_CONVERGENCE:
             return quotationQueryProvider.getQueryForMaPriceConvergenceTemplate();
+        case DOWN_TREND:
+            return quotationQueryProvider.getQueryForDowntrendTemplate();
         case ALL:
         case RS_SINCE_DATE:
         case THREE_WEEKS_TIGHT:
