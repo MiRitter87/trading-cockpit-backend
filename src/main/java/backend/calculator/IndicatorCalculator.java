@@ -162,6 +162,7 @@ public class IndicatorCalculator {
      * @return The base length in weeks.
      */
     public int getBaseLengthWeeks(final Quotation quotation, final QuotationArray sortedQuotations) {
+        AverageTrueRangeCalculator calculator = new AverageTrueRangeCalculator();
         Quotation tempQuotation;
         Quotation quotation52WeekHigh;
         BigDecimal highPrice52Weeks = new BigDecimal(0);
@@ -170,7 +171,8 @@ public class IndicatorCalculator {
         int indexOf52WeekHigh = 0;
         int baseLengthDays;
         float performance;
-        final int thresholdPercentOff52wHigh = -5;
+        int atrpPeriod;
+        float thresholdPercentOff52wHigh;
 
         // Get the starting point of 52 week high calculation.
         indexOfQuotation = sortedQuotations.getQuotations().indexOf(quotation);
@@ -189,8 +191,14 @@ public class IndicatorCalculator {
 
         quotation52WeekHigh = sortedQuotations.getQuotations().get(indexOf52WeekHigh);
 
+        atrpPeriod = indexOf52WeekHigh - indexOfQuotation + 1;
+        thresholdPercentOff52wHigh = calculator.getAverageTrueRangePercent(atrpPeriod,
+                sortedQuotations.getQuotations().get(indexOfQuotation), sortedQuotations);
+        thresholdPercentOff52wHigh = thresholdPercentOff52wHigh * -1;
+
         // Now check the days before the 52-week high.
-        // Any day that closes within 5% of the absolute 52-week high is considered for calculation of base length, too.
+        // Any day that closes within ATRP of the absolute 52-week high is considered for calculation of base length,
+        // too.
         for (int i = indexOf52WeekHigh + 1; i < (TRADING_DAYS_PER_YEAR + indexOfQuotation)
                 && i < sortedQuotations.getQuotations().size(); i++) {
             tempQuotation = sortedQuotations.getQuotations().get(i);
