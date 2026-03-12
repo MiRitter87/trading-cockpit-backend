@@ -208,7 +208,7 @@ public class IndicatorCalculatorTest {
     @Test
     public void testGetBaseLengthWeeks() {
         QuotationArray sortedQuotations = new QuotationArray(this.dmlStock.getQuotationsSortedByDate());
-        final int expectedBaseLength = 38;
+        final int expectedBaseLength = 35;
         int actualBaseLength;
 
         actualBaseLength = this.indicatorCalculator.getBaseLengthWeeks(sortedQuotations.getQuotations().get(0),
