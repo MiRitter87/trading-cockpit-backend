@@ -55,7 +55,7 @@ public class QuotationQueryProvider {
                 + "LEFT JOIN FETCH i.dividend LEFT JOIN FETCH i.divisor "
                 + "JOIN q.indicator r WHERE q.id IN :quotationIds AND q.indicator IS NOT NULL "
                 + "AND r.volumeDifferential5Days < 0 AND r.distanceTo52WeekHigh >= -10 "
-                + "AND r.bollingerBandWidth10Days <= r.bbw10Threshold25Percent AND r.baseLengthWeeks >= 3");
+                + "AND r.bollingerBandWidth10Days <= r.bbw10Threshold25Percent AND r.baseLengthWeeks >= 4");
     }
 
     /**
