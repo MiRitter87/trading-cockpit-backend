@@ -194,6 +194,8 @@ public class ScanThread extends DataRetrievalThread {
             instrument.setQuotations(databaseQuotations);
             List<Quotation> wsQuotations = quotationProviderDAO.getQuotationHistory(instrument, 1);
 
+            this.removeDuplicates(wsQuotations);
+
             for (Quotation wsQuotation : wsQuotations) {
                 obsoleteQuotations
                         .addAll(instrument.getQuotationArray().getOlderQuotationsOfSameDay(wsQuotation.getDate()));
@@ -490,6 +492,31 @@ public class ScanThread extends DataRetrievalThread {
         if (quotationAgeDays >= dayThreshold) {
             LOGGER.warn(MessageFormat.format("The newest Quotation data of symbol {0} are {1} days old.", symbol,
                     quotationAgeDays));
+        }
+    }
+
+    /**
+     * Removes duplicate quotations of the same day from the given List of quotations. Only the newest Quotation of each
+     * day should prevail.
+     *
+     * @param wsQuotations A List of quotations.
+     */
+    private void removeDuplicates(final List<Quotation> wsQuotations) {
+        QuotationArray quotations = new QuotationArray(wsQuotations);
+        Iterator<Quotation> iterator = wsQuotations.iterator();
+        Quotation currentQuotation;
+        Quotation newestQuotationOfDate;
+
+        while (iterator.hasNext()) {
+            currentQuotation = iterator.next();
+            newestQuotationOfDate = quotations.getNewestQuotationOfDate(currentQuotation.getDate());
+
+            if (newestQuotationOfDate != null) {
+                // Remove the current Quotation if it is not the newest Quotation of the day.
+                if (currentQuotation.getDate().getTime() < newestQuotationOfDate.getDate().getTime()) {
+                    iterator.remove();
+                }
+            }
         }
     }
 }
