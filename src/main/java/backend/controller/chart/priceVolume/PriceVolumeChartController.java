@@ -115,6 +115,7 @@ public class PriceVolumeChartController extends ChartController {
         XYPlot candleStickSubplot = this.getCandlestickPlot(instrument, dateAxis);
         XYPlot volumeSubplot = null;
         XYPlot indicatorSubplot = null;
+        LogAxis axis = (LogAxis) candleStickSubplot.getRangeAxis();
         final int candleStickPlotWeight = 4;
 
         if (withVolume) {
@@ -129,8 +130,6 @@ public class PriceVolumeChartController extends ChartController {
         this.addHorizontalLines(instrument, candleStickSubplot);
 
         // Build combined plot based on subplots.
-        combinedPlot.setDomainAxis(dateAxis);
-
         if (indicatorSubplot != null) {
             combinedPlot.add(indicatorSubplot, 1); // Indicator Plot takes 1 vertical size unit.
         }
@@ -140,6 +139,11 @@ public class PriceVolumeChartController extends ChartController {
         if (withVolume) {
             combinedPlot.add(volumeSubplot, 1); // Volume Plot takes 1 vertical size unit.
         }
+
+        combinedPlot.setDomainAxis(dateAxis);
+        // Recompute the y-axis range after all datasets (candles + moving averages) are in place.
+        // This prevents candles from being painted outside the visible chart area.
+        axis.setAutoRange(true);
 
         // Build chart based on combined Plot.
         chart = new JFreeChart(instrument.getName(), JFreeChart.DEFAULT_TITLE_FONT, combinedPlot, true);
