@@ -9,7 +9,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 /**
- * WebService populating customized TradingView widgets using REST technology.
+ * WebService providing customized TradingView widgets using REST technology.
  *
  * @author Michael
  */

@@ -1,5 +1,8 @@
 package backend.webservice.common;
 
+import java.io.InputStream;
+
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 /**
@@ -16,6 +19,13 @@ public class TradingViewWidgetService {
      * @return A HTML page containing the chart widget.
      */
     public Response getChartWidget(final Integer instrumentId) {
-        return null;
+        InputStream inputStream = getClass().getClassLoader()
+                .getResourceAsStream("html-templates/tradingview-chart-widget.html");
+
+        if (inputStream == null) {
+            return Response.status(Response.Status.NOT_FOUND).entity("").build();
+        }
+
+        return Response.ok(inputStream).type(MediaType.TEXT_HTML).build();
     }
 }
