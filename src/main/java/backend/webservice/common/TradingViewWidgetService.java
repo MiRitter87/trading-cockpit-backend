@@ -1,6 +1,5 @@
 package backend.webservice.common;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
@@ -42,7 +41,7 @@ public class TradingViewWidgetService {
 
         try {
             inputStream = widgetController.getChartWidget(instrumentId);
-        } catch (IOException exception) {
+        } catch (Exception exception) {
             LOGGER.error(MessageFormat.format(this.resources.getString("widgets.chart.getError"), instrumentId),
                     exception);
             return Response.status(Status.INTERNAL_SERVER_ERROR).build();
