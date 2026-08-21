@@ -6,8 +6,8 @@ import java.nio.charset.StandardCharsets;
 
 import backend.dao.DAOManager;
 import backend.dao.instrument.InstrumentDAO;
-import backend.model.StockExchange;
 import backend.model.instrument.Instrument;
+import backend.model.instrument.InstrumentType;
 
 /**
  * Constructs and provides customized Trading View widgets.
@@ -75,8 +75,7 @@ public class TradingViewWidgetController {
         String replacedTemplate;
 
         replacedTemplate = htmlTemplate.replace(PLACEHOLDER_SYMBOL, instrument.getSymbol());
-        replacedTemplate = replacedTemplate.replace(PLACEHOLDER_EXCHANGE,
-                this.getStringOfExchange(instrument.getStockExchange()));
+        replacedTemplate = replacedTemplate.replace(PLACEHOLDER_EXCHANGE, this.getStringOfExchange(instrument));
         replacedTemplate = replacedTemplate.replace(PLACEHOLDER_COMPANY, instrument.getName());
 
         return replacedTemplate;
@@ -85,39 +84,44 @@ public class TradingViewWidgetController {
     /**
      * Gets the TradingView-specific stock exchange string.
      *
-     * @param stockExchange The StockExchange of the Instrument.
+     * @param instrument The Instrument.
      * @return The TradingView-specific stock exchange string.
      */
-    private String getStringOfExchange(final StockExchange stockExchange) {
+    private String getStringOfExchange(final Instrument instrument) {
         String exchangeString = "";
 
-        switch (stockExchange) {
-        case NYSE:
-            exchangeString = "NYSE";
-            break;
-        case NDQ:
-            exchangeString = "NASDAQ";
-            break;
-        case AMEX:
+        if (instrument.getType() == InstrumentType.STOCK) {
+            switch (instrument.getStockExchange()) {
+            case NYSE:
+                exchangeString = "NYSE";
+                break;
+            case NDQ:
+                exchangeString = "NASDAQ";
+                break;
+            case AMEX:
+                exchangeString = "AMEX";
+                break;
+            case OTC:
+                exchangeString = "OTC";
+                break;
+            case TSX:
+                exchangeString = "TSX";
+                break;
+            case TSXV:
+                exchangeString = "TSXV";
+                break;
+            case CSE:
+                exchangeString = "CSE";
+                break;
+            case LSE:
+                exchangeString = "LSE";
+                break;
+            default:
+                break;
+            }
+        } else {
+            // ETFs like QQQ or XLE use exchange AMEX at TradingView.
             exchangeString = "AMEX";
-            break;
-        case OTC:
-            exchangeString = "OTC";
-            break;
-        case TSX:
-            exchangeString = "TSX";
-            break;
-        case TSXV:
-            exchangeString = "TSXV";
-            break;
-        case CSE:
-            exchangeString = "CSE";
-            break;
-        case LSE:
-            exchangeString = "LSE";
-            break;
-        default:
-            break;
         }
 
         return exchangeString;
